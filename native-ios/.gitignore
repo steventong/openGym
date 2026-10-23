@@ -5,3 +5,5 @@ xcuserdata/
 .test-session.json
 
 node_modules/
+
+.build-release/
