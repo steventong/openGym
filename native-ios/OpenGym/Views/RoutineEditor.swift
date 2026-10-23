@@ -7,6 +7,7 @@ struct RoutineEditor: View {
     @State private var name: String
     @State private var rows: [RawRow]
     @State private var pick = false
+    @State private var configuration: RawRow?
     @State private var discard = false
     @State private var error: String?
     init(routine:Routine,unit:String) {
@@ -33,7 +34,13 @@ struct RoutineEditor: View {
                                     numeric(expectedUnit,key:"weight",fallback:0,row:$row)
                                 }
                                 Stepper("组间休息 \(Int(number(row.raw["restSec"] ?? 90))) 秒",value:Binding(get:{Int(number(row.raw["restSec"] ?? 90))},set:{row.raw["restSec"] = $0}),in:0...900,step:15).font(.subheadline)
-                            } else { Text("此动作使用高级组型，参数原样保留；可调整备注和顺序。").font(.caption).foregroundStyle(.secondary) }
+                            } else { Text("已配置高级组型，可在下方调整参数。").font(.caption).foregroundStyle(.secondary) }
+                            Button { configuration = row } label: { Label("高级组型与计时",systemImage:"slider.horizontal.3") }.buttonStyle(.borderless).accessibilityIdentifier("advanced-slot-\(row.raw["id"] as? String ?? "")")
+                            if row.raw["sg"] != nil { Label("超级组",systemImage:"link").font(.caption).foregroundStyle(GymTheme.green) }
+                            HStack {
+                                if rows.last?.id != row.id { Button("与下一动作组成超级组") { group(row.id,"pair") }.font(.caption).buttonStyle(.borderless) }
+                                if row.raw["sg"] != nil { Button("解除超级组") { group(row.id,"unpair") }.font(.caption).buttonStyle(.borderless) }
+                            }
                             TextField("动作备注",text:Binding(get:{row.raw["note"] as? String ?? ""},set:{row.raw["note"] = $0})).font(.subheadline)
                             HStack {
                                 Button { shift(row.id,-1) } label: { Label("上移",systemImage:"arrow.up") }.disabled(rows.first?.id == row.id)
@@ -50,13 +57,18 @@ struct RoutineEditor: View {
                     ToolbarItem(placement:.topBarLeading) { Button("取消") { if dirty { discard = true } else { dismiss() } }.disabled(store.syncing) }
                     ToolbarItem(placement:.topBarTrailing) { Button(store.syncing ? "保存中…" : "保存") { Task { if await store.saveRoutine(original:original,proposed:proposed,expectedUnit:expectedUnit) { dismiss() } else { error = store.editError } } }.disabled(store.syncing || !dirty).accessibilityIdentifier("save-routine-edit") }
                 }
+                .sheet(item:$configuration) { selected in AdvancedConfigEditor(config:selected.raw,unit:expectedUnit) { updated in if let i = rows.firstIndex(where:{$0.id == selected.id}) { rows[i].raw = updated } } }
                 .sheet(isPresented:$pick) { ExercisePicker { exercise in rows.append(RawRow(raw:["id":exercise.id,"sets":3,"reps":10,"weight":0,"restSec":90])); pick = false } }
                 .alert("无法保存",isPresented:Binding(get:{error != nil},set:{if !$0 { error = nil }})) { Button("知道了",role:.cancel) {} } message: { Text(error ?? "") }
                 .confirmationDialog("放弃未保存的修改？",isPresented:$discard,titleVisibility:.visible) { Button("放弃修改",role:.destructive) { dismiss() }; Button("继续编辑",role:.cancel) {} }
                 .interactiveDismissDisabled(dirty || store.syncing)
         }.tint(GymTheme.green)
     }
-    private func shift(_ id:UUID,_ direction:Int) { guard let i = rows.firstIndex(where:{$0.id == id}), rows.indices.contains(i + direction) else { return }; rows.swapAt(i,i + direction) }
+    private func shift(_ id:UUID,_ direction:Int) { group(id,"move",direction) }
+    private func group(_ id:UUID,_ operation:String,_ direction:Int = 0) {
+        guard let i = rows.firstIndex(where:{$0.id == id}) else { return }
+        do { let result = try WebRules.shared.call("planGroup",payload:["rows":rows.map(\.raw),"operation":operation,"index":i,"direction":direction]) as! [[String:Any]];rows = result.map { RawRow(raw:$0) } } catch { self.error = error.localizedDescription }
+    }
     private func numeric(_ title:String,key:String,fallback:Double,row:Binding<RawRow>) -> some View {
         VStack(alignment:.leading,spacing:5) {
             Text(title).font(.caption).foregroundStyle(.secondary)

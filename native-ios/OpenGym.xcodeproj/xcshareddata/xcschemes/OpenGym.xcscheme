@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1BEFC85B68295B94242A6F49"
+               BlueprintIdentifier = "66EC1B8CBBFD039B30077615"
                BuildableName = "OpenGym.app"
                BlueprintName = "OpenGym"
                ReferencedContainer = "container:OpenGym.xcodeproj">
@@ -30,7 +30,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1BEFC85B68295B94242A6F49"
+            BlueprintIdentifier = "66EC1B8CBBFD039B30077615"
             BuildableName = "OpenGym.app"
             BlueprintName = "OpenGym"
             ReferencedContainer = "container:OpenGym.xcodeproj">
@@ -41,7 +41,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "86789E4FD6BA4A0EBD09D8E5"
+               BlueprintIdentifier = "61B06D426B612A407329C2C6"
                BuildableName = "OpenGymTests.xctest"
                BlueprintName = "OpenGymTests"
                ReferencedContainer = "container:OpenGym.xcodeproj">
@@ -63,7 +63,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1BEFC85B68295B94242A6F49"
+            BlueprintIdentifier = "66EC1B8CBBFD039B30077615"
             BuildableName = "OpenGym.app"
             BlueprintName = "OpenGym"
             ReferencedContainer = "container:OpenGym.xcodeproj">
@@ -80,7 +80,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1BEFC85B68295B94242A6F49"
+            BlueprintIdentifier = "66EC1B8CBBFD039B30077615"
             BuildableName = "OpenGym.app"
             BlueprintName = "OpenGym"
             ReferencedContainer = "container:OpenGym.xcodeproj">

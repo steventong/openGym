@@ -3,6 +3,7 @@ struct PlanView: View {
     @Environment(GymStore.self) private var store
     @State private var create = false
     @State private var schedule = false
+    @State private var rotation = false
     @State private var selected: Routine?
     var body: some View {
         ScrollView {
@@ -21,6 +22,10 @@ struct PlanView: View {
                 }
                 if store.userName != nil {
                     Button { schedule = true } label: { HStack { Label("训练排期",systemImage:"calendar.badge.clock"); Spacer(); Text("每周 / 单日").font(.caption); Image(systemName:"chevron.right") }.foregroundStyle(GymTheme.green).gymCard() }.accessibilityIdentifier("open-schedule")
+                }
+                if store.userName != nil {
+                    Button {rotation = true} label:{HStack {Label("循环排期",systemImage:"repeat");Spacer();Text("顺序 / 进度").font(.caption);Image(systemName:"chevron.right")}.foregroundStyle(GymTheme.green).gymCard()}.accessibilityIdentifier("open-rotation")
+                    if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
                 }
                 ForEach(store.routines) { routine in
                     VStack(alignment:.leading,spacing:16) {
@@ -41,6 +46,7 @@ struct PlanView: View {
             }.padding(22)
         }.refreshable { await store.refresh() }.sheet(isPresented:$create) { RoutineComposer() }
             .sheet(isPresented:$schedule) { ScheduleEditor() }
+            .sheet(isPresented:$rotation) {RotationEditor()}
             .sheet(item:$selected) { routine in RoutineEditor(routine:routine,unit:store.unit) }
     }
 }

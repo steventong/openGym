@@ -5,7 +5,10 @@ extension GymStore {
             guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409,"重量单位已改变，请重新打开编辑器。") }
             var state = source; var list = state["routines"] as? [[String:Any]] ?? []
             guard let i = list.firstIndex(where: { $0["id"] as? String == original["id"] as? String }) else { throw APIError.response(404,"计划已被删除，不能保存旧副本。") }
-            let merged = try RecordPatch.apply(original:original,proposed:proposed,current:list[i])
+            var merged = try RecordPatch.apply(original:original,proposed:proposed,current:list[i])
+            if let rows = merged["ex"] as? [[String:Any]] {
+                merged["ex"] = try WebRules.shared.call("planGroup",payload:["rows":rows,"operation":"cleanup","index":0])
+            }
             try EditValidation.routine(merged)
             list[i] = merged; state["routines"] = list; return state
         }
@@ -45,7 +48,7 @@ extension GymStore {
             let entriesChanged = !RecordPatch.equal(original["entries"],proposed["entries"])
             if entriesChanged {
                 let entries = next["entries"] as? [[String:Any]] ?? []
-                guard entries.contains(where: { ($0["sets"] as? [[String:Any]] ?? []).contains { $0["done"] as? Bool == true } }) else { throw APIError.response(0,"请至少保留一组已完成的训练。") }
+                guard entries.contains(where: { ($0["sets"] as? [[String:Any]] ?? []).contains(where:rawCompleted) }) else { throw APIError.response(0,"请至少保留一组已完成的训练。") }
                 for entry in entries {
                     for set in entry["sets"] as? [[String:Any]] ?? [] where EditValidation.ordinarySet(set,entry:entry) {
                         guard EditValidation.validNumber(set["w"] ?? 0,0...2000), EditValidation.validNumber(set["r"] ?? 0,0...1000) else { throw APIError.response(0,"请检查每组的重量和次数。") }

@@ -59,6 +59,7 @@ struct HomeView: View {
                         if store.draft != nil { store.selectedTab = 2 } else if routine != nil { store.start(scheduled) } else { store.selectedTab = 1 }
                     }
                 }.gymCard()
+                if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
                 HStack { SectionTitle(text:"体重"); Button("记录") { weightSheet = true }.font(.system(size:13,weight:.medium)) }
                 VStack(alignment:.leading,spacing:15) {
                     if let last = store.bodyweights.last {

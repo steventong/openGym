@@ -7,161 +7,203 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		08AE0DE4F521F0917D1F818E /* OpenGymApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DB6C03F40248C035D3AB26B /* OpenGymApp.swift */; };
-		19E979A85085FBEB791863C5 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C6B7B897D513AEF8E11C72 /* Theme.swift */; };
-		1DC7A0D91A5DD0702DC41EB8 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E11851673A157A3759560DB /* LibraryView.swift */; };
-		20181F89CB7D8EB335C9D42A /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E10FA4D2A8B22F7DD44CD55 /* APIClient.swift */; };
-		2BA9083791B3223AF0BED8AF /* GymStore+Editing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 209EBD85422FE0AA7D204775 /* GymStore+Editing.swift */; };
-		34F907092790DD5256C1FA8B /* Editing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB83EF930E308F0892544DC9 /* Editing.swift */; };
-		3C2579F813627AD79F35D2D4 /* WorkoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44AA5355C3F8C901EE144697 /* WorkoutView.swift */; };
-		457BB4D48259680E28FFD619 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA0EBAE7986612B23DDBCE4 /* HomeView.swift */; };
-		4987481C23FE81DFF703670C /* EditingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC59382ECEE365F1F5C84AD4 /* EditingTests.swift */; };
-		54D342EA1E4400B936315D83 /* catalogue.json in Resources */ = {isa = PBXBuildFile; fileRef = 0F8FF9CD159734EDFC35EE65 /* catalogue.json */; };
-		57F1513176E028D7007B531D /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 798CB39856EA6ADAE73312CA /* StatsView.swift */; };
-		5B351EFC68C8C5D8818F1CD9 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFA9F625E722F58D5A169781 /* Models.swift */; };
-		622FD5861F7B37A56452A229 /* RoutineEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0125A3E6B91303BB6E1AB71E /* RoutineEditor.swift */; };
-		6294223D4E22169C07B7ACA1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD201F0C7DF25F8429490632 /* Foundation.framework */; };
-		6B2F4834F96A0902C67BC6FE /* ExerciseDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C72AAE5C6D45617B1E8D68F5 /* ExerciseDetail.swift */; };
-		744D0327841C9763F230454F /* NOTICE.txt in Resources */ = {isa = PBXBuildFile; fileRef = A2EC5A27218891C521D656DD /* NOTICE.txt */; };
-		7DD100184B07B959A0CF6ACC /* HistoryEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED42F73FDD135356313CD0A /* HistoryEditor.swift */; };
-		92BC1B50329847A16DC03F46 /* OpenGymTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1DF3DC924CD6B7BA8A2E667 /* OpenGymTests.swift */; };
-		9DB42CA9D682F2FF9E55EE2D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE412D3183193EE7CE20105D /* SettingsView.swift */; };
-		B02FB038FE6405C42E7693E5 /* WebRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51156C0F1ECDA70AAA3950C3 /* WebRules.swift */; };
-		CC48DB77F3133EC4C126D510 /* web-rules.js in Resources */ = {isa = PBXBuildFile; fileRef = 06FA33298E553C68442D29C0 /* web-rules.js */; };
-		CC675350FBD00D3F3F0792E7 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = B2B6CD2C2031308A4123C130 /* LICENSE.txt */; };
-		D6E247DFF37E04B267BA607F /* PlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289610702BF1BAD7FB784191 /* PlanView.swift */; };
-		DBEFE03EEE7528C372282570 /* ScheduleEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C37A72B67F853991B8AA6 /* ScheduleEditor.swift */; };
-		E506F93A4C70A191907BA253 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD201F0C7DF25F8429490632 /* Foundation.framework */; };
-		EC87D4BBE5BC11E2385B71BE /* GymStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91317066308E7666F9B37D9E /* GymStore.swift */; };
+		1563D4565F584CB40633DBBD /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B6F3B2BE0A644226D7D356 /* Models.swift */; };
+		2DC0BFC7365AF7F950D98F9A /* AdvancedSetEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BB4F7F16E47306DF9C4CF20 /* AdvancedSetEditor.swift */; };
+		3113B48EF862508C78C4FDEC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF3C493F32914FC0C99A7E4A /* Foundation.framework */; };
+		3C1FC10186AB7849E2A462C8 /* OpenGymApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 709ABE68FAFE61D8BCB2B623 /* OpenGymApp.swift */; };
+		49E0B925DF03B5CD4603F0BE /* ExerciseDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE962F84C8400CF368C50DF /* ExerciseDetail.swift */; };
+		579E7D5B402DAEF6321641F2 /* WorkoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E09E7AF6451F040744FDE6 /* WorkoutView.swift */; };
+		6B3C2206540C87EFE52B437C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5DDCAA87E018D4A2D6761138 /* Assets.xcassets */; };
+		6CF92C2850AE5F3BC692F635 /* GymStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF2E126AB5221A83497C801E /* GymStore.swift */; };
+		6D081291AC1F0CDEA5258A80 /* AdvancedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74CAA3F789D83EDD16179751 /* AdvancedTests.swift */; };
+		6D0D6B4E08893B5B2C35F7F3 /* GymStore+Advanced.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949EA63F33559860A54750E7 /* GymStore+Advanced.swift */; };
+		6E3007222515AC0B13E2F1DE /* AdvancedConfigEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64DA2DE6A48EDA9D72F01F7 /* AdvancedConfigEditor.swift */; };
+		7691978F684915DFD14DA3E1 /* RoutineEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8B6CD3A447A93B4E8D309A /* RoutineEditor.swift */; };
+		7D020507C81DE83E07FDC317 /* web-rules.js in Resources */ = {isa = PBXBuildFile; fileRef = 3D70D589AB235E47A620FDAC /* web-rules.js */; };
+		86128D72867F53698C7561D0 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 1E32EE099AEBBF3FB5F964D1 /* LICENSE.txt */; };
+		86CA641836E45457566FAF3C /* HistoryEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9279FAE107BDB8422A165B /* HistoryEditor.swift */; };
+		86CD3027006DE468F413D8DE /* catalogue.json in Resources */ = {isa = PBXBuildFile; fileRef = A404554FCB51AA7E2E0DA32E /* catalogue.json */; };
+		874D18EFBDDB8EFE805D9C6D /* EditingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0754C117A1D88004422DB802 /* EditingTests.swift */; };
+		8DA3EF3FC2DD0A6AB35C90D5 /* Editing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5B6AFB43BE9ADF6335B61D /* Editing.swift */; };
+		92A32C56D7BCC97085034B46 /* AdvancedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2494DBE0820BDB8EE19B26C /* AdvancedSession.swift */; };
+		998DBD93045BAB1A14326349 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55E3E2CB815F93D517452CF /* Theme.swift */; };
+		9CC4A4157B3B27903858BF64 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF3C493F32914FC0C99A7E4A /* Foundation.framework */; };
+		A90A3906C81561AB6354E2FE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694068DA0EC9F2FCF5543660 /* SettingsView.swift */; };
+		B1C6CD6356C4077D764B2371 /* GymStore+Editing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179C63FDB93FBEAFF6AD8B7 /* GymStore+Editing.swift */; };
+		B2A5931C5670F5A09B33A8FF /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BD83B77952CACD0676D0D4D6 /* PrivacyInfo.xcprivacy */; };
+		B8901337F2B15505FE5137D0 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 729C31CC548FB1F26FD55FE6 /* HomeView.swift */; };
+		B9349B587EC10C5623988494 /* WebRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0489BBD51A7B2D09E0588B8D /* WebRules.swift */; };
+		BDA6FB7F534EFDCFF0FFA69B /* NOTICE.txt in Resources */ = {isa = PBXBuildFile; fileRef = A3260C139140263D48DFEBA9 /* NOTICE.txt */; };
+		CD92C3670E26B19472A9EF44 /* ScheduleEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87804E94568E5BBB5216F53E /* ScheduleEditor.swift */; };
+		D5880F53A1347CBCA63B6C94 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14CF241617C6EB6AF1A3954 /* LibraryView.swift */; };
+		D89F1DB8244416BF3B9AC743 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DB756A5AFCB7DB84B9473F /* APIClient.swift */; };
+		DEFD224DB7FA2CBC8C67F410 /* RotationEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3C7D25558613CB0CA0D3D7 /* RotationEditor.swift */; };
+		E9219B62A59C591910300B53 /* OpenGymTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6346F1B6248D9F1C1BE4A458 /* OpenGymTests.swift */; };
+		EA2E0A8951C28179C194B59C /* PlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F1426841E24532291D699 /* PlanView.swift */; };
+		FB667ADE67439C24911F46DE /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258738E2E1FDD99DCF77BF17 /* StatsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		7D221FB750746741DA185EFC /* PBXContainerItemProxy */ = {
+		A10CEFD5CEEFCB3F2C7B8883 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = AE10B77947CA7B617682B874 /* Project object */;
+			containerPortal = B9C94E4CB830E432C8BDBB03 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 1BEFC85B68295B94242A6F49;
+			remoteGlobalIDString = 66EC1B8CBBFD039B30077615;
 			remoteInfo = OpenGym;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0125A3E6B91303BB6E1AB71E /* RoutineEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RoutineEditor.swift; path = OpenGym/Views/RoutineEditor.swift; sourceTree = "<group>"; };
-		06FA33298E553C68442D29C0 /* web-rules.js */ = {isa = PBXFileReference; includeInIndex = 1; name = "web-rules.js"; path = "OpenGym/Resources/web-rules.js"; sourceTree = "<group>"; };
-		0E11851673A157A3759560DB /* LibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LibraryView.swift; path = OpenGym/Views/LibraryView.swift; sourceTree = "<group>"; };
-		0F8FF9CD159734EDFC35EE65 /* catalogue.json */ = {isa = PBXFileReference; includeInIndex = 1; name = catalogue.json; path = OpenGym/Resources/catalogue.json; sourceTree = "<group>"; };
-		209EBD85422FE0AA7D204775 /* GymStore+Editing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "GymStore+Editing.swift"; path = "OpenGym/Services/GymStore+Editing.swift"; sourceTree = "<group>"; };
-		289610702BF1BAD7FB784191 /* PlanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PlanView.swift; path = OpenGym/Views/PlanView.swift; sourceTree = "<group>"; };
-		44AA5355C3F8C901EE144697 /* WorkoutView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutView.swift; path = OpenGym/Views/WorkoutView.swift; sourceTree = "<group>"; };
-		51156C0F1ECDA70AAA3950C3 /* WebRules.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebRules.swift; path = OpenGym/Services/WebRules.swift; sourceTree = "<group>"; };
-		5ED42F73FDD135356313CD0A /* HistoryEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HistoryEditor.swift; path = OpenGym/Views/HistoryEditor.swift; sourceTree = "<group>"; };
-		65584A16BA7C8225D98EFF21 /* OpenGym.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenGym.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		798CB39856EA6ADAE73312CA /* StatsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StatsView.swift; path = OpenGym/Views/StatsView.swift; sourceTree = "<group>"; };
-		91317066308E7666F9B37D9E /* GymStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GymStore.swift; path = OpenGym/Services/GymStore.swift; sourceTree = "<group>"; };
-		9C27349F0E10B3D0F4A5D116 /* OpenGymTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenGymTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9DB6C03F40248C035D3AB26B /* OpenGymApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OpenGymApp.swift; path = OpenGym/OpenGymApp.swift; sourceTree = "<group>"; };
-		9E10FA4D2A8B22F7DD44CD55 /* APIClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = APIClient.swift; path = OpenGym/Services/APIClient.swift; sourceTree = "<group>"; };
-		A2EC5A27218891C521D656DD /* NOTICE.txt */ = {isa = PBXFileReference; includeInIndex = 1; name = NOTICE.txt; path = OpenGym/Resources/NOTICE.txt; sourceTree = "<group>"; };
-		A3C6B7B897D513AEF8E11C72 /* Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = OpenGym/Views/Theme.swift; sourceTree = "<group>"; };
-		B2B6CD2C2031308A4123C130 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE.txt; path = OpenGym/Resources/LICENSE.txt; sourceTree = "<group>"; };
-		BB83EF930E308F0892544DC9 /* Editing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Editing.swift; path = OpenGym/Models/Editing.swift; sourceTree = "<group>"; };
-		BC59382ECEE365F1F5C84AD4 /* EditingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EditingTests.swift; path = OpenGymTests/EditingTests.swift; sourceTree = "<group>"; };
-		BD201F0C7DF25F8429490632 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		BFA9F625E722F58D5A169781 /* Models.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Models.swift; path = OpenGym/Models/Models.swift; sourceTree = "<group>"; };
-		C72AAE5C6D45617B1E8D68F5 /* ExerciseDetail.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExerciseDetail.swift; path = OpenGym/Views/ExerciseDetail.swift; sourceTree = "<group>"; };
-		D1DF3DC924CD6B7BA8A2E667 /* OpenGymTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OpenGymTests.swift; path = OpenGymTests/OpenGymTests.swift; sourceTree = "<group>"; };
-		D51C37A72B67F853991B8AA6 /* ScheduleEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScheduleEditor.swift; path = OpenGym/Views/ScheduleEditor.swift; sourceTree = "<group>"; };
-		DE412D3183193EE7CE20105D /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = OpenGym/Views/SettingsView.swift; sourceTree = "<group>"; };
-		EAA0EBAE7986612B23DDBCE4 /* HomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HomeView.swift; path = OpenGym/Views/HomeView.swift; sourceTree = "<group>"; };
+		0489BBD51A7B2D09E0588B8D /* WebRules.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebRules.swift; path = OpenGym/Services/WebRules.swift; sourceTree = "<group>"; };
+		0754C117A1D88004422DB802 /* EditingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EditingTests.swift; path = OpenGymTests/EditingTests.swift; sourceTree = "<group>"; };
+		1E32EE099AEBBF3FB5F964D1 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE.txt; path = OpenGym/Resources/LICENSE.txt; sourceTree = "<group>"; };
+		22DB756A5AFCB7DB84B9473F /* APIClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = APIClient.swift; path = OpenGym/Services/APIClient.swift; sourceTree = "<group>"; };
+		258738E2E1FDD99DCF77BF17 /* StatsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StatsView.swift; path = OpenGym/Views/StatsView.swift; sourceTree = "<group>"; };
+		2D2B27FBCA67631CEDC5F73F /* OpenGymTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenGymTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D70D589AB235E47A620FDAC /* web-rules.js */ = {isa = PBXFileReference; includeInIndex = 1; name = "web-rules.js"; path = "OpenGym/Resources/web-rules.js"; sourceTree = "<group>"; };
+		3DE962F84C8400CF368C50DF /* ExerciseDetail.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExerciseDetail.swift; path = OpenGym/Views/ExerciseDetail.swift; sourceTree = "<group>"; };
+		4BB4F7F16E47306DF9C4CF20 /* AdvancedSetEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AdvancedSetEditor.swift; path = OpenGym/Views/AdvancedSetEditor.swift; sourceTree = "<group>"; };
+		4F3C7D25558613CB0CA0D3D7 /* RotationEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RotationEditor.swift; path = OpenGym/Views/RotationEditor.swift; sourceTree = "<group>"; };
+		5DDCAA87E018D4A2D6761138 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = OpenGym/Resources/Assets.xcassets; sourceTree = "<group>"; };
+		6346F1B6248D9F1C1BE4A458 /* OpenGymTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OpenGymTests.swift; path = OpenGymTests/OpenGymTests.swift; sourceTree = "<group>"; };
+		694068DA0EC9F2FCF5543660 /* SettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SettingsView.swift; path = OpenGym/Views/SettingsView.swift; sourceTree = "<group>"; };
+		709ABE68FAFE61D8BCB2B623 /* OpenGymApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OpenGymApp.swift; path = OpenGym/OpenGymApp.swift; sourceTree = "<group>"; };
+		729C31CC548FB1F26FD55FE6 /* HomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HomeView.swift; path = OpenGym/Views/HomeView.swift; sourceTree = "<group>"; };
+		72B6F3B2BE0A644226D7D356 /* Models.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Models.swift; path = OpenGym/Models/Models.swift; sourceTree = "<group>"; };
+		74CAA3F789D83EDD16179751 /* AdvancedTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AdvancedTests.swift; path = OpenGymTests/AdvancedTests.swift; sourceTree = "<group>"; };
+		7A9279FAE107BDB8422A165B /* HistoryEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HistoryEditor.swift; path = OpenGym/Views/HistoryEditor.swift; sourceTree = "<group>"; };
+		7B8F1426841E24532291D699 /* PlanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PlanView.swift; path = OpenGym/Views/PlanView.swift; sourceTree = "<group>"; };
+		87804E94568E5BBB5216F53E /* ScheduleEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScheduleEditor.swift; path = OpenGym/Views/ScheduleEditor.swift; sourceTree = "<group>"; };
+		949EA63F33559860A54750E7 /* GymStore+Advanced.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "GymStore+Advanced.swift"; path = "OpenGym/Services/GymStore+Advanced.swift"; sourceTree = "<group>"; };
+		9F5B6AFB43BE9ADF6335B61D /* Editing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Editing.swift; path = OpenGym/Models/Editing.swift; sourceTree = "<group>"; };
+		9F8B6CD3A447A93B4E8D309A /* RoutineEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RoutineEditor.swift; path = OpenGym/Views/RoutineEditor.swift; sourceTree = "<group>"; };
+		A3260C139140263D48DFEBA9 /* NOTICE.txt */ = {isa = PBXFileReference; includeInIndex = 1; name = NOTICE.txt; path = OpenGym/Resources/NOTICE.txt; sourceTree = "<group>"; };
+		A404554FCB51AA7E2E0DA32E /* catalogue.json */ = {isa = PBXFileReference; includeInIndex = 1; name = catalogue.json; path = OpenGym/Resources/catalogue.json; sourceTree = "<group>"; };
+		A55E3E2CB815F93D517452CF /* Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Theme.swift; path = OpenGym/Views/Theme.swift; sourceTree = "<group>"; };
+		AF3C493F32914FC0C99A7E4A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		BD83B77952CACD0676D0D4D6 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = OpenGym/Resources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		C179C63FDB93FBEAFF6AD8B7 /* GymStore+Editing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "GymStore+Editing.swift"; path = "OpenGym/Services/GymStore+Editing.swift"; sourceTree = "<group>"; };
+		C1E09E7AF6451F040744FDE6 /* WorkoutView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WorkoutView.swift; path = OpenGym/Views/WorkoutView.swift; sourceTree = "<group>"; };
+		CF2E126AB5221A83497C801E /* GymStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GymStore.swift; path = OpenGym/Services/GymStore.swift; sourceTree = "<group>"; };
+		D14CF241617C6EB6AF1A3954 /* LibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LibraryView.swift; path = OpenGym/Views/LibraryView.swift; sourceTree = "<group>"; };
+		F2494DBE0820BDB8EE19B26C /* AdvancedSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AdvancedSession.swift; path = OpenGym/Models/AdvancedSession.swift; sourceTree = "<group>"; };
+		F64DA2DE6A48EDA9D72F01F7 /* AdvancedConfigEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AdvancedConfigEditor.swift; path = OpenGym/Views/AdvancedConfigEditor.swift; sourceTree = "<group>"; };
+		FA4763C5A708F3613F82FE7E /* OpenGym.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenGym.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2E2C0CAA780D6A74BC75DF6D /* Frameworks */ = {
+		5D204EF7423A196370E6669F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E506F93A4C70A191907BA253 /* Foundation.framework in Frameworks */,
+				3113B48EF862508C78C4FDEC /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F9614A2DF09E5CA7F46D7651 /* Frameworks */ = {
+		BA7EBE677FC1308319907AFD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6294223D4E22169C07B7ACA1 /* Foundation.framework in Frameworks */,
+				9CC4A4157B3B27903858BF64 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		051BC1FFF3C9457D34D899EB /* Frameworks */ = {
+		9E6860EF6AD495E9911FB7E3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6D1ED37EC87ADB72643AD562 /* iOS */,
+				BB473FBC40F3C1AA547FCAD4 /* iOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		6D1ED37EC87ADB72643AD562 /* iOS */ = {
+		BB473FBC40F3C1AA547FCAD4 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				BD201F0C7DF25F8429490632 /* Foundation.framework */,
+				AF3C493F32914FC0C99A7E4A /* Foundation.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";
 		};
-		8F3F89D8CDED92A9E9A3B2A9 = {
+		BBF1F5D7FBD8C5968BD51B8F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CB8B123B052A4B11CCD923C6 /* Products */,
-				051BC1FFF3C9457D34D899EB /* Frameworks */,
-				BB83EF930E308F0892544DC9 /* Editing.swift */,
-				BFA9F625E722F58D5A169781 /* Models.swift */,
-				9DB6C03F40248C035D3AB26B /* OpenGymApp.swift */,
-				9E10FA4D2A8B22F7DD44CD55 /* APIClient.swift */,
-				209EBD85422FE0AA7D204775 /* GymStore+Editing.swift */,
-				91317066308E7666F9B37D9E /* GymStore.swift */,
-				51156C0F1ECDA70AAA3950C3 /* WebRules.swift */,
-				C72AAE5C6D45617B1E8D68F5 /* ExerciseDetail.swift */,
-				5ED42F73FDD135356313CD0A /* HistoryEditor.swift */,
-				EAA0EBAE7986612B23DDBCE4 /* HomeView.swift */,
-				0E11851673A157A3759560DB /* LibraryView.swift */,
-				289610702BF1BAD7FB784191 /* PlanView.swift */,
-				0125A3E6B91303BB6E1AB71E /* RoutineEditor.swift */,
-				D51C37A72B67F853991B8AA6 /* ScheduleEditor.swift */,
-				DE412D3183193EE7CE20105D /* SettingsView.swift */,
-				798CB39856EA6ADAE73312CA /* StatsView.swift */,
-				A3C6B7B897D513AEF8E11C72 /* Theme.swift */,
-				44AA5355C3F8C901EE144697 /* WorkoutView.swift */,
-				B2B6CD2C2031308A4123C130 /* LICENSE.txt */,
-				A2EC5A27218891C521D656DD /* NOTICE.txt */,
-				0F8FF9CD159734EDFC35EE65 /* catalogue.json */,
-				06FA33298E553C68442D29C0 /* web-rules.js */,
-				BC59382ECEE365F1F5C84AD4 /* EditingTests.swift */,
-				D1DF3DC924CD6B7BA8A2E667 /* OpenGymTests.swift */,
-			);
-			sourceTree = "<group>";
-		};
-		CB8B123B052A4B11CCD923C6 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				65584A16BA7C8225D98EFF21 /* OpenGym.app */,
-				9C27349F0E10B3D0F4A5D116 /* OpenGymTests.xctest */,
+				FA4763C5A708F3613F82FE7E /* OpenGym.app */,
+				2D2B27FBCA67631CEDC5F73F /* OpenGymTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F15257A3FEC1DE719EC03BCB = {
+			isa = PBXGroup;
+			children = (
+				BBF1F5D7FBD8C5968BD51B8F /* Products */,
+				9E6860EF6AD495E9911FB7E3 /* Frameworks */,
+				F2494DBE0820BDB8EE19B26C /* AdvancedSession.swift */,
+				9F5B6AFB43BE9ADF6335B61D /* Editing.swift */,
+				72B6F3B2BE0A644226D7D356 /* Models.swift */,
+				709ABE68FAFE61D8BCB2B623 /* OpenGymApp.swift */,
+				22DB756A5AFCB7DB84B9473F /* APIClient.swift */,
+				949EA63F33559860A54750E7 /* GymStore+Advanced.swift */,
+				C179C63FDB93FBEAFF6AD8B7 /* GymStore+Editing.swift */,
+				CF2E126AB5221A83497C801E /* GymStore.swift */,
+				0489BBD51A7B2D09E0588B8D /* WebRules.swift */,
+				F64DA2DE6A48EDA9D72F01F7 /* AdvancedConfigEditor.swift */,
+				4BB4F7F16E47306DF9C4CF20 /* AdvancedSetEditor.swift */,
+				3DE962F84C8400CF368C50DF /* ExerciseDetail.swift */,
+				7A9279FAE107BDB8422A165B /* HistoryEditor.swift */,
+				729C31CC548FB1F26FD55FE6 /* HomeView.swift */,
+				D14CF241617C6EB6AF1A3954 /* LibraryView.swift */,
+				7B8F1426841E24532291D699 /* PlanView.swift */,
+				4F3C7D25558613CB0CA0D3D7 /* RotationEditor.swift */,
+				9F8B6CD3A447A93B4E8D309A /* RoutineEditor.swift */,
+				87804E94568E5BBB5216F53E /* ScheduleEditor.swift */,
+				694068DA0EC9F2FCF5543660 /* SettingsView.swift */,
+				258738E2E1FDD99DCF77BF17 /* StatsView.swift */,
+				A55E3E2CB815F93D517452CF /* Theme.swift */,
+				C1E09E7AF6451F040744FDE6 /* WorkoutView.swift */,
+				1E32EE099AEBBF3FB5F964D1 /* LICENSE.txt */,
+				A3260C139140263D48DFEBA9 /* NOTICE.txt */,
+				A404554FCB51AA7E2E0DA32E /* catalogue.json */,
+				3D70D589AB235E47A620FDAC /* web-rules.js */,
+				74CAA3F789D83EDD16179751 /* AdvancedTests.swift */,
+				0754C117A1D88004422DB802 /* EditingTests.swift */,
+				6346F1B6248D9F1C1BE4A458 /* OpenGymTests.swift */,
+				5DDCAA87E018D4A2D6761138 /* Assets.xcassets */,
+				BD83B77952CACD0676D0D4D6 /* PrivacyInfo.xcprivacy */,
+			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1BEFC85B68295B94242A6F49 /* OpenGym */ = {
+		61B06D426B612A407329C2C6 /* OpenGymTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6175E1B4F9ECD085BC77079F /* Build configuration list for PBXNativeTarget "OpenGym" */;
+			buildConfigurationList = 8C171DA53BDFF3AA94BC9A2B /* Build configuration list for PBXNativeTarget "OpenGymTests" */;
 			buildPhases = (
-				71ED39E0A9BC9960525FCC44 /* Sources */,
-				F9614A2DF09E5CA7F46D7651 /* Frameworks */,
-				83464D562BD2A3DD987E7321 /* Resources */,
+				64B3AABE3222AE4CC40D186E /* Sources */,
+				5D204EF7423A196370E6669F /* Frameworks */,
+				59C6FDAF74DCF9D316F60AD9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5161D9D762FDAC003DB443F9 /* PBXTargetDependency */,
+			);
+			name = OpenGymTests;
+			productName = OpenGymTests;
+			productReference = 2D2B27FBCA67631CEDC5F73F /* OpenGymTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		66EC1B8CBBFD039B30077615 /* OpenGym */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F7B885E153F2FB26C0C1ED07 /* Build configuration list for PBXNativeTarget "OpenGym" */;
+			buildPhases = (
+				3159AB2851B43A63620F8553 /* Sources */,
+				BA7EBE677FC1308319907AFD /* Frameworks */,
+				2689FBA20B31BCA418FC72BA /* Resources */,
 			);
 			buildRules = (
 			);
@@ -169,37 +211,19 @@
 			);
 			name = OpenGym;
 			productName = OpenGym;
-			productReference = 65584A16BA7C8225D98EFF21 /* OpenGym.app */;
+			productReference = FA4763C5A708F3613F82FE7E /* OpenGym.app */;
 			productType = "com.apple.product-type.application";
-		};
-		86789E4FD6BA4A0EBD09D8E5 /* OpenGymTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 763C11E04EFBFD9C42622E90 /* Build configuration list for PBXNativeTarget "OpenGymTests" */;
-			buildPhases = (
-				E7851F617C1F713DDDFDFD3F /* Sources */,
-				2E2C0CAA780D6A74BC75DF6D /* Frameworks */,
-				0EA4B7039EF82B8654411682 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				3850B24896AF913C2ABDC6DE /* PBXTargetDependency */,
-			);
-			name = OpenGymTests;
-			productName = OpenGymTests;
-			productReference = 9C27349F0E10B3D0F4A5D116 /* OpenGymTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		AE10B77947CA7B617682B874 /* Project object */ = {
+		B9C94E4CB830E432C8BDBB03 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 			};
-			buildConfigurationList = 278660AFB9189686F986A1E1 /* Build configuration list for PBXProject "OpenGym" */;
+			buildConfigurationList = 586BD5230CDA86DE2ECC33EE /* Build configuration list for PBXProject "OpenGym" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -207,88 +231,232 @@
 				en,
 				Base,
 			);
-			mainGroup = 8F3F89D8CDED92A9E9A3B2A9;
+			mainGroup = F15257A3FEC1DE719EC03BCB;
 			minimizedProjectReferenceProxies = 0;
 			preferredProjectObjectVersion = 100;
-			productRefGroup = CB8B123B052A4B11CCD923C6 /* Products */;
+			productRefGroup = BBF1F5D7FBD8C5968BD51B8F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1BEFC85B68295B94242A6F49 /* OpenGym */,
-				86789E4FD6BA4A0EBD09D8E5 /* OpenGymTests */,
+				66EC1B8CBBFD039B30077615 /* OpenGym */,
+				61B06D426B612A407329C2C6 /* OpenGymTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		0EA4B7039EF82B8654411682 /* Resources */ = {
+		2689FBA20B31BCA418FC72BA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				86128D72867F53698C7561D0 /* LICENSE.txt in Resources */,
+				BDA6FB7F534EFDCFF0FFA69B /* NOTICE.txt in Resources */,
+				86CD3027006DE468F413D8DE /* catalogue.json in Resources */,
+				7D020507C81DE83E07FDC317 /* web-rules.js in Resources */,
+				6B3C2206540C87EFE52B437C /* Assets.xcassets in Resources */,
+				B2A5931C5670F5A09B33A8FF /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		83464D562BD2A3DD987E7321 /* Resources */ = {
+		59C6FDAF74DCF9D316F60AD9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CC675350FBD00D3F3F0792E7 /* LICENSE.txt in Resources */,
-				744D0327841C9763F230454F /* NOTICE.txt in Resources */,
-				54D342EA1E4400B936315D83 /* catalogue.json in Resources */,
-				CC48DB77F3133EC4C126D510 /* web-rules.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		71ED39E0A9BC9960525FCC44 /* Sources */ = {
+		3159AB2851B43A63620F8553 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34F907092790DD5256C1FA8B /* Editing.swift in Sources */,
-				5B351EFC68C8C5D8818F1CD9 /* Models.swift in Sources */,
-				08AE0DE4F521F0917D1F818E /* OpenGymApp.swift in Sources */,
-				20181F89CB7D8EB335C9D42A /* APIClient.swift in Sources */,
-				2BA9083791B3223AF0BED8AF /* GymStore+Editing.swift in Sources */,
-				EC87D4BBE5BC11E2385B71BE /* GymStore.swift in Sources */,
-				B02FB038FE6405C42E7693E5 /* WebRules.swift in Sources */,
-				6B2F4834F96A0902C67BC6FE /* ExerciseDetail.swift in Sources */,
-				7DD100184B07B959A0CF6ACC /* HistoryEditor.swift in Sources */,
-				457BB4D48259680E28FFD619 /* HomeView.swift in Sources */,
-				1DC7A0D91A5DD0702DC41EB8 /* LibraryView.swift in Sources */,
-				D6E247DFF37E04B267BA607F /* PlanView.swift in Sources */,
-				622FD5861F7B37A56452A229 /* RoutineEditor.swift in Sources */,
-				DBEFE03EEE7528C372282570 /* ScheduleEditor.swift in Sources */,
-				9DB42CA9D682F2FF9E55EE2D /* SettingsView.swift in Sources */,
-				57F1513176E028D7007B531D /* StatsView.swift in Sources */,
-				19E979A85085FBEB791863C5 /* Theme.swift in Sources */,
-				3C2579F813627AD79F35D2D4 /* WorkoutView.swift in Sources */,
+				92A32C56D7BCC97085034B46 /* AdvancedSession.swift in Sources */,
+				8DA3EF3FC2DD0A6AB35C90D5 /* Editing.swift in Sources */,
+				1563D4565F584CB40633DBBD /* Models.swift in Sources */,
+				3C1FC10186AB7849E2A462C8 /* OpenGymApp.swift in Sources */,
+				D89F1DB8244416BF3B9AC743 /* APIClient.swift in Sources */,
+				6D0D6B4E08893B5B2C35F7F3 /* GymStore+Advanced.swift in Sources */,
+				B1C6CD6356C4077D764B2371 /* GymStore+Editing.swift in Sources */,
+				6CF92C2850AE5F3BC692F635 /* GymStore.swift in Sources */,
+				B9349B587EC10C5623988494 /* WebRules.swift in Sources */,
+				6E3007222515AC0B13E2F1DE /* AdvancedConfigEditor.swift in Sources */,
+				2DC0BFC7365AF7F950D98F9A /* AdvancedSetEditor.swift in Sources */,
+				49E0B925DF03B5CD4603F0BE /* ExerciseDetail.swift in Sources */,
+				86CA641836E45457566FAF3C /* HistoryEditor.swift in Sources */,
+				B8901337F2B15505FE5137D0 /* HomeView.swift in Sources */,
+				D5880F53A1347CBCA63B6C94 /* LibraryView.swift in Sources */,
+				EA2E0A8951C28179C194B59C /* PlanView.swift in Sources */,
+				DEFD224DB7FA2CBC8C67F410 /* RotationEditor.swift in Sources */,
+				7691978F684915DFD14DA3E1 /* RoutineEditor.swift in Sources */,
+				CD92C3670E26B19472A9EF44 /* ScheduleEditor.swift in Sources */,
+				A90A3906C81561AB6354E2FE /* SettingsView.swift in Sources */,
+				FB667ADE67439C24911F46DE /* StatsView.swift in Sources */,
+				998DBD93045BAB1A14326349 /* Theme.swift in Sources */,
+				579E7D5B402DAEF6321641F2 /* WorkoutView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E7851F617C1F713DDDFDFD3F /* Sources */ = {
+		64B3AABE3222AE4CC40D186E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4987481C23FE81DFF703670C /* EditingTests.swift in Sources */,
-				92BC1B50329847A16DC03F46 /* OpenGymTests.swift in Sources */,
+				6D081291AC1F0CDEA5258A80 /* AdvancedTests.swift in Sources */,
+				874D18EFBDDB8EFE805D9C6D /* EditingTests.swift in Sources */,
+				E9219B62A59C591910300B53 /* OpenGymTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3850B24896AF913C2ABDC6DE /* PBXTargetDependency */ = {
+		5161D9D762FDAC003DB443F9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = OpenGym;
-			target = 1BEFC85B68295B94242A6F49 /* OpenGym */;
-			targetProxy = 7D221FB750746741DA185EFC /* PBXContainerItemProxy */;
+			target = 66EC1B8CBBFD039B30077615 /* OpenGym */;
+			targetProxy = A10CEFD5CEEFCB3F2C7B8883 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0105F83753DA7D1348A6DA6D /* Debug */ = {
+		176880205EEC68AD1CC17A5D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.itwl.opengym.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenGym.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OpenGym";
+			};
+			name = Debug;
+		};
+		2EBE9134948FC70627E7A70A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.itwl.opengym.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenGym.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OpenGym";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		35A52718833887B527625B6A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = OpenGym/OpenGym.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HHH7WTMLVN;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = OpenGym/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = openGym;
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.itwl.opengym;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		59C6E0732C0A66CB6BEDF5DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		6C5818D65E8E0A52C7D5DF78 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = OpenGym/OpenGym.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HHH7WTMLVN;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = OpenGym/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = openGym;
+				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = me.itwl.opengym;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C75CC5751A6742E00C2F1E63 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -349,171 +517,37 @@
 			};
 			name = Debug;
 		};
-		0C1551E84A2BDF69D3FCBDD5 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.opengym.native.preview.tests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenGym.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OpenGym";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		A23F4217D660763968939302 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.opengym.native.preview.tests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/OpenGym.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/OpenGym";
-			};
-			name = Debug;
-		};
-		B88308AB7B84474EA78DE409 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		D4DFE298C1842FE553D276A4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = OpenGym/OpenGym.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = OpenGym/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = openGym;
-				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.opengym.native.preview;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		D5C7E90BC9983B3BAC5654A4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = OpenGym/OpenGym.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = OpenGym/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = openGym;
-				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.opengym.native.preview;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		278660AFB9189686F986A1E1 /* Build configuration list for PBXProject "OpenGym" */ = {
+		586BD5230CDA86DE2ECC33EE /* Build configuration list for PBXProject "OpenGym" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0105F83753DA7D1348A6DA6D /* Debug */,
-				B88308AB7B84474EA78DE409 /* Release */,
+				C75CC5751A6742E00C2F1E63 /* Debug */,
+				59C6E0732C0A66CB6BEDF5DB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6175E1B4F9ECD085BC77079F /* Build configuration list for PBXNativeTarget "OpenGym" */ = {
+		8C171DA53BDFF3AA94BC9A2B /* Build configuration list for PBXNativeTarget "OpenGymTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D4DFE298C1842FE553D276A4 /* Release */,
-				D5C7E90BC9983B3BAC5654A4 /* Debug */,
+				2EBE9134948FC70627E7A70A /* Release */,
+				176880205EEC68AD1CC17A5D /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		763C11E04EFBFD9C42622E90 /* Build configuration list for PBXNativeTarget "OpenGymTests" */ = {
+		F7B885E153F2FB26C0C1ED07 /* Build configuration list for PBXNativeTarget "OpenGym" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0C1551E84A2BDF69D3FCBDD5 /* Release */,
-				A23F4217D660763968939302 /* Debug */,
+				35A52718833887B527625B6A /* Release */,
+				6C5818D65E8E0A52C7D5DF78 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = AE10B77947CA7B617682B874 /* Project object */;
+	rootObject = B9C94E4CB830E432C8BDBB03 /* Project object */;
 }

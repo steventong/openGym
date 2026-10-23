@@ -39,5 +39,5 @@ if(!saved) {
 const {json}=await req('/api/pair/create',{},saved.token);
 const sim=process.argv[2];
 if(!sim) throw new Error('Pass an explicit simulator UDID');
-execFileSync('xcrun',['simctl','launch',sim,'com.opengym.native.preview','-pairCode',json.code],{stdio:'pipe'});
+execFileSync('xcrun',['simctl','launch',sim,'me.itwl.opengym','-pairCode',json.code],{stdio:'pipe'});
 console.log('Launched native app and paired the isolated iOS simulator test account through /api/pair/redeem.');

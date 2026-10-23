@@ -15,7 +15,7 @@ xcodebuild -project OpenGym.xcodeproj -scheme OpenGym \
   -destination 'platform=iOS Simulator,id=<SIMULATOR-UDID>' \
   -derivedDataPath .build build
 xcrun simctl install <SIMULATOR-UDID> .build/Build/Products/Debug-iphonesimulator/OpenGym.app
-xcrun simctl launch <SIMULATOR-UDID> com.opengym.native.preview
+xcrun simctl launch <SIMULATOR-UDID> me.itwl.opengym
 ```
 
 服务端用仓库现有 Docker Compose 启动。正常账号在网页中登录后，从「设置 → 账号 → 配对手机 App」取得一次性代码，在 iOS 设置中填写。凭据保存在 Keychain，绑定服务地址；应用不会读取 Docker 数据目录或服务端密钥。
@@ -26,10 +26,11 @@ xcrun simctl launch <SIMULATOR-UDID> com.opengym.native.preview
 - 5,632 条原版动作：中文/英文搜索、身体部位/器械筛选、列表/网格、详情、中文动作步骤、Epley 估算。
 - AVQueuePlayer + AVPlayerLooper 播放现有服务提供的 MP4，支持暂停/恢复、失败重试；图片和动画不重新生成。
 - 账号配对、Keychain、登录续期、手动刷新、前台刷新、每 30 秒刷新。
-- 计划编辑：名称、动作增删与排序、普通组的组数/次数/重量/休息时间和备注；高级参数原样保留。
+- 计划编辑：名称、动作增删与排序、组数/次数/重量/休息时间和备注；支持热身、计时、有氧、分侧、金字塔、递减、Rest-pause、最后一组力竭和相邻动作超级组。
 - 训练排期：每周一天可以安排多个计划；单日指定计划、休息或恢复每周安排。首页按网页规则显示队列和覆盖，可合并开始多个计划。
 - 历史编辑：名称、备注、日期/开始时间、时长、普通组重量/次数/完成与热身状态、动作和组的增删；重新计算训练量、个人纪录及受修正影响的已追踪重量。支持继续加载较早的历史记录。
-- 普通重量/次数组训练：记录每组、添加组、组间计时、草稿持久化、完成后同步。
+- 原生高级训练：逐组/逐侧记录，编辑递减重量和次数、Rest-pause 小组、RIR/RPE；超级组按轮切换和休息。计时支持暂停、恢复、提前完成，草稿和计时可跨重启恢复。
+- 循环排期：编辑循环名称与顺序、移入移出计划、进度显示、重新开始一轮、切回固定周；保留外部队列的归属规则，完成一轮后按网页版规则自动续轮。
 - 体重记录与折线图、真实训练历史、完成组数、12 周活动图。
 
 ## 协议
@@ -52,11 +53,11 @@ xcrun simctl launch <SIMULATOR-UDID> com.opengym.native.preview
 
 ## 复用的计算规则
 
-所有页面为 SwiftUI，视频为 AVPlayer。排期解析、训练量和个人纪录校正通过系统 JavaScriptCore 执行仓库已有纯函数，没有 WebView。`scripts/rules/entry.js` 只读导入原 Web 源码，esbuild 将其打包至本目录的 `OpenGym/Resources/web-rules.js`。生成文件已加入工程，日常 Xcode 构建不需要 Node。更新仓库后，在 `native-ios` 中执行 `npm ci && npm run build:rules` 重新生成，不会修改原 Web 文件。
+所有页面为 SwiftUI，视频为 AVPlayer。排期解析、训练组生成、训练量、个人纪录、分侧聚合、超级组和循环流转，通过系统 JavaScriptCore 执行仓库已有纯函数，没有 WebView。`scripts/rules/entry.js` 与 `advanced.js` 只读导入原 Web 源码，esbuild 将其打包至本目录的 `OpenGym/Resources/web-rules.js`。生成文件已加入工程，日常 Xcode 构建不需要 Node。更新仓库后，在 `native-ios` 中执行 `npm ci && npm run build:rules` 重新生成，不会修改原 Web 文件。
 
 ## 当前边界
 
-尚未实现 Web 的全部功能。暂不支持原生创建通行密钥、自动进阶算法、复杂组型参数编辑（如计时、递减、金字塔、分侧）、循环排期编辑、Apple Health、通知或完整的离线数据同步。普通训练开始时使用计划的重量和次数；不运行网页的进阶引擎。现有高级字段在同步中保留，历史记录中的高级组仍可保留并参与网页原有的统计规则。
+尚未实现 Web 的全部功能。暂不支持原生创建通行密钥、所有进阶策略的原生设置界面、Apple Health、后台通知或完整的离线数据同步。开始训练已经调用网页的组生成和处方规则，沿用服务器保存的进阶配置。计时的到期结算在训练界面运行或返回时完成；后台不承诺声音或通知。原版配置和扩展字段在同步中保留。
 
 训练草稿按「服务地址 + 账号」隔离保存，保存失败时保留；当前冷启动需要成功验证账号后才能恢复草稿。未配对时可以浏览动作；计划、体重和训练写入需要账号。测试账号中出现的记录均为模拟器验证数据。
 
@@ -72,7 +73,11 @@ ruby scripts/generate-project.rb  # 需要 xcodeproj Ruby gem；生成的工程�
 
 `OpenGymTests` 验证动作目录完整性、服务地址限制、Web 兼容的训练格式、409 重试保留并发数据和未知字段、断网保存保留草稿，以及长时间离开后保存时不把等待时间算入训练。
 
-编辑测试覆盖并发字段冲突、多计划和单日排期覆盖、个人纪录与训练量校正、已删除记录保护、旧记录标识和合并训练关联。本次 13 项 XCTest 通过；模拟器实际验证了计划改名/改参数、每周多选、单日休息、历史修改与改期。真实服务端读回数据通过原版网页函数校验，详见 `artifacts/editing-api-verification.json`。
+编辑测试覆盖并发字段冲突、多计划和单日排期覆盖、个人纪录与训练量校正、已删除记录保护、旧记录标识和合并训练关联。上一阶段 13 项 XCTest 通过；模拟器实际验证了计划改名/改参数、每周多选、单日休息、历史修改与改期。真实服务端读回数据通过原版网页函数校验，详见 `artifacts/editing-api-verification.json`。
+
+高级组型增量验证见 `OpenGymTests/AdvancedTests.swift`。模拟器已经通过界面完成包含计时、双侧递减、Rest-pause、金字塔和有氧的训练，并保存至现有接口。原版网页函数读回训练量为 1740，与原生端一致；继续完成循环 B 后，下一轮正确从 2026-10-24 开始。证据位于 `artifacts/advanced-verification.json`、`advanced-saved-workout.json` 和 `rotation-next-pass.png`。
+
+本阶段最终 22 项 XCTest 全部通过。Mac 在高级配置表单最后的“完成 / 保存”点击前锁屏，此一条界面保存流程尚未最终补验；配置规则、训练记录保存及循环流转已分别通过测试和上述模拟器操作验证。
 
 可选 `node scripts/simulator-account.mjs <SIMULATOR-UDID>` 通过现有 WebAuthn API 创建独立的「iOS 模拟器测试」账号，再用正式配对接口连接 Debug App。测试会创建一份有明显测试名称的计划；不操作真实健身账号。会在本目录生成已忽略的 `.test-session.json`（0600 权限），仅供本机测试，不要分享。此脚本不会修改服务配置或后端源码。
 

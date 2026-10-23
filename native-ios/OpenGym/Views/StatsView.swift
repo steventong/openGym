@@ -4,7 +4,7 @@ struct StatsView: View {
     @State private var editing: WorkoutRecord?
     @State private var historyLimit = 30
     private var completedSets: [[String:Any]] {
-        store.workouts.flatMap { $0["entries"] as? [[String:Any]] ?? [] }.flatMap { $0["sets"] as? [[String:Any]] ?? [] }.filter { $0["done"] as? Bool == true }
+        store.workouts.flatMap { $0["entries"] as? [[String:Any]] ?? [] }.flatMap { $0["sets"] as? [[String:Any]] ?? [] }.flatMap { row -> [[String:Any]] in if let sides = row["sides"] as? [String:[String:Any]] {return [sides["L"],sides["R"]].compactMap{$0}};return [row] }.filter { $0["done"] as? Bool == true }
     }
     var body: some View {
         ScrollView {
@@ -34,7 +34,7 @@ struct StatsView: View {
                         HStack { Text(workout["name"] as? String ?? "训练").font(.headline); Spacer(); Button { editing = WorkoutRecord(raw:workout) } label: { Label("编辑",systemImage:"pencil").font(.caption) }.accessibilityIdentifier("edit-history-\(WorkoutRecord.key(workout))") }
                         HStack { Text(workout["d"] as? String ?? ""); Spacer(); Text("\(max(0,Int((number(workout["end"]) - number(workout["start"])) / 60000))) 分钟") }.font(.caption).foregroundStyle(GymTheme.muted)
                         ForEach(Array((workout["entries"] as? [[String:Any]] ?? []).enumerated()),id:\.offset) { _, entry in
-                            let sets = (entry["sets"] as? [[String:Any]] ?? []).filter { $0["done"] as? Bool == true }
+                            let sets = (entry["sets"] as? [[String:Any]] ?? []).filter(rawCompleted)
                             HStack { Text(store.exercise(entry["id"] as? String ?? "")?.name ?? "自定义动作").lineLimit(1); Spacer(); Text("\(sets.count) 组").foregroundStyle(GymTheme.green) }.font(.system(size:13))
                         }
                     }.gymCard()

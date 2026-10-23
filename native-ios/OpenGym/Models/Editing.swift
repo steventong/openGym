@@ -51,7 +51,7 @@ enum EditValidation {
         guard let n = value as? NSNumber else { return false }; return n.doubleValue.isFinite && range.contains(n.doubleValue)
     }
     static func ordinaryConfig(_ raw:[String:Any]) -> Bool {
-        (raw["mode"] as? String ?? "reps") == "reps" && raw["pyramid"] == nil && raw["intensifier"] == nil && raw["side"] == nil
+        (raw["mode"] as? String ?? "reps") == "reps" && raw["pyramid"] == nil && raw["intensifier"] == nil && raw["side"] == nil && raw["sec"] == nil && raw["min"] == nil && raw["speed"] == nil
     }
     static func ordinarySet(_ raw:[String:Any], entry:[String:Any]) -> Bool {
         let target = entry["target"] as? [String:Any] ?? entry

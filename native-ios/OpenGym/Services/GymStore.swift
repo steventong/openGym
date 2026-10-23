@@ -156,26 +156,18 @@ import Observation
         guard !selected.isEmpty else { return }
         guard draft == nil else { selectedTab = 2; return }
         guard userName != nil else { showSettings = true; return }
-        // This first native version records conventional weight/repetition sets only.
-        guard selected.flatMap(\.exercises).allSatisfy({ cfg in
-            (cfg["mode"] as? String ?? "reps") == "reps" && cfg["pyramid"] == nil && cfg["sides"] == nil && cfg["sideMode"] == nil && number(cfg["warmupSets"]) == 0
-        }) else { error = "此计划含计时、分侧或特殊组型，请暂时在网页中训练。原生版当前支持普通重量 × 次数组。"; return }
-        let entries = selected.flatMap { routine in routine.exercises.compactMap { cfg -> TrainingEntry? in
-            guard let id = cfg["id"] as? String else { return nil }
-            let weight = number(cfg["weight"]), count = min(30, max(1, Int(number(cfg["sets"])))), reps = max(1, Int(number(cfg["reps"])))
-            return TrainingEntry(id:id, name:exercise(id)?.name ?? id, sets:(0..<count).map { _ in TrainingSet(weight:weight,reps:reps) },routineID:routine.id,restSec:number(cfg["restSec"] ?? state["restSec"] ?? 90))
-        } }
-        guard !entries.isEmpty else { error = "请先给计划添加动作。"; return }
-        draft = TrainingDraft(routineID:selected.first?.id, name:selected.map(\.name).joined(separator:" + "), entries:entries, unit:unit, routineIDs:selected.map(\.id)); selectedTab = 2
+        do {
+            let raw = try WebRules.shared.call("beginAdvanced",payload:["state":state,"ids":selected.map(\.id),"id":UUID().uuidString,"now":Date().timeIntervalSince1970*1000,"day":dayString()]) as! [String:Any]
+            draft = try TrainingDraft.fromWeb(raw,unit:unit);selectedTab = 2
+        } catch { self.error = error.localizedDescription }
     }
     func finish() async {
         guard let draft, draft.completedSets > 0 else { error = "至少完成一组后再保存训练。"; return }
-        let workout = draft.workoutJSON()
+        let active = draft.activeJSON
         let saved = await mutate { source in
             guard (source["unit"] as? String ?? "kg") == draft.unit else { throw APIError.response(409, "服务端重量单位已改变。训练草稿已保留，请先恢复原单位。") }
-            var s = source; var list = s["workouts"] as? [[String: Any]] ?? []
-            if !list.contains(where: { $0["id"] as? String == draft.id }) { list.append(workout) }
-            s["workouts"] = list; return s
+            guard let result = try WebRules.shared.call("finishAdvanced",payload:["state":source,"active":active,"now":Date().timeIntervalSince1970*1000,"today":dayString()]) as? [String:Any] else { throw APIError.invalidResponse }
+            return result
         }
         if saved { self.draft = nil; restUntil = nil; selectedTab = 3 }
     }

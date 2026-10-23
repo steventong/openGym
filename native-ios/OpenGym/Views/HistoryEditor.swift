@@ -51,14 +51,9 @@ struct HistoryEditor: View {
                     Section {
                         ForEach($entry.sets) { $set in
                             VStack(alignment:.leading,spacing:10) {
-                                if EditValidation.ordinarySet(set.raw,entry:entry.raw) {
-                                    HStack {
-                                        historyNumber("重量 · \(expectedUnit)",key:"w",row:$set)
-                                        historyNumber("次数",key:"r",row:$set)
-                                        Toggle("完成",isOn:Binding(get:{set.raw["done"] as? Bool ?? false},set:{set.raw["done"] = $0})).labelsHidden().tint(GymTheme.green)
-                                    }
-                                    Toggle("热身组",isOn:Binding(get:{let phase = set.raw["phase"] as? String; return phase.map { ["warmup","warm-up","warm_up"].contains($0) } ?? (set.raw["warmup"] as? Bool ?? false)},set:{set.raw["phase"] = $0 ? "warmup" : "work"; set.raw["warmup"] = $0})).font(.caption)
-                                } else { Text("高级组型参数原样保留，可在网页中调整。").font(.caption).foregroundStyle(.secondary) }
+                                AdvancedSetEditor(row:set.raw,target:entry.raw["target"] as? [String:Any] ?? [:],unit:expectedUnit,identifier:set.id.uuidString) { action in
+                                    do {var p = action;p["row"] = set.raw;p["target"] = entry.raw["target"] ?? [:];p["state"] = store.state;p["editing"] = true;set.raw = try WebRules.shared.call("editAdvancedRow",payload:p) as! [String:Any]} catch {self.error = error.localizedDescription}
+                                }
                                 Button(role:.destructive) { let id = set.id; entry.sets.removeAll { $0.id == id } } label: { Label("移除此组",systemImage:"minus.circle").font(.caption) }.buttonStyle(.borderless)
                             }.padding(.vertical,4)
                         }

@@ -55,7 +55,8 @@ struct TrainingDraft: Codable, Identifiable {
     var entries: [TrainingEntry]
     var unit: String
     var routineIDs: [String]? = nil
-    var completedSets: Int { entries.flatMap(\.sets).filter(\.done).count }
+    var webData: Data? = nil
+    var completedSets: Int { webData == nil ? entries.flatMap(\.sets).filter(\.done).count : rawEntries.flatMap { $0["sets"] as? [[String:Any]] ?? [] }.filter(rawCompleted).count }
     // Matches the ordinary-set branch of frontend/src/lib/finish-workout.js:
     // a gap longer than 20 minutes ends the continuous session, but keeps all logged sets.
     func sessionEnd(now: Date) -> Double {
