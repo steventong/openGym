@@ -9,5 +9,7 @@
 	</dict>
 	<key>NSHealthShareUsageDescription</key>
 	<string>读取 Apple 健康中的体重，保存在本机，并同步到你连接的 openGym 账号，用于展示体重趋势。</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>openGym 当前只读取体重用于展示体重趋势，不会向 Apple 健康写入或修改数据。</string>
 </dict>
 </plist>
