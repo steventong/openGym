@@ -14,6 +14,31 @@ struct Exercise: Codable, Identifiable, Hashable {
     var equipmentLabel: String { Vocabulary.label(equipment) }
     var targetLabel: String { Vocabulary.label(target) }
     var searchText: String { "\(name) \(english) \(bodyLabel) \(targetLabel)" }
+
+    /// A session label does not include the gym suffix used to distinguish imported IDs.
+    var recordName: String {
+        // Remove the suffix before parsing: 档位（非kg） is not part of the translation.
+        let importedName = name.components(separatedBy: " · ").first ?? name
+        if id.hasPrefix("cimp"), let opening = importedName.firstIndex(of: "（"),
+           let closing = importedName.lastIndex(of: "）"), opening < closing {
+            let chinese = String(importedName[importedName.index(after: opening)..<closing])
+            let english = String(importedName[..<opening]).trimmingCharacters(in: .whitespacesAndNewlines)
+            return "\(chinese)(\(english))"
+        }
+        let english = english.trimmingCharacters(in: .whitespacesAndNewlines)
+        return english.isEmpty || english == name ? name : "\(name)(\(english))"
+    }
+
+    func recordLabel(at index: Int) -> String { "\(index + 1).\(recordName)" }
+
+    /// Server custom exercises use the web catalogue's compact keys, not the bundled JSON schema.
+    static func custom(_ raw: [String: Any]) -> Exercise? {
+        guard let id = raw["id"] as? String, !id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              let name = raw["n"] as? String, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+        return Exercise(id: id, name: name, english: "", bodyPart: raw["bp"] as? String ?? "",
+                        equipment: raw["eq"] as? String ?? "", target: raw["tg"] as? String ?? "",
+                        category: raw["cat"] as? String ?? "", instructions: [], description: raw["desc"] as? String ?? "")
+    }
 }
 
 enum Vocabulary {

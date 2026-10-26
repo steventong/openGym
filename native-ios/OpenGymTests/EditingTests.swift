@@ -66,4 +66,111 @@ final class EditingTests:XCTestCase {
         XCTAssertEqual(data["routineIds"] as? [String],["a","b"])
         XCTAssertEqual((data["entries"] as! [[String:Any]])[1]["rid"] as? String,"b")
     }
+    private func requestBody(_ request:URLRequest) throws -> [String:Any] {
+        let data:Data
+        if let body = request.httpBody { data = body } else {
+            let stream = try XCTUnwrap(request.httpBodyStream)
+            stream.open(); defer { stream.close() }
+            var result = Data(), buffer = [UInt8](repeating:0,count:4096)
+            while stream.hasBytesAvailable {
+                let count = stream.read(&buffer,maxLength:buffer.count)
+                if count <= 0 { break }
+                result.append(buffer,count:count)
+            }
+            data = result
+        }
+        return try XCTUnwrap(JSONSerialization.jsonObject(with:data) as? [String:Any])
+    }
+    @MainActor private func deletionStore() throws -> GymStore {
+        let config = URLSessionConfiguration.ephemeral; config.protocolClasses = [StubProtocol.self]
+        let api = APIClient(address:try ServerAddress("https://test.invalid"),token:"test",session:URLSession(configuration:config))
+        return GymStore(client:api,userID:"routine-deletion-test")
+    }
+    @MainActor func testDeleteRoutineCleansScheduleAndKeepsHistoryDraftAndLoopProgress() async throws {
+        let store = try deletionStore()
+        var server:[String:Any] = [
+            "routines":[["id":"a","name":"A","ex":[]],["id":"b","name":"B","ex":[]]],
+            "week":["0":"a","1":["a","b"],"2":["a"],"3":"b","4":["b","a","b"]],
+            "dayPlan":["2026-10-25":"a","2026-10-26":"b","2026-10-27":"rest","2020-01-01":"a"],
+            "workouts":[["id":"history","routineId":"a","routineIds":["a","b"],"entries":[]]],
+            "active":["routineId":"a","entries":[]],"futureField":["keep":true],
+            "rotation":["id":"loop","sequence":["a","b"],"label":"Loop"],
+            "queue":["rotationId":"loop","ids":["a","b"],"since":1,"startsOn":"2026-10-25","label":"Loop"],
+            "deleted":["routines":["old":12]],"edited":["week.5":20],"_wid":"snapshot"
+        ]
+        let before = server
+        store.state = server
+        store.draft = TrainingDraft(routineID:"a",name:"A",entries:[TrainingEntry(id:"0150",name:"Pull",sets:[TrainingSet(done:true)])],unit:"kg")
+        let draft = try JSONEncoder().encode(store.draft)
+        defer { store.draft = nil; StubProtocol.handler = nil }
+        StubProtocol.handler = { request in
+            if request.httpMethod == "GET" { return (200,["state":server,"rev":7]) }
+            let body = try self.requestBody(request)
+            XCTAssertEqual(body["baseRev"] as? Int,7)
+            XCTAssertEqual(body["baseWid"] as? String,"snapshot")
+            XCTAssertNil(body["stamped"])
+            server = try XCTUnwrap(body["state"] as? [String:Any])
+            return (200,["ok":true])
+        }
+        let deleted = await store.deleteRoutine(id:"a")
+        XCTAssertTrue(deleted)
+        XCTAssertEqual(store.routines.map(\.id),["b"])
+        XCTAssertTrue(RecordPatch.equal(server["week"],["1":["b"],"3":"b","4":["b","b"]]))
+        XCTAssertTrue(RecordPatch.equal(server["dayPlan"],["2026-10-26":"b","2026-10-27":"rest"]))
+        for key in ["workouts","active","futureField","rotation","queue","deleted","edited"] {
+            XCTAssertTrue(RecordPatch.equal(server[key],before[key]),key)
+        }
+        XCTAssertTrue(RecordPatch.equal(try JSONSerialization.jsonObject(with:JSONEncoder().encode(store.draft)),try JSONSerialization.jsonObject(with:draft)))
+        let scheduled = try WebRules.shared.call("schedule",payload:["state":server,"dates":["2026-10-25","2026-10-26"],"today":"2026-10-25"]) as! [[String]]
+        XCTAssertEqual(scheduled,[[],["b"]])
+        let repeated = await store.deleteRoutine(id:"a")
+        XCTAssertTrue(repeated)
+        let last = await store.deleteRoutine(id:"b")
+        XCTAssertTrue(last); XCTAssertTrue(store.routines.isEmpty)
+        let empty = try WebRules.shared.call("schedule",payload:["state":server,"dates":["2026-10-25"],"today":"2026-10-25"]) as! [[String]]
+        XCTAssertEqual(empty,[[]])
+    }
+    @MainActor func testDeleteRoutineRetriesWithoutOverwritingConcurrentSchedule() async throws {
+        let store = try deletionStore(); var writes = 0
+        var server:[String:Any] = ["routines":[["id":"a"],["id":"b"]],"week":["1":["a"]],"_wid":"first"]
+        defer { StubProtocol.handler = nil }
+        StubProtocol.handler = { request in
+            if request.httpMethod == "GET" { return (200,["state":server,"rev":writes+1]) }
+            writes += 1
+            if writes == 1 {
+                server["routines"] = [["id":"a"],["id":"b"],["id":"new","note":"remote"]]
+                server["week"] = ["1":["a","new"],"2":["b"]]
+                server["dayPlan"] = ["2026-10-26":"new"]
+                server["futureField"] = "remote"; server["_wid"] = "second"
+                return (409,["error":"conflict"])
+            }
+            let body = try self.requestBody(request)
+            XCTAssertEqual(body["baseRev"] as? Int,2); XCTAssertEqual(body["baseWid"] as? String,"second")
+            server = try XCTUnwrap(body["state"] as? [String:Any])
+            return (200,["ok":true])
+        }
+        let deleted = await store.deleteRoutine(id:"a")
+        XCTAssertTrue(deleted); XCTAssertEqual(writes,2)
+        XCTAssertEqual(store.routines.map(\.id),["b","new"])
+        XCTAssertTrue(RecordPatch.equal(server["week"],["1":["new"],"2":["b"]]))
+        XCTAssertTrue(RecordPatch.equal(server["dayPlan"],["2026-10-26":"new"]))
+        XCTAssertEqual(server["futureField"] as? String,"remote")
+    }
+    @MainActor func testFailedDeleteKeepsLocalPlanAndReportsError() async throws {
+        let store = try deletionStore()
+        let before:[String:Any] = ["routines":[["id":"a","name":"A"]],"week":["1":["a"]]]
+        store.state = before
+        defer { StubProtocol.handler = nil }
+        for failRead in [true,false] {
+            StubProtocol.handler = { request in
+                if failRead { throw URLError(.notConnectedToInternet) }
+                if request.httpMethod == "GET" { return (200,["state":before,"rev":1]) }
+                return (500,["error":"Unable to save"])
+            }
+            let deleted = await store.deleteRoutine(id:"a")
+            XCTAssertFalse(deleted); XCTAssertNotNil(store.editError)
+            XCTAssertTrue(RecordPatch.equal(store.state,before)); XCTAssertFalse(store.syncing)
+        }
+    }
+
 }

@@ -32,10 +32,17 @@ struct StatsView: View {
                 ForEach(Array(store.workouts.prefix(historyLimit).enumerated()),id:\.offset) { _, workout in
                     VStack(alignment:.leading,spacing:13) {
                         HStack { Text(workout["name"] as? String ?? "训练").font(.headline); Spacer(); Button { editing = WorkoutRecord(raw:workout) } label: { Label("编辑",systemImage:"pencil").font(.caption) }.accessibilityIdentifier("edit-history-\(WorkoutRecord.key(workout))") }
+                        if let local = store.historyEdits[WorkoutRecord.key(workout)] {
+                            HStack {
+                                Label(local["submitted"] as? Bool == true ? "已存本机 · 待同步" : "本机编辑草稿",systemImage:"internaldrive").font(.caption).foregroundStyle(.orange)
+                                Spacer()
+                                if local["submitted"] as? Bool == true { Button("重新提交") { Task { if !(await store.submitHistoryEdit(WorkoutRecord.key(workout))) { store.error = store.editError ?? store.localSaveError } } }.font(.caption).disabled(store.syncing) }
+                            }
+                        }
                         HStack { Text(workout["d"] as? String ?? ""); Spacer(); Text("\(max(0,Int((number(workout["end"]) - number(workout["start"])) / 60000))) 分钟") }.font(.caption).foregroundStyle(GymTheme.muted)
-                        ForEach(Array((workout["entries"] as? [[String:Any]] ?? []).enumerated()),id:\.offset) { _, entry in
+                        ForEach(Array((workout["entries"] as? [[String:Any]] ?? []).enumerated()),id:\.offset) { index, entry in
                             let sets = (entry["sets"] as? [[String:Any]] ?? []).filter(rawCompleted)
-                            HStack { Text(store.exercise(entry["id"] as? String ?? "")?.name ?? "自定义动作").lineLimit(1); Spacer(); Text("\(sets.count) 组").foregroundStyle(GymTheme.green) }.font(.system(size:13))
+                            HStack { Text(store.exercise(entry["id"] as? String ?? "")?.recordLabel(at: index) ?? "\(index + 1).自定义动作").fixedSize(horizontal: false, vertical: true); Spacer(); Text("\(sets.count) 组").foregroundStyle(GymTheme.green) }.font(.system(size:13))
                         }
                     }.gymCard()
                 }

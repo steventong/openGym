@@ -1,6 +1,6 @@
 // Build-time, read-only imports of openGym's existing pure rules. No WebView or DOM.
 import { effectiveRoutineIds, bestWeightForEntry, workoutVolume } from '../../../frontend/src/lib/history.js';
-import { beatsWeight } from '../../../frontend/src/lib/exercises.js';
+import { registerCustom, beatsWeight } from '../../../frontend/src/lib/exercises.js';
 import { rebuildPrHistory } from '../../../frontend/src/lib/workout-date.js';
 export function schedule(input) {
   const {state,dates,today}=JSON.parse(input);
@@ -8,6 +8,7 @@ export function schedule(input) {
 }
 export function repairHistory(input) {
   const {state,changedID,touched,recomputeEntries,previous}=JSON.parse(input);
+  registerCustom(state.customEx || []);
   const list=state.workouts.sort((a,b)=>(a.d||'').localeCompare(b.d||'') || (a.start||0)-(b.start||0));
   const changed=list.find(w=>w.id===changedID);
   if(!changed) throw new Error('workout missing');

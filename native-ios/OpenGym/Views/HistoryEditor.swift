@@ -1,88 +1,105 @@
 import SwiftUI
-private struct HistoryEntryDraft: Identifiable {
-    var id = UUID()
-    var raw:[String:Any]
-    var sets:[RawRow]
-    init(_ raw:[String:Any]) { self.raw = raw; sets = (raw["sets"] as? [[String:Any]] ?? []).map { RawRow(raw:$0) } }
-    var value:[String:Any] { var next = raw; if raw["sets"] != nil || !sets.isEmpty { next["sets"] = sets.map(\.raw) }; return next }
-}
+
 struct HistoryEditor: View {
     @Environment(GymStore.self) private var store
     @Environment(\.dismiss) private var dismiss
-    let original:[String:Any]
-    let expectedUnit:String
-    @State private var name:String
-    @State private var note:String
-    @State private var date:Date
-    @State private var minutes:Double
-    @State private var entries:[HistoryEntryDraft]
+    let record: WorkoutRecord
+    let unit: String
+    @State private var form: HistoryForm
+    @State private var restored = false
     @State private var pick = false
-    @State private var discard = false
-    @State private var error:String?
-    init(record:WorkoutRecord,unit:String) {
-        original = record.raw; expectedUnit = unit
-        _name = State(initialValue:record.raw["name"] as? String ?? "训练")
-        _note = State(initialValue:record.raw["note"] as? String ?? "")
-        _date = State(initialValue:Date(timeIntervalSince1970:number(record.raw["start"])/1000))
-        _minutes = State(initialValue:max(0,number(record.raw["end"]) - number(record.raw["start"]))/60000)
-        _entries = State(initialValue:(record.raw["entries"] as? [[String:Any]] ?? []).map(HistoryEntryDraft.init))
+    @State private var error: String?
+    init(record: WorkoutRecord, unit: String) {
+        self.record = record; self.unit = unit
+        _form = State(initialValue: HistoryForm(original: record.raw, unit: unit))
     }
-    private var proposed:[String:Any] {
-        var next = original; next["name"] = name.trimmingCharacters(in:.whitespacesAndNewlines)
-        if note != (original["note"] as? String ?? "") { next["note"] = note.trimmingCharacters(in:.whitespacesAndNewlines) }
-        next["entries"] = entries.map(\.value)
-        let start = date.timeIntervalSince1970 * 1000, duration = minutes * 60000
-        let changedDate = abs(start-number(original["start"])) > 1
-        if changedDate { next["start"] = start; next["d"] = dayString(date) }
-        if changedDate || abs(duration - (number(original["end"]) - number(original["start"]))) > 1 { next["end"] = start + duration }
-        return next
+    private var binding: Binding<HistoryForm> {
+        Binding(get: { form }, set: { form = $0; persist() })
     }
-    private var dirty:Bool { !RecordPatch.equal(original,proposed) }
+    private func persist() {
+        guard restored else { return }
+        if store.historyEdits[record.id] == nil && RecordPatch.equal(form.original,form.proposed) { return }
+        store.keepHistoryEdit(original: form.original, proposed: form.proposed, unit: form.unit, form: form.fields)
+    }
     var body: some View {
         NavigationStack {
             List {
                 Section("训练信息") {
-                    TextField("训练名称",text:$name).accessibilityIdentifier("history-name")
-                    DatePicker("日期和开始时间",selection:$date,in:...Date(),displayedComponents:[.date,.hourAndMinute]).environment(\.locale,Locale(identifier:"zh_CN")).accessibilityIdentifier("history-date")
-                    HStack { Text("时长（分钟）"); Spacer(); TextField("分钟",value:$minutes,format:.number.precision(.fractionLength(0...2))).keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width:100).accessibilityIdentifier("history-duration") }
-                    TextField("训练备注",text:$note,axis:.vertical).lineLimit(2...5).accessibilityIdentifier("history-note")
+                    TextField("训练名称", text: binding.name).accessibilityIdentifier("history-name")
+                    DatePicker("日期和开始时间", selection: binding.date, in: ...Date(), displayedComponents: [.date, .hourAndMinute]).environment(\.locale, Locale(identifier: "zh_CN"))
+                    HStack { Text("时长（分钟）"); Spacer(); TextField("分钟", text: binding.minutes).keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 100) }
+                    TextField("训练备注", text: binding.note, axis: .vertical).lineLimit(2...5).accessibilityIdentifier("history-note")
                 }
-                ForEach($entries) { $entry in
+                if !form.entries.isEmpty {
                     Section {
-                        ForEach($entry.sets) { $set in
-                            VStack(alignment:.leading,spacing:10) {
-                                AdvancedSetEditor(row:set.raw,target:entry.raw["target"] as? [String:Any] ?? [:],unit:expectedUnit,identifier:set.id.uuidString) { action in
-                                    do {var p = action;p["row"] = set.raw;p["target"] = entry.raw["target"] ?? [:];p["state"] = store.state;p["editing"] = true;set.raw = try WebRules.shared.call("editAdvancedRow",payload:p) as! [String:Any]} catch {self.error = error.localizedDescription}
-                                }
-                                Button(role:.destructive) { let id = set.id; entry.sets.removeAll { $0.id == id } } label: { Label("移除此组",systemImage:"minus.circle").font(.caption) }.buttonStyle(.borderless)
-                            }.padding(.vertical,4)
-                        }
-                        Button {
-                            let last = entry.sets.last?.raw ?? [:]
-                            entry.sets.append(RawRow(raw:["w":number(last["w"]),"r":max(1,number(last["r"] ?? 10)),"done":true,"phase":"work","mode":"reps"]))
-                        } label: { Label("添加普通组",systemImage:"plus") }.buttonStyle(.borderless)
-                        TextField("动作备注",text:Binding(get:{entry.raw["note"] as? String ?? ""},set:{entry.raw["note"] = $0})).font(.subheadline)
-                        Button("移除此动作",role:.destructive) { let id = entry.id; entries.removeAll { $0.id == id } }.font(.caption).buttonStyle(.borderless)
-                    } header: { Text(store.exercise(entry.raw["id"] as? String ?? "")?.name ?? entry.raw["id"] as? String ?? "动作") }
+                        Picker("选择动作", selection: binding.selected) {
+                            ForEach(form.entries.indices, id: \.self) { i in
+                                Text("\(i + 1).\(entryName(i))").tag(i)
+                            }
+                        }.pickerStyle(.menu).accessibilityIdentifier("history-exercise-selector")
+                    }
+                    entryCard(form.selected)
                 }
-                Section { Button { pick = true } label: { Label("添加动作",systemImage:"plus.circle") } }
-                Section { Text("保存后重算训练量和个人纪录，保留照片、计划关联和其他未修改信息。取消不会修改已保存的记录。").font(.caption).foregroundStyle(.secondary) }
-            }.navigationTitle("编辑训练记录").navigationBarTitleDisplayMode(.inline)
+                Section { Button { pick = true } label: { Label("添加动作", systemImage: "plus.circle") } }
+                Section {
+                    if let issue = store.localSaveError { Text(issue).foregroundStyle(.orange); Button("重试本机保存") { persist() } }
+                    else { Text(store.historyEdits[record.id] == nil ? "编辑后会自动保存到本机。" : "已保存到本机，右上角菜单可提交。离线或提交失败后可以再次提交。") }
+                }.font(.caption)
+            }.disabled(store.syncing)
+                .navigationTitle("编辑训练记录").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement:.topBarLeading) { Button("取消") { if dirty { discard = true } else { dismiss() } }.disabled(store.syncing) }
-                    ToolbarItem(placement:.topBarTrailing) { Button(store.syncing ? "保存中…" : "保存") { Task { if await store.saveWorkout(original:original,proposed:proposed,expectedUnit:expectedUnit) { dismiss() } else { error = store.editError } } }.disabled(!dirty || store.syncing).accessibilityIdentifier("save-history") }
+                    ToolbarItem(placement: .topBarLeading) { Button("关闭") { persist(); if store.localSaveError == nil { dismiss() } else { error = store.localSaveError } }.disabled(store.syncing) }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            Button("保存并提交") { Task { await submit() } }.accessibilityIdentifier("save-history")
+                        } label: { Image(systemName: "ellipsis.circle").frame(width: 44, height: 44) }.disabled(store.syncing).accessibilityLabel("记录菜单")
+                    }
                 }
-                .sheet(isPresented:$pick) { ExercisePicker { ex in entries.append(HistoryEntryDraft(["id":ex.id,"sets":[["w":0,"r":10,"done":true,"phase":"work"]]])); pick = false } }
-                .alert("无法保存",isPresented:Binding(get:{error != nil},set:{if !$0 { error = nil }})) { Button("知道了",role:.cancel) {} } message: { Text(error ?? "") }
-                .confirmationDialog("放弃记录修改？",isPresented:$discard,titleVisibility:.visible) { Button("放弃修改",role:.destructive) { dismiss() }; Button("继续编辑",role:.cancel) {} }
-                .interactiveDismissDisabled(dirty || store.syncing)
+                .onAppear {
+                    guard !restored else { return }
+                    form = HistoryForm(original: record.raw, unit: unit, saved: store.historyEdits[record.id]); restored = true
+                }
+                .sheet(isPresented: $pick) { ExercisePicker { ex in
+                    form.entries.append(HistoryEntryDraft(["id": ex.id, "sets": [["w": 0, "r": 10, "done": true, "phase": "work"]]]))
+                    form.selected = form.entries.count - 1; persist(); pick = false
+                } }
+                .alert("内容已保留", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) { Button("知道了", role: .cancel) {} } message: { Text(error ?? "") }
+                .interactiveDismissDisabled(store.syncing || store.localSaveError != nil)
         }.tint(GymTheme.green)
     }
-    private func historyNumber(_ title:String,key:String,row:Binding<RawRow>) -> some View {
-        VStack(alignment:.leading,spacing:5) {
-            Text(title).font(.caption).foregroundStyle(.secondary)
-            TextField(title,value:Binding(get:{number(row.wrappedValue.raw[key])},set:{row.wrappedValue.raw[key] = $0}),format:.number).keyboardType(key == "r" ? .numberPad : .decimalPad)
-                .padding(9).background(.white.opacity(0.07),in:RoundedRectangle(cornerRadius:9)).accessibilityIdentifier("history-\(key)-\(row.wrappedValue.id)")
+    private func entryName(_ i: Int) -> String { store.exercise(form.entries[i].raw["id"] as? String ?? "")?.recordName ?? "动作" }
+    private func completed(_ i: Int) -> Bool { form.entries[i].sets.contains { rawCompleted($0.raw) } }
+    @ViewBuilder private func entryCard(_ i: Int) -> some View {
+        if form.entries.indices.contains(i) {
+            Section {
+                Text("\(i + 1).\(entryName(i))").font(.headline)
+                TextField("动作备注", text: Binding(get: { form.entries[i].raw["note"] as? String ?? "" }, set: { form.entries[i].raw["note"] = $0; persist() }), axis: .vertical)
+                ScrollView(.horizontal,showsIndicators:false) {
+                    Text(store.previousExerciseText(form.entries[i].raw,before:number(form.original["start"]),exclude:record.id)).font(.caption).foregroundStyle(.secondary).lineLimit(1).fixedSize(horizontal:true,vertical:false)
+                }
+                ForEach(binding.entries[i].sets) { row in
+                    let set = row.wrappedValue
+                    VStack(alignment: .leading, spacing: 10) {
+                        AdvancedSetEditor(row: set.raw, target: form.entries[i].raw["target"] as? [String: Any] ?? [:], unit: form.unit, identifier: set.id.uuidString) { action in
+                            do {
+                                row.wrappedValue.raw = try TrainingInput.edit(row: row.wrappedValue.raw, action: action, target: form.entries[i].raw["target"] as? [String: Any] ?? [:], state: store.state, editing: true)
+                            } catch { self.error = error.localizedDescription }
+                        }
+                        Button("移除此组", role: .destructive) { form.entries[i].sets.removeAll { $0.id == set.id }; persist() }.buttonStyle(.borderless).font(.caption)
+                    }
+                }
+                Button("添加普通组") {
+                    let last = form.entries[i].sets.last?.raw ?? [:]
+                    form.entries[i].sets.append(RawRow(raw: ["w": number(last["w"]), "r": max(1, number(last["r"] ?? 10)), "done": true, "phase": "work", "mode": "reps"])); persist()
+                }.buttonStyle(.borderless)
+                Button("移除此动作", role: .destructive) { form.entries.remove(at: i); form.selected = min(i, max(0, form.entries.count - 1)); persist() }.buttonStyle(.borderless)
+            } header: { Text("动作 \(i + 1) / \(form.entries.count) · \(completed(i) ? "已练" : "待练")") }
         }
+    }
+    private func submit() async {
+        persist()
+        guard TrainingInput.value(form.minutes) != nil else { error = "请填写有效的时长，输入内容已保留。"; return }
+        if await store.saveWorkout(original: form.original, proposed: form.proposed, expectedUnit: form.unit) { dismiss() }
+        else { error = store.editError ?? store.localSaveError }
     }
 }

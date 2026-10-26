@@ -9,6 +9,9 @@ struct RoutineEditor: View {
     @State private var pick = false
     @State private var configuration: RawRow?
     @State private var discard = false
+    @State private var confirmDelete = false
+    @State private var deleting = false
+    @State private var errorTitle = "无法保存"
     @State private var error: String?
     init(routine:Routine,unit:String) {
         original = routine.raw; expectedUnit = unit
@@ -43,8 +46,8 @@ struct RoutineEditor: View {
                             }
                             TextField("动作备注",text:Binding(get:{row.raw["note"] as? String ?? ""},set:{row.raw["note"] = $0})).font(.subheadline)
                             HStack {
-                                Button { shift(row.id,-1) } label: { Label("上移",systemImage:"arrow.up") }.disabled(rows.first?.id == row.id)
-                                Button { shift(row.id,1) } label: { Label("下移",systemImage:"arrow.down") }.disabled(rows.last?.id == row.id)
+                                Button { shift(row.id,-1) } label: { Label("上移",systemImage:"arrow.up").frame(minWidth:72,minHeight:48).contentShape(Rectangle()) }.disabled(rows.first?.id == row.id)
+                                Button { shift(row.id,1) } label: { Label("下移",systemImage:"arrow.down").frame(minWidth:72,minHeight:48).contentShape(Rectangle()) }.disabled(rows.last?.id == row.id)
                                 Spacer()
                                 Button(role:.destructive) { let id = row.id; rows.removeAll { $0.id == id } } label: { Image(systemName:"minus.circle") }.accessibilityLabel("移除动作")
                             }.font(.caption).buttonStyle(.borderless)
@@ -52,22 +55,39 @@ struct RoutineEditor: View {
                     }.onMove { rows.move(fromOffsets:$0,toOffset:$1) }.onDelete { rows.remove(atOffsets:$0) }
                     Button { pick = true } label: { Label("添加动作",systemImage:"plus.circle.fill") }.accessibilityIdentifier("edit-add-exercise")
                 } header: { Text("动作 · \(rows.count)") } footer: { Text("保存后更新计划。正在进行的训练草稿不受影响。") }
+                Section {
+                    Button(role:.destructive) { confirmDelete = true } label: {
+                        Label(deleting ? "删除中…" : "删除训练计划",systemImage:"trash")
+                    }.disabled(store.syncing || deleting).accessibilityIdentifier("delete-routine")
+                } footer: { Text("删除计划及其排期，保留训练历史和正在进行的训练。") }
             }.navigationTitle("编辑计划").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement:.topBarLeading) { Button("取消") { if dirty { discard = true } else { dismiss() } }.disabled(store.syncing) }
-                    ToolbarItem(placement:.topBarTrailing) { Button(store.syncing ? "保存中…" : "保存") { Task { if await store.saveRoutine(original:original,proposed:proposed,expectedUnit:expectedUnit) { dismiss() } else { error = store.editError } } }.disabled(store.syncing || !dirty).accessibilityIdentifier("save-routine-edit") }
+                    ToolbarItem(placement:.topBarTrailing) { Button(store.syncing && !deleting ? "保存中…" : "保存") { Task { if await store.saveRoutine(original:original,proposed:proposed,expectedUnit:expectedUnit) { dismiss() } else { errorTitle = "无法保存"; error = store.editError } } }.disabled(store.syncing || deleting || !dirty).accessibilityIdentifier("save-routine-edit") }
                 }
                 .sheet(item:$configuration) { selected in AdvancedConfigEditor(config:selected.raw,unit:expectedUnit) { updated in if let i = rows.firstIndex(where:{$0.id == selected.id}) { rows[i].raw = updated } } }
                 .sheet(isPresented:$pick) { ExercisePicker { exercise in rows.append(RawRow(raw:["id":exercise.id,"sets":3,"reps":10,"weight":0,"restSec":90])); pick = false } }
-                .alert("无法保存",isPresented:Binding(get:{error != nil},set:{if !$0 { error = nil }})) { Button("知道了",role:.cancel) {} } message: { Text(error ?? "") }
+                .alert(errorTitle,isPresented:Binding(get:{error != nil},set:{if !$0 { error = nil }})) { Button("知道了",role:.cancel) {} } message: { Text(error ?? "") }
+                .confirmationDialog("删除训练计划？",isPresented:$confirmDelete,titleVisibility:.visible) {
+                    Button("删除训练计划",role:.destructive) { Task { await deleteRoutine() } }
+                    Button("取消",role:.cancel) {}
+                } message: {
+                    Text("将删除「\(original["name"] as? String ?? "训练计划")」及其排期，无法撤销。训练历史和正在进行的训练会保留。" + (dirty ? "当前未保存的修改将被放弃。" : ""))
+                }
                 .confirmationDialog("放弃未保存的修改？",isPresented:$discard,titleVisibility:.visible) { Button("放弃修改",role:.destructive) { dismiss() }; Button("继续编辑",role:.cancel) {} }
                 .interactiveDismissDisabled(dirty || store.syncing)
         }.tint(GymTheme.green)
     }
+    private func deleteRoutine() async {
+        guard !deleting, let id = original["id"] as? String else { return }
+        deleting = true; defer { deleting = false }
+        if await store.deleteRoutine(id:id) { dismiss() }
+        else { errorTitle = "无法删除"; error = store.editError }
+    }
     private func shift(_ id:UUID,_ direction:Int) { group(id,"move",direction) }
     private func group(_ id:UUID,_ operation:String,_ direction:Int = 0) {
         guard let i = rows.firstIndex(where:{$0.id == id}) else { return }
-        do { let result = try WebRules.shared.call("planGroup",payload:["rows":rows.map(\.raw),"operation":operation,"index":i,"direction":direction]) as! [[String:Any]];rows = result.map { RawRow(raw:$0) } } catch { self.error = error.localizedDescription }
+        do { let result = try WebRules.shared.call("planGroup",payload:["rows":rows.map(\.raw),"operation":operation,"index":i,"direction":direction]) as! [[String:Any]];rows = result.map { RawRow(raw:$0) } } catch { errorTitle = "无法保存"; self.error = error.localizedDescription }
     }
     private func numeric(_ title:String,key:String,fallback:Double,row:Binding<RawRow>) -> some View {
         VStack(alignment:.leading,spacing:5) {

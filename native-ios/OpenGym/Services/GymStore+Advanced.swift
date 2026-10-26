@@ -2,7 +2,7 @@ import Foundation
 extension GymStore {
     func changeActive(_ change:(inout [String:Any]) throws -> Void) {
         guard var d = draft else { return }
-        do { var raw = d.activeJSON;try change(&raw);try d.setActive(raw);draft = d } catch { self.error = error.localizedDescription }
+        do { var raw = d.activeJSON;try change(&raw);if !RecordPatch.equal(raw["entries"],d.activeJSON["entries"]) { raw.removeValue(forKey:"nativeFinishAt") };try d.setActive(raw);draft = d } catch { self.error = error.localizedDescription }
     }
     func replaceLiveRow(entry:Int,set:Int,row:[String:Any]) {
         changeActive { raw in
@@ -15,8 +15,7 @@ extension GymStore {
         guard let d = draft,d.rawEntries.indices.contains(entry) else { return }
         let en = d.rawEntries[entry],rows = en["sets"] as? [[String:Any]] ?? [];guard rows.indices.contains(set) else { return }
         do {
-            var payload = action;payload["row"] = rows[set];payload["target"] = en["target"] ?? [:];payload["state"] = state;payload["now"] = Date().timeIntervalSince1970*1000
-            let row = try WebRules.shared.call("editAdvancedRow",payload:payload) as! [String:Any]
+            let row = try TrainingInput.edit(row:rows[set],action:action,target:en["target"] as? [String:Any] ?? [:],state:state,editing:false)
             replaceLiveRow(entry:entry,set:set,row:row)
             if action["action"] as? String == "toggle",row["done"] as? Bool == true { applyRest(entry:entry,set:set) }
         } catch { self.error = error.localizedDescription }
@@ -27,9 +26,25 @@ extension GymStore {
             let info = try WebRules.shared.call("restForCompleted",payload:["active":d.activeJSON,"entry":entry,"index":set,"state":state,"timerRunning":(restUntil ?? .distantPast) > Date()]) as! [String:Any]
             changeActive { raw in var levels = raw["nativeHighWater"] as? [String:Any] ?? [:];levels[String(entry)] = info["highWater"];raw["nativeHighWater"] = levels }
             if info["preserveRest"] as? Bool == true { return }
-            let seconds = number(info["seconds"]);restUntil = seconds>0 ? Date().addingTimeInterval(seconds) : nil
-            changeActive { raw in raw["cur"] = info["next"] }
+            let seconds = number(info["seconds"]); startRest(entry:entry,seconds:seconds)
+            changeActive { raw in raw["cur"] = seconds > 0 ? entry : info["next"] }
         } catch { self.error = error.localizedDescription }
+    }
+    var restEntry: Int? { (draft?.activeJSON["nativeRest"] as? [String:Any])?["entry"] as? Int }
+    func startRest(entry:Int,seconds:Double) {
+        changeActive { raw in
+            if seconds > 0 { raw["nativeRest"] = ["entry":entry,"end":Date().addingTimeInterval(seconds).timeIntervalSince1970] }
+            else { raw.removeValue(forKey:"nativeRest") }
+        }
+    }
+    func selectLiveEntry(_ index:Int) { changeActive { $0["cur"] = index } }
+    func previousExerciseText(_ entry:[String:Any],before:Double,exclude:String) -> String {
+        let payload:[String:Any] = ["state":state,"id":entry["id"] ?? "","rid":entry["rid"] ?? NSNull(),"before":before,"exclude":exclude]
+        guard let result = try? WebRules.shared.call("previousExercise",payload:payload) as? [String:Any], let date = result["date"] as? String, let label = result["label"] as? String else { return "上次：暂无同一动作的训练记录" }
+        return "上次 \(date) · \(label) · \(unit)"
+    }
+    func setLiveNote(entry:Int,text:String) {
+        changeActive { raw in var entries = raw["entries"] as? [[String:Any]] ?? [];guard entries.indices.contains(entry) else {return};entries[entry]["note"] = text;raw["entries"] = entries }
     }
     func addLiveSet(entry:Int) {
         changeActive { raw in

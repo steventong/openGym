@@ -1,5 +1,26 @@
 import Foundation
 extension GymStore {
+    func deleteRoutine(id:String) async -> Bool {
+        await mutate(reportError:false) { source in
+            var state = source
+            state["routines"] = (source["routines"] as? [[String:Any]] ?? []).filter { $0["id"] as? String != id }
+            if var week = source["week"] as? [String:Any] {
+                for (day,value) in week {
+                    let ids = value as? [String] ?? (value as? String).map { [$0] } ?? []
+                    guard ids.contains(id) else { continue }
+                    let remaining = ids.filter { $0 != id }
+                    if remaining.isEmpty { week.removeValue(forKey:day) } else { week[day] = remaining }
+                }
+                state["week"] = week
+            }
+            if let days = source["dayPlan"] as? [String:Any] {
+                state["dayPlan"] = days.filter { $0.value as? String != id }
+            }
+            // Match Web deletion: loop readers skip missing IDs; retain queue identity/progress,
+            // history and active training snapshots. The server stamps the removal on write.
+            return state
+        }
+    }
     func saveRoutine(original:[String:Any],proposed:[String:Any],expectedUnit:String) async -> Bool {
         await mutate(reportError:false) { source in
             guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409,"重量单位已改变，请重新打开编辑器。") }
@@ -33,7 +54,42 @@ extension GymStore {
         return ids.compactMap { id in routines.first { $0.id == id } }
     }
     func saveWorkout(original:[String:Any],proposed:[String:Any],expectedUnit:String) async -> Bool {
-        await mutate(reportError:false) { source in
+        guard keepHistoryEdit(original:original,proposed:proposed,unit:expectedUnit,submit:true) else { editError = localSaveError; return false }
+        return await submitHistoryEdit(WorkoutRecord.key(original))
+    }
+    func submitHistoryEdit(_ key:String) async -> Bool {
+        guard let item = historyEdits[key], let original = item["original"] as? [String:Any],
+              let proposed = item["proposed"] as? [String:Any], let generation = item["generation"] as? String else { return false }
+        if let fields = item["form"] as? [String:Any], let minutes = fields["minutes"] as? String, TrainingInput.value(minutes) == nil {
+            editError = "时长还未填完，本机输入已保留。"; return false
+        }
+        do { try TrainingInput.validate(proposed) } catch { editError = error.localizedDescription; return false }
+        guard persistHistoryEdits() else { editError = localSaveError; return false }
+        var expected = item["expected"] as? [String:Any]
+        let ok = await mutate(reportError:false,verify:{ source in
+            guard let expected else { return false }
+            return (source["workouts"] as? [[String:Any]] ?? []).contains { WorkoutRecord.key($0) == key && RecordPatch.equal($0,expected) }
+        }) { source in
+            if let expected, let current = (source["workouts"] as? [[String:Any]] ?? []).first(where:{WorkoutRecord.key($0) == key}), RecordPatch.equal(current,expected) { return source }
+            let current = (source["workouts"] as? [[String:Any]] ?? []).first { WorkoutRecord.key($0) == key }
+            let prior = item["priorExpected"] as? [String:Any]
+            let baseline = prior != nil && RecordPatch.equal(prior,current) ? prior! : original
+            let next = try self.patchedWorkoutState(source:source,original:baseline,proposed:TrainingInput.clean(proposed) as! [String:Any],expectedUnit:item["unit"] as? String ?? "kg")
+            expected = (next["workouts"] as? [[String:Any]])?.first { WorkoutRecord.key($0) == key }
+            guard self.historyEdits[key]?["generation"] as? String == generation else { throw APIError.response(0,"本机编辑已更新，请提交最新内容。") }
+            self.historyEdits[key]?["expected"] = expected
+            self.historyEdits[key]?["submitted"] = true
+            guard self.persistHistoryEdits() else { throw APIError.response(0,self.localSaveError ?? "本机保存失败") }
+            return next
+        }
+        if ok {
+            let archived = archiveHistoryEdit(key,generation:generation)
+            if !archived { editError = localSaveError ?? "提交后有更新的本机输入，已保留，请继续核对。" }
+            return archived
+        }
+        return false
+    }
+    func patchedWorkoutState(source:[String:Any],original:[String:Any],proposed:[String:Any],expectedUnit:String) throws -> [String:Any] {
             guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409,"重量单位已改变，请重新打开编辑器。") }
             var state = source; var list = state["workouts"] as? [[String:Any]] ?? []
             let key = WorkoutRecord.key(original)
@@ -63,6 +119,5 @@ extension GymStore {
                 state = repaired
             }
             return state
-        }
     }
 }

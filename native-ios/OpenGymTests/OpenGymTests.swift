@@ -90,4 +90,68 @@ final class OpenGymTests: XCTestCase {
         XCTAssertEqual(entries.count,5632); XCTAssertEqual(Set(entries.map(\.id)).count,entries.count)
         XCTAssertEqual(entries.first { $0.id == "0150" }?.name,"绳索杠高位下拉")
     }
+
+    @MainActor func testImportedHistoryResolvesGymSpecificNamesWithoutChangingRecords() throws {
+        let store = GymStore()
+        let bundle = Bundle(for: GymStore.self)
+        let catalogue = try JSONDecoder().decode([Exercise].self, from: Data(contentsOf: bundle.url(forResource: "catalogue", withExtension: "json")!))
+        let peakID = "cimp72bfd0875b9eaa5e62b1", dpcID = "cimp-bench-dpc"
+        let peakName = "Dumbbell Bench Press（哑铃卧推） · Peak Fitness TRX"
+        let dpcName = "Dumbbell Bench Press（哑铃卧推） · DPC Club Gym"
+        let document: [String: Any] = [
+            "customEx": [["id": peakID, "n": peakName, "bp": "chest", "eq": "dumbbell", "tg": "pectorals", "desc": "健身房：Peak Fitness TRX。"],
+                         ["id": dpcID, "n": dpcName, "bp": "chest"]],
+            "workouts": [["id": "imported", "entries": [["id": peakID, "sets": [["w": 15, "r": 12, "done": true]]], ["id": dpcID, "sets": []]]]],
+            "futureField": ["keep": true]
+        ]
+        // Account data may arrive before the bundled catalogue.
+        store.state = document
+        store.registerCatalogue(catalogue)
+        let history = try XCTUnwrap(store.workouts.first?["entries"] as? [[String: Any]])
+        XCTAssertEqual(history.compactMap { store.exercise($0["id"] as! String)?.name }, [peakName, dpcName])
+        XCTAssertEqual(history.enumerated().compactMap { index, entry in store.exercise(entry["id"] as! String)?.recordLabel(at: index) },
+                       ["1.哑铃卧推(Dumbbell Bench Press)", "2.哑铃卧推(Dumbbell Bench Press)"])
+        XCTAssertEqual(store.exercise(peakID)?.equipment, "dumbbell")
+        XCTAssertEqual(store.exercise(peakID)?.description, "健身房：Peak Fitness TRX。")
+        XCTAssertTrue(store.exercises.contains { $0.id == dpcID && $0.searchText.contains("DPC Club Gym") })
+        XCTAssertEqual(store.exercises.count, catalogue.count + 2)
+        XCTAssertEqual(store.exercise("0150")?.name, "绳索杠高位下拉")
+        XCTAssertTrue(NSDictionary(dictionary: store.state).isEqual(to: document))
+    }
+
+    func testRecordLabelsPreserveVariantsAndNumberEachSessionIndependently() throws {
+        let raw: [String: Any] = ["id": "cimp-example", "n": "Cable Triceps Pushdown (V-Bar)（绳索三头肌下压(V形把手)） · DPC Club Gym · 档位（非kg）"]
+        let imported = try XCTUnwrap(Exercise.custom(raw))
+        XCTAssertEqual(imported.recordLabel(at: 0), "1.绳索三头肌下压(V形把手)(Cable Triceps Pushdown (V-Bar))")
+        XCTAssertEqual(imported.recordLabel(at: 3), "4.绳索三头肌下压(V形把手)(Cable Triceps Pushdown (V-Bar))")
+        XCTAssertEqual(imported.recordLabel(at: 0), "1.绳索三头肌下压(V形把手)(Cable Triceps Pushdown (V-Bar))")
+        let builtIn = Exercise(id: "0289", name: "哑铃卧推", english: "dumbbell bench press", bodyPart: "chest", equipment: "dumbbell", target: "pectorals", category: "strength", instructions: [], description: "")
+        XCTAssertEqual(builtIn.recordLabel(at: 1), "2.哑铃卧推(dumbbell bench press)")
+        XCTAssertEqual(Exercise.custom(["id": "custom", "n": "我的动作 · 慢速"] )?.recordName, "我的动作 · 慢速")
+        XCTAssertEqual(Exercise.custom(["id": "cimp-example", "n": "哑铃卧推(Dumbbell Bench Press)"] )?.recordName, "哑铃卧推(Dumbbell Bench Press)")
+    }
+
+    @MainActor func testSyncedCustomRenameDeletionAndAccountSwitchReplaceCachedNames() throws {
+        let store = GymStore()
+        let builtIn = Exercise(id: "0289", name: "哑铃卧推", english: "dumbbell bench press", bodyPart: "chest", equipment: "dumbbell", target: "pectorals", category: "strength", instructions: [], description: "")
+        store.registerCatalogue([builtIn])
+        store.state = ["customEx": [["id": "cimp-history", "n": "原名称"], ["id": "0289", "n": "自定义覆盖名称"]]]
+        XCTAssertEqual(store.exercise("cimp-history")?.name, "原名称")
+        XCTAssertEqual(store.exercise("0289")?.name, "自定义覆盖名称")
+        store.state["customEx"] = [["id": "cimp-history", "n": "修正后的名称"]]
+        XCTAssertEqual(store.exercise("cimp-history")?.name, "修正后的名称")
+        XCTAssertEqual(store.exercise("0289")?.name, "哑铃卧推")
+        store.state = [:]
+        XCTAssertNil(store.exercise("cimp-history"))
+        XCTAssertEqual(store.exercises, [builtIn])
+    }
+
+    @MainActor func testCustomCatalogueSkipsInvalidRowsAndHandlesDuplicateIDs() {
+        let store = GymStore()
+        store.state = ["customEx": [NSNull(), ["id": "", "n": "无编号"], ["id": "invalid", "n": " "],
+                                   ["id": "cimp-valid", "n": "旧名称"], ["id": "cimp-valid", "n": "最终名称"]] as [Any]]
+        XCTAssertEqual(store.exercises.count, 1)
+        XCTAssertEqual(store.exercise("cimp-valid")?.name, "最终名称")
+        XCTAssertNil(store.exercise("invalid"))
+    }
 }

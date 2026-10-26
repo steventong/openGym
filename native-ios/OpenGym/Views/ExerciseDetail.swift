@@ -56,12 +56,13 @@ struct ExerciseDetail: View {
                 HStack(alignment:.top) {
                     VStack(alignment:.leading,spacing:7) {
                         Text(exercise.name).font(.system(size:24,weight:.bold))
-                        Text(exercise.english.capitalized).font(.system(size:13)).foregroundStyle(GymTheme.muted)
+                        if !exercise.english.isEmpty { Text(exercise.english.capitalized).font(.system(size:13)).foregroundStyle(GymTheme.muted) }
                     }
                     Spacer()
                     Button { dismiss() } label: { Image(systemName:"xmark").font(.system(size:13,weight:.bold)).foregroundStyle(.gray).padding(10).background(.white.opacity(0.07),in:Circle()) }.accessibilityLabel("关闭动作详情")
                 }
-                ZStack(alignment:.bottomTrailing) {
+                if store.mediaURL(exercise.id, video: true) != nil {
+                  ZStack(alignment:.bottomTrailing) {
                     PlayerSurface(player:playback.player).frame(height:260).background(.white)
                     if !playback.ready && !playback.failed { ProgressView().tint(.gray).frame(maxWidth:.infinity,maxHeight:.infinity) }
                     if playback.failed {
@@ -71,7 +72,8 @@ struct ExerciseDetail: View {
                             Label(playback.playing ? "点按暂停" : "继续播放",systemImage:playback.playing ? "pause.fill" : "play.fill").font(.system(size:11,weight:.medium)).padding(9).foregroundStyle(.white).background(.black.opacity(0.4),in:Capsule())
                         }.padding(12).accessibilityIdentifier("animation-toggle")
                     }
-                }.clipShape(RoundedRectangle(cornerRadius:18)).accessibilityElement(children:.contain).accessibilityLabel("动作示范动画")
+                  }.clipShape(RoundedRectangle(cornerRadius:18)).accessibilityElement(children:.contain).accessibilityLabel("动作示范动画")
+                }
                 HStack(spacing:7) {
                     ForEach([exercise.bodyLabel,exercise.targetLabel,exercise.equipmentLabel],id:\.self) { label in
                         Text(label).font(.system(size:11,weight:.medium)).padding(.horizontal,10).padding(.vertical,6).foregroundStyle(GymTheme.green).background(GymTheme.green.opacity(0.12),in:Capsule())
@@ -88,7 +90,8 @@ struct ExerciseDetail: View {
                     Text("\(decimal(weight * (1 + Double(reps) / 30))) \(store.unit)").font(.system(size:30,weight:.bold,design:.rounded)).foregroundStyle(GymTheme.green).frame(maxWidth:.infinity,alignment:.trailing)
                     Text("由单组估算，并非实测最大值。").font(.caption).foregroundStyle(GymTheme.muted)
                 }.gymCard()
-                SectionTitle(text:"动作要领")
+                if !exercise.description.isEmpty { Text(exercise.description).font(.system(size:15)).foregroundStyle(GymTheme.muted) }
+                if !exercise.instructions.isEmpty { SectionTitle(text:"动作要领") }
                 ForEach(Array(exercise.instructions.enumerated()),id:\.offset) { index, text in
                     HStack(alignment:.top,spacing:12) {
                         Text(String(format:"%02d",index + 1)).font(.system(size:13,weight:.semibold,design:.monospaced)).foregroundStyle(GymTheme.green).padding(.top,2)

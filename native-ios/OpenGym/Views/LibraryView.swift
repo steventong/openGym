@@ -17,7 +17,7 @@ struct LibraryView: View {
                 HStack(alignment:.top) {
                     VStack(alignment:.leading,spacing:6) {
                         Text("动作库").font(.system(size:34,weight:.bold))
-                        Text("\(store.exercises.count) 个带动画的动作").font(.subheadline).foregroundStyle(GymTheme.muted)
+                        Text("\(store.exercises.count) 个动作").font(.subheadline).foregroundStyle(GymTheme.muted)
                     }
                     Spacer()
                     Button { store.showSettings = true } label: { Image(systemName:"slider.horizontal.3").font(.system(size:20)).foregroundStyle(GymTheme.green).padding(12).background(GymTheme.green.opacity(0.12),in:RoundedRectangle(cornerRadius:12)) }.accessibilityLabel("服务设置")
@@ -37,7 +37,7 @@ struct LibraryView: View {
                     HStack(spacing:8) { ForEach(equipments,id:\.self) { item in Pill(title:item.isEmpty ? "所有器械" : Vocabulary.label(item),selected:equipment == item) { equipment = item } } }
                 }
                 if let error = store.catalogueError { Text(error).foregroundStyle(.orange) }
-                HStack { Text(query.isEmpty && bodyPart.isEmpty && equipment.isEmpty ? "探索动作" : "找到 \(results.count) 个动作").font(.caption).foregroundStyle(GymTheme.muted); Spacer(); Label("原版动作库",systemImage:"checkmark.seal").font(.caption2).foregroundStyle(GymTheme.muted) }
+                HStack { Text(query.isEmpty && bodyPart.isEmpty && equipment.isEmpty ? "探索动作" : "找到 \(results.count) 个动作").font(.caption).foregroundStyle(GymTheme.muted); Spacer(); Label("动作库",systemImage:"checkmark.seal").font(.caption2).foregroundStyle(GymTheme.muted) }
                 if results.isEmpty { EmptyCard(icon:"magnifyingglass",title:"没有找到动作",detail:"试试其他关键词，或清除肌群、器械筛选。") }
                 LazyVGrid(columns:grid ? [GridItem(.flexible()),GridItem(.flexible())] : [GridItem(.flexible())],spacing:10) {
                     ForEach(Array(results.prefix(limit))) { exercise in

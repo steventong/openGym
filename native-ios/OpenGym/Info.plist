@@ -7,5 +7,7 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>读取 Apple 健康中的体重，保存在本机，并同步到你连接的 openGym 账号，用于展示体重趋势。</string>
 </dict>
 </plist>

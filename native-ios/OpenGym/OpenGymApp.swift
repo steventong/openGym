@@ -1,11 +1,19 @@
 import SwiftUI
 @main struct OpenGymApp: App {
-    @State private var store = GymStore()
+    @UIApplicationDelegateAdaptor(OpenGymAppDelegate.self) private var delegate
+    private var store: GymStore { delegate.store }
     var body: some Scene {
         WindowGroup {
             RootView().environment(store).preferredColorScheme(.dark).tint(GymTheme.green)
                 .task { await store.boot() }
         }
+    }
+}
+@MainActor final class OpenGymAppDelegate: NSObject, UIApplicationDelegate {
+    let store = GymStore()
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        store.prepareOfflineLaunch()
+        return true
     }
 }
 struct RootView: View {
@@ -23,6 +31,7 @@ struct RootView: View {
                 default: LibraryView()
                 }
             }.frame(maxWidth:.infinity,maxHeight:.infinity)
+            if let issue = store.localSaveError { Text(issue).font(.caption).foregroundStyle(.orange).padding(8).accessibilityIdentifier("local-save-error") }
             tabBar
         }.background(GymTheme.background).foregroundStyle(.white)
             .sheet(isPresented:$store.showSettings) { SettingsView() }
@@ -30,8 +39,8 @@ struct RootView: View {
             .alert("openGym",isPresented:Binding(get:{store.error != nil},set:{if !$0 { store.error = nil }})) {
                 Button("知道了",role:.cancel) { store.error = nil }
             } message: { Text(store.error ?? "") }
-            .onChange(of:scenePhase) { _, phase in if phase == .active { Task { await store.refresh() } } }
-            .task { while !Task.isCancelled { try? await Task.sleep(for:.seconds(30)); if !Task.isCancelled { await store.refresh() } } }
+            .onChange(of:scenePhase) { _, phase in if phase == .active { Task { await store.refresh(); await store.healthSync.resume() } } }
+            .task { while !Task.isCancelled { try? await Task.sleep(for:.seconds(30)); if !Task.isCancelled { await store.refresh(); await store.healthSync.resume() } } }
     }
     private var tabBar: some View {
         HStack(alignment:.bottom,spacing:0) {

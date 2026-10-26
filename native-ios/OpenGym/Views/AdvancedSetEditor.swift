@@ -51,8 +51,8 @@ struct AdvancedSetEditor:View {
             ForEach(drops.indices,id:\.self) { i in
                 HStack(spacing:8) {
                     Text("降 \(i+1)").font(.caption).foregroundStyle(GymTheme.muted)
-                    subField("重量",value:number(drops[i]["w"])) { subAction("dropEdit",side:side,index:i,patch:["w":$0]) }
-                    subField("次数",value:number(drops[i]["r"])) { subAction("dropEdit",side:side,index:i,patch:["r":$0]) }
+                    subField("重量",path:"drop.\(side ?? "both").\(i).w",value:number(drops[i]["w"]),operation:["action":"dropEdit","index":i,"side":side as Any? ?? NSNull()],patchKey:"w") { subAction("dropEdit",side:side,index:i,patch:["w":$0]) }
+                    subField("次数",path:"drop.\(side ?? "both").\(i).r",value:number(drops[i]["r"]),operation:["action":"dropEdit","index":i,"side":side as Any? ?? NSNull()],patchKey:"r") { subAction("dropEdit",side:side,index:i,patch:["r":$0]) }
                     Button { subAction("dropRemove",side:side,index:i) } label:{Image(systemName:"minus.circle").foregroundStyle(.orange)}.buttonStyle(.borderless)
                 }
             }
@@ -60,7 +60,7 @@ struct AdvancedSetEditor:View {
             ForEach(clusters.indices,id:\.self) { i in
                 HStack {
                     Text("小组 \(i+1)").font(.caption).foregroundStyle(GymTheme.muted)
-                    subField("次数",value:number(clusters[i]["r"])) { var p:[String:Any] = ["action":"clusterEdit","index":i,"value":$0];p["side"] = side;action(p) }
+                    subField("次数",path:"cluster.\(side ?? "both").\(i).r",value:number(clusters[i]["r"]),operation:["action":"clusterEdit","index":i,"side":side as Any? ?? NSNull()]) { var p:[String:Any] = ["action":"clusterEdit","index":i,"value":$0];p["side"] = side;action(p) }
                     if let startRest { Button("休息 \(Int(number(clusters[i]["restSec"])))s") {editing = false;startRest(number(clusters[i]["restSec"]))}.font(.caption2).buttonStyle(.borderless).disabled(timerRunning) }
                     else {Text("休息 \(Int(number(clusters[i]["restSec"])))s").font(.caption2).foregroundStyle(GymTheme.muted)}
                     Button { subAction("clusterRemove",side:side,index:i) } label:{Image(systemName:"minus.circle").foregroundStyle(.orange)}.buttonStyle(.borderless)
@@ -69,7 +69,7 @@ struct AdvancedSetEditor:View {
             if effortVisible || data["rir"] != nil || data["rpe"] != nil {
                 HStack {
                     Menu(data["rpe"] != nil ? "RPE" : "RIR") { Button("RIR") { emitField("rir",value:2,side:side) };Button("RPE") { emitField("rpe",value:8,side:side) };Button("清除") { emitField("rir",value:NSNull(),side:side);emitField("rpe",value:NSNull(),side:side);effortVisible = false } }.font(.caption)
-                    subField("强度",value:number(data["rpe"] ?? data["rir"] ?? 2)) { emitField(data["rpe"] != nil ? "rpe" : "rir",value:min(10,max(0,$0)),side:side) }
+                    subField("强度",path:"\(side ?? "both").\(data["rpe"] != nil ? "rpe" : "rir")",value:number(data["rpe"] ?? data["rir"] ?? 2),operation:["action":"field","key":data["rpe"] != nil ? "rpe" : "rir","side":side as Any? ?? NSNull()]) { emitField(data["rpe"] != nil ? "rpe" : "rir",value:min(10,max(0,$0)),side:side) }
                 }
             }
         }
@@ -77,10 +77,18 @@ struct AdvancedSetEditor:View {
     private func field(_ title:String,_ key:String,_ data:[String:Any],_ side:String?)->some View {
         VStack(alignment:.leading,spacing:4) {
             Text(title).font(.caption2).foregroundStyle(.secondary)
-            TextField(title,value:Binding(get:{number(data[key])},set:{emitField(key,value:max(0,$0),side:side)}),format:.number.precision(.fractionLength(0...2))).keyboardType(.decimalPad).focused($editing).multilineTextAlignment(.center).padding(9).background(.white.opacity(0.07),in:RoundedRectangle(cornerRadius:9)).accessibilityIdentifier("\(key)-\(identifier)-\(side ?? "both")").disabled(timerRunning || (key == "r" && data["type"] as? String == "restpause"))
+            TextField(title,text:inputBinding(path:"\(side ?? "both").\(key)",value:number(data[key]),operation:["action":"field","key":key,"side":side as Any? ?? NSNull()])).keyboardType(.decimalPad).focused($editing).multilineTextAlignment(.center).padding(9).background(.white.opacity(0.07),in:RoundedRectangle(cornerRadius:9)).accessibilityIdentifier("\(key)-\(identifier)-\(side ?? "both")").disabled(timerRunning || (key == "r" && data["type"] as? String == "restpause"))
         }
     }
     private func emitField(_ key:String,value:Any,side:String?) { var p:[String:Any] = ["action":"field","key":key,"value":value];p["side"] = side;action(p) }
     private func subAction(_ type:String,side:String?,index:Int,patch:[String:Any] = [:]) { var p:[String:Any] = ["action":type,"index":index,"patch":patch];p["side"] = side;action(p) }
-    private func subField(_ title:String,value:Double,change:@escaping(Double)->Void)->some View { TextField(title,value:Binding(get:{value},set:{change(max(0,$0))}),format:.number).keyboardType(.decimalPad).focused($editing).multilineTextAlignment(.center).padding(7).background(.white.opacity(0.07),in:RoundedRectangle(cornerRadius:8)) }
+    private func inputBinding(path:String,value:Double,operation:[String:Any],patchKey:String? = nil) -> Binding<String> {
+        Binding(get:{TrainingInput.display(row,path:path,number:value)},set:{ text in
+            var message:[String:Any] = ["action":"input","path":path,"text":text,"operation":operation]
+            message["patchKey"] = patchKey;action(message)
+        })
+    }
+    private func subField(_ title:String,path:String,value:Double,operation:[String:Any],patchKey:String? = nil,change:@escaping(Double)->Void)->some View {
+        TextField(title,text:inputBinding(path:path,value:value,operation:operation,patchKey:patchKey)).keyboardType(.decimalPad).focused($editing).multilineTextAlignment(.center).padding(7).background(.white.opacity(0.07),in:RoundedRectangle(cornerRadius:8)).accessibilityIdentifier("\(path)-\(identifier)")
+    }
 }

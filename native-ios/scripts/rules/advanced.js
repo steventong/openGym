@@ -1,7 +1,7 @@
 import {buildCombinedEntries,deriveSessionName} from '../../../frontend/src/lib/session-merge.js';
 import {buildCompletedWorkout,sessionEnd} from '../../../frontend/src/lib/finish-workout.js';
-import {defaultConfig,modeOf,workoutVolume,bestWeightForEntry,bestWeightFor,cleanupSg,pairAdjacent,unpairSuperset,supersetUnits,doneUnits,setUnitsTotal,setsDoneActive,copyRowAt,moveRoutineEntry,canBeWarmup} from '../../../frontend/src/lib/history.js';
-import {beatsWeight} from '../../../frontend/src/lib/exercises.js';
+import {defaultConfig,modeOf,lastEntryFor,setLabel,workoutVolume,bestWeightForEntry,bestWeightFor,cleanupSg,pairAdjacent,unpairSuperset,supersetUnits,doneUnits,setUnitsTotal,setsDoneActive,copyRowAt,moveRoutineEntry,canBeWarmup} from '../../../frontend/src/lib/history.js';
+import {registerCustom,beatsWeight} from '../../../frontend/src/lib/exercises.js';
 import {normalizePyramid,flatFromPyramid,normalizePyramidRest,normalizePyramidWeight,pyramidRestFor} from '../../../frontend/src/lib/pyramid.js';
 import * as M from '../../../frontend/src/lib/workout-model.js';
 import {restSecFor,warmupRestSecFor,supersetFlowStep,nextUnfinishedUnit,restAfterSet,setProgressHighWater,restOnRecheck} from '../../../frontend/src/lib/supersetFlow.js';
@@ -9,7 +9,7 @@ import {entryDbLoad} from '../../../frontend/src/lib/dumbbells.js';
 import {dropGrid} from '../../../frontend/src/lib/plates.js';
 import {saveRotation,chooseFixedWeek,chooseRotation,startNewPass,stopPass,refillAfter,scheduleModeOf} from '../../../frontend/src/lib/rotation.js';
 import {queueView,queueOf} from '../../../frontend/src/lib/queue.js';
-const defaults=s=>({unit:'kg',restSec:90,restPauseSec:15,bodyweight:[],workouts:[],routines:[],exWeights:{},week:{},dayPlan:{},customEx:[],...s});
+const defaults=s=>{const state={unit:'kg',restSec:90,restPauseSec:15,bodyweight:[],workouts:[],routines:[],exWeights:{},week:{},dayPlan:{},customEx:[],...s};registerCustom(state.customEx);return state;};
 const integer=(v,f,min,max)=>Math.max(min,Math.min(max,Math.round(Number(v))||f));
 export function advancedConfig(input) {
   const {config:c}=JSON.parse(input),mode=modeOf(c), out={...defaultConfig(c.id,mode),...c,mode};
@@ -103,3 +103,11 @@ export function rotationChange(input){
 }
 
 export function copyAdvancedSet(input){const {sets}=JSON.parse(input);return JSON.stringify(sets.length?copyRowAt(sets,sets.length-1):[{w:0,r:10,done:false}]);}
+
+export function previousExercise(input) {
+ const {state,id,rid,before=Infinity,exclude}=JSON.parse(input),s=defaults(state);
+ registerCustom(s.customEx);
+ s.workouts=s.workouts.filter(w=>w.id!==exclude && (!w.start || w.start<before)).sort((a,b)=>(a.d||'').localeCompare(b.d||'')||(a.start||0)-(b.start||0));
+ const last=lastEntryFor(s,id,rid);
+ return JSON.stringify(last?{date:last.d,label:last.sets.map(row=>setLabel(id,row,last.target,s.unit==='lb'?'mph':'km/h')).join(' · ')}:null);
+}

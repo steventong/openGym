@@ -20,7 +20,7 @@ enum RecordPatch {
             if let old = old as? [String:Any], let new = new as? [String:Any], let remote = remote as? [String:Any] {
                 result[key] = try apply(original:old,proposed:new,current:remote)
             } else {
-                guard equal(old,remote) else { throw APIError.response(409,"这项内容已在其他设备修改。你的编辑仍在这里；请取消后重新打开，核对最新内容再保存。") }
+                guard equal(old,remote) else { throw APIError.response(409,"这项内容已在其他设备修改。你的本机编辑已保留，请核对两个版本后再提交。") }
                 result[key] = new
             }
         }

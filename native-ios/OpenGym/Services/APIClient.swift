@@ -7,7 +7,7 @@ enum APIError: LocalizedError {
         switch self {
         case .invalidServer: return "请输入有效的服务地址。远程服务需要 HTTPS；本机支持 http://localhost:8080。"
         case .response(401, _), .signIn: return "请先在设置中配对账号，或重新配对已过期的连接。"
-        case .response(409, _): return "其他设备正在修改数据，请稍后重试。你的训练草稿仍保留在本机。"
+        case let .response(409, message): return message == "conflict" ? "其他设备正在修改数据，请稍后重试。你的训练草稿仍保留在本机。" : message
         case let .response(_, message): return message
         case .invalidResponse: return "服务器返回了无法识别的数据。"
         case .busy: return "正在同步，请稍后重试。"
