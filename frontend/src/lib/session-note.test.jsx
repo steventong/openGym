@@ -70,4 +70,26 @@ describe('session note', () => {
     unmountAll()
     expect(useStore.getState().S.workouts[0].note).toBeUndefined()
   })
+
+  it('keeps an imported original log when history is opened, edited and dismissed', () => {
+    const note = '健身房：Peak Fitness TRX\n\n原始记录：\n' + 'Chest Press 15kg 12 12 12\n'.repeat(25) + 'Finished'
+    useStore.setState(s => ({ S: { ...s.S, active: null, workouts: [{ ...workout(), note }] } }))
+    let host = render(() => workoutDetailSheet(useStore.getState().S.workouts[0]))
+    expect(host.querySelector('textarea').maxLength).toBeGreaterThan(note.length)
+    unmountAll()
+    expect(useStore.getState().S.workouts[0].note).toBe(note)
+    host = render(() => workoutDetailSheet(useStore.getState().S.workouts[0]))
+    const edited = note + 'Felt good'
+    act(() => { type(host.querySelector('textarea'), edited) })
+    unmountAll()
+    expect(useStore.getState().S.workouts[0].note).toBe(edited)
+  })
+
+  it('keeps a long original log when saving the active session note', () => {
+    const note = '原始记录：\n' + 'Chest Press 15kg 12 12 12\n'.repeat(25) + 'Finished'
+    useStore.setState(s => ({ S: { ...s.S, active: { ...workout(), note } } }))
+    const host = render(() => sessionNoteSheet())
+    act(() => { [...host.querySelectorAll('button')].find(b => /save/i.test(b.textContent)).click() })
+    expect(useStore.getState().S.active.note).toBe(note)
+  })
 })

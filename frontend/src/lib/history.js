@@ -391,8 +391,10 @@ function lastEntryIn(S, exId, rid) {
   return null
 }
 
-/** How long any single note may get. Long enough for a paragraph, short enough to stay a note. */
+/** Maximum length of an exercise, set or day note. */
 export const NOTE_MAX = 500
+// Session notes can include the original training log alongside session context.
+export const SESSION_NOTE_MAX = 2000
 
 /**
  * The most recent session note the user pinned for this exercise, or null.

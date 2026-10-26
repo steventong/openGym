@@ -4,7 +4,7 @@ import { useUI } from './store/useUI.js'
 import { EXDB, EXIDX, BODYPARTS, isCardio, isBodyweightEq, allExercises, equipmentOf, byCategory, smOf, searchExercises, similarExercises, exOr, isAssisted, betterWeight, beatsWeight, isCustomEx } from './lib/exercises.js'
 import { activeProfile, exAvailable, ALL_EQUIPMENT, newProfile, profileEquipment, ACC_V } from './lib/equipment.js'
 import { fmtDate, fmtDateRange, fmtNum, fmtPlate, exerciseNameText, fmtVol, fmtDur, durPart, todayISO, isoOf, uid, exCount, routineCount, setsWorkCount, DAYN, DAYS, weekOrder, weekStartOf, weekDayOffset, MONTHS_LONG, ACCENTS } from './lib/format.js'
-import { lastEntryFor, bestWeightFor, bestWeightForEntry, buildSets, effectiveRoutineIds, workoutDay, workoutVolume, setsDone, setsDoneActive, setUnitsTotal, lastBW, sessionSections, setLabel, defaultConfig, cleanupSg, modeOf, effortOf, EFFORT, capEffort, stepEffort, isBw, isPerSide, sideReps, workSetsDone, applyIntensifierPlan, MAX_PLANNED_WARMUPS, NOTE_MAX } from './lib/history.js'
+import { lastEntryFor, bestWeightFor, bestWeightForEntry, buildSets, effectiveRoutineIds, workoutDay, workoutVolume, setsDone, setsDoneActive, setUnitsTotal, lastBW, sessionSections, setLabel, defaultConfig, cleanupSg, modeOf, effortOf, EFFORT, capEffort, stepEffort, isBw, isPerSide, sideReps, workSetsDone, applyIntensifierPlan, MAX_PLANNED_WARMUPS, NOTE_MAX, SESSION_NOTE_MAX } from './lib/history.js'
 import { usesBar, defaultBarWeight, hasBarOverride, isNoBar } from './lib/bar.js'
 import { PLATE_SIZES, pairsOf, ownsPlates, withPlatePairs, withStandardPlates, withLoadKind, loadKindFor, baseWeightFor, dropGrid } from './lib/plates.js'
 import { toScale, rirOf, EFFORT_PRESETS, effortColor } from './lib/effort.js'
@@ -2444,7 +2444,7 @@ function WorkoutDetail({ w, close }) {
   const saveNote = () => update(s => {
     const rec = s.workouts.find(x => sameWorkout(x, w))
     if (!rec) return
-    const text = note.trim().slice(0, NOTE_MAX)
+    const text = note.trim().slice(0, SESSION_NOTE_MAX)
     if (text === (rec.note || '')) return
     if (text) rec.note = text; else delete rec.note
     stampWorkout(rec)
@@ -2457,7 +2457,7 @@ function WorkoutDetail({ w, close }) {
   latest.current = note
   const initial = useRef(w.note || '')
   useEffect(() => () => {
-    const text = latest.current.trim().slice(0, NOTE_MAX)
+    const text = latest.current.trim().slice(0, SESSION_NOTE_MAX)
     if (text === initial.current) return
     update(s => {
       const rec = s.workouts.find(x => sameWorkout(x, w))
@@ -2475,7 +2475,7 @@ function WorkoutDetail({ w, close }) {
       {ex && <Thumb ex={ex} />}
       <div className="grow"><div className={`tt ${exerciseNameClass(ex)}`} style={{ fontWeight: 600 }}>{nameOf(e)} {w.prs && w.prs.includes(e.id) && <span className="pr"><Icon name="trophy" />PR</span>}</div>
         <div className="ss">{e.sets.filter(hasCompletedWork).map(s => setLabel(e.id, s, e.target, speedUnitOf(st))).join('  ·  ') || t('no sets')}</div>
-        {e.note && <div className="small dim" style={{ marginTop: 3 }}>
+        {e.note && <div className="small dim" style={{ marginTop: 3, whiteSpace: 'pre-wrap' }}>
           {e.notePin && <Icon name="pin" style={{ fontSize: 12, marginInlineEnd: 4, verticalAlign: '-1px', color: 'var(--yellow)' }} />}{e.note}
         </div>}</div>
       <Icon name="chevronRight" className="chev" style={{ alignSelf: 'center' }} />
@@ -2535,7 +2535,7 @@ function WorkoutDetail({ w, close }) {
     {/* Progress photos and form-check videos: added and removed right here, on the saved record. */}
     <WorkoutMediaSection w={w} />
     <div className="small muted" style={{ margin: '4px 0 6px' }}>{t('Session note')}</div>
-    <textarea ref={noteRef} className="input" rows={2} maxLength={NOTE_MAX} value={note}
+    <textarea ref={noteRef} className="input" rows={Math.min(16, Math.max(2, note.split('\n').length))} maxLength={SESSION_NOTE_MAX} value={note}
       placeholder={t('How the session went as a whole.')}
       onFocus={onNoteFocus} onChange={e => setNote(e.target.value)} onBlur={saveNote} />
     <div style={{ height: 14 }} />
@@ -2544,7 +2544,7 @@ function WorkoutDetail({ w, close }) {
         flush the date row does, and the unmount hook then has nothing left to write over it. */}
     <Button icon="pencil" disabled={!!st.active} onClick={() => {
       saveNote()
-      initial.current = latest.current.trim().slice(0, NOTE_MAX)
+      initial.current = latest.current.trim().slice(0, SESSION_NOTE_MAX)
       try { update(state => { editCompletedSession(state, w) }); closeThenNav(close, '/workout') }
       catch (error) { toast(t(error.message)) }
     }}>{t('Edit workout')}</Button>
@@ -2553,19 +2553,19 @@ function WorkoutDetail({ w, close }) {
         in this workout. The record itself stays as it is. */}
     <Button icon="reset" disabled={!!st.active} style={{ marginBottom: 8 }} onClick={() => {
       saveNote()
-      initial.current = latest.current.trim().slice(0, NOTE_MAX)
+      initial.current = latest.current.trim().slice(0, SESSION_NOTE_MAX)
       repeatWorkout(w, close)
     }}>{t('Repeat today')}</Button>
     {/* The note lives in a textarea that only writes on blur, and moving the workout re-keys a
         legacy record — so flush it first and stop the unmount hook writing it a second time. */}
     <Button icon="calendar" style={{ marginBottom: 8 }} onClick={() => {
       saveNote()
-      initial.current = latest.current.trim().slice(0, NOTE_MAX)
+      initial.current = latest.current.trim().slice(0, SESSION_NOTE_MAX)
       workoutDateSheet(w, close)
     }}>{t('Change date & time')}</Button>
     <Button icon="stopwatch" style={{ marginBottom: 8 }} onClick={() => {
       saveNote()
-      initial.current = latest.current.trim().slice(0, NOTE_MAX)
+      initial.current = latest.current.trim().slice(0, SESSION_NOTE_MAX)
       workoutDurationSheet(w, close)
     }}>{t('Change duration')}</Button>
     <Button icon="plus" onClick={() => confirmSheet({
@@ -3092,14 +3092,14 @@ function SessionNote({ close }) {
   if (!A) return null
 
   const save = () => {
-    const text = note.trim().slice(0, NOTE_MAX)
+    const text = note.trim().slice(0, SESSION_NOTE_MAX)
     update(s => { if (!s.active) return; if (text) s.active.note = text; else delete s.active.note })
     close()
   }
 
   return <>
     <h3>{t('Session note')}</h3>
-    <textarea ref={noteRef} className="input" rows={4} maxLength={NOTE_MAX} value={note}
+    <textarea ref={noteRef} className="input" rows={4} maxLength={SESSION_NOTE_MAX} value={note}
       placeholder={t('How the session went as a whole.')}
       onFocus={onNoteFocus} onChange={e => setNote(e.target.value)} />
     <div style={{ height: 18 }} />
