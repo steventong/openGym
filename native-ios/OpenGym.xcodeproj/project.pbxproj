@@ -470,7 +470,7 @@
 				DEVELOPMENT_TEAM = HHH7WTMLVN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OpenGym/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = openGym;
+				INFOPLIST_KEY_CFBundleDisplayName = OpenGYM;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -553,7 +553,7 @@
 				DEVELOPMENT_TEAM = HHH7WTMLVN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OpenGym/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = openGym;
+				INFOPLIST_KEY_CFBundleDisplayName = OpenGYM;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
