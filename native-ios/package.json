@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build:rules": "esbuild scripts/rules/entry.js --bundle --format=iife --global-name=OpenGymRules --platform=neutral --target=es2020 --minify --outfile=OpenGym/Resources/web-rules.js --define:import.meta.env={}"
+    "build:rules": "node scripts/build-rules.mjs"
   },
   "devDependencies": {
     "esbuild": "0.25.12"

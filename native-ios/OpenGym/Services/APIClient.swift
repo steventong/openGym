@@ -47,7 +47,13 @@ struct ServerAddress {
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw APIError.invalidResponse }
         let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
-        guard (200..<300).contains(http.statusCode) else { throw APIError.response(http.statusCode, json?["error"] as? String ?? "HTTP \(http.statusCode)") }
+        guard (200..<300).contains(http.statusCode) else {
+            let message: String
+            if path.hasPrefix("api/coach/"), let code = json?["code"] as? String {
+                message = CoachSession.jobError(code)
+            } else { message = json?["error"] as? String ?? "HTTP \(http.statusCode)" }
+            throw APIError.response(http.statusCode,message)
+        }
         guard let json else { throw APIError.invalidResponse }
         return json
     }

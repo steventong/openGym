@@ -2,6 +2,7 @@ import SwiftUI
 struct PlanView: View {
     @Environment(GymStore.self) private var store
     @State private var create = false
+    @State private var coach = false
     @State private var schedule = false
     @State private var rotation = false
     @State private var selected: Routine?
@@ -11,6 +12,12 @@ struct PlanView: View {
                 HStack {
                     VStack(alignment:.leading,spacing:7) { Text("训练计划").font(.system(size:34,weight:.bold)); Text("安排训练，保持自己的节奏").font(.subheadline).foregroundStyle(GymTheme.muted) }
                     Spacer()
+                    if store.userName != nil {
+                        Button { coach = true } label: {
+                            Text("AI").font(.system(size:16,weight:.bold)).foregroundStyle(GymTheme.green)
+                                .frame(width:44,height:44).background(GymTheme.green.opacity(0.12),in:Circle())
+                        }.accessibilityLabel("AI 教练").accessibilityIdentifier("open-coach")
+                    }
                     Button { create = true } label: { Image(systemName:"plus").font(.system(size:20)).foregroundStyle(GymTheme.green).padding(12).background(GymTheme.green.opacity(0.12),in:Circle()) }.accessibilityLabel("新建计划")
                 }
                 if store.userName == nil {
@@ -45,6 +52,7 @@ struct PlanView: View {
                 }
             }.padding(22)
         }.refreshable { await store.refresh() }.sheet(isPresented:$create) { RoutineComposer() }
+            .sheet(isPresented:$coach) { CoachView() }
             .sheet(isPresented:$schedule) { ScheduleEditor() }
             .sheet(isPresented:$rotation) {RotationEditor()}
             .sheet(item:$selected) { routine in RoutineEditor(routine:routine,unit:store.unit) }

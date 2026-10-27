@@ -1,4 +1,5 @@
 .build/
+.build-se/
 artifacts/
 *.xcuserstate
 xcuserdata/

@@ -286,3 +286,31 @@ import Observation
         } catch { localSaveError = "训练草稿读取失败，文件已保留：\(error.localizedDescription)" }
     }
 }
+
+extension GymStore {
+    var coachIdentity: String { serverURL + "|" + (userID ?? "") }
+    /// The paired session is the only credential used by the native Coach.
+    func coachRequest(_ path: String, method: String = "GET", body: [String: Any]? = nil) async throws -> [String: Any] {
+        guard let client, client.token != nil, userID != nil else { throw APIError.signIn }
+        let identity = coachIdentity
+        let result = try await client.request(path, method: method, body: body)
+        guard identity == coachIdentity else { throw CancellationError() }
+        return result
+    }
+    func waitForCoachIdle() async throws {
+        for _ in 0..<50 {
+            try Task.checkCancellation()
+            if !loading && !syncing { return }
+            try await Task.sleep(for:.milliseconds(100))
+        }
+        throw APIError.busy
+    }
+    func refreshCoachState() async throws {
+        try await waitForCoachIdle()
+        guard !loading, !syncing else { throw APIError.busy }
+        loading = true; defer { loading = false }
+        let result = try await coachRequest("api/data")
+        guard let document = result["state"] as? [String: Any] else { throw APIError.invalidResponse }
+        state = document; cacheProfile(); lastSync = Date()
+    }
+}

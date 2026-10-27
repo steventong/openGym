@@ -30,3 +30,4 @@ export function repairHistory(input) {
   return JSON.stringify(state);
 }
 export * from './advanced.js';
+export * from './coach.js';
