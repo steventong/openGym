@@ -16,7 +16,7 @@ struct AdvancedConfigEditor: View {
             Form {
                 Section("记录方式") {
                     if cardio { Label("有氧 · 时长与速度",systemImage:"figure.run") }
-                    else { Picker("方式",selection:Binding(get:{mode},set:{config["mode"] = $0})) { Text("次数").tag("reps");Text("计时").tag("time") }.pickerStyle(.segmented).accessibilityIdentifier("advanced-mode") }
+                    else { Picker("方式",selection:Binding(get:{mode},set:{config["mode"] = $0;config.removeValue(forKey:"prog")})) { Text("次数").tag("reps");Text("计时").tag("time") }.pickerStyle(.segmented).accessibilityIdentifier("advanced-mode") }
                     field("组数",key:"sets",fallback:3)
                     if mode == "cardio" { field("每组分钟",key:"min",fallback:20);field(unit == "lb" ? "速度（mph）" : "速度（km/h）",key:"speed",fallback:8) }
                     else if mode == "time" { field("每组秒数",key:"sec",fallback:45);field("附加重量（\(unit)）",key:"weight",fallback:0) }
@@ -64,10 +64,11 @@ struct AdvancedConfigEditor: View {
                         }
                     }
                 }
+                ProgressionOptions(config:$config,mode:mode,unit:unit)
                 if mode != "cardio" && pyramid.isEmpty { Section { Toggle("最后一组力竭 / AMRAP",isOn:flag("lastToFailure")) } }
             }.navigationTitle("高级组型").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement:.topBarLeading) { Button("取消") { dismiss() } };ToolbarItem(placement:.topBarTrailing) { Button("完成") {
-                    do { var c = config;c["mode"] = mode;let next = try WebRules.shared.call("advancedConfig",payload:["config":c]) as! [String:Any];save(next);dismiss() } catch { self.error = error.localizedDescription }
+                    do { var c = config;c["mode"] = mode;for key in ["inc","repsMin","setsMax","deloadFactor"] { if let text = c[key] as? String { guard let n = TrainingInput.value(text) else { throw APIError.response(0,"请填完进阶参数。") };c[key] = n } }; _ = try WebRules.shared.call("validatePersonalConfig",payload:["config":c]);let next = try WebRules.shared.call("advancedConfig",payload:["config":c]) as! [String:Any];save(next);dismiss() } catch { self.error = error.localizedDescription }
                 }.accessibilityIdentifier("advanced-config-done") } }
                 .alert("无法应用",isPresented:Binding(get:{error != nil},set:{if !$0 { error = nil }})) { Button("知道了",role:.cancel) {} } message:{Text(error ?? "")}
         }.tint(GymTheme.green)

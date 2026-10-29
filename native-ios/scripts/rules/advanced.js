@@ -1,11 +1,14 @@
 import {buildCombinedEntries,deriveSessionName} from '../../../frontend/src/lib/session-merge.js';
 import {buildCompletedWorkout,sessionEnd} from '../../../frontend/src/lib/finish-workout.js';
-import {defaultConfig,modeOf,lastEntryFor,setLabel,workoutVolume,bestWeightForEntry,bestWeightFor,cleanupSg,pairAdjacent,unpairSuperset,supersetUnits,doneUnits,setUnitsTotal,setsDoneActive,copyRowAt,moveRoutineEntry,canBeWarmup} from '../../../frontend/src/lib/history.js';
-import {registerCustom,beatsWeight} from '../../../frontend/src/lib/exercises.js';
+import {defaultConfig,modeOf,lastEntryFor,setLabel,workoutVolume,bestWeightForEntry,bestWeightFor,cleanupSg,pairAdjacent,unpairSuperset,supersetUnits,doneUnits,setUnitsTotal,setsDoneActive,copyRowAt,setSpanAt,moveRoutineEntry,canBeWarmup} from '../../../frontend/src/lib/history.js';
+import {registerCustom,beatsWeight,EXIDX} from '../../../frontend/src/lib/exercises.js';
 import {normalizePyramid,flatFromPyramid,normalizePyramidRest,normalizePyramidWeight,pyramidRestFor} from '../../../frontend/src/lib/pyramid.js';
 import * as M from '../../../frontend/src/lib/workout-model.js';
 import {restSecFor,warmupRestSecFor,supersetFlowStep,nextUnfinishedUnit,restAfterSet,setProgressHighWater,restOnRecheck} from '../../../frontend/src/lib/supersetFlow.js';
-import {entryDbLoad} from '../../../frontend/src/lib/dumbbells.js';
+import {entryDbLoad,ownedWeightsFor,stepOwned} from '../../../frontend/src/lib/dumbbells.js';
+import {weightIncrement,stepWeight} from '../../../frontend/src/lib/progression.js';
+import {repStep,copySpanAt} from '../../../frontend/src/lib/history.js';
+import {clampIncline,inclineFits} from '../../../frontend/src/lib/incline.js';
 import {dropGrid} from '../../../frontend/src/lib/plates.js';
 import {saveRotation,chooseFixedWeek,chooseRotation,startNewPass,stopPass,refillAfter,scheduleModeOf} from '../../../frontend/src/lib/rotation.js';
 import {queueView,queueOf} from '../../../frontend/src/lib/queue.js';
@@ -37,8 +40,8 @@ export function advancedConfig(input) {
 export function planGroup(input){const {rows,operation,index,direction}=JSON.parse(input);let next=rows;if(operation==='pair')next=pairAdjacent(rows,index,index+1);else if(operation==='unpair')next=unpairSuperset(rows,index);else if(operation==='move')next=moveRoutineEntry(rows,index,direction)||rows;cleanupSg(next);return JSON.stringify(next);}
 export function beginAdvanced(input){
  const {state,ids,id,now,day}=JSON.parse(input),s=defaults(state),built=buildCombinedEntries(s,ids);
- if(!built.entries.length)throw Error('计划没有可训练的动作。');
- return JSON.stringify({id,d:day,start:now,name:deriveSessionName(built.routines.map(r=>r.name)),routineIds:built.routineIds,routineId:built.routineIds[0],entries:built.entries,bw:s.bodyweight.at(-1)?.w??null,cur:0});
+ if(ids.length&&!built.entries.length)throw Error('计划没有可训练的动作。');
+ return JSON.stringify({id,d:day,start:now,name:ids.length?deriveSessionName(built.routines.map(r=>r.name)):'自由训练',routineIds:built.routineIds,routineId:built.routineIds[0]??null,entries:built.entries,bw:s.bodyweight.at(-1)?.w??null,cur:0});
 }
 export function finishAdvanced(input){
  const {state,active,now,today}=JSON.parse(input),s=defaults(state);
@@ -48,13 +51,14 @@ export function finishAdvanced(input){
  for(const entry of w.entries){const top=bestWeightForEntry(entry);const before=bestWeightFor(s,entry.id,entryDbLoad(entry));if(beatsWeight(entry.id,top,before))w.prs.push(entry.id);if(beatsWeight(entry.id,top,s.exWeights[entry.id]?.w||0))s.exWeights[entry.id]={w:top,d:w.d};}
  w.prs=[...new Set(w.prs)];w.vol=workoutVolume(w);s.workouts.push(w);s.workouts.sort((a,b)=>(a.d||'').localeCompare(b.d||'')||(a.start||0)-(b.start||0));refillAfter(s,w,today,now);delete s.active;return JSON.stringify(s);
 }
-export function rowInfo(input){const {row,target={}}=JSON.parse(input);return JSON.stringify({mode:M.modeForSet(row,target),side:M.isSideSet(row),warmup:M.isWarmupRow(row),type:M.setType(row),completed:M.hasCompletedWork(row),canWarmup:canBeWarmup(row)});}
+export function rowInfo(input){const {row,target={}}=JSON.parse(input);return JSON.stringify({mode:M.modeForSet(row,target),side:M.isSideSet(row),warmup:M.isWarmupRow(row),type:M.setType(row),completed:M.hasCompletedWork(row),canWarmup:canBeWarmup(row),incline:row.incline!=null||inclineFits(EXIDX[target.id])});}
 export function sessionInfo(input){const {active}=JSON.parse(input);return JSON.stringify({done:active.entries.reduce((n,e)=>n+e.sets.reduce((v,s)=>v+doneUnits(s),0),0),total:setUnitsTotal(active.entries),completed:setsDoneActive(active),volume:workoutVolume(active)});}
 export function editAdvancedRow(input){
  const {row,action,key,value,side,index,patch={},state={},target={},editing=false,now=Date.now()}=JSON.parse(input);let next=structuredClone(row);const grid=dropGrid(defaults(state),target);
  if(action==='field'){
-   if(side) next=M.setSideField(next,side,key,value);
-   else {if(value==null)delete next[key];else next[key]=value;}
+   const fieldValue=key==='incline'?clampIncline(value):value;
+   if(side) next=M.setSideField(next,side,key,fieldValue);
+   else {if(fieldValue==null)delete next[key];else next[key]=fieldValue;}
    if(key==='rir'||key==='rpe'){const other=key==='rir'?'rpe':'rir';if(side){next=M.setSideField(next,side,other,null)}else delete next[other];}
  } else if(action==='toggle'){
    if(side)next=M.toggleSide(next,side);else next.done=!next.done;
@@ -102,7 +106,50 @@ export function rotationChange(input){
  delete s.active;return JSON.stringify(s);
 }
 
-export function copyAdvancedSet(input){const {sets}=JSON.parse(input);return JSON.stringify(sets.length?copyRowAt(sets,sets.length-1):[{w:0,r:10,done:false}]);}
+export function copyAdvancedSet(input){
+ const {sets,editing=false,target={}}=JSON.parse(input);
+ const mode=M.modeForSet({},target);
+ const empty=mode==='time'?{w:target.weight||0,sec:target.sec||45,mode,done:false}:mode==='cardio'?{min:target.min||10,speed:target.speed||0,mode,done:false}:{w:target.weight||0,r:target.reps||10,mode:'reps',phase:'work',done:false};
+ const initial=target.side&&mode==='time'?[{...empty,side:'L'},{...empty,side:'R'}]:[target.side&&mode==='reps'?M.makeSideSet(empty):empty];
+ const next=sets.length?copyRowAt(sets,sets.length-1):initial;
+ for(const row of next.slice(sets.length)) {
+   // Literal input caches belong to the original row, including any deleted sub-rows.
+   delete row._nativeInputs;
+   if(editing){row.done=true;if(row.sides)for(const side of Object.values(row.sides))side.done=true;}
+ }
+ return JSON.stringify(next);
+}
+// Copy exactly the selected span; untouched rows retain their literal input caches.
+export function copySelectedSet(input){
+ const {sets,index,editing=false}=JSON.parse(input);
+ if(!Number.isInteger(index)||!sets[index])throw Error('训练组不存在。');
+ const {start,end}=copySpanAt(sets,index),at=end+1,count=end-start+1;
+ const next=copyRowAt(sets,index);
+ for(const row of next.slice(at,at+count)) {
+   delete row._nativeInputs;
+   if(editing){row.done=true;if(row.sides)for(const side of Object.values(row.sides))side.done=true;}
+ }
+ return JSON.stringify({sets:next,at,count});
+}
+// Values and increments here are in the displayed unit, including equipment inventories.
+export function stepTrainingValue(input){
+ const {value,key,direction,target={},state={},unit=state.unit||'kg',side}=JSON.parse(input);
+ const s=defaults(state),cfg={...target};
+ if(key==='w') {
+   if(cfg.inc>0&&unit!==s.unit)cfg.inc*=unit==='lb'?1/0.45359237:0.45359237;
+   const owned=ownedWeightsFor({...s,unit},cfg);
+   return JSON.stringify({value:owned?stepOwned(owned,value,direction):stepWeight(value,weightIncrement(cfg,unit),direction)});
+ }
+ const step=key==='sec'?5:['speed','incline','rpe'].includes(key)?0.5:key==='r'&&!side?repStep(cfg):1;
+ const max=key==='incline'?40:['rir','rpe'].includes(key)?10:Infinity;
+ return JSON.stringify({value:Math.min(max,Math.max(0,Math.round((value+direction*step)*100)/100))});
+}
+export function removeAdvancedSet(input){
+ const {sets,index}=JSON.parse(input);
+ if(!Number.isInteger(index)||!sets[index])throw Error('训练组不存在。');
+ const [start,count]=setSpanAt(sets,index),next=sets.slice();next.splice(start,count);
+ return JSON.stringify({sets:next,start,count,highWater:setProgressHighWater({sets:next}).highWater});
+}
 
 export function previousExercise(input) {
  const {state,id,rid,before=Infinity,exclude}=JSON.parse(input),s=defaults(state);

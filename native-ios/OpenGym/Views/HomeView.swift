@@ -3,6 +3,7 @@ import Charts
 struct HomeView: View {
     @Environment(GymStore.self) private var store
     @State private var weightSheet = false
+    @State private var dayNote = false
     @State private var weekOffset = 0
     @State private var selectedDay = Calendar.current.startOfDay(for:Date())
     private var days: [Date] {
@@ -56,9 +57,22 @@ struct HomeView: View {
                     Text(store.draft?.name ?? (scheduled.isEmpty ? "休息日" : scheduled.map(\.name).joined(separator:" + "))).font(.system(size:29,weight:.bold))
                     Text(store.draft != nil ? "你的训练仍在进行，随时继续。" : routine.map { _ in "\(scheduled.flatMap(\.exercises).count) 个动作 · 按自己的节奏训练" } ?? "给身体一点恢复时间，也可以选择其他训练。").font(.system(size:13)).foregroundStyle(GymTheme.muted)
                     GreenButton(title:store.draft != nil ? "继续训练" : routine != nil ? "开始训练" : "选择训练",icon:"play.fill") {
-                        if store.draft != nil { store.selectedTab = 2 } else if routine != nil { store.start(scheduled) } else { store.selectedTab = 1 }
+                        if store.draft != nil { store.selectedTab = 2 } else if routine != nil { store.start(scheduled) } else { store.selectedTab = 2 }
+                    }
+                    if store.draft == nil {
+                        Button { store.startFreestyle() } label: {
+                            Label("自由训练", systemImage: "figure.strengthtraining.traditional")
+                                .frame(maxWidth: .infinity, minHeight: 44)
+                        }.foregroundStyle(GymTheme.green).disabled(store.syncing)
+                            .accessibilityIdentifier("home-start-freestyle-workout")
                     }
                 }.gymCard()
+                if selectedDay <= Date() {
+                    Button {dayNote = true} label: {Label("当天备注",systemImage:"note.text").frame(maxWidth:.infinity,minHeight:44)}
+                    if let note = (store.state["dayNotes"] as? [String:Any])?[dayString(selectedDay)] as? [String:Any] {
+                        Text([note["tag"] as? String ?? "",note["text"] as? String ?? ""].filter{!$0.isEmpty}.joined(separator:" · ")).font(.caption).foregroundStyle(GymTheme.muted)
+                    }
+                }
                 if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
                 HStack { SectionTitle(text:"体重"); Button("记录") { weightSheet = true }.font(.system(size:13,weight:.medium)) }
                 VStack(alignment:.leading,spacing:15) {
@@ -79,7 +93,7 @@ struct HomeView: View {
                     stat("\(store.exercises.count)","动作库")
                 }.gymCard()
             }.padding(22)
-        }.refreshable { await store.refresh() }.sheet(isPresented:$weightSheet) { WeightEntryView() }
+        }.refreshable { await store.refresh() }.sheet(isPresented:$dayNote) {DayNoteEditor(date:selectedDay)}.sheet(isPresented:$weightSheet) { WeightEntryView() }
     }
     private func stat(_ value:String,_ label:String) -> some View {
         VStack(spacing:6) { Text(value).font(.system(size:22,weight:.semibold,design:.rounded)); Text(label).font(.system(size:11)).foregroundStyle(GymTheme.muted) }.frame(maxWidth:.infinity)

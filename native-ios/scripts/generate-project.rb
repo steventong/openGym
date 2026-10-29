@@ -32,3 +32,6 @@ scheme.add_build_target(app)
 scheme.set_launch_target(app)
 scheme.add_test_target(tests)
 scheme.save_as(root+'/OpenGym.xcodeproj', 'OpenGym', true)
+
+# Add the companion-only watch remote and shared transport models.
+require_relative 'configure-watch'

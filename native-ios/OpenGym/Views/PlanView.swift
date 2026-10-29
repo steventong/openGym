@@ -2,6 +2,7 @@ import SwiftUI
 struct PlanView: View {
     @Environment(GymStore.self) private var store
     @State private var create = false
+    @State private var tools = false
     @State private var coach = false
     @State private var schedule = false
     @State private var rotation = false
@@ -34,6 +35,7 @@ struct PlanView: View {
                     Button {rotation = true} label:{HStack {Label("循环排期",systemImage:"repeat");Spacer();Text("顺序 / 进度").font(.caption);Image(systemName:"chevron.right")}.foregroundStyle(GymTheme.green).gymCard()}.accessibilityIdentifier("open-rotation")
                     if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
                 }
+                Button { tools = true } label: { Label("模板与计划导入 / 导出",systemImage:"square.and.arrow.up").frame(maxWidth:.infinity,minHeight:44) }.accessibilityIdentifier("open-plan-tools")
                 ForEach(store.routines) { routine in
                     VStack(alignment:.leading,spacing:16) {
                         Button { selected = routine } label: {
@@ -47,11 +49,13 @@ struct PlanView: View {
                             ForEach(Array(routine.exercises.prefix(4).enumerated()),id:\.offset) { _, cfg in ExerciseThumbnail(id:cfg["id"] as? String ?? "",size:52) }
                             Spacer()
                         }
+                        Button("复制计划") { let id = UUID().uuidString;Task { _ = await store.copyRoutine(routine,newID:id) } }.font(.caption).disabled(store.syncing)
                         GreenButton(title:"开始训练",icon:"play.fill") { store.start(routine) }
                     }.gymCard()
                 }
             }.padding(22)
         }.refreshable { await store.refresh() }.sheet(isPresented:$create) { RoutineComposer() }
+            .sheet(isPresented:$tools) { PlanToolsView() }
             .sheet(isPresented:$coach) { CoachView() }
             .sheet(isPresented:$schedule) { ScheduleEditor() }
             .sheet(isPresented:$rotation) {RotationEditor()}

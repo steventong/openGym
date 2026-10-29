@@ -4,12 +4,12 @@ import Observation
 @MainActor @Observable final class GymStore {
     private(set) var exercises: [Exercise] = []
     var catalogueError: String?
-    var state: [String: Any] = [:] { didSet { rebuildExerciseIndex() } }
+    var state: [String: Any] = [:] { didSet { rebuildExerciseIndex(); watchBridge?.publish() } }
     var serverURL = UserDefaults.standard.string(forKey: "serverURL") ?? "http://localhost:8080"
     var userName: String?
-    var userID: String?
+    var userID: String? { didSet { watchBridge?.publish() } }
     var online = false
-    var syncing = false
+    var syncing = false { didSet { watchBridge?.publish() } }
     var status = "正在连接服务…"
     var error: String?
     var editError: String?
@@ -17,7 +17,8 @@ import Observation
     var selectedTab = 0
     var showSettings = false
     var selectedExercise: Exercise?
-    var draft: TrainingDraft? { didSet { persistDraft() } }
+    var draft: TrainingDraft? { didSet { persistDraft(); watchBridge?.publish() } }
+    @ObservationIgnored var watchBridge: PhoneWatchBridge?
     var localSaveIssues: [String: String] = [:]
     var localSaveError: String? {
         get { localSaveIssues.sorted { $0.key < $1.key }.first?.value }
@@ -214,10 +215,14 @@ import Observation
     func start(_ routine: Routine) { start([routine]) }
     func start(_ selected: [Routine]) {
         guard !selected.isEmpty else { return }
+        startSession(routineIDs: selected.map(\.id))
+    }
+    func startFreestyle() { startSession(routineIDs: []) }
+    private func startSession(routineIDs: [String]) {
         guard draft == nil else { selectedTab = 2; return }
         guard userName != nil else { showSettings = true; return }
         do {
-            let raw = try WebRules.shared.call("beginAdvanced",payload:["state":state,"ids":selected.map(\.id),"id":UUID().uuidString,"now":Date().timeIntervalSince1970*1000,"day":dayString()]) as! [String:Any]
+            let raw = try WebRules.shared.call("beginAdvanced",payload:["state":state,"ids":routineIDs,"id":UUID().uuidString,"now":Date().timeIntervalSince1970*1000,"day":dayString()]) as! [String:Any]
             draft = try TrainingDraft.fromWeb(raw,unit:unit);selectedTab = 2
         } catch { self.error = error.localizedDescription }
     }
@@ -252,6 +257,19 @@ import Observation
             do { try localStorage.write(["draft":try JSONSerialization.jsonObject(with:JSONEncoder().encode(snapshot))],to:folder.appendingPathComponent("archive/live-\(snapshot.id).json")) }
             catch { localSaveError = error.localizedDescription; return }
             self.draft = nil; selectedTab = 3
+        }
+    }
+    func deleteCurrentWorkout() {
+        guard !syncing, draft != nil else { return }
+        guard let url = draftURL else { error = "尚未识别账号，无法删除本次训练。"; return }
+        do {
+            // Persist an empty document first: a failed write must keep the live input,
+            // and an absent file would allow restoreDraft to adopt a legacy draft.
+            try localStorage.write([:], to: url)
+            draft = nil
+            selectedTab = 2
+        } catch {
+            self.error = "删除训练失败，本次训练已保留：\(error.localizedDescription)"
         }
     }
     func updateSet(entry: Int, set: Int, _ change: (inout TrainingSet) -> Void) {

@@ -31,3 +31,7 @@ export function repairHistory(input) {
 }
 export * from './advanced.js';
 export * from './coach.js';
+export * from './exercise-management.js';
+export * from './training-operations.js';
+
+export * from './personal.js';

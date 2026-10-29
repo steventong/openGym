@@ -8,3 +8,5 @@ xcuserdata/
 node_modules/
 
 .build-release/
+
+.build-personal/

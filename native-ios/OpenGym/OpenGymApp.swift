@@ -13,6 +13,7 @@ import SwiftUI
     let store = GymStore()
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         store.prepareOfflineLaunch()
+        store.watchBridge = PhoneWatchBridge(store: store)
         return true
     }
 }
@@ -39,9 +40,12 @@ struct RootView: View {
             .alert("openGym",isPresented:Binding(get:{store.error != nil},set:{if !$0 { store.error = nil }})) {
                 Button("知道了",role:.cancel) { store.error = nil }
             } message: { Text(store.error ?? "") }
-            .onChange(of:scenePhase) { _, phase in if phase == .active { Task { await store.refresh(); await store.healthSync.resume() } } }
+            .onChange(of:store.draft?.id,initial:true) { _,_ in updateWake() }
+            .onChange(of:store.state["keepAwake"] as? Bool) { _,_ in updateWake() }
+            .onChange(of:scenePhase) { _, phase in updateWake();if phase == .active { Task { await store.refresh(); await store.healthSync.resume() } } }
             .task { while !Task.isCancelled { try? await Task.sleep(for:.seconds(30)); if !Task.isCancelled { await store.refresh(); await store.healthSync.resume() } } }
     }
+    private func updateWake() { UIApplication.shared.isIdleTimerDisabled = scenePhase == .active && store.draft != nil && store.state["keepAwake"] as? Bool != false }
     private var tabBar: some View {
         HStack(alignment:.bottom,spacing:0) {
             tab(0,"首页","house")

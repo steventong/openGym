@@ -29,6 +29,8 @@ struct RoutineEditor: View {
                             HStack {
                                 ExerciseThumbnail(id:row.raw["id"] as? String ?? "",size:46)
                                 Text(store.exercise(row.raw["id"] as? String ?? "")?.name ?? row.raw["id"] as? String ?? "动作").font(.headline)
+                                Spacer()
+                                RoutineExerciseReplacement(slot: $row.raw, routineID: original["id"] as? String ?? "")
                             }
                             if EditValidation.ordinaryConfig(row.raw) {
                                 HStack {
@@ -101,15 +103,24 @@ struct ExercisePicker: View {
     @Environment(GymStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var search = ""
+    @State private var available:Set<String>?
+    @State private var favouritesOnly = false
+    private var choices:[Exercise] {
+        let favourites = store.favouriteIDs
+        let matching = store.exercises.filter {(search.isEmpty || $0.searchText.localizedCaseInsensitiveContains(search)) && (!favouritesOnly || favourites.contains($0.id)) && (available == nil || available!.contains($0.id))}
+        return matching.filter {favourites.contains($0.id)} + matching.filter {!favourites.contains($0.id)}
+    }
+    var title = "添加动作"
     let select:(Exercise)->Void
     var body: some View {
         NavigationStack {
             List {
                 TextField("搜索动作",text:$search).accessibilityIdentifier("picker-search")
-                ForEach(Array(store.exercises.filter { search.isEmpty || $0.searchText.localizedCaseInsensitiveContains(search) }.prefix(60))) { ex in
+                Toggle("只看收藏",isOn:$favouritesOnly)
+                ForEach(Array(choices.prefix(60))) { ex in
                     Button { select(ex) } label: { HStack { ExerciseThumbnail(id:ex.id,size:45); Text(ex.name).font(.subheadline).foregroundStyle(.primary); Spacer(); Image(systemName:"plus") } }.accessibilityIdentifier("pick-\(ex.id)")
                 }
-            }.navigationTitle("添加动作").navigationBarTitleDisplayMode(.inline).toolbar { ToolbarItem(placement:.topBarTrailing) { Button("取消") { dismiss() } } }
+            }.onAppear {if store.state["equipFilterOn"] as? Bool == true {available = ((try? store.personalInfo("equipment"))?["available"] as? [String]).map {Set($0)}}}.navigationTitle(title).navigationBarTitleDisplayMode(.inline).toolbar { ToolbarItem(placement:.topBarTrailing) { Button("取消") { dismiss() } } }
         }
     }
 }

@@ -3,6 +3,8 @@ struct StatsView: View {
     @Environment(GymStore.self) private var store
     @State private var editing: WorkoutRecord?
     @State private var historyLimit = 30
+    @State private var analytics = false
+    @State private var search = ""
     private var completedSets: [[String:Any]] {
         store.workouts.flatMap { $0["entries"] as? [[String:Any]] ?? [] }.flatMap { $0["sets"] as? [[String:Any]] ?? [] }.flatMap { row -> [[String:Any]] in if let sides = row["sides"] as? [String:[String:Any]] {return [sides["L"],sides["R"]].compactMap{$0}};return [row] }.filter { $0["done"] as? Bool == true }
     }
@@ -27,9 +29,12 @@ struct StatsView: View {
                 if !store.bodyweights.isEmpty {
                     VStack(alignment:.leading,spacing:18) { SectionTitle(text:"体重趋势"); WeightChart(points:store.bodyweights).frame(height:140) }.gymCard()
                 }
+                Button { analytics = true } label: { Label("动作进步、肌群与身体指标",systemImage:"chart.xyaxis.line").frame(maxWidth:.infinity,minHeight:44) }.gymCard().accessibilityIdentifier("open-personal-analytics")
                 SectionTitle(text:"训练记录")
+                TextField("搜索训练名称、日期、动作",text:$search).textFieldStyle(.roundedBorder)
+
                 if store.workouts.isEmpty { EmptyCard(icon:"chart.line.uptrend.xyaxis",title:"进步，从第一组开始",detail:"完成一场训练后，这里会展示你的真实记录。") }
-                ForEach(Array(store.workouts.prefix(historyLimit).enumerated()),id:\.offset) { _, workout in
+                ForEach(Array(store.workouts.filter { search.isEmpty || historyMatches($0) }.prefix(historyLimit).enumerated()),id:\.offset) { _, workout in
                     VStack(alignment:.leading,spacing:13) {
                         HStack { Text(workout["name"] as? String ?? "训练").font(.headline); Spacer(); Button { editing = WorkoutRecord(raw:workout) } label: { Label("编辑",systemImage:"pencil").font(.caption) }.accessibilityIdentifier("edit-history-\(WorkoutRecord.key(workout))") }
                         if let local = store.historyEdits[WorkoutRecord.key(workout)] {
@@ -44,11 +49,16 @@ struct StatsView: View {
                             let sets = (entry["sets"] as? [[String:Any]] ?? []).filter(rawCompleted)
                             HStack { Text(store.exercise(entry["id"] as? String ?? "")?.recordLabel(at: index) ?? "\(index + 1).自定义动作").fixedSize(horizontal: false, vertical: true); Spacer(); Text("\(sets.count) 组").foregroundStyle(GymTheme.green) }.font(.system(size:13))
                         }
+                        WorkoutPersonalActions(record:WorkoutRecord(raw:workout))
                     }.gymCard()
                 }
                 if store.workouts.count > historyLimit { Button("更多训练记录") { historyLimit += 30 }.frame(maxWidth:.infinity) }
             }.padding(22)
-        }.refreshable { await store.refresh() }.sheet(item:$editing) { record in HistoryEditor(record:record,unit:store.unit) }
+        }.refreshable { await store.refresh() }.sheet(isPresented:$analytics) { PersonalStatsHub() }.sheet(item:$editing) { record in HistoryEditor(record:record,unit:store.unit) }
+    }
+    private func historyMatches(_ w:[String:Any])->Bool {
+        let text = [w["name"] as? String ?? "",w["d"] as? String ?? "",w["note"] as? String ?? ""] + (w["entries"] as? [[String:Any]] ?? []).map {store.exercise($0["id"] as? String ?? "")?.searchText ?? $0["n"] as? String ?? ""}
+        return text.joined(separator:" ").localizedCaseInsensitiveContains(search)
     }
     private func metric(_ value:String,_ label:String,_ icon:String) -> some View {
         VStack(alignment:.leading,spacing:16) {

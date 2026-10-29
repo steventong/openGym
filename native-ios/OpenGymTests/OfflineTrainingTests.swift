@@ -22,6 +22,65 @@ final class OfflineTrainingTests: XCTestCase {
         ["id":"w1","name":"原训练","d":"2026-10-20","start":1_792_476_000_000.0,"end":1_792_476_060_000.0,
          "entries":[["id":"0289","target":["mode":"reps"],"sets":[["w":15,"r":10,"done":true]]]],"prs":[],"future":"keep"]
     }
+    @MainActor func testFreestyleStartsWithoutPlansAndRestoresEmptyDraft() throws {
+        let first = try store()
+        first.state = ["unit": "lb", "routines": [], "bodyweight": [["w": 150]]]
+        first.startFreestyle()
+        let draft = try XCTUnwrap(first.draft)
+        XCTAssertEqual(draft.name, "自由训练"); XCTAssertEqual(draft.unit, "lb")
+        XCTAssertTrue(draft.rawEntries.isEmpty); XCTAssertNil(draft.routineID)
+        XCTAssertEqual(draft.routineIDs, []); XCTAssertEqual(first.selectedTab, 2)
+        XCTAssertEqual(number(draft.activeJSON["bw"]), 150)
+        let restored = try store(); restored.restoreDraft()
+        XCTAssertEqual(restored.draft?.id, draft.id)
+        XCTAssertTrue(RecordPatch.equal(restored.draft?.activeJSON, draft.activeJSON))
+    }
+    @MainActor func testFreestyleRequiresAccountAndResumesExistingPlan() throws {
+        let s = try store(); s.userName = nil
+        s.startFreestyle()
+        XCTAssertNil(s.draft); XCTAssertTrue(s.showSettings)
+        s.userName = "Test"; s.showSettings = false
+        s.state = ["routines": [["id": "plan", "name": "原计划", "ex": [["id": "0289", "sets": 1, "reps": 8, "weight": 20]]]]]
+        s.start(s.routines[0])
+        let existing = try XCTUnwrap(s.draft)
+        XCTAssertEqual(existing.routineID, "plan")
+        s.selectedTab = 0; s.startFreestyle()
+        XCTAssertTrue(RecordPatch.equal(s.draft?.activeJSON, existing.activeJSON))
+        XCTAssertEqual(s.selectedTab, 2)
+    }
+    @MainActor func testFreestyleAddsExerciseAndSavesWithoutCreditingPlan() async throws {
+        let s = try store()
+        var server: [String: Any] = ["unit": "kg", "routines": [["id": "plan", "name": "计划", "ex": []]],
+            "workouts": [], "week": ["4": ["plan"]], "dayPlan": [dayString(): ["plan"]],
+            "rotation": ["id": "rotation", "sequence": ["plan"]], "scheduleMode": "rotation",
+            "queue": ["ids": ["plan"], "rotationId": "rotation", "startsOn": dayString(), "since": 0]]
+        let original = server
+        s.state = server; s.startFreestyle()
+        let id = try XCTUnwrap(s.draft?.id)
+        s.manageLiveExercise(action: "add", index: 0, id: "0289")
+        XCTAssertEqual(s.draft?.rawEntries.count, 1)
+        XCTAssertNil(s.draft?.rawEntries.first?["rid"])
+        s.liveRowAction(entry: 0, set: 0, action: ["action": "field", "key": "w", "value": 20])
+        s.liveRowAction(entry: 0, set: 0, action: ["action": "field", "key": "r", "value": 8])
+        s.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"])
+        XCTAssertEqual(s.draft?.completedSets, 1)
+        StubProtocol.handler = { request in
+            if request.httpMethod == "GET" { return (200, ["state": server, "rev": 1]) }
+            server = try self.body(request)["state"] as! [String: Any]
+            return (200, ["ok": true])
+        }
+        await s.finish()
+        XCTAssertNil(s.draft); XCTAssertNil(s.error)
+        let saved = try XCTUnwrap((server["workouts"] as? [[String: Any]])?.first)
+        XCTAssertEqual(saved["id"] as? String, id); XCTAssertEqual(saved["name"] as? String, "自由训练")
+        XCTAssertEqual(saved["routineIds"] as? [String], []); XCTAssertTrue(saved["routineId"] is NSNull)
+        XCTAssertEqual(number(saved["vol"]), 160)
+        for key in ["routines", "week", "dayPlan", "rotation", "queue"] {
+            XCTAssertTrue(RecordPatch.equal(server[key], original[key]), key)
+        }
+        let restored = try store(); restored.restoreDraft()
+        XCTAssertNil(restored.draft)
+    }
     @MainActor func testColdOfflineRestartRestoresAccountProfileLiveInputAndHistoryForm() throws {
         let first = try store(), original = workout()
         first.state = ["unit":"kg","workouts":[original],"routines":[]];first.cacheProfile()
@@ -38,6 +97,42 @@ final class OfflineTrainingTests: XCTestCase {
         XCTAssertEqual(second.draft?.id,"active");XCTAssertEqual(second.restEntry,0);XCTAssertNotNil(second.restUntil)
         XCTAssertEqual(((second.draft?.rawEntries[0]["sets"] as? [[String:Any]])?[0][TrainingInput.key] as? [String:String])?["both.w"],"12.")
         XCTAssertTrue(RecordPatch.equal((second.state["workouts"] as? [[String:Any]])?[0],original))
+    }
+    @MainActor func testDeleteCurrentWorkoutClearsTimersAndSurvivesRestart() throws {
+        let s = try store()
+        let state: [String: Any] = ["workouts": [workout()], "routines": [["id": "routine"]]]
+        s.state = state
+        s.draft = try TrainingDraft.fromWeb(["id": "delete-current", "start": 1000,
+            "nativeTimer": ["entry": 0, "set": 0, "end": 9999999999.0],
+            "nativeRest": ["entry": 0, "end": 9999999999.0],
+            "entries": [["id": "0289", "sets": [["w": 25, "r": 15, "done": true]]]]], unit: "kg")
+        s.deleteCurrentWorkout()
+        XCTAssertNil(s.draft); XCTAssertNil(s.workTimer); XCTAssertNil(s.restUntil)
+        XCTAssertTrue(RecordPatch.equal(s.state, state))
+        let restarted = try store(); restarted.restoreDraft()
+        XCTAssertNil(restarted.draft)
+        // Recovery from the previous copy must also keep the deleted workout gone.
+        let url = try XCTUnwrap(s.accountFolder).appendingPathComponent("live-draft.json")
+        try Data("damaged".utf8).write(to: url)
+        let recovered = try store(); recovered.restoreDraft()
+        XCTAssertNil(recovered.draft)
+    }
+    @MainActor func testDeleteCurrentWorkoutRetainsDraftWhenDiskWriteFails() throws {
+        let s = try store()
+        s.draft = try TrainingDraft.fromWeb(["id": "keep-current", "start": 1000, "entries": []], unit: "kg")
+        let folder = try XCTUnwrap(s.accountFolder)
+        try FileManager.default.removeItem(at: folder)
+        try Data([1]).write(to: folder)
+        s.deleteCurrentWorkout()
+        XCTAssertEqual(s.draft?.id, "keep-current"); XCTAssertNotNil(s.error)
+    }
+    @MainActor func testDeleteCurrentWorkoutIsBlockedDuringSubmission() throws {
+        let s = try store()
+        s.draft = try TrainingDraft.fromWeb(["id": "submitting", "start": 1000, "entries": []], unit: "kg")
+        s.syncing = true; s.deleteCurrentWorkout()
+        XCTAssertEqual(s.draft?.id, "submitting")
+        let restarted = try store(); restarted.restoreDraft()
+        XCTAssertEqual(restarted.draft?.id, "submitting")
     }
     func testAtomicStorageRecoveryAndAccountIsolation() throws {
         let storage = LocalTrainingStorage(root:root)
@@ -117,6 +212,80 @@ final class OfflineTrainingTests: XCTestCase {
         s.selectLiveEntry(1);XCTAssertEqual(s.draft?.activeJSON["cur"] as? Int,1);XCTAssertEqual(s.restEntry,0)
         let recovered = try store();recovered.restoreDraft();XCTAssertEqual(recovered.draft?.activeJSON["cur"] as? Int,1);XCTAssertEqual(recovered.restEntry,0)
     }
+    @MainActor func testRemovingLiveSetsPreservesRemainingInputAndRestoresEmptyDraft() throws {
+        let s = try store()
+        let retained: [String: Any] = ["w": 25, "r": 8, "done": false, TrainingInput.key: ["both.w": "25."]]
+        s.draft = try TrainingDraft.fromWeb(["id": "delete-sets", "start": 1000, "cur": 0, "nativeFinishAt": 2000,
+            "entries": [["id": "0289", "target": ["mode": "reps"], "sets": [["w": 10, "r": 8, "done": true], retained]]]], unit: "kg")
+        s.removeLiveSet(entry: 0, set: 0)
+        XCTAssertTrue(RecordPatch.equal(s.draft?.rawEntries[0]["sets"], [retained]))
+        XCTAssertNil(s.draft?.activeJSON["nativeFinishAt"])
+        let restored = try store(); restored.restoreDraft()
+        XCTAssertTrue(RecordPatch.equal(restored.draft?.rawEntries[0]["sets"], [retained]))
+        restored.removeLiveSet(entry: 0, set: 0)
+        XCTAssertEqual((restored.draft?.rawEntries[0]["sets"] as? [[String: Any]])?.count, 0)
+        restored.addLiveSet(entry: 0)
+        let rows = try XCTUnwrap(restored.draft?.rawEntries[0]["sets"] as? [[String: Any]])
+        XCTAssertEqual(rows.count, 1); XCTAssertEqual(rows[0]["done"] as? Bool, false)
+    }
+    @MainActor func testRemovingTimedPairShiftsTimerAndCancelsOnlyItsOwner() throws {
+        let s = try store()
+        let rows: [[String: Any]] = ["L", "R", "L", "R"].map { ["side": $0, "sec": 30, "mode": "time", "done": false] }
+        s.draft = try TrainingDraft.fromWeb(["id": "timer-delete", "start": 1000,
+            "entries": [["id": "0289", "sets": rows], ["id": "1047", "sets": [["r": 8, "done": false]]]]], unit: "kg")
+        s.startWorkTimer(entry: 0, set: 3); s.pauseWorkTimer()
+        s.removeLiveSet(entry: 1, set: 0)
+        XCTAssertEqual(s.workTimer?["set"] as? Int, 3)
+        s.removeLiveSet(entry: 0, set: 0)
+        XCTAssertEqual((s.draft?.rawEntries[0]["sets"] as? [[String: Any]])?.count, 2)
+        XCTAssertEqual(s.workTimer?["set"] as? Int, 1)
+        XCTAssertEqual(s.workTimer?["paused"] as? Bool, true)
+        let restored = try store(); restored.restoreDraft()
+        XCTAssertEqual(restored.workTimer?["set"] as? Int, 1)
+        restored.removeLiveSet(entry: 0, set: 1)
+        XCTAssertNil(restored.workTimer); restored.settleTimer()
+        XCTAssertEqual((restored.draft?.rawEntries[0]["sets"] as? [[String: Any]])?.count, 0)
+    }
+    @MainActor func testRemovingSetAdjustsRestOwnerAndAllowsNewCompletionRest() throws {
+        let s = try store(); s.state = ["restSec": 90]
+        let rows: [[String: Any]] = [["r": 8, "done": true], ["r": 8, "done": true], ["r": 8, "done": false]]
+        s.draft = try TrainingDraft.fromWeb(["id": "rest-delete", "start": 1000, "nativeHighWater": ["0": 2],
+            "entries": [["id": "0289", "sets": rows], ["id": "1047", "sets": [["r": 8, "done": false]]]]], unit: "kg")
+        s.startRest(entry: 0, seconds: 90, set: 1)
+        s.removeLiveSet(entry: 0, set: 0)
+        XCTAssertEqual((s.draft?.activeJSON["nativeRest"] as? [String: Any])?["set"] as? Int, 0)
+        s.removeLiveSet(entry: 0, set: 0)
+        XCTAssertNil(s.restUntil)
+        s.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"])
+        XCTAssertEqual(s.restEntry, 0); XCTAssertNotNil(s.restUntil)
+    }
+    @MainActor func testHistoryAndLiveUseSameSetShapeAndPairedRemoval() throws {
+        let sets: [[String: Any]] = ["L", "R"].map { ["side": $0, "sec": 30, "mode": "time", "done": true, TrainingInput.key: ["both.sec": "30."]] }
+        var entry = HistoryEntryDraft(["id": "0289", "target": ["mode": "time", "sec": 30, "side": true], "sets": sets])
+        let originalIDs = entry.sets.map(\.id)
+        try entry.addSet()
+        XCTAssertEqual(entry.sets.count, 4)
+        XCTAssertEqual(Array(entry.sets.prefix(2)).map(\.id), originalIDs)
+        XCTAssertEqual(entry.sets.map { $0.raw["side"] as? String }, ["L", "R", "L", "R"])
+        XCTAssertTrue(entry.sets.allSatisfy { $0.raw["done"] as? Bool == true })
+        XCTAssertNil(entry.sets[2].raw[TrainingInput.key]); XCTAssertNotNil(entry.sets[0].raw[TrainingInput.key])
+        try entry.removeSet(id: entry.sets[3].id)
+        XCTAssertEqual(entry.sets.map(\.id), originalIDs)
+        try entry.removeSet(id: entry.sets[0].id)
+        XCTAssertTrue(entry.sets.isEmpty)
+        try entry.addSet()
+        XCTAssertEqual(entry.sets.count, 2)
+        XCTAssertEqual(entry.sets.map { $0.raw["side"] as? String }, ["L", "R"])
+        XCTAssertEqual(entry.sets[0].raw["mode"] as? String, "time")
+        XCTAssertEqual(number(entry.sets[0].raw["sec"]), 30)
+        let s = try store()
+        s.draft = try TrainingDraft.fromWeb(["id": "copy", "start": 1000, "entries": [["id": "0289", "sets": sets]]], unit: "kg")
+        s.addLiveSet(entry: 0)
+        let liveRows = try XCTUnwrap(s.draft?.rawEntries[0]["sets"] as? [[String: Any]])
+        XCTAssertEqual(liveRows.count, 4)
+        XCTAssertTrue(liveRows.suffix(2).allSatisfy { $0["done"] as? Bool == false })
+        XCTAssertNil(liveRows[2][TrainingInput.key])
+    }
     @MainActor func testPreviousExerciseUsesExactGymIDAndOnlyEarlierCompletedWork() throws {
         let s = try store()
         let custom:[String:Any] = ["id":"gym-a","n":"Bench · Gym A","eq":"dumbbell","bp":"chest"]
@@ -172,6 +341,65 @@ final class OfflineTrainingTests: XCTestCase {
         StubProtocol.handler = { _ in XCTFail("Incomplete input must never be sent");throw URLError(.cancelled) }
         let saved = await s.submitHistoryEdit("w1");XCTAssertFalse(saved);XCTAssertNotNil(s.historyEdits["w1"])
     }
+    @MainActor func testEquipmentWeightUnitRoundTripsWithoutChangingStoredLoad() throws {
+        let original: [String: Any] = ["w": 20, "r": 8, "done": true, TrainingInput.key: ["both.w": "20.", "both.r": "8"]]
+        var row = original
+        for _ in 0..<20 {
+            row = try TrainingInput.edit(row: row, action: ["action": "weightUnit", "unit": "lb"], target: [:], state: ["unit": "kg"], editing: false)
+            XCTAssertEqual(TrainingInput.weightDisplay(row, path: "both.w", value: number(row["w"]), storedUnit: "kg"), "44.09")
+            row = try TrainingInput.edit(row: row, action: ["action": "weightUnit", "unit": "kg"], target: [:], state: ["unit": "kg"], editing: false)
+        }
+        XCTAssertEqual(number(row["w"]), 20)
+        XCTAssertEqual(row["done"] as? Bool, true)
+        XCTAssertEqual((row[TrainingInput.key] as? [String: String])?["both.r"], "8")
+        let blank = ["w": 20, TrainingInput.key: ["both.w": ""]] as [String: Any]
+        XCTAssertThrowsError(try TrainingInput.edit(row: blank, action: ["action": "weightUnit", "unit": "lb"], target: [:], state: [:], editing: false))
+    }
+
+    @MainActor func testMixedEquipmentUnitsSaveCorrectVolumeAndRestoreSelection() throws {
+        let s = try store()
+        s.state = ["unit": "kg", "workouts": [], "routines": []]
+        let active: [String: Any] = ["id": "units", "name": "不同器械", "d": "2026-10-29", "start": 1000,
+            "entries": [["id": "0025", "sets": [["w": 20, "r": 10, "done": true]]],
+                        ["id": "0025", "sets": [["w": 20, "r": 10, "done": true]]]]]
+        s.draft = try TrainingDraft.fromWeb(active, unit: "kg")
+        s.liveRowAction(entry: 1, set: 0, action: ["action": "weightUnit", "unit": "lb"])
+        s.liveRowAction(entry: 1, set: 0, action: ["action": "input", "path": "both.w", "text": "100", "operation": ["action": "field", "key": "w"]])
+        let restored = try store()
+        restored.restoreLocalTraining()
+        let draft = try XCTUnwrap(restored.draft)
+        let kg = (draft.rawEntries[0]["sets"] as! [[String: Any]])[0]
+        let lb = (draft.rawEntries[1]["sets"] as! [[String: Any]])[0]
+        XCTAssertEqual(TrainingInput.weightUnit(kg, fallback: "kg"), "kg")
+        XCTAssertEqual(TrainingInput.weightUnit(lb, fallback: "kg"), "lb")
+        XCTAssertEqual(number(lb["w"]), 45.359237, accuracy: 0.000001)
+        XCTAssertEqual(TrainingInput.weightDisplay(lb, path: "both.w", value: number(lb["w"]), storedUnit: "kg"), "100")
+        let saved = try WebRules.shared.call("finishAdvanced", payload: ["state": s.state, "active": TrainingInput.clean(draft.activeJSON), "now": 61000, "today": "2026-10-29"]) as! [String: Any]
+        let workout = (saved["workouts"] as! [[String: Any]])[0]
+        XCTAssertEqual(number(workout["vol"]), 653.59237, accuracy: 0.00001)
+        let form = HistoryForm(original: workout, unit: "kg")
+        XCTAssertEqual(TrainingInput.weightUnit(form.entries[1].sets[0].raw, fallback: "kg"), "lb")
+        XCTAssertEqual(saved["unit"] as? String, "kg")
+    }
+
+    @MainActor func testEquipmentUnitsConvertSideDropsAndPreserveNonWeightFields() throws {
+        let side: [String: Any] = ["w": 20, "r": 5, "done": true, "drops": [["w": 10, "r": 4]]]
+        var row: [String: Any] = ["sides": ["L": side, "R": side], "mode": "reps", "type": "dropset", TrainingInput.weightUnitKey: "lb"]
+        row = try TrainingInput.edit(row: row, action: ["action": "input", "path": "drop.L.0.w", "text": "50", "patchKey": "w", "operation": ["action": "dropEdit", "side": "L", "index": 0]], target: [:], state: ["unit": "kg"], editing: true)
+        let sides = row["sides"] as! [String: [String: Any]]
+        XCTAssertEqual(number((sides["L"]!["drops"] as! [[String: Any]])[0]["w"]), 22.6796185, accuracy: 0.000001)
+        XCTAssertEqual(number((sides["R"]!["drops"] as! [[String: Any]])[0]["w"]), 10)
+        row = try TrainingInput.edit(row: row, action: ["action": "input", "path": "R.w", "text": "100", "operation": ["action": "field", "side": "R", "key": "w"]], target: [:], state: ["unit": "kg"], editing: false)
+        XCTAssertEqual(number((row["sides"] as! [String: [String: Any]])["R"]?["w"]), 45.359237, accuracy: 0.000001)
+        let copied = try WebRules.shared.call("copyAdvancedSet", payload: ["sets": [row]]) as! [[String: Any]]
+        XCTAssertEqual(TrainingInput.weightUnit(copied[1], fallback: "kg"), "lb")
+        XCTAssertNil(copied[1][TrainingInput.key])
+        let cardio = try TrainingInput.edit(row: ["mode": "cardio", TrainingInput.weightUnitKey: "kg"], action: ["action": "input", "path": "both.speed", "text": "8", "operation": ["action": "field", "key": "speed"]], target: [:], state: ["unit": "lb", "speedUnit": "kmh"], editing: false)
+        XCTAssertEqual(number(cardio["speed"]), 8)
+        let pounds = try TrainingInput.edit(row: [TrainingInput.weightUnitKey: "kg"], action: ["action": "input", "path": "both.w", "text": "20,5", "operation": ["action": "field", "key": "w"]], target: [:], state: ["unit": "lb"], editing: false)
+        XCTAssertEqual(number(pounds["w"]), 20.5 / 0.45359237, accuracy: 0.000001)
+    }
+
     func testHealthMergeRespectsUserDeletionAndRecoversEarlierSameDaySample() {
         let samples:[String:[String:Any]] = ["earlier":["kg":70,"time":1000,"day":"2026-10-20"],"later":["kg":71,"time":2000,"day":"2026-10-20"]]
         let deleted:[String:Any] = ["unit":"kg","bodyweight":[],"deleted":["bodyweight":["2026-10-20":3000]]]

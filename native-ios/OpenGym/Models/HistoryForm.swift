@@ -5,6 +5,25 @@ struct HistoryEntryDraft: Identifiable {
     var raw: [String: Any]
     var sets: [RawRow]
     init(_ raw: [String: Any]) { self.raw = raw; sets = (raw["sets"] as? [[String: Any]] ?? []).map { RawRow(raw: $0) } }
+    @MainActor mutating func addSet() throws {
+        let copied = try WebRules.shared.call("copyAdvancedSet", payload: ["sets": sets.map(\.raw), "target": raw["target"] as? [String: Any] ?? [:], "editing": true]) as! [[String: Any]]
+        sets.append(contentsOf: copied.dropFirst(sets.count).map { RawRow(raw: $0) })
+    }
+    @MainActor mutating func removeSet(id: UUID) throws {
+        guard let index = sets.firstIndex(where: { $0.id == id }) else { return }
+        let result = try WebRules.shared.call("removeAdvancedSet", payload: ["sets": sets.map(\.raw), "index": index]) as! [String: Any]
+        let start = Int(number(result["start"])), count = Int(number(result["count"]))
+        sets.removeSubrange(start..<(start + count))
+    }
+    @MainActor mutating func copySet(at index: Int) throws {
+        guard sets.indices.contains(index) else { return }
+        try TrainingInput.validate(sets[index].raw)
+        let result = try WebRules.shared.call("copySelectedSet", payload: ["sets": sets.map(\.raw), "index": index, "editing": true]) as! [String: Any]
+        let at = Int(number(result["at"])), count = Int(number(result["count"]))
+        try TrainingInput.validate(sets[(at - count)..<at].map(\.raw))
+        let rows = result["sets"] as! [[String: Any]]
+        sets.insert(contentsOf: rows[at..<(at + count)].map { RawRow(raw: $0) }, at: at)
+    }
     var value: [String: Any] { var next = raw; next["sets"] = sets.map(\.raw); return next }
 }
 struct HistoryForm {

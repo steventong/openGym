@@ -34,6 +34,12 @@ struct SettingsView: View {
                 } header: { Text("Apple 健康") } footer: {
                     Text("读取 Apple 健康体重并同步到当前账号，不写回健康。权限可在健康 App 中管理。")
                 }
+                Section("个人设置") {
+                    NavigationLink("健身房器械筛选") { EquipmentProfilesView() }
+                    NavigationLink("训练偏好与单位") { PersonalSettingsView() }
+                    NavigationLink("体重记录与目标") { BodyRecordsView(measurements:false) }
+                    NavigationLink("身体围度") { BodyRecordsView(measurements:true) }
+                }
                 Section("关于") {
                     LabeledContent("客户端",value:"SwiftUI 原生预览 · 0.1")
                     LabeledContent("动作库",value:"\(store.exercises.count) 个动作")
