@@ -56,16 +56,9 @@ struct HomeView: View {
                     HStack { Text(Calendar.current.isDateInToday(selectedDay) ? "今天" : selectedDay.formatted(.dateTime.month().day())).font(.system(size:12)).foregroundStyle(GymTheme.muted); Spacer(); Image(systemName:"figure.strengthtraining.traditional").foregroundStyle(GymTheme.green) }
                     Text(store.draft?.name ?? (scheduled.isEmpty ? "休息日" : scheduled.map(\.name).joined(separator:" + "))).font(.system(size:29,weight:.bold))
                     Text(store.draft != nil ? "你的训练仍在进行，随时继续。" : routine.map { _ in "\(scheduled.flatMap(\.exercises).count) 个动作 · 按自己的节奏训练" } ?? "给身体一点恢复时间，也可以选择其他训练。").font(.system(size:13)).foregroundStyle(GymTheme.muted)
-                    GreenButton(title:store.draft != nil ? "继续训练" : routine != nil ? "开始训练" : "选择训练",icon:"play.fill") {
-                        if store.draft != nil { store.selectedTab = 2 } else if routine != nil { store.start(scheduled) } else { store.selectedTab = 2 }
-                    }
-                    if store.draft == nil {
-                        Button { store.startFreestyle() } label: {
-                            Label("自由训练", systemImage: "figure.strengthtraining.traditional")
-                                .frame(maxWidth: .infinity, minHeight: 44)
-                        }.foregroundStyle(GymTheme.green).disabled(store.syncing)
-                            .accessibilityIdentifier("home-start-freestyle-workout")
-                    }
+                    GreenButton(title:store.draft != nil ? "继续训练" : "开始训练",icon:"play.fill") {
+                        store.selectedTab = 2
+                    }.accessibilityIdentifier("home-start-workout")
                 }.gymCard()
                 if selectedDay <= Date() {
                     Button {dayNote = true} label: {Label("当天备注",systemImage:"note.text").frame(maxWidth:.infinity,minHeight:44)}
