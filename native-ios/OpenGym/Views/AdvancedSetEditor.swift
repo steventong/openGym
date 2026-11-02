@@ -9,6 +9,7 @@ struct AdvancedSetEditor:View {
     var setLabel = ""
     var copySet: (() -> Void)?
     var removeSet: (() -> Void)?
+    var readOnly = false
     var timerRunning = false
     var startTimer:(()->Void)? = nil
     var startRest:((Double)->Void)? = nil
@@ -31,12 +32,12 @@ struct AdvancedSetEditor:View {
                 if row["type"] as? String == "dropset" { Text("递减组").font(.caption).foregroundStyle(GymTheme.green) }
                 if row["type"] as? String == "restpause" { Text("Rest-pause").font(.caption).foregroundStyle(GymTheme.green) }
                 Spacer()
-                setMenu
+                if !readOnly { setMenu }
             } }
             if sides != nil { pane("L");Divider();pane("R") } else { pane(nil) }
             if row["failure"] as? Bool == true { Label("力竭",systemImage:"bolt.fill").font(.caption).foregroundStyle(.orange) }
-            if mode == "time",let startTimer { Button {focusedField = nil;startTimer()} label:{ Label(timerRunning ? "计时中" : "开始计时",systemImage:"timer").font(.subheadline).frame(maxWidth:.infinity).padding(9).background(GymTheme.green.opacity(0.12),in:RoundedRectangle(cornerRadius:10)) }.disabled(timerRunning || row["done"] as? Bool == true).accessibilityIdentifier("timer-\(identifier)") }
-        }
+            if !readOnly, mode == "time",let startTimer { Button {focusedField = nil;startTimer()} label:{ Label(timerRunning ? "计时中" : "开始计时",systemImage:"timer").font(.subheadline).frame(maxWidth:.infinity).padding(9).background(GymTheme.green.opacity(0.12),in:RoundedRectangle(cornerRadius:10)) }.disabled(timerRunning || row["done"] as? Bool == true).accessibilityIdentifier("timer-\(identifier)") }
+        }.disabled(readOnly)
     }
     private var setMenu: some View {
 Menu {
@@ -64,7 +65,7 @@ Menu {
                 if mode == "cardio" { field("分钟","min",data,side);field(TrainingInput.speedUnit(inputState) == "mph" ? "mph" : "km/h","speed",data,side) }
                 else { field(weightUnit,"w",data,side);field(mode == "time" ? "秒" : "次数",mode == "time" ? "sec" : "r",data,side) }
                 Button { focusedField = nil;var p:[String:Any] = ["action":"toggle"];p["side"] = side;action(p) } label:{Image(systemName:"checkmark").font(.system(size:15,weight:.bold)).frame(width:44,height:inputHeight).foregroundStyle(data["done"] as? Bool == true ? .black : .gray).background(data["done"] as? Bool == true ? GymTheme.green : Color.white.opacity(0.07),in:RoundedRectangle(cornerRadius:10))}.buttonStyle(.borderless).accessibilityLabel("\(side == "L" ? "左侧" : side == "R" ? "右侧" : "本组")完成").accessibilityIdentifier("complete-\(identifier)-\(side ?? "both")").accessibilityValue(data["done"] as? Bool == true ? "已完成":"未完成").disabled(timerRunning)
-                if compact { setMenu }
+                if compact && !readOnly { setMenu }
             }
             if mode == "reps", let plates = plateText(data) { Text(plates).font(.caption2).foregroundStyle(GymTheme.muted) }
             if mode == "cardio", ((try? WebRules.shared.call("rowInfo", payload: ["row": row, "target": target])) as? [String: Any])?["incline"] as? Bool == true {
@@ -76,7 +77,9 @@ Menu {
                     Text("降 \(i+1)").font(.caption).foregroundStyle(GymTheme.muted)
                     subField(weightUnit,path:"drop.\(side ?? "both").\(i).w",value:number(drops[i]["w"]),operation:["action":"dropEdit","index":i,"side":side as Any? ?? NSNull()],patchKey:"w") { subAction("dropEdit",side:side,index:i,patch:["w":$0]) }
                     subField("次数",path:"drop.\(side ?? "both").\(i).r",value:number(drops[i]["r"]),operation:["action":"dropEdit","index":i,"side":side as Any? ?? NSNull()],patchKey:"r") { subAction("dropEdit",side:side,index:i,patch:["r":$0]) }
-                    Button { subAction("dropRemove",side:side,index:i) } label:{Image(systemName:"minus.circle").foregroundStyle(.orange)}.buttonStyle(.borderless)
+                    if !readOnly {
+                        Button { subAction("dropRemove",side:side,index:i) } label:{Image(systemName:"minus.circle").foregroundStyle(.orange)}.buttonStyle(.borderless)
+                    }
                 }
             }
             let clusters = data["clusters"] as? [[String:Any]] ?? []
@@ -84,14 +87,17 @@ Menu {
                 HStack {
                     Text("小组 \(i+1)").font(.caption).foregroundStyle(GymTheme.muted)
                     subField("次数",path:"cluster.\(side ?? "both").\(i).r",value:number(clusters[i]["r"]),operation:["action":"clusterEdit","index":i,"side":side as Any? ?? NSNull()]) { var p:[String:Any] = ["action":"clusterEdit","index":i,"value":$0];p["side"] = side;action(p) }
-                    if let startRest { Button("休息 \(Int(number(clusters[i]["restSec"])))s") {focusedField = nil;startRest(number(clusters[i]["restSec"]))}.font(.caption2).buttonStyle(.borderless).disabled(timerRunning) }
+                    if !readOnly, let startRest { Button("休息 \(Int(number(clusters[i]["restSec"])))s") {focusedField = nil;startRest(number(clusters[i]["restSec"]))}.font(.caption2).buttonStyle(.borderless).disabled(timerRunning) }
                     else {Text("休息 \(Int(number(clusters[i]["restSec"])))s").font(.caption2).foregroundStyle(GymTheme.muted)}
-                    Button { subAction("clusterRemove",side:side,index:i) } label:{Image(systemName:"minus.circle").foregroundStyle(.orange)}.buttonStyle(.borderless)
+                    if !readOnly {
+                        Button { subAction("clusterRemove",side:side,index:i) } label:{Image(systemName:"minus.circle").foregroundStyle(.orange)}.buttonStyle(.borderless)
+                    }
                 }
             }
-            if effortVisible || ["rir","rpe"].contains(inputState["effort"] as? String ?? "") || data["rir"] != nil || data["rpe"] != nil {
+            if (!readOnly && (effortVisible || ["rir","rpe"].contains(inputState["effort"] as? String ?? ""))) || data["rir"] != nil || data["rpe"] != nil {
                 HStack {
-                    Menu(effortKey(data).uppercased()) { Button("RIR") { emitField("rir",value:2,side:side) };Button("RPE") { emitField("rpe",value:8,side:side) };Button("清除") { emitField("rir",value:NSNull(),side:side);emitField("rpe",value:NSNull(),side:side);effortVisible = false } }.font(.caption)
+                    if readOnly { Text(effortKey(data).uppercased()).font(.caption) }
+                    else { Menu(effortKey(data).uppercased()) { Button("RIR") { emitField("rir",value:2,side:side) };Button("RPE") { emitField("rpe",value:8,side:side) };Button("清除") { emitField("rir",value:NSNull(),side:side);emitField("rpe",value:NSNull(),side:side);effortVisible = false } }.font(.caption) }
                     subField("强度",path:"\(side ?? "both").\(effortKey(data))",value:number(data["rpe"] ?? data["rir"] ?? (effortKey(data) == "rpe" ? 8:2)),operation:["action":"field","key":effortKey(data),"side":side as Any? ?? NSNull()]) { emitField(effortKey(data),value:min(10,max(0,$0)),side:side) }
                 }
             }

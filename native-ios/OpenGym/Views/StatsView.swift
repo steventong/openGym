@@ -1,7 +1,9 @@
 import SwiftUI
 struct StatsView: View {
     @Environment(GymStore.self) private var store
-    @State private var editing: WorkoutRecord?
+    @State private var previewing: WorkoutRecord?
+    @State private var syncingRecordID: String?
+    @State private var syncError: String?
     @State private var historyLimit = 30
     @State private var analytics = false
     @State private var weightSheet = false
@@ -49,14 +51,27 @@ struct StatsView: View {
                 if store.workouts.isEmpty { EmptyCard(icon:"chart.line.uptrend.xyaxis",title:"进步，从第一组开始",detail:"完成一场训练后，这里会展示你的真实记录。") }
                 LazyVStack(spacing:10) {
                     ForEach(store.workouts.filter { search.isEmpty || historyMatches($0) }.prefix(historyLimit).map(WorkoutRecord.init),id:\.id) { record in
-                        Button { editing = record } label: {
-                            WorkoutHistoryRow(record:record,localEdit:store.historyEdits[record.id])
-                        }.buttonStyle(.plain).accessibilityIdentifier("edit-history-\(record.id)")
+                        WorkoutHistoryRow(record: record, unsynced: store.historyEdits[record.id] != nil,
+                                          syncing: syncingRecordID == record.id, busy: store.syncing || syncingRecordID != nil,
+                                          preview: { previewing = record }, sync: { sync(record.id) })
                     }
                 }
                 if store.workouts.count > historyLimit { Button("更多训练记录") { historyLimit += 30 }.frame(maxWidth:.infinity) }
             }.padding(22)
-        }.refreshable { await store.refresh() }.sheet(isPresented:$analytics) { PersonalStatsHub() }.sheet(isPresented:$weightSheet) { WeightEntryView() }.sheet(item:$editing) { record in HistoryEditor(record:record,unit:store.unit) }
+        }.refreshable { await store.refresh() }.sheet(isPresented:$analytics) { PersonalStatsHub() }.sheet(isPresented:$weightSheet) { WeightEntryView() }.sheet(item:$previewing) { record in WorkoutHistoryPreview(record:record) }
+            .alert("同步未完成", isPresented: Binding(get: { syncError != nil }, set: { if !$0 { syncError = nil } })) {
+                Button("知道了", role: .cancel) {}
+            } message: { Text(syncError ?? "") }
+    }
+    private func sync(_ id: String) {
+        guard syncingRecordID == nil, !store.syncing else { return }
+        syncingRecordID = id
+        Task {
+            defer { syncingRecordID = nil }
+            if !(await store.submitHistoryEdit(id)) {
+                syncError = store.editError ?? store.localSaveError ?? "同步失败，记录仍保留在本机，请稍后重试。"
+            }
+        }
     }
     private func historyMatches(_ w:[String:Any])->Bool {
         let text = [w["name"] as? String ?? "",w["d"] as? String ?? "",w["note"] as? String ?? ""] + (w["entries"] as? [[String:Any]] ?? []).map {store.exercise($0["id"] as? String ?? "")?.searchText ?? $0["n"] as? String ?? ""}
@@ -73,7 +88,11 @@ struct StatsView: View {
 
 private struct WorkoutHistoryRow: View {
     let record: WorkoutRecord
-    let localEdit: [String:Any]?
+    let unsynced: Bool
+    let syncing: Bool
+    let busy: Bool
+    let preview: () -> Void
+    let sync: () -> Void
     private var subtitle: String {
         let day = record.raw["d"] as? String ?? ""
         let date = dateFromDay(day).map { $0.formatted(.dateTime.month().day().weekday(.abbreviated).locale(Locale(identifier:"zh_Hans_CN"))) } ?? day
@@ -82,31 +101,112 @@ private struct WorkoutHistoryRow: View {
         return [date,duration,"\(record.completedSetCount) 组"].joined(separator:" · ")
     }
     var body: some View {
-        HStack(spacing:12) {
-            Image(systemName:record.raw["routineId"] as? String == nil ? "figure.strengthtraining.traditional" : "dumbbell.fill")
-                .font(.system(size:19,weight:.medium)).foregroundStyle(.black)
-                .frame(width:40,height:40).background(GymTheme.green,in:RoundedRectangle(cornerRadius:10))
-                .accessibilityHidden(true)
-            VStack(alignment:.leading,spacing:5) {
-                HStack(spacing:8) {
-                    Text(record.raw["name"] as? String ?? "训练").font(.subheadline.weight(.semibold)).foregroundStyle(.white).lineLimit(1)
-                    Spacer(minLength:0)
-                    let prs = (record.raw["prs"] as? [Any])?.count ?? 0
-                    if prs > 0 {
-                        Label("\(prs) PR",systemImage:"trophy.fill").font(.caption2.weight(.semibold))
-                            .foregroundStyle(.yellow).padding(.horizontal,7).padding(.vertical,4)
-                            .background(Color.yellow.opacity(0.15),in:RoundedRectangle(cornerRadius:6))
-                            .fixedSize().accessibilityLabel("\(prs) 项个人纪录")
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Button(action: preview) {
+                HStack(spacing: 12) {
+                    Image(systemName: record.raw["routineId"] as? String == nil ? "figure.strengthtraining.traditional" : "dumbbell.fill")
+                        .font(.system(size: 19, weight: .medium)).foregroundStyle(.black)
+                        .frame(width: 40, height: 40).background(GymTheme.green, in: RoundedRectangle(cornerRadius: 10))
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 5) {
+                        HStack(spacing: 8) {
+                            Text(record.raw["name"] as? String ?? "训练")
+                                .font(.subheadline.weight(.semibold)).foregroundStyle(.white).lineLimit(1)
+                            if unsynced {
+                                Text("未同步").font(.caption2).foregroundStyle(.orange).fixedSize()
+                                    .accessibilityIdentifier("unsynced-history-\(record.id)")
+                            }
+                            Spacer(minLength: 0)
+                        }
+                        Text(subtitle).font(.caption).foregroundStyle(GymTheme.muted).fixedSize(horizontal: false, vertical: true)
+                        let prs = (record.raw["prs"] as? [Any])?.count ?? 0
+                        if prs > 0 {
+                            Label("\(prs) PR", systemImage: "trophy.fill").font(.caption2.weight(.semibold))
+                                .foregroundStyle(.yellow).accessibilityLabel("\(prs) 项个人纪录")
+                        }
+                    }.frame(maxWidth: .infinity, alignment: .leading)
+                    if !unsynced {
+                        Image(systemName: "chevron.right").font(.caption.weight(.semibold))
+                            .foregroundStyle(GymTheme.muted).accessibilityHidden(true)
+                    }
+                }.contentShape(Rectangle())
+            }.buttonStyle(.plain).disabled(busy).accessibilityIdentifier("preview-history-\(record.id)")
+            if unsynced {
+                Button(syncing ? "同步中…" : "同步", action: sync)
+                    .font(.subheadline).foregroundStyle(GymTheme.green)
+                    .frame(minWidth: 44, minHeight: 44).fixedSize()
+                    .buttonStyle(.plain).disabled(busy)
+                    .accessibilityIdentifier("sync-history-\(record.id)")
+            }
+        }.padding(14).background(GymTheme.card, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+/// Preview has no editable bindings or persistence; corrections use the existing editor.
+private struct WorkoutHistoryPreview: View {
+    @Environment(GymStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    let record: WorkoutRecord
+    @State private var editing: WorkoutRecord?
+    private var current: WorkoutRecord {
+        store.workouts.first { WorkoutRecord.key($0) == record.id }.map(WorkoutRecord.init) ?? record
+    }
+    private var unit: String { store.historyEdits[record.id]?["unit"] as? String ?? store.unit }
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(current.raw["name"] as? String ?? "训练").font(.title2.bold())
+                        Text(current.raw["d"] as? String ?? "").foregroundStyle(GymTheme.muted)
+                        Text("\(decimal(max(0, number(current.raw["end"]) - number(current.raw["start"])) / 60000)) 分钟 · \(current.completedSetCount) 组")
+                            .font(.subheadline).foregroundStyle(GymTheme.muted)
+                        if let note = current.raw["note"] as? String, !note.isEmpty { Text(note).font(.subheadline) }
+                    }.gymCard()
+                    let entries = current.raw["entries"] as? [[String: Any]] ?? []
+                    ForEach(entries.indices, id: \.self) { index in
+                        exerciseCard(entries[index], index: index)
+                    }
+                    if entries.isEmpty { Text("暂无动作记录").foregroundStyle(GymTheme.muted) }
+                }.padding(20)
+            }.background(GymTheme.background).foregroundStyle(.white)
+                .navigationTitle("训练记录").navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) { Button("关闭") { dismiss() } }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("编辑记录") { editing = current }.disabled(store.syncing)
+                            .accessibilityIdentifier("edit-history-\(record.id)")
                     }
                 }
-                Text(subtitle).font(.caption).foregroundStyle(GymTheme.muted).fixedSize(horizontal:false,vertical:true)
-                if let localEdit {
-                    Label(localEdit["submitted"] as? Bool == true ? "待同步" : "本机编辑草稿",systemImage:"internaldrive")
-                        .font(.caption2).foregroundStyle(.orange)
+                .sheet(item: $editing) { record in HistoryEditor(record: record, unit: unit) }
+        }.tint(GymTheme.green)
+    }
+    private func exerciseCard(_ entry: [String: Any], index: Int) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 10) {
+                ExerciseThumbnail(id: entry["id"] as? String ?? "", size: 40)
+                let parts = store.exercise(entry["id"] as? String ?? "")?.titleParts
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(parts?.primary ?? entry["n"] as? String ?? "动作").font(.headline)
+                    if let secondary = parts?.secondary, !secondary.isEmpty {
+                        Text(secondary).font(.caption).foregroundStyle(GymTheme.muted)
+                    }
                 }
-            }.frame(maxWidth:.infinity,alignment:.leading)
-            Image(systemName:"chevron.right").font(.caption.weight(.semibold)).foregroundStyle(GymTheme.muted).accessibilityHidden(true)
-        }.padding(14).background(GymTheme.card,in:RoundedRectangle(cornerRadius:16))
-            .contentShape(RoundedRectangle(cornerRadius:16))
+            }
+            if entry["sg"] != nil { Label("超级组", systemImage: "link").font(.caption).foregroundStyle(GymTheme.green) }
+            if let note = (entry["target"] as? [String: Any])?["note"] as? String, !note.isEmpty {
+                Text(note).font(.caption).foregroundStyle(GymTheme.muted)
+            }
+            if let note = entry["note"] as? String, !note.isEmpty { Text(note).font(.subheadline) }
+            let rows = entry["sets"] as? [[String: Any]] ?? []
+            ForEach(rows.indices, id: \.self) { i in
+                let setNumber = (0...i).filter { !(rows[$0]["side"] as? String == "R" && $0 > 0 && rows[$0 - 1]["side"] as? String == "L") }.count
+                AdvancedSetEditor(row: rows[i], target: (entry["target"] as? [String: Any] ?? [:]).merging(["id": entry["id"] ?? ""]) { _, new in new },
+                                  unit: unit, inputState: store.state.merging(["unit": unit]) { _, new in new },
+                                  identifier: "history-preview-\(index)-\(i)", setLabel: "第 \(setNumber) 组", readOnly: true) { _ in }
+                if i < rows.count - 1 { Divider() }
+            }
+            if rows.isEmpty { Text("暂无训练组").font(.caption).foregroundStyle(GymTheme.muted) }
+        }.gymCard().accessibilityIdentifier("history-preview-exercise-\(index)")
     }
 }
