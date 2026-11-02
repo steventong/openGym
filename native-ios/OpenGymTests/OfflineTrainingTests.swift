@@ -248,7 +248,8 @@ final class OfflineTrainingTests: XCTestCase {
     }
     @MainActor func testRemovingSetAdjustsRestOwnerAndAllowsNewCompletionRest() throws {
         let s = try store(); s.state = ["restSec": 90]
-        let rows: [[String: Any]] = [["r": 8, "done": true], ["r": 8, "done": true], ["r": 8, "done": false]]
+        // Keep another unfinished set: completing an exercise's final set no longer starts rest.
+        let rows: [[String: Any]] = [["r": 8, "done": true], ["r": 8, "done": true], ["r": 8, "done": false], ["r": 8, "done": false]]
         s.draft = try TrainingDraft.fromWeb(["id": "rest-delete", "start": 1000, "nativeHighWater": ["0": 2],
             "entries": [["id": "0289", "sets": rows], ["id": "1047", "sets": [["r": 8, "done": false]]]]], unit: "kg")
         s.startRest(entry: 0, seconds: 90, set: 1)

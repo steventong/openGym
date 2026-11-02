@@ -3,6 +3,8 @@ import SwiftUI
 /// Shared exercise page for an active session and a saved workout.
 /// Owners provide persistence and the live-only timer controls.
 struct TrainingExerciseEditor<Accessory: View>: View {
+    @Environment(GymStore.self) private var store
+    @Binding var showingOptions: Bool
     let entries: [[String: Any]]
     let names: [String]
     @Binding var selected: Int
@@ -13,6 +15,7 @@ struct TrainingExerciseEditor<Accessory: View>: View {
     @Binding var note: String
     let identifier: String
     var timerRunning = false
+    var restUntil: Date? = nil
     var startTimer: ((Int) -> Void)? = nil
     var startRest: ((Int, Double) -> Void)? = nil
     let showDetails: () -> Void
@@ -23,50 +26,54 @@ struct TrainingExerciseEditor<Accessory: View>: View {
     var undoRemove: (() -> Void)? = nil
     @ViewBuilder let accessory: () -> Accessory
     @State private var unitError: String?
-    @State private var options: OptionsRoute?
-    private enum OptionsRoute: String, Identifiable {
-        case metadata
-        var id: String { rawValue }
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             if entries.indices.contains(selected) {
-                exerciseCard(entries[selected]).id(selected)
+                exerciseCard(entries[selected])
                 HStack {
-                    Button { selected -= 1 } label: { Label("上一个动作", systemImage: "chevron.left").frame(minHeight: 44) }
+                    Button { selected -= 1 } label: {
+                        Label("上一个动作", systemImage: "chevron.left")
+                            .foregroundStyle(selected == 0 ? GymTheme.muted : .white)
+                            .frame(minHeight: 44)
+                    }
                         .disabled(selected == 0).accessibilityIdentifier("\(identifier)-previous-entry")
-                    Spacer()
-                    Button { selected += 1 } label: { Label("下一个动作", systemImage: "chevron.right").frame(minHeight: 44) }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("\(selected + 1)/\(entries.count)")
+                        .font(.caption.monospacedDigit()).foregroundStyle(GymTheme.muted)
+                        .fixedSize().accessibilityLabel("第 \(selected + 1) 个动作，共 \(entries.count) 个")
+                        .accessibilityIdentifier("\(identifier)-entry-position")
+                    Button { selected += 1 } label: {
+                        HStack(spacing: 8) {
+                            Text("下一个动作")
+                            Image(systemName: "chevron.right")
+                        }.foregroundStyle(selected + 1 >= entries.count ? GymTheme.muted : .white)
+                            .frame(minHeight: 44)
+                    }
                         .disabled(selected + 1 >= entries.count).accessibilityIdentifier("\(identifier)-next-entry")
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }.font(.subheadline)
             }
-        }.sheet(item: $options) { _ in
+        }.sheet(isPresented: $showingOptions) {
             optionsSheet
-        }.onChange(of: selected) { _, _ in options = nil; unitError = nil }
+        }.onChange(of: selected) { _, _ in showingOptions = false; unitError = nil }
     }
 
     private func exerciseCard(_ entry: [String: Any]) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             accessory()
-            HStack(spacing: 10) {
+            HStack(alignment: .center, spacing: 10) {
                 ExerciseThumbnail(id: entry["id"] as? String ?? "", size: 40)
-                Menu {
-                    Button("备注与单位", systemImage: "square.and.pencil") { options = .metadata }
-                        .accessibilityIdentifier("\(identifier)-exercise-options")
-                    Divider()
-                    ForEach(entries.indices, id: \.self) { index in
-                        Button("\(index + 1).\(names[index]) · \(status(entries[index]))") { selected = index }
+                let parts = store.exercise(entry["id"] as? String ?? "")?.titleParts
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(parts?.primary ?? names[selected])
+                        .font(.headline).lineLimit(1).minimumScaleFactor(0.75)
+                    if let subtitle = parts?.secondary, !subtitle.isEmpty {
+                        Text(subtitle).font(.caption).foregroundStyle(GymTheme.muted)
+                            .lineLimit(2)
                     }
-                } label: {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("\(selected + 1).\(names[selected])").font(.headline).multilineTextAlignment(.leading)
-                        HStack(spacing: 5) {
-                            Text("\(status(entry)) · \(selected + 1) / \(entries.count)")
-                            Image(systemName: "chevron.down")
-                        }.font(.caption).foregroundStyle(GymTheme.green)
-                    }.frame(maxWidth: .infinity, alignment: .leading).frame(minHeight: 44)
-                }.buttonStyle(.plain).accessibilityIdentifier("\(identifier)-exercise-selector")
+                }.frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityIdentifier("\(identifier)-exercise-title")
                 Button(action: showDetails) { Image(systemName: "info.circle").frame(width: 44, height: 44) }.accessibilityLabel("动作详情")
             }
             if let targetNote = (entry["target"] as? [String: Any])?["note"] as? String, !targetNote.isEmpty {
@@ -83,13 +90,30 @@ struct TrainingExerciseEditor<Accessory: View>: View {
                                       startRest: startRest.map { start in { start(index, $0) } }) { editSet(index, $0) }
                 }
                 if index < rows.count - 1 { Divider() }
-            }.id(rows.map(\.id))
+            // Reset input focus and row-local controls without recreating the title and thumbnail.
+            }.id([String(selected),entry["id"] as? String ?? ""] + rows.map(\.id))
             if let undoRemove {
                 HStack { Text("已删除训练组").foregroundStyle(GymTheme.muted); Spacer(); Button("撤销", action: undoRemove).frame(minHeight: 44) }.font(.caption)
             }
             if rows.isEmpty { Text("暂无训练组，点击下方添加。").font(.subheadline).foregroundStyle(GymTheme.muted) }
-            Button(action: addSet) { Label("添加一组", systemImage: "plus").font(.subheadline).frame(maxWidth: .infinity, minHeight: 44) }
-                .buttonStyle(.borderless).disabled(timerRunning).accessibilityIdentifier("add-set")
+            HStack(spacing: 12) {
+                if startRest != nil {
+                    // Keep the same space before, during, and after rest; the overlay cannot resize the card.
+                    Color.clear.frame(maxWidth: .infinity)
+                        .overlay(alignment: .center) {
+                            if let restUntil {
+                                TimelineView(.periodic(from: .now, by: 1)) { context in
+                                    let seconds = max(0, Int(ceil(restUntil.timeIntervalSince(context.date))))
+                                    Label(String(format: "%02d:%02d", seconds / 60, seconds % 60), systemImage: "timer")
+                                        .monospacedDigit().foregroundStyle(GymTheme.green)
+                                        .accessibilityLabel(seconds > 0 ? "组间休息剩余 \(seconds) 秒" : "休息结束")
+                                }.accessibilityIdentifier("card-rest-timer")
+                            }
+                        }.allowsHitTesting(false)
+                }
+                Button(action: addSet) { Label("添加一组", systemImage: "plus").frame(maxWidth: .infinity, minHeight: 44) }
+                    .buttonStyle(.borderless).disabled(timerRunning).accessibilityIdentifier("add-set")
+            }.font(.subheadline).lineLimit(1).minimumScaleFactor(0.6).frame(height: 44)
         }.gymCard()
     }
 
@@ -124,7 +148,7 @@ struct TrainingExerciseEditor<Accessory: View>: View {
                     }
                 }
             }.navigationTitle("备注与单位").navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { options = nil } } }
+                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { showingOptions = false } } }
                 .alert("重量输入已保留", isPresented: Binding(get: { unitError != nil }, set: { if !$0 { unitError = nil } })) {
                     Button("知道了", role: .cancel) {}
                 } message: { Text(unitError ?? "") }
@@ -143,11 +167,7 @@ struct TrainingExerciseEditor<Accessory: View>: View {
         (0...index).filter { !isRightHalf($0) }.count
     }
 
-    private func status(_ entry: [String: Any]) -> String {
-        let sets = entry["sets"] as? [[String: Any]] ?? []
-        if !sets.isEmpty && sets.allSatisfy({ $0["done"] as? Bool == true }) { return "已练" }
-        return sets.contains(where: rawCompleted) ? "进行中" : "待练"
-    }
+
 }
 
 struct TrainingEditorRow: Identifiable {

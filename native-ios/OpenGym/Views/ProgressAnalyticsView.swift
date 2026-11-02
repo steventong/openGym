@@ -12,12 +12,12 @@ struct ExerciseProgressView:View {
     private var points:[TrendPoint] {
         let raw:[[String:Any]]
         if metric == "sets" { raw = ((data["perSet"] as? [String:Any])?["lines"] as? [[String:Any]] ?? []).flatMap { line in (line["points"] as? [[String:Any]] ?? []).map { $0.merging(["series":"第 \(Int(number(line["n"]))) 组"]) {_,new in new} } } } else { raw = data[metric] as? [[String:Any]] ?? [] }
-        return raw.compactMap { p in
+        return TrendPoint.identified(raw.compactMap { p in
             guard number(p["t"])>0, let y = p["y"] as? Double else {return nil}
             let date = Date(timeIntervalSince1970:number(p["t"])/1000)
             guard days == 0 || date >= Calendar.current.date(byAdding:.day,value:-days,to:Date())! else {return nil}
             return TrendPoint(date:date,value:y,series:p["series"] as? String ?? "")
-        }
+        })
     }
     private var unit:String { metric == "e1rm" ? store.unit:metric == "effort" ? data["effortUnit"] as? String ?? "RIR":metric == "max" ? "次":metric == "sets" ? data["perSetUnit"] as? String ?? store.unit:data["unit"] as? String ?? store.unit }
     var body:some View {

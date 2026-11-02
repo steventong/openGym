@@ -52,11 +52,11 @@ struct ExerciseThumbnail: View {
     let id: String
     var size: CGFloat = 60
     var body: some View {
-        AsyncImage(url:store.mediaURL(id)) { phase in
-            switch phase {
-            case .success(let image): image.resizable().scaledToFit().padding(3)
-            case .failure: Image(systemName:"dumbbell").foregroundStyle(.gray)
-            default: ProgressView().tint(.gray)
+        Group {
+            if let url = store.mediaURL(id), let image = UIImage(contentsOfFile:url.path) {
+                Image(uiImage:image).resizable().scaledToFit().padding(3)
+            } else {
+                Image(systemName:"dumbbell").foregroundStyle(.gray)
             }
         }.frame(width:size,height:size).background(.white,in:RoundedRectangle(cornerRadius:12)).clipShape(RoundedRectangle(cornerRadius:12))
     }

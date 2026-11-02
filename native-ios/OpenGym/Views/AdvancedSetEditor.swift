@@ -118,26 +118,7 @@ Menu {
                 if compact { Text(title).font(.caption2).foregroundStyle(.secondary).fixedSize() }
             }.padding(.horizontal, 7).frame(height: inputHeight)
                 .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 9))
-            if focusedField == "\(side ?? "both").\(key)" { stepButtons(binding, title: title, path: "\(side ?? "both").\(key)") }
         }.disabled(timerRunning || (key == "r" && data["type"] as? String == "restpause"))
-    }
-    private func stepButtons(_ binding: Binding<String>, title: String, path: String) -> some View {
-        HStack(spacing: 0) {
-            stepButton(binding, title: title, path: path, direction: -1)
-            stepButton(binding, title: title, path: path, direction: 1)
-        }.background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 8))
-    }
-    private func stepButton(_ binding: Binding<String>, title: String, path: String, direction: Int) -> some View {
-        Button {
-            if let text = TrainingInput.steppedText(binding.wrappedValue.isEmpty && path.hasSuffix(".incline") ? "0" : binding.wrappedValue, path: path, direction: direction, target: target, state: inputState, unit: weightUnit) {
-                binding.wrappedValue = text
-            }
-        } label: {
-            Image(systemName: direction < 0 ? "minus" : "plus").font(.caption.bold())
-                .frame(maxWidth: .infinity, minHeight: 44)
-        }.buttonStyle(.borderless).disabled(timerRunning)
-            .accessibilityLabel("\(direction < 0 ? "减少" : "增加")\(title)")
-            .accessibilityIdentifier("\(direction < 0 ? "decrease" : "increase")-\(path)-\(identifier)")
     }
     private func emitField(_ key:String,value:Any,side:String?) { var p:[String:Any] = ["action":"field","key":key,"value":value];p["side"] = side;action(p) }
     private func subAction(_ type:String,side:String?,index:Int,patch:[String:Any] = [:]) { var p:[String:Any] = ["action":type,"index":index,"patch":patch];p["side"] = side;action(p) }
@@ -156,7 +137,6 @@ Menu {
         return VStack(spacing: 4) {
             Text(title).font(.caption2).foregroundStyle(.secondary)
             TextField(title,text:binding).keyboardType(.decimalPad).focused($focusedField, equals: path).multilineTextAlignment(.center).padding(7).background(.white.opacity(0.07),in:RoundedRectangle(cornerRadius:8)).accessibilityIdentifier("\(path)-\(identifier)")
-            if focusedField == path { stepButtons(binding, title: title, path: path) }
         }.disabled(timerRunning)
     }
 }

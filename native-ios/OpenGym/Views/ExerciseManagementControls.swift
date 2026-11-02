@@ -1,16 +1,39 @@
 import SwiftUI
 
 /// The same discoverable actions for live sessions and historical corrections.
-struct ExerciseManagementControls: View {
+struct ExerciseManagementControls<AdditionalActions: View>: View {
     let entries: [[String: Any]]
     let selected: Int
     var history = false
     var timerRunning = false
     var startRest: ((Int) -> Void)? = nil
+    var showExerciseNote: (() -> Void)? = nil
+    var menuTitle = "动作管理"
+    var menuIcon = "slider.horizontal.3"
+    var menuIdentifier = "training-exercise-options"
+    let additionalActions: () -> AdditionalActions
     let change: (String, Int, Int, String?) -> Void
     @State private var picker: PickerAction?
     @State private var confirmRemoval = false
     @State private var pendingIndex = 0
+
+    init(entries: [[String: Any]], selected: Int, history: Bool = false, timerRunning: Bool = false,
+         startRest: ((Int) -> Void)? = nil, showExerciseNote: (() -> Void)? = nil, menuTitle: String = "动作管理",
+         menuIcon: String = "slider.horizontal.3", menuIdentifier: String = "training-exercise-options",
+         @ViewBuilder additionalActions: @escaping () -> AdditionalActions = { EmptyView() },
+         change: @escaping (String, Int, Int, String?) -> Void) {
+        self.entries = entries
+        self.selected = selected
+        self.history = history
+        self.timerRunning = timerRunning
+        self.startRest = startRest
+        self.showExerciseNote = showExerciseNote
+        self.menuTitle = menuTitle
+        self.menuIcon = menuIcon
+        self.menuIdentifier = menuIdentifier
+        self.additionalActions = additionalActions
+        self.change = change
+    }
 
     private enum PickerAction: String, Identifiable {
         case add, replace
@@ -21,23 +44,25 @@ struct ExerciseManagementControls: View {
             Button("添加动作", systemImage: "plus") { picker = .add }
             if entries.indices.contains(selected) {
                 Button("更换动作", systemImage: "arrow.triangle.2.circlepath") { pendingIndex = selected; picker = .replace }
+                if let showExerciseNote { Button("动作备注", systemImage: "note.text", action: showExerciseNote).accessibilityIdentifier("exercise-note-menu") }
                 Button("上移", systemImage: "arrow.up") { change("move", selected, -1, nil) }.disabled(selected == 0)
                 Button("下移", systemImage: "arrow.down") { change("move", selected, 1, nil) }.disabled(selected + 1 >= entries.count)
                 if let startRest {
-                    Menu("设置并开始休息") {
+                    Menu {
                         ForEach([30, 60, 90, 120, 180, 300], id: \.self) { seconds in Button("\(seconds) 秒") { startRest(seconds) } }
-                    }.disabled(timerRunning)
+                    } label: { Label("设置并开始休息", systemImage: "timer") }.disabled(timerRunning)
                 }
                 Section("超级组") {
-                    if selected > 0 { Button("与上一个动作组合") { change("pair", selected, -1, nil) }.disabled(timerRunning) }
-                    if selected + 1 < entries.count { Button("与下一个动作组合") { change("pair", selected, 1, nil) }.disabled(timerRunning) }
-                    if entries[selected]["sg"] != nil { Button("移出超级组") { change("unpair", selected, 0, nil) }.disabled(timerRunning) }
+                    if selected > 0 { Button("与上一个动作组合", systemImage: "link") { change("pair", selected, -1, nil) }.disabled(timerRunning) }
+                    if selected + 1 < entries.count { Button("与下一个动作组合", systemImage: "link") { change("pair", selected, 1, nil) }.disabled(timerRunning) }
+                    if entries[selected]["sg"] != nil { Button("移出超级组", systemImage: "minus.circle") { change("unpair", selected, 0, nil) }.disabled(timerRunning) }
                 }
                 Button("删除动作", systemImage: "trash", role: .destructive) { pendingIndex = selected; confirmRemoval = true }
             }
+            additionalActions()
         } label: {
-            Image(systemName: "slider.horizontal.3").frame(width: 44, height: 44)
-        }.font(.subheadline).buttonStyle(.borderless).accessibilityLabel("动作管理").accessibilityIdentifier("training-exercise-options")
+            Image(systemName: menuIcon).frame(width: 44, height: 44)
+        }.font(.subheadline).buttonStyle(.borderless).accessibilityLabel(menuTitle).accessibilityIdentifier(menuIdentifier)
             .sheet(item: $picker) { action in
                 if action == .replace {
                     TrainingReplacementPicker(history: history, currentID: entries.indices.contains(pendingIndex) ? entries[pendingIndex]["id"] as? String : nil) { exercise in
@@ -79,12 +104,14 @@ private struct TrainingReplacementPicker: View {
     }
 }
 
-struct LiveExerciseManagement: View {
+struct LiveExerciseManagement<WorkoutActions: View>: View {
     @Environment(GymStore.self) private var store
+    var showExerciseNote: () -> Void
+    @ViewBuilder let workoutActions: () -> WorkoutActions
     var body: some View {
         if let draft = store.draft {
             let index = min(max(0, draft.activeJSON["cur"] as? Int ?? 0), max(0, draft.rawEntries.count - 1))
-            ExerciseManagementControls(entries: draft.rawEntries, selected: index, timerRunning: store.workTimer != nil, startRest: { store.startExerciseRest(entry: index, seconds: Double($0)) }) { action, targetIndex, direction, id in
+            ExerciseManagementControls(entries: draft.rawEntries, selected: index, timerRunning: store.workTimer != nil, startRest: { store.startExerciseRest(entry: index, seconds: Double($0)) }, showExerciseNote: showExerciseNote, menuTitle: "训练菜单", menuIcon: "ellipsis.circle", menuIdentifier: "workout-menu", additionalActions: workoutActions) { action, targetIndex, direction, id in
                 store.manageLiveExercise(action: action, index: targetIndex, direction: direction, id: id)
             }
         }

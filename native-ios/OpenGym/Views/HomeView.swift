@@ -2,8 +2,6 @@ import SwiftUI
 import Charts
 struct HomeView: View {
     @Environment(GymStore.self) private var store
-    @State private var weightSheet = false
-    @State private var dayNote = false
     @State private var weekOffset = 0
     @State private var selectedDay = Calendar.current.startOfDay(for:Date())
     private var days: [Date] {
@@ -25,13 +23,6 @@ struct HomeView: View {
                     }
                     Spacer()
                     Button { store.showSettings = true } label: { Image(systemName:"gearshape").font(.system(size:22)).foregroundStyle(.white).padding(12).background(GymTheme.card,in:Circle()) }.accessibilityLabel("设置")
-                }
-                Button { store.showSettings = true } label: {
-                    HStack(spacing:7) {
-                        Circle().fill(store.online ? GymTheme.green : .orange).frame(width:6,height:6)
-                        Text(store.userName.map { "\($0) · \(store.status)" } ?? store.status).font(.system(size:12))
-                        Spacer(); Image(systemName:"chevron.right").font(.system(size:9))
-                    }.foregroundStyle(GymTheme.muted)
                 }
                 VStack(spacing:18) {
                     HStack {
@@ -56,41 +47,46 @@ struct HomeView: View {
                     HStack { Text(Calendar.current.isDateInToday(selectedDay) ? "今天" : selectedDay.formatted(.dateTime.month().day())).font(.system(size:12)).foregroundStyle(GymTheme.muted); Spacer(); Image(systemName:"figure.strengthtraining.traditional").foregroundStyle(GymTheme.green) }
                     Text(store.draft?.name ?? (scheduled.isEmpty ? "休息日" : scheduled.map(\.name).joined(separator:" + "))).font(.system(size:29,weight:.bold))
                     Text(store.draft != nil ? "你的训练仍在进行，随时继续。" : routine.map { _ in "\(scheduled.flatMap(\.exercises).count) 个动作 · 按自己的节奏训练" } ?? "给身体一点恢复时间，也可以选择其他训练。").font(.system(size:13)).foregroundStyle(GymTheme.muted)
-                    GreenButton(title:store.draft != nil ? "继续训练" : "开始训练",icon:"play.fill") {
-                        store.selectedTab = 2
-                    }.accessibilityIdentifier("home-start-workout")
-                }.gymCard()
-                if selectedDay <= Date() {
-                    Button {dayNote = true} label: {Label("当天备注",systemImage:"note.text").frame(maxWidth:.infinity,minHeight:44)}
-                    if let note = (store.state["dayNotes"] as? [String:Any])?[dayString(selectedDay)] as? [String:Any] {
-                        Text([note["tag"] as? String ?? "",note["text"] as? String ?? ""].filter{!$0.isEmpty}.joined(separator:" · ")).font(.caption).foregroundStyle(GymTheme.muted)
-                    }
-                }
-                if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
-                HStack { SectionTitle(text:"体重"); Button("记录") { weightSheet = true }.font(.system(size:13,weight:.medium)) }
-                VStack(alignment:.leading,spacing:15) {
-                    if let last = store.bodyweights.last {
-                        HStack(alignment:.firstTextBaseline,spacing:5) { Text(decimal(number(last["w"]))).font(.system(size:35,weight:.bold,design:.rounded)); Text(store.unit).font(.subheadline).foregroundStyle(GymTheme.muted); Spacer(); Text(last["d"] as? String ?? "").font(.caption).foregroundStyle(GymTheme.muted) }
-                        WeightChart(points:store.bodyweights).frame(height:110)
+                    if store.draft != nil {
+                        GreenButton(title:"继续训练",icon:"play.fill") {
+                            store.selectedTab = 2
+                        }.accessibilityIdentifier("home-start-workout")
+                    } else if scheduled.isEmpty {
+                        GreenButton(title:"自由训练",icon:"figure.strengthtraining.traditional") {
+                            store.startFreestyle()
+                        }.accessibilityIdentifier("start-freestyle-workout")
+                        Button {
+                            store.selectedTab = 2
+                        } label: {
+                            Text("选择训练计划")
+                                .font(.subheadline)
+                                .foregroundStyle(GymTheme.green)
+                                .frame(maxWidth:.infinity,minHeight:44)
+                                .contentShape(Rectangle())
+                        }.buttonStyle(.plain).accessibilityIdentifier("home-select-plan")
                     } else {
-                        Image(systemName:"scalemass").font(.title2).foregroundStyle(GymTheme.green)
-                        Text("还没有称重记录").font(.headline)
-                        Text("记一下体重，曲线就开始了。").font(.subheadline).foregroundStyle(GymTheme.muted)
+                        GreenButton(title:"开始训练",icon:"play.fill") {
+                            store.start(scheduled)
+                        }.accessibilityIdentifier("home-start-workout")
+                        secondaryTrainingButton("自由训练",icon:"figure.strengthtraining.traditional",identifier:"start-freestyle-workout") {
+                            store.startFreestyle()
+                        }
                     }
-                }.frame(maxWidth:.infinity,alignment:.leading).gymCard()
-                HStack {
-                    stat("\(store.workouts.count)","累计训练")
-                    Divider().frame(height:35)
-                    stat("\(store.routines.count)","我的计划")
-                    Divider().frame(height:35)
-                    stat("\(store.exercises.count)","动作库")
                 }.gymCard()
+                if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
             }.padding(22)
-        }.refreshable { await store.refresh() }.sheet(isPresented:$dayNote) {DayNoteEditor(date:selectedDay)}.sheet(isPresented:$weightSheet) { WeightEntryView() }
+        }.refreshable { await store.refresh() }
     }
-    private func stat(_ value:String,_ label:String) -> some View {
-        VStack(spacing:6) { Text(value).font(.system(size:22,weight:.semibold,design:.rounded)); Text(label).font(.system(size:11)).foregroundStyle(GymTheme.muted) }.frame(maxWidth:.infinity)
+    private func secondaryTrainingButton(_ title:String,icon:String,identifier:String,action:@escaping () -> Void) -> some View {
+        Button(action:action) {
+            Label(title,systemImage:icon)
+                .font(.subheadline.weight(.semibold))
+                .frame(maxWidth:.infinity,minHeight:44)
+                .foregroundStyle(GymTheme.green)
+                .background(GymTheme.green.opacity(0.1),in:RoundedRectangle(cornerRadius:15))
+        }.buttonStyle(.plain).accessibilityIdentifier(identifier)
     }
+
 }
 struct WeightChart: View {
     let points: [[String:Any]]

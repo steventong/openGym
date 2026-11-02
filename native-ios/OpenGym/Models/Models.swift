@@ -15,18 +15,27 @@ struct Exercise: Codable, Identifiable, Hashable {
     var targetLabel: String { Vocabulary.label(target) }
     var searchText: String { "\(name) \(english) \(bodyLabel) \(targetLabel)" }
 
-    /// A session label does not include the gym suffix used to distinguish imported IDs.
-    var recordName: String {
-        // Remove the suffix before parsing: 档位（非kg） is not part of the translation.
+    /// Keep imported gym suffixes out of the training title and copied name.
+    var titleParts: (primary: String, secondary: String) {
         let importedName = name.components(separatedBy: " · ").first ?? name
         if id.hasPrefix("cimp"), let opening = importedName.firstIndex(of: "（"),
            let closing = importedName.lastIndex(of: "）"), opening < closing {
-            let chinese = String(importedName[importedName.index(after: opening)..<closing])
-            let english = String(importedName[..<opening]).trimmingCharacters(in: .whitespacesAndNewlines)
-            return "\(chinese)(\(english))"
+            return (String(importedName[importedName.index(after: opening)..<closing]),
+                    String(importedName[..<opening]).trimmingCharacters(in: .whitespacesAndNewlines))
         }
-        let english = english.trimmingCharacters(in: .whitespacesAndNewlines)
-        return english.isEmpty || english == name ? name : "\(name)(\(english))"
+        if id.hasPrefix("cimp"), let opening = importedName.firstIndex(of: "("), importedName.hasSuffix(")") {
+            return (String(importedName[..<opening]), String(importedName[importedName.index(after: opening)..<importedName.index(before: importedName.endIndex)]))
+        }
+        let translation = english.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (name, translation.isEmpty || translation == name ? "" : translation)
+    }
+    var recordName: String {
+        let parts = titleParts
+        return parts.secondary.isEmpty ? parts.primary : "\(parts.primary)(\(parts.secondary))"
+    }
+    var clipboardName: String {
+        let parts = titleParts
+        return parts.secondary.isEmpty ? parts.primary : "\(parts.primary)（\(parts.secondary)）"
     }
 
     func recordLabel(at index: Int) -> String { "\(index + 1).\(recordName)" }

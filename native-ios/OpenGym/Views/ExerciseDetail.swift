@@ -91,27 +91,43 @@ struct ExerciseDetail: View {
     @State private var saved = false
     @State private var editingCustom = false
     @State private var progress = false
+    @State private var copiedName = false
+    @State private var copyFeedbackID = UUID()
     var body: some View {
         ScrollView {
             VStack(alignment:.leading,spacing:22) {
                 HStack(alignment:.top) {
                     VStack(alignment:.leading,spacing:7) {
-                        Text(exercise.name).font(.system(size:24,weight:.bold))
-                        if !exercise.english.isEmpty { Text(exercise.english.capitalized).font(.system(size:13)).foregroundStyle(GymTheme.muted) }
+                        Text(exercise.titleParts.primary).font(.system(size:24,weight:.bold)).lineLimit(1).minimumScaleFactor(0.7)
+                        if !exercise.titleParts.secondary.isEmpty { Text(exercise.titleParts.secondary).font(.system(size:13)).foregroundStyle(GymTheme.muted) }
                     }
                     Spacer()
-                    Button { dismiss() } label: { Image(systemName:"xmark").font(.system(size:13,weight:.bold)).foregroundStyle(.gray).padding(10).background(.white.opacity(0.07),in:Circle()) }.accessibilityLabel("关闭动作详情")
+                    HStack(spacing: 8) {
+                        Button {
+                            UIPasteboard.general.string = exercise.clipboardName
+                            copiedName = true
+                            copyFeedbackID = UUID()
+                        } label: {
+                            detailActionIcon(copiedName ? "checkmark" : "doc.on.doc")
+                        }.accessibilityLabel(copiedName ? "已复制动作名称" : "复制动作名称")
+                            .accessibilityIdentifier("copy-exercise-name")
+                        Button { dismiss() } label: { detailActionIcon("xmark") }
+                            .accessibilityLabel("关闭动作详情")
+                    }.buttonStyle(.plain).fixedSize()
                 }
                 if store.mediaURL(exercise.id, video: true) != nil {
                   ZStack(alignment:.bottomTrailing) {
                     PlayerSurface(player:playback.player).frame(height:260).background(.white)
-                    if !playback.ready && !playback.failed { ProgressView().tint(.gray).frame(maxWidth:.infinity,maxHeight:.infinity) }
+                    if !playback.ready && !playback.failed {
+                        VStack(spacing:12) { ProgressView().tint(.gray); Text("正在打开动作视频").font(.caption) }
+                            .foregroundStyle(.black).frame(maxWidth:.infinity,maxHeight:.infinity)
+                    }
                     if playback.failed {
-                        VStack { Image(systemName:"wifi.exclamationmark"); Text("动画加载失败"); Button("重试") { loadVideo() } }.foregroundStyle(.black).frame(maxWidth:.infinity,maxHeight:.infinity).background(.white)
+                        VStack(spacing:12) { Image(systemName:"exclamationmark.triangle"); Text("动作视频播放失败").font(.caption); Button("重试") { loadVideo() } }.padding().foregroundStyle(.black).frame(maxWidth:.infinity,maxHeight:.infinity).background(.white)
                     } else {
                         Button { playback.toggle() } label: {
                             Label(playback.playing ? "点按暂停" : "继续播放",systemImage:playback.playing ? "pause.fill" : "play.fill").font(.system(size:11,weight:.medium)).padding(9).foregroundStyle(.white).background(.black.opacity(0.4),in:Capsule())
-                        }.padding(12).accessibilityIdentifier("animation-toggle")
+                        }.padding(12).accessibilityIdentifier("animation-toggle").disabled(!playback.ready)
                     }
                   }.clipShape(RoundedRectangle(cornerRadius:18)).accessibilityElement(children:.contain).accessibilityLabel("动作示范动画")
                 }
@@ -156,6 +172,12 @@ struct ExerciseDetail: View {
             .sheet(isPresented:$editingCustom) { CustomExerciseEditor(original:store.customExercises.first {$0["id"] as? String == exercise.id}) }
             .sheet(isPresented:$progress) { NavigationStack { ExerciseProgressView(initialID:exercise.id) } }
             .task(id:exercise.id) { loadVideo() }.onDisappear { playback.stop() }
+            .task(id:copyFeedbackID) {
+                guard copiedName else { return }
+                try? await Task.sleep(for: .milliseconds(1500))
+                guard !Task.isCancelled else { return }
+                copiedName = false
+            }
             .onChange(of:scenePhase) { _, phase in if phase != .active { playback.stop() } else { playback.resume() } }
             .confirmationDialog("加入哪个计划？",isPresented:$choosePlan,titleVisibility:.visible) {
                 ForEach(store.routines) { routine in Button(routine.name) { Task { saved = await store.appendExercise(exercise,to:routine.id) } } }
@@ -163,9 +185,20 @@ struct ExerciseDetail: View {
                 Button("取消",role:.cancel) {}
             }
     }
+    private func detailActionIcon(_ symbol: String) -> some View {
+        Image(systemName: symbol)
+            .font(.system(size:13,weight:.bold)).foregroundStyle(.gray)
+            .frame(width:44,height:44)
+            .background(.white.opacity(0.07),in:Circle())
+    }
     private var estimateText:String {
         guard let result = try? store.personalInfo("oneRM",["weight":weight,"reps":reps]), let value = result["value"] as? Double else { return "次数过高，无法可靠估算" }
         return "\(decimal(value)) \(store.unit)"
     }
-    private func loadVideo() { if let url = store.mediaURL(exercise.id,video:true) { playback.load(url) } }
+    private func loadVideo() {
+        if let local = store.mediaURL(exercise.id,video:true) {
+            playback.load(local)
+            if scenePhase != .active { playback.stop() }
+        }
+    }
 }

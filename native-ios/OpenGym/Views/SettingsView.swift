@@ -5,6 +5,7 @@ struct SettingsView: View {
     @State private var server = ""
     @State private var code = ""
     @State private var notice = false
+    @State private var loaded = false
     var body: some View {
         NavigationStack {
             Form {
@@ -34,6 +35,17 @@ struct SettingsView: View {
                 } header: { Text("Apple 健康") } footer: {
                     Text("读取 Apple 健康体重并同步到当前账号，不写回健康。权限可在健康 App 中管理。")
                 }
+                Section {
+                    Toggle("同步训练到苹果健身", isOn: Binding(get: { store.workoutHealth.enabled }, set: { value in Task { await store.workoutHealth.setEnabled(value) } }))
+                        .disabled(!store.workoutHealth.available || !store.workoutHealth.canChangeSetting)
+                        .accessibilityIdentifier("health-workout-enabled")
+                    Text(store.workoutHealth.status).font(.caption).foregroundStyle(.secondary)
+                    Button("授权训练与运动指标") { Task { await store.workoutHealth.authorize() } }
+                        .disabled(store.workoutHealth.busy || !store.workoutHealth.available)
+                    Button("重试训练同步") { store.workoutHealth.retry(wakeWatch: true) }.disabled(!store.workoutHealth.available)
+                } header: { Text("Apple 健身 · 训练同步") } footer: {
+                    Text("开启后，下次训练开始与结束时自动同步为传统力量训练。已连接的 Apple Watch 优先记录心率与活动卡路里；首次使用需在手表授权。无系统数据时留空。运动健康指标仅保留在设备与 Apple 健康中。")
+                }
                 Section("个人设置") {
                     NavigationLink("健身房器械筛选") { EquipmentProfilesView() }
                     NavigationLink("训练偏好与单位") { PersonalSettingsView() }
@@ -47,7 +59,7 @@ struct SettingsView: View {
                     Button("开源许可与素材说明") { notice = true }
                 }
             }.navigationTitle("设置").toolbar { ToolbarItem(placement:.topBarTrailing) { Button("完成") { dismiss() } } }
-                .onAppear { server = store.serverURL }
+                .onAppear { guard !loaded else { return }; loaded = true; server = store.serverURL }
                 .sheet(isPresented:$notice) {
                     ScrollView { Text((try? String(contentsOf:Bundle.main.url(forResource:"NOTICE",withExtension:"txt")!)) ?? "openGym · GNU AGPL v3.0").font(.system(size:12)).padding() }
                 }

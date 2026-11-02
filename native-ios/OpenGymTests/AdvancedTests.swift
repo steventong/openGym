@@ -1,8 +1,60 @@
 import XCTest
+import SwiftUI
+import UIKit
 @testable import OpenGym
 @MainActor final class AdvancedTests:XCTestCase {
     let day = "2026-10-23"
     let now = 1_792_699_200_000.0
+    func testRestCountdownDoesNotResizeExerciseCard() async throws {
+        let store = GymStore()
+        let catalogue = try XCTUnwrap(Bundle.main.url(forResource: "catalogue", withExtension: "json"))
+        store.registerCatalogue(try JSONDecoder().decode([Exercise].self, from: Data(contentsOf: catalogue)))
+        let row: [String: Any] = ["w": 20, "r": 8]
+        let entry: [String: Any] = ["id": "0289", "sets": [row], "target": ["mode": "reps"]]
+        let restStates: [Date?] = [nil, Date().addingTimeInterval(90), Date().addingTimeInterval(-10)]
+        for width: CGFloat in [280, 350] {
+            for textSize: DynamicTypeSize in [.large, .accessibility3] {
+                var baseline: CGSize?
+                for (index, restUntil) in restStates.enumerated() {
+                    let view = TrainingExerciseEditor(
+                        showingOptions: .constant(false), entries: [entry], names: ["哑铃卧推"], selected: .constant(0),
+                        rows: [TrainingEditorRow(id: "0", raw: row)], unit: "kg", previous: "上次 20 kg × 8",
+                        note: .constant(""), identifier: "layout-test", restUntil: restUntil,
+                        startRest: { _, _ in }, showDetails: {}, addSet: {}, copySet: { _ in },
+                        removeSet: { _ in }, editSet: { _, _ in }
+                    ) { EmptyView() }
+                        .environment(store).environment(\.dynamicTypeSize, textSize)
+                        .preferredColorScheme(.dark).tint(GymTheme.green)
+                        .frame(width: width).ignoresSafeArea()
+                    let controller = UIHostingController(rootView: view)
+                    let size = controller.sizeThatFits(in: CGSize(width: width, height: .greatestFiniteMagnitude))
+                    if let baseline {
+                        XCTAssertEqual(size.width, baseline.width, accuracy: 0.5)
+                        XCTAssertEqual(size.height, baseline.height, accuracy: 0.5,
+                                       "Rest state \(index) resized the card at width \(width), text size \(textSize)")
+                    } else {
+                        baseline = size
+                    }
+                    if width == 350 && textSize == .large {
+                        let window = UIWindow(frame: CGRect(origin: .zero, size: size))
+                        window.rootViewController = controller
+                        window.makeKeyAndVisible()
+                        controller.view.frame = window.bounds
+                        controller.view.layoutIfNeeded()
+                        try await Task.sleep(for: .milliseconds(250))
+                        let image = UIGraphicsImageRenderer(size: size).image { _ in
+                            controller.view.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+                        }
+                        let attachment = XCTAttachment(image: image)
+                        attachment.name = "rest-layout-\(index)"
+                        attachment.lifetime = .keepAlways
+                        add(attachment)
+                        window.isHidden = true
+                    }
+                }
+            }
+        }
+    }
     func state(_ configs:[[String:Any]])->[String:Any] { ["unit":"kg","restSec":90,"bodyweight":[],"workouts":[],"routines":[["id":"a","name":"A","excludeFromProgression":true,"ex":configs]],"week":[:],"dayPlan":[:]] }
     func begin(_ state:[String:Any],id:String = "test")->[String:Any] { try! WebRules.shared.call("beginAdvanced",payload:["state":state,"ids":["a"],"id":id,"now":now,"day":day]) as! [String:Any] }
     func testEmptyOrMissingPlanDoesNotSilentlyStartFreestyle() throws {
@@ -121,6 +173,50 @@ import XCTest
         let store = GymStore(); store.state = s; store.draft = try TrainingDraft.fromWeb(begin(s),unit:"kg")
         store.liveRowAction(entry:0,set:0,action:["action":"toggle"])
         XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int,1)
+        XCTAssertNil(store.restUntil)
+    }
+    func testFinalSetClearsRestEvenWithAnotherExerciseRemaining() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let s = state([["id": "0150", "sets": 2, "reps": 8, "weight": 20],
+                       ["id": "0025", "sets": 2, "reps": 8, "weight": 30]])
+        let store = GymStore(userID: "rest-completion", storage: LocalTrainingStorage(root: root))
+        store.state = s
+        store.draft = try TrainingDraft.fromWeb(begin(s), unit: "kg")
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
+        XCTAssertNotNil(store.restUntil)
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
+        XCTAssertNil(store.restUntil)
+        XCTAssertNil(store.watchSnapshot().restEnd)
+        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 0)
+
+        // Rechecking the final set must also clear an existing timer instead of preserving it.
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
+        store.startRest(entry: 0, seconds: 90)
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
+        XCTAssertNil(store.restUntil)
+        let restored = GymStore(userID: "rest-completion", storage: LocalTrainingStorage(root: root))
+        restored.restoreDraft()
+        XCTAssertNil(restored.restUntil)
+    }
+    func testSupersetRestsBetweenRoundsButNotAfterFinalRound() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let configs: [[String: Any]] = [["id": "0150", "sets": 2, "reps": 8, "weight": 20],
+                                       ["id": "0025", "sets": 2, "reps": 8, "weight": 30],
+                                       ["id": "0289", "sets": 2, "reps": 8, "weight": 10]]
+        let grouped = try WebRules.shared.call("planGroup", payload: ["rows": configs, "operation": "pair", "index": 0]) as! [[String: Any]]
+        let s = state(grouped)
+        let store = GymStore(userID: "superset-rest-completion", storage: LocalTrainingStorage(root: root))
+        store.state = s
+        store.draft = try TrainingDraft.fromWeb(begin(s), unit: "kg")
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
+        XCTAssertNil(store.restUntil)
+        XCTAssertTrue(store.liveRowAction(entry: 1, set: 0, action: ["action": "toggle"]))
+        XCTAssertNotNil(store.restUntil)
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
+        XCTAssertNil(store.restUntil)
+        XCTAssertTrue(store.liveRowAction(entry: 1, set: 1, action: ["action": "toggle"]))
         XCTAssertNil(store.restUntil)
     }
 }

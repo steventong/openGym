@@ -1,5 +1,13 @@
 import XCTest
+import Observation
 @testable import OpenGym
+
+private final class ObservationChangeCount: @unchecked Sendable {
+    private let lock = NSLock()
+    private var changes = 0
+    var value:Int { lock.withLock { changes } }
+    func record() { lock.withLock { changes += 1 } }
+}
 
 final class StubProtocol: URLProtocol {
     static var handler: ((URLRequest) throws -> (Int,[String:Any]))?
@@ -126,6 +134,12 @@ final class OpenGymTests: XCTestCase {
         XCTAssertEqual(imported.recordLabel(at: 3), "4.绳索三头肌下压(V形把手)(Cable Triceps Pushdown (V-Bar))")
         XCTAssertEqual(imported.recordLabel(at: 0), "1.绳索三头肌下压(V形把手)(Cable Triceps Pushdown (V-Bar))")
         let builtIn = Exercise(id: "0289", name: "哑铃卧推", english: "dumbbell bench press", bodyPart: "chest", equipment: "dumbbell", target: "pectorals", category: "strength", instructions: [], description: "")
+        XCTAssertEqual(imported.titleParts.primary, "绳索三头肌下压(V形把手)")
+        XCTAssertEqual(imported.titleParts.secondary, "Cable Triceps Pushdown (V-Bar)")
+        XCTAssertEqual(imported.clipboardName, "绳索三头肌下压(V形把手)（Cable Triceps Pushdown (V-Bar)）")
+        XCTAssertEqual(builtIn.titleParts.primary, "哑铃卧推")
+        XCTAssertEqual(builtIn.titleParts.secondary, "dumbbell bench press")
+        XCTAssertEqual(builtIn.clipboardName, "哑铃卧推（dumbbell bench press）")
         XCTAssertEqual(builtIn.recordLabel(at: 1), "2.哑铃卧推(dumbbell bench press)")
         XCTAssertEqual(Exercise.custom(["id": "custom", "n": "我的动作 · 慢速"] )?.recordName, "我的动作 · 慢速")
         XCTAssertEqual(Exercise.custom(["id": "cimp-example", "n": "哑铃卧推(Dumbbell Bench Press)"] )?.recordName, "哑铃卧推(Dumbbell Bench Press)")
@@ -153,5 +167,49 @@ final class OpenGymTests: XCTestCase {
         XCTAssertEqual(store.exercises.count, 1)
         XCTAssertEqual(store.exercise("cimp-valid")?.name, "最终名称")
         XCTAssertNil(store.exercise("invalid"))
+    }
+
+    @MainActor func testUnrelatedSyncDoesNotInvalidateExerciseViews() throws {
+        let store = GymStore()
+        let exercise = try XCTUnwrap(Exercise.custom(["id":"builtin","n":"测试动作"]))
+        store.registerCatalogue([exercise])
+        store.state = ["customEx":[["id":"custom","n":"自定义动作","_ts":1]]]
+        let invalidated = ObservationChangeCount()
+        withObservationTracking {
+            _ = store.exercises
+            _ = store.exercise("custom")
+        } onChange: { invalidated.record() }
+        store.state["workouts"] = [["id":"new-workout"]]
+        store.state["bodyweight"] = [["d":"2026-11-02","w":70]]
+        store.state["customEx"] = [["id":"custom","n":"自定义动作","_ts":2]]
+        store.registerCatalogue([exercise])
+        XCTAssertEqual(invalidated.value,0)
+        XCTAssertEqual(store.exercise("custom")?.name,"自定义动作")
+    }
+
+    @MainActor func testIdenticalRefreshDoesNotInvalidateStateButNewServerStampsDo() async throws {
+        let config = URLSessionConfiguration.ephemeral; config.protocolClasses = [StubProtocol.self]
+        let api = APIClient(address:try ServerAddress("https://test.invalid"),token:"test",session:URLSession(configuration:config))
+        let store = GymStore(client:api,userID:"refresh-ui",storage:LocalTrainingStorage(root:FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)))
+        var server:[String:Any] = ["unit":"kg","_ts":1,"_wid":"first","workouts":[]]
+        store.state = server
+        StubProtocol.handler = { request in
+            switch request.url!.path {
+            case "/api/health": return (200,["ok":true])
+            case "/api/me": return (200,["user":["id":"refresh-ui","name":"QA"]])
+            default: return (200,["state":server])
+            }
+        }
+        defer { StubProtocol.handler = nil }
+        let changes = ObservationChangeCount()
+        withObservationTracking { _ = store.state } onChange: { changes.record() }
+        await store.refresh()
+        XCTAssertEqual(changes.value,0)
+        XCTAssertNotNil(store.lastSync)
+
+        server["_ts"] = 2; server["_wid"] = "second"
+        await store.refresh()
+        XCTAssertEqual(changes.value,1)
+        XCTAssertEqual(store.state["_wid"] as? String,"second")
     }
 }

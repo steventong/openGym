@@ -27,7 +27,6 @@ struct LibraryView: View {
                         Text("\(store.exercises.count) 个动作").font(.subheadline).foregroundStyle(GymTheme.muted)
                     }
                     Spacer()
-                    Button { store.showSettings = true } label: { Image(systemName:"slider.horizontal.3").font(.system(size:20)).foregroundStyle(GymTheme.green).padding(12).background(GymTheme.green.opacity(0.12),in:RoundedRectangle(cornerRadius:12)) }.accessibilityLabel("服务设置")
                 }
                 HStack(spacing:10) {
                     HStack {

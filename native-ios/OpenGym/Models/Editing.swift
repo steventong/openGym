@@ -34,6 +34,16 @@ struct RawRow: Identifiable {
 struct WorkoutRecord: Identifiable {
     let raw: [String:Any]
     var id: String { Self.key(raw) }
+    var completedSetCount: Int {
+        (raw["entries"] as? [[String:Any]] ?? []).reduce(0) { total, entry in
+            total + (entry["sets"] as? [[String:Any]] ?? []).reduce(0) { count, row in
+                if let sides = row["sides"] as? [String:[String:Any]] {
+                    return count + [sides["L"],sides["R"]].compactMap { $0 }.filter { $0["done"] as? Bool == true }.count
+                }
+                return count + (row["done"] as? Bool == true ? 1 : 0)
+            }
+        }
+    }
     static func key(_ raw:[String:Any]) -> String {
         if let id = raw["id"] as? String { return id }
         return "\(raw["d"] as? String ?? "undefined")|\(raw["start"].map { String(describing:$0) } ?? "undefined")"

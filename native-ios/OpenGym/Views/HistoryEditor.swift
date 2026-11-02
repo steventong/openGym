@@ -9,6 +9,8 @@ struct HistoryEditor: View {
     @State private var restored = false
     @State private var detail: Exercise?
     @State private var error: String?
+    @State private var deleting = false
+    @State private var showExerciseNote = false
     @State private var undoEntries: [HistoryEntryDraft]?
     @State private var undoExpected: [[String: Any]]?
     init(record: WorkoutRecord, unit: String) {
@@ -34,7 +36,7 @@ struct HistoryEditor: View {
                         HStack { Text("时长（分钟）"); Spacer(); TextField("分钟", text: binding.minutes).keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 100) }
                         TextField("训练备注", text: binding.note, axis: .vertical).lineLimit(2...5).accessibilityIdentifier("history-note")
                     }.gymCard()
-                    ExerciseManagementControls(entries: form.entries.map(\.value), selected: form.selected, history: true) { action, index, direction, id in
+                    ExerciseManagementControls(entries: form.entries.map(\.value), selected: form.selected, history: true, showExerciseNote: { showExerciseNote = true }) { action, index, direction, id in
                         do { try form.manageExercise(action: action, index: index, direction: direction, id: id, state: store.state); persist() }
                         catch { self.error = error.localizedDescription }
                     }
@@ -51,6 +53,8 @@ struct HistoryEditor: View {
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
                             Button("保存并提交") { Task { await submit() } }.accessibilityIdentifier("save-history")
+                            Divider()
+                            WorkoutPersonalActions(record:WorkoutRecord(raw:form.proposed)) { deleting = true }
                         } label: { Image(systemName: "ellipsis.circle").frame(width: 44, height: 44) }.disabled(store.syncing).accessibilityLabel("记录菜单")
                     }
                 }
@@ -59,6 +63,16 @@ struct HistoryEditor: View {
                     form = HistoryForm(original: record.raw, unit: unit, saved: store.historyEdits[record.id]); restored = true
                 }
                 .sheet(item: $detail) { ExerciseDetail(exercise: $0) }
+                .confirmationDialog("删除训练记录？",isPresented:$deleting,titleVisibility:.visible) {
+                    Button("删除",role:.destructive) {
+                        Task {
+                            if await store.deletePersonalWorkout(WorkoutRecord(raw:form.original)) { dismiss() }
+                            else { error = store.editError }
+                        }
+                    }
+                } message: {
+                    Text("删除后无法撤销；其他训练保留，并重新核对相关个人纪录。有本机编辑草稿时，请先保存并提交后再删除。")
+                }
                 .alert("内容已保留", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) { Button("知道了", role: .cancel) {} } message: { Text(error ?? "") }
                 .interactiveDismissDisabled(store.syncing || store.localSaveError != nil)
         }.tint(GymTheme.green)
@@ -68,7 +82,7 @@ struct HistoryEditor: View {
         if form.entries.indices.contains(i) {
             let entry = form.entries[i]
             TrainingExerciseEditor(
-                entries: form.entries.map(\.value), names: form.entries.indices.map(entryName),
+                showingOptions: $showExerciseNote, entries: form.entries.map(\.value), names: form.entries.indices.map(entryName),
                 selected: binding.selected,
                 rows: entry.sets.map { TrainingEditorRow(id: $0.id.uuidString, raw: $0.raw) },
                 unit: form.unit, inputState: store.state.merging(["unit": form.unit]) { _, new in new }, previous: store.previousExerciseText(entry.raw, before: number(form.original["start"]), exclude: record.id),

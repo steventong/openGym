@@ -4,23 +4,25 @@ struct WorkoutView: View {
     @State private var confirmFinish = false
     @State private var confirmDelete = false
     @State private var showNote = false
+    @State private var showExerciseNote = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 if let d = store.draft {
                     sessionHeader(d)
-                    let info = (try? WebRules.shared.call("sessionInfo", payload: ["active": d.activeJSON])) as? [String: Any] ?? [:]
-                    ProgressView(value: number(info["done"]), total: max(1, number(info["total"]))).tint(GymTheme.green)
+                    if store.workoutHealth.enabled, let report = store.workoutHealth.report(for: d) {
+                        HStack {
+                            if let energy = report.activeCalories { Label("\(energy, specifier: "%.0f") 活动千卡", systemImage: "flame.fill").foregroundStyle(.orange) }
+                            if report.state == .running, let heart = report.heartRate { Label("\(heart, specifier: "%.0f") 次/分", systemImage: "heart.fill").foregroundStyle(.red) }
+                        }.font(.caption.monospacedDigit())
+                    }
                     if !d.rawEntries.isEmpty {
                         let index = min(max(0, d.activeJSON["cur"] as? Int ?? 0), d.rawEntries.count - 1)
                         exerciseCard(d, index: index)
                     }
-                    Text("输入自动保存到本机。右上角菜单可保存训练并提交；提交失败后保留草稿，可重复提交。").font(.caption).foregroundStyle(GymTheme.muted)
                 } else {
-                    Text("开始训练").font(.system(size: 34, weight: .bold))
-                    EmptyCard(icon: "figure.strengthtraining.traditional", title: "准备好开始了吗？", detail: "选择训练计划，或开始自由训练，边练边添加动作。")
-                    GreenButton(title: "自由训练", icon: "figure.strengthtraining.traditional") { store.startFreestyle() }
-                        .accessibilityIdentifier("start-freestyle-workout")
+                    Text("选择训练计划").font(.system(size: 34, weight: .bold))
+                    EmptyCard(icon: "figure.strengthtraining.traditional", title: "准备好开始了吗？", detail: "选择一个训练计划开始训练。")
                     let scheduled = store.scheduledRoutines(on: Date())
                     if !scheduled.isEmpty { GreenButton(title: "开始今日安排", icon: "play.fill") { store.start(scheduled) } }
                     ForEach(store.routines) { r in GreenButton(title: r.name, icon: "play.fill") { store.start(r) } }
@@ -28,6 +30,7 @@ struct WorkoutView: View {
                 }
             }.padding(20).disabled(store.syncing)
         }.scrollDismissesKeyboard(.interactively)
+            .sheet(isPresented: $showNote) { WorkoutNoteEditor() }
             .confirmationDialog("保存训练并提交？", isPresented: $confirmFinish, titleVisibility: .visible) {
                 Button("保存并提交") { Task { await store.finish() } }
                 Button("继续训练", role: .cancel) {}
@@ -43,23 +46,30 @@ struct WorkoutView: View {
     private func name(_ entry: [String: Any]) -> String { store.exercise(entry["id"] as? String ?? "")?.recordName ?? "自定义动作" }
     private func sessionHeader(_ d: TrainingDraft) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top) {
+            HStack(alignment: .center, spacing: 8) {
                 TextField("训练名称", text: Binding(get: { d.name }, set: { text in store.changeActive { $0["name"] = text } }))
                     .font(.headline).accessibilityIdentifier("live-workout-name")
                 Spacer(minLength: 8)
-                LiveExerciseManagement()
-                Menu {
-                    Button(showNote ? "收起训练备注" : "训练备注", systemImage: "note.text") { showNote.toggle() }
-                    Button("保存训练并提交") { confirmFinish = true }.disabled(d.completedSets == 0 || store.workTimer != nil).accessibilityIdentifier("finish-workout")
-                    Button(role: .destructive) { confirmDelete = true } label: {
-                        Label("删除训练", systemImage: "trash")
-                    }.accessibilityIdentifier("delete-workout")
-                } label: { Image(systemName: "ellipsis.circle").font(.title2).frame(width: 48, height: 48) }.accessibilityLabel("训练菜单")
+                HStack(spacing: 4) {
+                    Image(systemName: "clock")
+                    Text(d.start, style: .timer).monospacedDigit().fixedSize()
+                }.font(.caption).foregroundStyle(GymTheme.muted)
+                    .accessibilityLabel("训练时长").accessibilityIdentifier("workout-duration")
+                LiveExerciseManagement(showExerciseNote: { showExerciseNote = true }) {
+                    Section("训练") {
+                        Button("训练备注", systemImage: "note.text") { showNote = true }
+                            .accessibilityIdentifier("workout-note-menu")
+                        Button("保存训练并提交", systemImage: "checkmark.circle") { confirmFinish = true }.disabled(d.completedSets == 0 || store.workTimer != nil).accessibilityIdentifier("finish-workout")
+                        Button(role: .destructive) { confirmDelete = true } label: {
+                            Label("删除训练", systemImage: "trash")
+                        }.accessibilityIdentifier("delete-workout")
+                    }
+                }
             }
-            HStack { Text("训练时长"); Spacer(); Text(d.start, style: .timer).monospacedDigit() }.font(.caption).foregroundStyle(GymTheme.muted)
-            if showNote {
-                TextField("本次训练备注", text: Binding(get: { d.activeJSON["note"] as? String ?? "" }, set: { text in store.changeActive { $0["note"] = text } }), axis: .vertical)
-                .font(.subheadline).accessibilityIdentifier("live-workout-note")
+            if let note = d.activeJSON["note"] as? String, !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Text(note).font(.subheadline).foregroundStyle(GymTheme.muted)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityIdentifier("live-workout-note-display")
             }
         }
     }
@@ -67,12 +77,13 @@ struct WorkoutView: View {
         let entry = d.rawEntries[e]
         let rows = entry["sets"] as? [[String: Any]] ?? []
         return TrainingExerciseEditor(
-            entries: d.rawEntries, names: d.rawEntries.map(name),
+            showingOptions: $showExerciseNote, entries: d.rawEntries, names: d.rawEntries.map(name),
             selected: Binding(get: { e }, set: { store.selectLiveEntry($0) }),
             rows: rows.enumerated().map { TrainingEditorRow(id: "\(e)-\($0.offset)", raw: $0.element) },
             unit: d.unit, inputState: store.state.merging(["unit": d.unit]) { _, new in new }, previous: store.previousExerciseText(entry, before: d.start.timeIntervalSince1970 * 1000, exclude: d.id),
             note: Binding(get: { entry["note"] as? String ?? "" }, set: { store.setLiveNote(entry: e, text: $0) }),
             identifier: "live", timerRunning: store.workTimer != nil,
+            restUntil: store.restEntry == e ? store.restUntil : nil,
             startTimer: { store.startWorkTimer(entry: e, set: $0) },
             startRest: { store.startRest(entry: e, seconds: $1, set: $0) },
             showDetails: { store.selectedExercise = store.exercise(entry["id"] as? String ?? "") },
@@ -83,24 +94,7 @@ struct WorkoutView: View {
             undoRemove: store.canUndoSetRemoval ? { store.undoSetRemoval() } : nil
         ) {
             if let timer = store.workTimer, timer["entry"] as? Int == e { timerCard(timer) }
-            if let until = store.restUntil, store.restEntry == e { restCard(until) }
-
         }
-    }
-    private func restCard(_ until: Date) -> some View {
-        TimelineView(.periodic(from: .now, by: 1)) { context in
-            let seconds = max(0, Int(ceil(until.timeIntervalSince(context.date))))
-            VStack(spacing: 6) {
-                HStack { Label(seconds > 0 ? "组间休息" : "休息结束", systemImage: "timer"); Spacer(); Text(String(format: "%02d:%02d", seconds / 60, seconds % 60)).monospacedDigit() }
-                HStack {
-                    Button("−15 秒") { store.adjustRest(by: -15) }.accessibilityIdentifier("rest-minus")
-                    Spacer()
-                    Button("+15 秒") { store.adjustRest(by: 15) }.accessibilityIdentifier("rest-plus")
-                    Spacer()
-                    Button("跳过") { store.restUntil = nil }
-                }.frame(minHeight: 44)
-            }.font(.subheadline).foregroundStyle(GymTheme.green)
-        }.accessibilityIdentifier("card-rest-timer")
     }
     private func timerCard(_ timer: [String: Any]) -> some View {
         TimelineView(.periodic(from: .now, by: 1)) { c in
@@ -111,5 +105,26 @@ struct WorkoutView: View {
                 HStack { Button(paused ? "继续" : "暂停") { store.pauseWorkTimer() }; Spacer(); Button("提前完成") { store.finishWorkTimer() }; Button("取消", role: .cancel) { store.finishWorkTimer(cancel: true) } }.font(.subheadline)
             }.foregroundStyle(GymTheme.green).accessibilityIdentifier("work-timer")
         }
+    }
+}
+
+private struct WorkoutNoteEditor: View {
+    @Environment(GymStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("本次训练备注") {
+                    TextField("填写备注", text: Binding(
+                        get: { store.draft?.activeJSON["note"] as? String ?? "" },
+                        set: { text in store.changeActive { $0["note"] = text } }
+                    ), axis: .vertical)
+                        .lineLimit(3...6).accessibilityIdentifier("live-workout-note")
+                }
+            }.navigationTitle("训练备注").navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() } } }
+        }.presentationDetents([.medium, .large]).presentationDragIndicator(.visible)
+            .onChange(of: store.draft?.id) { _, _ in dismiss() }
     }
 }

@@ -9,6 +9,7 @@ struct CoachProposalView: View {
     @State private var schedule = true
     @State private var confirmApply = false
     @State private var confirmDismiss = false
+    @State private var selectionLoaded = false
     var body: some View {
         let presentation = session.presentation(proposal,history:historical)
         let p = presentation.coachObject("proposal")
@@ -60,7 +61,10 @@ struct CoachProposalView: View {
                 if kind != "debrief" { CoachTextAction(title:"拒绝这份建议") { confirmDismiss = true }.disabled(session.locked).accessibilityIdentifier("coach-dismiss") }
             }
         }.gymCard()
-        .onAppear { selected = Set(p.coachObjects("changes").filter { $0.coachText("status") != "stale" }.map { $0.coachText("id") }) }
+        .onAppear {
+            guard !selectionLoaded else { return }; selectionLoaded = true
+            selected = Set(p.coachObjects("changes").filter { $0.coachText("status") != "stale" }.map { $0.coachText("id") })
+        }
         .onChange(of:p.coachObjects("changes").filter { $0.coachText("status") != "stale" }.map { $0.coachText("id") }) { _,ids in selected.formIntersection(ids) }
         .confirmationDialog(kind == "debrief" ? "保存到教练历史？" : "确认应用教练建议？",isPresented:$confirmApply,titleVisibility:.visible) {
             Button(kind == "debrief" ? "保存复盘" : "确认应用") { Task { await session.resolve(proposal,accepted:Array(selected),schedule:schedule) } }

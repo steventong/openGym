@@ -2,6 +2,22 @@ import XCTest
 @testable import OpenGym
 
 final class PersonalFeaturesTests:XCTestCase {
+    func testTrendPointIdentitySurvivesRedrawAndValueChanges() {
+        let date = Date(timeIntervalSince1970:1000)
+        func points(_ value:Double) -> [TrendPoint] {
+            TrendPoint.identified([
+                TrendPoint(date:date,value:value,series:"第 1 组"),
+                TrendPoint(date:date,value:60,series:"第 1 组"),
+                TrendPoint(date:date,value:70,series:"第 2 组")
+            ])
+        }
+        let original = points(50), updated = points(55)
+        XCTAssertEqual(original.map(\.id),updated.map(\.id))
+        XCTAssertEqual(Set(original.map(\.id)).count,3)
+        let prepended = TrendPoint.identified([TrendPoint(date:date.addingTimeInterval(-100),value:40)] + updated)
+        XCTAssertEqual(Array(prepended.dropFirst().map(\.id)),original.map(\.id))
+        XCTAssertEqual(TrendPoint(date:date,value:70).id,TrendPoint(date:date,value:71).id)
+    }
     @MainActor private func rule(_ action:String,_ state:[String:Any],_ extra:[String:Any] = [:]) throws -> [String:Any] {
         try WebRules.shared.call("personalInfo",payload:extra.merging(["state":state,"action":action]){_,new in new}) as! [String:Any]
     }
@@ -35,6 +51,16 @@ final class PersonalFeaturesTests:XCTestCase {
         let result = try rule("workoutText",[:],["workout":workout(),"names":["0025":"卧推"]])
         let text = result["text"] as! String
         XCTAssertTrue(text.contains("卧推"));XCTAssertFalse(text.contains("[object Object]"));XCTAssertTrue(text.contains("60"))
+    }
+    func testHistorySummaryCountsCompletedSidesLikeWeb() {
+        let record = WorkoutRecord(raw:["entries":[["sets":[
+            ["done":true], ["done":false], ["done":true,"phase":"warmup"],
+            ["sides":["L":["done":true],"R":["done":false]]],
+            ["sides":["L":["done":true],"R":["done":true]]],
+            ["sides":["L":["done":false],"R":["done":false]]]
+        ]]]])
+        XCTAssertEqual(record.completedSetCount,5)
+        XCTAssertEqual(WorkoutRecord(raw:[:]).completedSetCount,0)
     }
     @MainActor func testPlanRoundTripConvertsUnitsAndExcludesPrivateData() throws {
         let state:[String:Any] = ["unit":"kg","routines":[["id":"r","name":"计划","ex":[["id":"0025","sets":3,"reps":8,"weight":60]]]],"favEx":["0025"],"coach":["secret":"private"]]

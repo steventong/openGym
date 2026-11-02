@@ -14,6 +14,8 @@ struct BodyRecordsView: View {
     @State private var range = 90
     @State private var goal = ""
     @State private var goalOriginal:[String:Any] = [:]
+    @State private var goalLoaded = false
+    @State private var goalUnit = "kg"
     @State private var issue:String?
     private var collection:String { measurements ? "measurements" : "bodyweight" }
     private var records:[[String:Any]] { (store.state[collection] as? [[String:Any]] ?? []).sorted { ($0["d"] as? String ?? "") < ($1["d"] as? String ?? "") } }
@@ -34,11 +36,11 @@ struct BodyRecordsView: View {
                 Button(measurements ? "记录围度" : "记录体重") { editor = PersonalRecord() }.accessibilityIdentifier("add-body-record")
             }
             if !measurements {
-                Section("目标体重（\(store.unit)）") {
+                Section("目标体重（\(goalUnit)）") {
                     TextField("留空取消目标",text:$goal).keyboardType(.decimalPad)
                     Button("保存目标") {
                         guard goal.isEmpty || (TrainingInput.value(goal).map { $0 > 0 && $0 < 1000 } ?? false) else { issue = "请输入有效目标体重。"; return }
-                        let unit = store.unit
+                        let unit = goalUnit
                         Task { if await store.savePersonalFields(original:goalOriginal,proposed:goal.isEmpty ? [:] : ["targetW":TrainingInput.value(goal)!],unit:unit) { goalOriginal = store.state.filter { $0.key == "targetW" } } else { issue = store.editError } }
                     }.disabled(store.syncing)
                 }
@@ -59,7 +61,7 @@ struct BodyRecordsView: View {
                 }
             }
         }.navigationTitle(measurements ? "身体围度" : "体重记录").navigationBarTitleDisplayMode(.inline)
-            .onAppear { goalOriginal = store.state.filter{$0.key == "targetW"}; goal = store.state["targetW"].map { personalNumber(number($0)) } ?? "" }
+            .onAppear { guard !goalLoaded else { return }; goalLoaded = true; goalUnit = store.unit; goalOriginal = store.state.filter{$0.key == "targetW"}; goal = store.state["targetW"].map { personalNumber(number($0)) } ?? "" }
             .sheet(item:$editor) { record in BodyRecordEditor(original:record.raw,measurements:measurements,fields:fields,unit:store.unit) }
             .confirmationDialog("删除这条记录？",isPresented:Binding(get:{deleting != nil},set:{if !$0 { deleting = nil }}),titleVisibility:.visible) {
                 Button("删除",role:.destructive) { guard let row = deleting?.raw else { return }; Task { if !(await store.savePersonalRecord(collection:collection,key:"d",original:row,proposed:nil)) { issue = store.editError } } }
@@ -71,7 +73,25 @@ struct BodyRecordsView: View {
         return fields.filter { MeasureField.value(row,$0.id)>0 }.prefix(4).map { "\($0.name) \(decimal(MeasureField.value(row,$0.id) / (store.unit == "lb" && $0.id != "bodyFat" ? 2.54:1)))" }.joined(separator:" · ")
     }
 }
-struct TrendPoint:Identifiable { let id = UUID(); let date:Date; let value:Double; var series = "" }
+struct TrendPoint:Identifiable {
+    struct ID:Hashable { let date:Date; let series:String; let occurrence:Int }
+    let date:Date
+    let value:Double
+    var series = ""
+    var occurrence = 0
+    var id:ID { ID(date:date,series:series,occurrence:occurrence) }
+    // Imported sessions may share a timestamp. Keep each point distinct without random IDs.
+    static func identified(_ points:[TrendPoint]) -> [TrendPoint] {
+        var counts:[ID:Int] = [:]
+        return points.map { point in
+            var next = point
+            let key = ID(date:point.date,series:point.series,occurrence:0)
+            next.occurrence = counts[key,default:0]
+            counts[key,default:0] += 1
+            return next
+        }
+    }
+}
 struct TrendChart:View {
     let points:[TrendPoint]
     let unit:String
