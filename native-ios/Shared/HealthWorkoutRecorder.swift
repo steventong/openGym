@@ -4,9 +4,10 @@ import HealthKit
 enum HealthWorkoutAccess {
     static let workout = HKObjectType.workoutType()
     static let energy = HKQuantityType(.activeEnergyBurned)
+    static let restingEnergy = HKQuantityType(.basalEnergyBurned)
     static let heartRate = HKQuantityType(.heartRate)
     static func authorize(_ health: HKHealthStore) async throws {
-        try await health.requestAuthorization(toShare: [workout, energy], read: [workout, energy, heartRate])
+        try await health.requestAuthorization(toShare: [workout, energy], read: [workout, energy, restingEnergy, heartRate])
         guard health.authorizationStatus(for: workout) == .sharingAuthorized else {
             throw NSError(domain: "OpenGymHealth", code: 1, userInfo: [NSLocalizedDescriptionKey: "请在健康 App 中允许 openGym 写入体能训练。"])
         }
@@ -151,8 +152,10 @@ enum HealthWorkoutAccess {
                     throw NSError(domain: "OpenGymHealth", code: 4, userInfo: [NSLocalizedDescriptionKey: "Apple 健康尚未确认保存，请重试同步。"])
                 }
                 let calories = workout.statistics(for: HealthWorkoutAccess.energy)?.sumQuantity()?.doubleValue(for: .kilocalorie())
+                let resting = workout.statistics(for: HealthWorkoutAccess.restingEnergy)?.sumQuantity()?.doubleValue(for: .kilocalorie())
                 // Persist completion before releasing the live builder. Stable sync metadata protects replay after a crash.
-                try report(HealthWorkoutReport(id: request.id, state: .saved, activeCalories: HealthWorkoutReport.metric(calories)))
+                try report(HealthWorkoutReport(id: request.id, state: .saved, activeCalories: HealthWorkoutReport.metric(calories),
+                    totalCalories: HealthWorkoutReport.totalCalories(active: calories, resting: resting)))
                 session.end(); clearSession()
             } else {
                 try await HealthWorkoutAccess.saveDuration(request, health: health)
@@ -177,9 +180,11 @@ enum HealthWorkoutAccess {
     private func emitMetrics() {
         guard let id = ledger.activeID, let builder, ledger.reports[id]?.terminal != true else { return }
         let energy = builder.statistics(for: HealthWorkoutAccess.energy)?.sumQuantity()?.doubleValue(for: .kilocalorie())
+        let resting = builder.statistics(for: HealthWorkoutAccess.restingEnergy)?.sumQuantity()?.doubleValue(for: .kilocalorie())
         let heart = builder.statistics(for: HealthWorkoutAccess.heartRate)?.mostRecentQuantity()?.doubleValue(for: .count().unitDivided(by: .minute()))
         // Metrics are transient during a session. The terminal report is journaled once saved.
-        onReport?(HealthWorkoutReport(id: id, state: .running, activeCalories: HealthWorkoutReport.metric(energy), heartRate: HealthWorkoutReport.metric(heart)))
+        onReport?(HealthWorkoutReport(id: id, state: .running, activeCalories: HealthWorkoutReport.metric(energy),
+            totalCalories: HealthWorkoutReport.totalCalories(active: energy, resting: resting), heartRate: HealthWorkoutReport.metric(heart)))
     }
     nonisolated func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
     nonisolated func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {

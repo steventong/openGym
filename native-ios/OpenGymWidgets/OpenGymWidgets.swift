@@ -17,19 +17,24 @@ struct WorkoutLiveActivity: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Text(context.state.trainingName).font(.caption).foregroundStyle(.secondary).lineLimit(1).padding(.leading, 6)
+                    Text(context.state.trainingName).font(.caption).foregroundStyle(.secondary).lineLimit(1).padding(.leading, 12)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text(context.state.position).font(.caption).foregroundStyle(.secondary).padding(.trailing, 6)
+                    Text(context.state.restEnd != nil ? (context.isStale ? "休息结束" : "组间休息") : context.state.position)
+                        .font(.caption).foregroundStyle(.secondary).padding(.trailing, 12)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    WorkoutActivityView(context: context, island: true).padding(.top, 2)
+                    WorkoutActivityView(context: context, island: true)
+                        .padding(.top, 4)
+                        // Keep the whole 44-point button inside the island's curved edge.
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 12)
                 }
             } compactLeading: {
                 HStack(spacing: 4) {
                     Image(systemName: context.state.restEnd == nil ? "dumbbell.fill" : "timer")
                     Text(context.state.exercise.isEmpty ? context.state.trainingName : context.state.exercise)
-                        .font(.caption2).lineLimit(1).frame(maxWidth: 72)
+                        .font(.caption2).lineLimit(1)
                 }.foregroundStyle(.green)
             } compactTrailing: {
                 if let end = context.state.restEnd {
@@ -54,42 +59,71 @@ private struct WorkoutActivityView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if !island { Text(state.trainingName).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(state.exercise.isEmpty ? "准备开始训练" : state.exercise).font(.headline).lineLimit(1)
-                    Text((resting ? "接下来 · " : "") + state.setLabel).font(.subheadline).foregroundStyle(.green).lineLimit(1)
-                }
+            if !island {
+                HStack {
+                    Text(state.trainingName).lineLimit(1)
+                    Spacer(minLength: 8)
+                    if state.restEnd != nil { Text(context.isStale ? "休息结束" : "组间休息") }
+                }.font(.caption).foregroundStyle(.secondary)
+            }
+            HStack(alignment: .firstTextBaseline) {
+                Text(state.exercise.isEmpty ? "准备开始训练" : state.exercise).font(.headline).lineLimit(1)
                 Spacer(minLength: 8)
                 if let end = state.restEnd {
-                    VStack(alignment: .trailing, spacing: 3) {
-                        Text(context.isStale ? "休息结束" : "组间休息").font(.caption).foregroundStyle(.secondary)
-                        RestCountdown(end: end).font(.title2.bold()).frame(width: 76)
-                    }
+                    RestCountdown(end: end).font(.title2.bold())
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 76, alignment: .trailing)
                 }
             }
-            HStack {
-                Text(state.message.isEmpty ? state.detail : state.message)
-                    .font(.caption).foregroundStyle(.secondary).lineLimit(2)
+            HStack(alignment: .center, spacing: 8) {
+                setSummary.font(.subheadline).lineLimit(1).minimumScaleFactor(0.75)
                 Spacer(minLength: 8)
-                if let command = state.restCommand {
-                    Button("结束休息", intent: WorkoutActivityIntent(command: command))
-                        .font(.caption).buttonStyle(.bordered).controlSize(.small).tint(.green)
+                if let command = state.restCommand, !island || resting {
+                    Button(intent: WorkoutActivityIntent(command: command)) {
+                        Text("结束休息")
+                            .font(.caption).fixedSize(horizontal: true, vertical: false)
+                            .padding(.horizontal, 10).frame(minHeight: 44)
+                            .background(.green.opacity(0.16), in: RoundedRectangle(cornerRadius: 12))
+                            .contentShape(Rectangle())
+                    }.buttonStyle(.plain).foregroundStyle(.green)
                 }
-                action.font(.caption.bold()).buttonStyle(.borderedProminent).controlSize(.small).tint(.green).foregroundStyle(.black)
+                if !island || !resting {
+                    action.buttonStyle(.plain).foregroundStyle(.black)
+                }
+            }
+            if !state.message.isEmpty {
+                Text(state.message).font(.caption).foregroundStyle(.secondary).lineLimit(2)
             }
         }.foregroundStyle(.white)
+    }
+
+    private var setSummary: Text {
+        let label = Text(state.setLabel).foregroundColor(.green)
+        if let weight = state.setWeight {
+            return Text("\(label)  \(Text(weight).foregroundColor(.white))  \(Text(state.setDetail ?? "").foregroundColor(.secondary))")
+        }
+        // Preserve data from a still-running activity encoded by an older app version.
+        if !state.detail.isEmpty { return Text("\(label)  \(Text(state.detail).foregroundColor(.secondary))") }
+        return label
     }
 
     @ViewBuilder private var action: some View {
         // Keep completion available even if the system delays the stale-date redraw at zero.
         if let command = state.command {
             Button(intent: WorkoutActivityIntent(command: command)) {
-                Label(state.commandTitle, systemImage: state.commandTitle == "完成本组" ? "checkmark" : "arrow.right")
+                actionLabel(state.commandTitle, symbol: state.commandTitle == "完成本组" ? "checkmark" : "arrow.right")
             }
         } else {
-            Link(destination: URL(string: "opengym://workout")!) { Label("打开训练", systemImage: "arrow.up.right") }
+            Link(destination: URL(string: "opengym://workout")!) { actionLabel("打开App", symbol: "arrow.up.right") }
         }
+    }
+
+    private func actionLabel(_ title: String, symbol: String) -> some View {
+        Label(title, systemImage: symbol)
+            .font(.caption.bold()).fixedSize(horizontal: true, vertical: false)
+            .padding(.horizontal, 12).frame(minHeight: 44)
+            .background(.green, in: RoundedRectangle(cornerRadius: 12))
+            .contentShape(Rectangle())
     }
 }
 

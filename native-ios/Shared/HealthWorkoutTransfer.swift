@@ -21,6 +21,7 @@ struct HealthWorkoutReport: Codable, Equatable {
     var id: String
     var state: State
     var activeCalories: Double?
+    var totalCalories: Double?
     var heartRate: Double?
     var message: String?
     var updatedAt = Date()
@@ -28,6 +29,10 @@ struct HealthWorkoutReport: Codable, Equatable {
     static func metric(_ value: Double?) -> Double? {
         guard let value, value.isFinite, value >= 0 else { return nil }
         return value
+    }
+    static func totalCalories(active: Double?, resting: Double?) -> Double? {
+        guard let active = metric(active), let resting = metric(resting) else { return nil }
+        return metric(active + resting)
     }
 }
 
@@ -50,6 +55,7 @@ struct HealthWorkoutLedger: Codable {
               report.updatedAt >= (reports[report.id]?.updatedAt ?? .distantPast) else { return }
         var clean = report
         clean.activeCalories = HealthWorkoutReport.metric(report.activeCalories)
+        clean.totalCalories = HealthWorkoutReport.metric(report.totalCalories)
         clean.heartRate = HealthWorkoutReport.metric(report.heartRate)
         reports[report.id] = clean
     }

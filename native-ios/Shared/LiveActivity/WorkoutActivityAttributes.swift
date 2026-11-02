@@ -15,6 +15,9 @@ struct WorkoutActivityAttributes: ActivityAttributes {
         var command: String?
         var commandTitle: String
         var restCommand: String?
+        // Optional so activities created before the inline summary still decode.
+        var setWeight: String? = nil
+        var setDetail: String? = nil
     }
 
     var account: String

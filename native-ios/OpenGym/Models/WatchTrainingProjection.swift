@@ -18,6 +18,7 @@ extension GymStore {
         snapshot.exercisePosition = "动作 \(e + 1) / \(entries.count)"
         if let rest = draft.activeJSON["nativeRest"] as? [String: Any], let end = rest["end"] as? Double {
             snapshot.restEnd = Date(timeIntervalSince1970: end)
+            snapshot.restEntry = rest["entry"] as? Int
             if let owner = rest["entry"] as? Int, entries.indices.contains(owner) { snapshot.restExercise = watchExerciseName(entries[owner]) }
         }
         let target = entry["target"] as? [String: Any] ?? [:]
@@ -67,30 +68,60 @@ extension GymStore {
 
     /// Completion is a command, never a toggle. A delayed or duplicated command cannot tick a different set.
     func performWatchCommand(_ command: WatchTrainingCommand) -> [String: Any] {
+        WorkoutActivityDiagnostics.withTrace { executeRemoteCommand(command) }
+    }
+
+    private func executeRemoteCommand(_ command: WatchTrainingCommand) -> [String: Any] {
+        let started = ContinuousClock.now
         var result: String?
+        var outcome = "applied"
         let before = watchSnapshot()
+        WorkoutActivityDiagnostics.record("remote.command.begin", WorkoutActivityDiagnostics.command(command, snapshot: before))
         if command.version != 1 || command.sessionID != before.sessionID || command.account != before.account {
+            outcome = command.version != 1 ? "unsupported_version" : (command.account != before.account ? "account_mismatch" : "session_mismatch")
             result = "训练已变更，请按最新数据操作。"
         } else if before.acknowledged.contains(command.id) {
             // Re-send the receipt after a lost reply without starting a second rest timer.
+            outcome = "duplicate_acknowledged"
         } else if command.revision != before.revision {
+            outcome = "revision_mismatch"
             result = "手机上的记录已更新，请核对当前组后重试。"
         } else if syncing || localSaveError != nil {
+            outcome = syncing ? "syncing" : "save_error"
             result = "请先在 iPhone 完成保存。"
+        } else if command.action == "skipRest", before.restEnd != nil, before.restEntry == command.entry {
+            restUntil = nil
+            if localSaveError == nil { acknowledgeWatchCommand(command.id) }
         } else if command.action == "complete", let row = before.nextSet,
                   row.entry == command.entry, row.index == command.index, row.side == command.side {
-            if let reason = row.blockedReason { result = reason }
+            if let reason = row.blockedReason { result = reason; outcome = workTimer != nil ? "work_timer_running" : "invalid_set_input" }
             else {
+                WorkoutActivityDiagnostics.record("remote.set.begin", ["entry": String(row.entry), "set": String(row.index)])
                 var action: [String: Any] = ["action": "toggle"]; action["side"] = row.side
                 let succeeded = liveRowAction(entry: row.entry, set: row.index, action: action)
-                if !succeeded || localSaveError != nil { result = "iPhone 草稿保存失败，请在手机检查。" }
-                else { acknowledgeWatchCommand(command.id) }
+                WorkoutActivityDiagnostics.record("remote.set.end", ["succeeded": String(succeeded), "saved": String(localSaveError == nil)])
+                if !succeeded || localSaveError != nil { result = "iPhone 草稿保存失败，请在手机检查。"; outcome = localSaveError != nil ? "save_failed" : "set_edit_failed" }
+                else {
+                    // Both remote surfaces advance only on the first accepted completion.
+                    if let next = watchSnapshot().nextEntry {
+                        WorkoutActivityDiagnostics.record("remote.auto_advance", ["entry": String(next)])
+                        selectLiveEntry(next)
+                    }
+                    if localSaveError == nil { acknowledgeWatchCommand(command.id) }
+                }
             }
         } else if command.action == "next", before.nextEntry == command.entry {
             selectLiveEntry(command.entry); acknowledgeWatchCommand(command.id)
-        } else { result = "当前组已变更，请刷新后重试。" }
-        if result == nil, localSaveError != nil { result = "iPhone 草稿保存失败，请在手机检查。" }
-        var response = watchSnapshot().payload
+        } else { result = "当前组已变更，请刷新后重试。"; outcome = "target_mismatch" }
+        if result == nil, localSaveError != nil { result = "iPhone 草稿保存失败，请在手机检查。"; outcome = "save_failed" }
+        let after = watchSnapshot()
+        var fields = WorkoutActivityDiagnostics.state(self, snapshot: after)
+        fields["outcome"] = outcome; fields["accepted"] = String(result == nil)
+        fields["receipt_present"] = String(after.acknowledged.contains(command.id))
+        fields["revision_changed"] = String(before.revision != after.revision)
+        fields["elapsed_ms"] = WorkoutActivityDiagnostics.elapsed(started)
+        WorkoutActivityDiagnostics.record("remote.command.end", fields, failure: result != nil)
+        var response = after.payload
         response["commandID"] = command.id
         response["accepted"] = result == nil
         if let result { response["error"] = result }
@@ -101,5 +132,7 @@ extension GymStore {
             var receipts = raw["nativeWatchReceipts"] as? [String] ?? []
             receipts.append(id); raw["nativeWatchReceipts"] = Array(receipts.suffix(32))
         }
+        WorkoutActivityDiagnostics.record("remote.receipt.saved", ["command": WorkoutActivityDiagnostics.fingerprint(id),
+            "saved": String(localSaveError == nil)], failure: localSaveError != nil)
     }
 }

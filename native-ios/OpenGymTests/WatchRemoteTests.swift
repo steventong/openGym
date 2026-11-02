@@ -16,6 +16,115 @@ import XCTest
         let snapshot = store.watchSnapshot(), row = try XCTUnwrap(snapshot.nextSet)
         return WatchTrainingCommand(account: snapshot.account, sessionID: try XCTUnwrap(snapshot.sessionID), revision: snapshot.revision, action: "complete", entry: row.entry, index: row.index, side: row.side)
     }
+    private func endRestCommand() throws -> WatchTrainingCommand {
+        let snapshot = store.watchSnapshot()
+        return WatchTrainingCommand(account: snapshot.account, sessionID: try XCTUnwrap(snapshot.sessionID),
+            revision: snapshot.revision, action: "skipRest", entry: try XCTUnwrap(snapshot.restEntry))
+    }
+    func testRestStateExpiresWithoutWaitingForAnotherPhoneSnapshot() throws {
+        let now = Date(timeIntervalSince1970: 1000)
+        var snapshot = store.watchSnapshot(now: now)
+        XCTAssertFalse(snapshot.isResting(at: now))
+        snapshot.restEnd = now.addingTimeInterval(90)
+        XCTAssertTrue(snapshot.isResting(at: now))
+        XCTAssertTrue(snapshot.isResting(at: now.addingTimeInterval(89)))
+        XCTAssertFalse(snapshot.isResting(at: now.addingTimeInterval(90)))
+        XCTAssertFalse(snapshot.isResting(at: now.addingTimeInterval(100)))
+    }
+    func testPrimaryActionSwitchesInPlaceAcrossRestCompletionAndPendingReply() {
+        let now = Date()
+        var snapshot = store.watchSnapshot()
+        func action(pending: Bool = false, sending: Bool = false, at date: Date? = nil) -> WatchTrainingAction {
+            snapshot.primaryAction(reachable: true, reconnecting: false, hasPending: pending, sending: sending, at: date ?? now)
+        }
+        XCTAssertEqual(action(), .complete)
+        snapshot.restEnd = now.addingTimeInterval(90)
+        XCTAssertEqual(action(), .endRest)
+        XCTAssertEqual(action(pending: true, sending: true), .sending)
+        XCTAssertEqual(action(pending: true), .retry)
+        XCTAssertEqual(action(at: now.addingTimeInterval(90)), .complete)
+        snapshot.restEnd = nil; snapshot.nextSet = nil; snapshot.nextEntry = 1
+        XCTAssertEqual(action(), .next)
+        snapshot.nextEntry = nil
+        XCTAssertEqual(action(), .finished)
+    }
+    func testConnectionFailureReplacesEveryTrainingActionIncludingPendingRetry() {
+        var snapshot = store.watchSnapshot()
+        for resting in [false, true] {
+            snapshot.restEnd = resting ? Date().addingTimeInterval(90) : nil
+            for pending in [false, true] {
+                for sending in [false, true] {
+                    XCTAssertEqual(snapshot.primaryAction(reachable: false, reconnecting: false,
+                        hasPending: pending, sending: sending), .connect)
+                }
+            }
+            // A brief automatic recovery keeps the training action's label in place.
+            XCTAssertEqual(snapshot.primaryAction(reachable: false, reconnecting: true,
+                hasPending: false, sending: false), resting ? .endRest : .complete)
+        }
+    }
+    func testEndRestPreservesNextSetAndDuplicateCannotEndNewRest() throws {
+        _ = store.performWatchCommand(try completeCommand())
+        let row = store.watchSnapshot().nextSet
+        let command = try endRestCommand()
+        let reply = store.performWatchCommand(command)
+        XCTAssertEqual(reply["accepted"] as? Bool, true)
+        XCTAssertNil(WatchTrainingSnapshot.decode(reply)?.restEnd)
+        XCTAssertEqual(store.watchSnapshot().nextSet, row)
+        XCTAssertEqual(store.draft?.completedSets, 1)
+        store.startRest(entry: 0, seconds: 120)
+        let end = store.restUntil
+        XCTAssertEqual(store.performWatchCommand(command)["accepted"] as? Bool, true)
+        XCTAssertEqual(store.restUntil, end)
+        let restored = GymStore(userID: "watch-test", storage: LocalTrainingStorage(root: root))
+        restored.restoreDraft()
+        XCTAssertEqual(restored.performWatchCommand(command)["accepted"] as? Bool, true)
+        XCTAssertEqual(restored.restUntil, end)
+    }
+    func testEndRestRejectsChangedTimerWrongOwnerAndUnavailableStorage() throws {
+        store.startRest(entry: 0, seconds: 90)
+        let stale = try endRestCommand()
+        store.adjustRest(by: 30)
+        let end = store.restUntil
+        XCTAssertEqual(store.performWatchCommand(stale)["accepted"] as? Bool, false)
+        var wrongOwner = try endRestCommand(); wrongOwner.entry = 1
+        XCTAssertEqual(store.performWatchCommand(wrongOwner)["accepted"] as? Bool, false)
+        let current = try endRestCommand()
+        store.syncing = true
+        XCTAssertEqual(store.performWatchCommand(current)["accepted"] as? Bool, false)
+        store.syncing = false
+        store.localSaveError = "test write failure"
+        XCTAssertEqual(store.performWatchCommand(current)["accepted"] as? Bool, false)
+        store.localSaveError = nil
+        XCTAssertEqual(store.restUntil, end)
+        XCTAssertEqual(store.draft?.completedSets, 0)
+    }
+    func testLastSetLoadsNextExerciseAndReplayNeverChangesSelection() throws {
+        store.changeActive { raw in
+            var entries = raw["entries"] as! [[String: Any]]
+            entries.append(["id": "0025", "sets": [["w": 30, "r": 8, "done": true]]])
+            entries.append(["id": "0025", "sets": [["w": 30, "r": 8, "done": false]]])
+            raw["entries"] = entries
+        }
+        _ = store.performWatchCommand(try completeCommand())
+        _ = store.performWatchCommand(try endRestCommand())
+        let command = try completeCommand()
+        let reply = store.performWatchCommand(command)
+        XCTAssertEqual(reply["accepted"] as? Bool, true)
+        let snapshot = try XCTUnwrap(WatchTrainingSnapshot.decode(reply))
+        XCTAssertEqual(snapshot.nextSet?.entry, 2)
+        XCTAssertEqual(snapshot.nextSet?.index, 0)
+        XCTAssertEqual(snapshot.nextSet?.weight, "30 kg")
+        XCTAssertNil(snapshot.nextEntry)
+        store.selectLiveEntry(0)
+        XCTAssertEqual(store.performWatchCommand(command)["accepted"] as? Bool, true)
+        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 0)
+        store.selectLiveEntry(2)
+        XCTAssertEqual(store.performWatchCommand(try completeCommand())["accepted"] as? Bool, true)
+        XCTAssertNil(store.watchSnapshot().nextSet)
+        XCTAssertNil(store.watchSnapshot().nextEntry)
+        XCTAssertTrue(store.watchSnapshot().message.contains("保存"))
+    }
     func testCompletionStartsSharedRestAndDuplicateDoesNotToggleOrRestart() throws {
         let command = try completeCommand()
         let reply = store.performWatchCommand(command)

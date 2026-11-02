@@ -26,6 +26,7 @@ import Observation
     var draft: TrainingDraft? { didSet { persistDraft(); publishTraining() } }
     @ObservationIgnored var watchBridge: PhoneWatchBridge?
     @ObservationIgnored var liveActivity: WorkoutActivityCoordinator?
+    var restNotifications: RestNotifications?
     var liveActivityIssue: String?
     var localSaveIssues: [String: String] = [:] { didSet { publishTraining() } }
     var localSaveError: String? {
@@ -45,7 +46,7 @@ import Observation
     private var client: APIClient?
     private var loading = false
     init(client: APIClient? = nil, userID: String? = nil, storage: LocalTrainingStorage = LocalTrainingStorage()) { self.client = client; self.userID = userID; self.localStorage = storage }
-    private func publishTraining() { watchBridge?.publish(); liveActivity?.publish() }
+    private func publishTraining() { restNotifications?.publish(); watchBridge?.publish(); liveActivity?.publish() }
     var unit: String { state["unit"] as? String ?? "kg" }
     var routines: [Routine] { (state["routines"] as? [[String: Any]] ?? []).filter { ($0["id"] as? String) != nil }.map { Routine(raw: $0) } }
     var workouts: [[String: Any]] {
@@ -302,18 +303,42 @@ import Observation
         return accountFolder?.appendingPathComponent("live-draft.json")
     }
     @discardableResult func persistDraft() -> Bool {
-        guard let url = draftURL else { if draft != nil { localSaveIssues["live"] = "没有账号，训练草稿无法写入本机。" }; return draft == nil }
+        let started = ContinuousClock.now
+        var outcome = "failed"
+        if WorkoutActivityDiagnostics.traceID != nil { WorkoutActivityDiagnostics.record("draft.save.begin", ["has_draft": String(draft != nil)]) }
+        defer {
+            if WorkoutActivityDiagnostics.traceID != nil {
+                WorkoutActivityDiagnostics.record("draft.save.end", ["outcome": outcome, "elapsed_ms": WorkoutActivityDiagnostics.elapsed(started)])
+            }
+        }
+        guard let url = draftURL else {
+            outcome = draft == nil ? "no_draft" : "missing_account"
+            if draft != nil {
+                localSaveIssues["live"] = "没有账号，训练草稿无法写入本机。"
+                WorkoutActivityDiagnostics.record("draft.save.failed", ["reason": "missing_account"], failure: true)
+            }
+            return draft == nil
+        }
         do {
             let value: [String: Any]
             if let draft { value = ["draft": try JSONSerialization.jsonObject(with: JSONEncoder().encode(draft))] }
             else { value = [:] }
-            try localStorage.write(value, to: url); localSaveIssues.removeValue(forKey:"live"); return true
-        } catch { localSaveIssues["live"] = "训练草稿写入本机失败：\(error.localizedDescription)"; return false }
+            try localStorage.write(value, to: url); localSaveIssues.removeValue(forKey:"live"); outcome = "saved"; return true
+        } catch {
+            WorkoutActivityDiagnostics.record("draft.save.failed", WorkoutActivityDiagnostics.errorFields(error), failure: true)
+            localSaveIssues["live"] = "训练草稿写入本机失败：\(error.localizedDescription)"; return false
+        }
     }
     func restoreDraft() {
-        guard let url = draftURL else { return }
+        let started = ContinuousClock.now
+        var source = "none"
+        WorkoutActivityDiagnostics.record("draft.restore.begin", ["has_account": String(userID != nil)])
+        defer { WorkoutActivityDiagnostics.record("draft.restore.end", ["source": source, "has_draft": String(draft != nil),
+            "save_error": String(localSaveError != nil), "elapsed_ms": WorkoutActivityDiagnostics.elapsed(started)]) }
+        guard let url = draftURL else { source = "missing_account"; return }
         do {
             if let saved = try localStorage.read(url) {
+                source = "account_storage"
                 if let raw = saved["draft"] { draft = try JSONDecoder().decode(TrainingDraft.self, from: JSONSerialization.data(withJSONObject: raw)) }
                 return
             }
@@ -321,8 +346,11 @@ import Observation
             guard let userID else { return }
             let key = Data("\(serverURL)|\(userID)".utf8).base64EncodedString().replacingOccurrences(of: "/", with: "_")
             let old = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("draft-\(key).json")
-            if FileManager.default.fileExists(atPath: old.path) { draft = try JSONDecoder().decode(TrainingDraft.self, from: Data(contentsOf: old)) }
-        } catch { localSaveError = "训练草稿读取失败，文件已保留：\(error.localizedDescription)" }
+            if FileManager.default.fileExists(atPath: old.path) { source = "legacy_storage"; draft = try JSONDecoder().decode(TrainingDraft.self, from: Data(contentsOf: old)) }
+        } catch {
+            WorkoutActivityDiagnostics.record("draft.restore.failed", WorkoutActivityDiagnostics.errorFields(error), failure: true)
+            localSaveError = "训练草稿读取失败，文件已保留：\(error.localizedDescription)"
+        }
     }
 }
 

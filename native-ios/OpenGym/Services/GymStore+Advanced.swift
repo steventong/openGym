@@ -2,7 +2,7 @@ import Foundation
 extension GymStore {
     func changeActive(_ change:(inout [String:Any]) throws -> Void) {
         guard var d = draft else { return }
-        do { var raw = d.activeJSON;try change(&raw);if !RecordPatch.equal(raw["entries"],d.activeJSON["entries"]) { raw.removeValue(forKey:"nativeFinishAt") };if let undo = raw["nativeSetUndo"] as? [String: Any], !RecordPatch.equal(undo["expected"], raw["entries"]) { raw.removeValue(forKey: "nativeSetUndo") };try d.setActive(raw);draft = d } catch { self.error = error.localizedDescription }
+        do { var raw = d.activeJSON;try change(&raw);if !RecordPatch.equal(raw["entries"],d.activeJSON["entries"]) { raw.removeValue(forKey:"nativeFinishAt") };if let undo = raw["nativeSetUndo"] as? [String: Any], !RecordPatch.equal(undo["expected"], raw["entries"]) { raw.removeValue(forKey: "nativeSetUndo") };try d.setActive(raw);draft = d } catch { WorkoutActivityDiagnostics.failureIfTracing("draft.mutation.failed", error: error); self.error = error.localizedDescription }
     }
     func replaceLiveRow(entry:Int,set:Int,row:[String:Any]) {
         changeActive { raw in
@@ -33,7 +33,7 @@ extension GymStore {
             } else { replaceLiveRow(entry:entry,set:set,row:row) }
             if action["action"] as? String == "toggle",row["done"] as? Bool == true { applyRest(entry:entry,set:set) }
             return localSaveError == nil
-        } catch { self.error = error.localizedDescription; return false }
+        } catch { WorkoutActivityDiagnostics.failureIfTracing("set.rules.failed", error: error); self.error = error.localizedDescription; return false }
     }
     func applyRest(entry:Int,set:Int) {
         guard let d = draft else { return }
@@ -51,7 +51,7 @@ extension GymStore {
             if info["preserveRest"] as? Bool == true { return }
             let seconds = number(info["seconds"]); startRest(entry:entry,seconds:seconds,set:set)
             changeActive { raw in raw["cur"] = seconds > 0 ? entry : info["next"] }
-        } catch { self.error = error.localizedDescription }
+        } catch { WorkoutActivityDiagnostics.failureIfTracing("rest.rules.failed", error: error); self.error = error.localizedDescription }
     }
     var restEntry: Int? { (draft?.activeJSON["nativeRest"] as? [String:Any])?["entry"] as? Int }
     func startRest(entry:Int,seconds:Double,set:Int? = nil) {

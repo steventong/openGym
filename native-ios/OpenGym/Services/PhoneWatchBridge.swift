@@ -61,7 +61,11 @@ import WatchConnectivity
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         Task { @MainActor [weak self] in
             guard let store = self?.store else { replyHandler(["error": "请打开 iPhone 上的 openGym"]); return }
-            if let command = WatchTrainingCommand.decode(message) { replyHandler(store.performWatchCommand(command)) }
+            if let command = WatchTrainingCommand.decode(message) {
+                let response = store.performWatchCommand(command)
+                await store.restNotifications?.flush()
+                replyHandler(response)
+            }
             else if message["request"] as? String == "snapshot" {
                 store.settleTimer()
                 var payload = store.watchSnapshot().payload

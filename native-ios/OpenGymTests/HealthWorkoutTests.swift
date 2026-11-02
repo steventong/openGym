@@ -65,6 +65,31 @@ import XCTest
         XCTAssertNil(ledger.reports[request().id]?.heartRate)
         XCTAssertNoThrow(try JSONEncoder().encode(ledger))
     }
+    func testTotalCaloriesRequireBothMeasuredComponentsInKcal() {
+        XCTAssertEqual(HealthWorkoutReport.totalCalories(active: 128, resting: 28), 156)
+        XCTAssertEqual(HealthWorkoutReport.totalCalories(active: 0, resting: 0), 0)
+        XCTAssertNil(HealthWorkoutReport.totalCalories(active: 128, resting: nil))
+        XCTAssertNil(HealthWorkoutReport.totalCalories(active: nil, resting: 28))
+        XCTAssertNil(HealthWorkoutReport.totalCalories(active: -1, resting: 28))
+        XCTAssertNil(HealthWorkoutReport.totalCalories(active: 128, resting: .infinity))
+        XCTAssertNil(HealthWorkoutReport.totalCalories(active: .greatestFiniteMagnitude, resting: .greatestFiniteMagnitude))
+    }
+    func testTotalCaloriesSurviveWireAndJournalWhileOldReportsRemainReadable() throws {
+        let report = HealthWorkoutReport(id: request().id, state: .running, activeCalories: 128, totalCalories: 156, heartRate: 124)
+        XCTAssertEqual(HealthWorkoutWire.report(from: HealthWorkoutWire.report(report)), report)
+        let journal = HealthWorkoutJournal(name: "metrics", root: root)
+        var ledger = HealthWorkoutLedger(); ledger.merge(request()); ledger.receive(report)
+        try journal.write(ledger)
+        XCTAssertEqual(try journal.read().reports[report.id]?.totalCalories, 156)
+        var legacy = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(report)) as? [String: Any])
+        legacy.removeValue(forKey: "totalCalories")
+        let decoded = try JSONDecoder().decode(HealthWorkoutReport.self, from: JSONSerialization.data(withJSONObject: legacy))
+        XCTAssertNil(decoded.totalCalories)
+        XCTAssertEqual(decoded.activeCalories, 128)
+        ledger.receive(HealthWorkoutReport(id: request().id, state: .running, totalCalories: .nan))
+        XCTAssertNil(ledger.reports[request().id]?.totalCalories)
+        XCTAssertNoThrow(try JSONEncoder().encode(ledger))
+    }
     func testStaleReportsDoNotReplaceNewMetricsOrTerminalResult() {
         var ledger = HealthWorkoutLedger(); ledger.merge(request())
         let newer = HealthWorkoutReport(id: request().id, state: .running, activeCalories: 45)

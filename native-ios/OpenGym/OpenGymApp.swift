@@ -14,8 +14,18 @@ import HealthKitUI
 @MainActor final class OpenGymAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     let store = WorkoutActivityRuntime.store
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        WorkoutActivityDiagnostics.record("app.launched", WorkoutActivityDiagnostics.environment())
         UNUserNotificationCenter.current().delegate = self
         return true
+    }
+    func applicationProtectedDataDidBecomeAvailable(_ application: UIApplication) {
+        WorkoutActivityDiagnostics.record("app.protected_data.available", WorkoutActivityDiagnostics.environment())
+    }
+    func applicationProtectedDataWillBecomeUnavailable(_ application: UIApplication) {
+        WorkoutActivityDiagnostics.record("app.protected_data.unavailable", WorkoutActivityDiagnostics.environment())
+    }
+    func applicationWillTerminate(_ application: UIApplication) {
+        WorkoutActivityDiagnostics.record("app.terminating", WorkoutActivityDiagnostics.environment())
     }
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         let configuration = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
@@ -23,11 +33,17 @@ import HealthKitUI
         return configuration
     }
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.banner, .sound])
+        if notification.request.content.userInfo["openGymWorkout"] as? Bool == true {
+            Task { @MainActor in WorkoutActivityDiagnostics.record("reminder.foreground_delivery") }
+        }
+        completionHandler([.banner, .list, .sound])
     }
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         Task { @MainActor in
-            if response.notification.request.content.userInfo["openGymWorkout"] as? Bool == true { self.store.selectedTab = 2 }
+            if response.notification.request.content.userInfo["openGymWorkout"] as? Bool == true {
+                WorkoutActivityDiagnostics.record("reminder.opened")
+                self.store.selectedTab = 2
+            }
             completionHandler()
         }
     }
@@ -58,14 +74,19 @@ struct RootView: View {
             .onChange(of:store.draft?.id,initial:true) { _,_ in updateWake() }
             .onChange(of:store.state["keepAwake"] as? Bool) { _,_ in updateWake() }
             .onChange(of:scenePhase, initial:true) { _, phase in
+                WorkoutActivityDiagnostics.record("app.scene.changed", ["phase": String(describing: phase)])
                 updateWake()
                 if phase == .active {
+                    store.restNotifications?.publish()
                     store.liveActivity?.publish()
                     store.workoutHealth.retry()
                     Task { await store.refresh(); await store.healthSync.resume() }
                 }
             }
-            .onOpenURL { url in if url.scheme == "opengym", url.host == "workout" { store.selectedTab = 2 } }
+            .onOpenURL { url in if url.scheme == "opengym", url.host == "workout" {
+                WorkoutActivityDiagnostics.record("app.open_workout_link")
+                store.selectedTab = 2
+            } }
             .task { while !Task.isCancelled { try? await Task.sleep(for:.seconds(30)); if !Task.isCancelled { await store.refresh(); await store.healthSync.resume() } } }
     }
     private func updateWake() { UIApplication.shared.isIdleTimerDisabled = scenePhase == .active && store.draft != nil && store.state["keepAwake"] as? Bool != false }

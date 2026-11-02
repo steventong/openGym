@@ -12,7 +12,12 @@ import HealthKit
     @ObservationIgnored private let healthRecorder = HealthWorkoutRecorder(name: "watch-recorder")
     @ObservationIgnored private let healthStore = HKHealthStore()
     var snapshot = WatchTrainingSnapshot(generatedAt: .distantPast)
+    var currentHealthReport: HealthWorkoutReport? {
+        guard let sessionID = snapshot.sessionID, healthReport?.id == "\(snapshot.account):\(sessionID)" else { return nil }
+        return healthReport
+    }
     var reachable = false
+    private(set) var reconnecting = false
     var sending = false
     var coolingDown = false
     var error: String?
@@ -21,6 +26,8 @@ import HealthKit
     @ObservationIgnored private var reminderKey = ""
     @ObservationIgnored private var timeout: Task<Void, Never>?
     @ObservationIgnored private var reminderTask: Task<Void, Never>?
+    @ObservationIgnored private var connectionTask: Task<Void, Never>?
+    @ObservationIgnored private var connectionID: UUID?
     @ObservationIgnored private var preview = false
 
     override init() {
@@ -30,7 +37,17 @@ import HealthKit
             preview = true
             snapshot = WatchTrainingSnapshot(sessionID: "preview", exercise: "杠铃卧推", exercisePosition: "动作 1 / 5",
                 nextSet: WatchTrainingSet(entry: 0, index: 1, label: "第 2 / 4 组", weight: "40 kg", detail: "10 次"),
-                restEnd: Date().addingTimeInterval(75), restExercise: "杠铃卧推", message: "预览")
+                restEnd: Date().addingTimeInterval(75), restEntry: 0, restExercise: "杠铃卧推", message: "预览")
+            reachable = true
+            notificationStatus = .authorized
+            healthReport = HealthWorkoutReport(id: ":preview", state: .running, activeCalories: 128, totalCalories: 156, heartRate: 124)
+            if ProcessInfo.processInfo.arguments.contains("-preview-training") { snapshot.restEnd = nil }
+            if ProcessInfo.processInfo.arguments.contains("-preview-disconnected") { reachable = false }
+            if ProcessInfo.processInfo.arguments.contains("-preview-long-text") {
+                snapshot.exercise = "坐姿单臂哑铃肩上推举（交替训练）"
+                snapshot.nextSet?.label = "第 12 / 12 组 · 右侧 · 热身"
+                snapshot.nextSet?.detail = "12 次 · Rest-pause 3 小组"
+            }
             return
         }
         #endif
@@ -47,18 +64,68 @@ import HealthKit
         WCSession.default.activate()
     }
     func refresh() {
-        guard !preview else { return }
+        guard !preview, connectionTask == nil else { return }
         Task {
             let status = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
             if status != notificationStatus { notificationStatus = status; reminderKey = ""; scheduleReminder() }
         }
         let session = WCSession.default
         if session.activationState == .notActivated { start() }
-        reachable = session.activationState == .activated && session.isReachable
-        guard reachable else { return }
-        session.sendMessage(["request": "snapshot"], replyHandler: { [weak self] message in
-            Task { @MainActor in self?.receive(message) }
-        }, errorHandler: { [weak self] _ in Task { @MainActor in self?.reachable = false } })
+        if !session.isReachable { reachable = false }
+        reconnecting = true
+        let id = UUID(); connectionID = id
+        connectionTask = Task { [weak self] in
+            // Give activation/transient reachability a short automatic recovery window.
+            // Only a fresh phone reply re-enables training; never replay a completion here.
+            for _ in 0..<3 {
+                guard !Task.isCancelled, self?.connectionID == id else { return }
+                if session.activationState == .activated && session.isReachable {
+                    session.sendMessage(["request": "snapshot"], replyHandler: { [weak self] message in
+                        Task { @MainActor in
+                            guard let self, self.connectionID == id, WatchTrainingSnapshot.decode(message) != nil else { return }
+                            self.receive(message)
+                            self.reachable = true
+                            self.finishConnection()
+                        }
+                    }, errorHandler: { _ in })
+                }
+                try? await Task.sleep(for: .seconds(2))
+            }
+            guard !Task.isCancelled, let self, self.connectionID == id else { return }
+            self.reachable = false
+            self.finishConnection()
+        }
+    }
+    private func finishConnection() {
+        connectionTask?.cancel(); connectionTask = nil; connectionID = nil; reconnecting = false
+    }
+    func primaryAction(at date: Date = Date()) -> WatchTrainingAction {
+        snapshot.primaryAction(reachable: reachable, reconnecting: reconnecting,
+            hasPending: pending != nil, sending: sending, at: date)
+    }
+    func isDisabled(_ action: WatchTrainingAction) -> Bool {
+        if action == .connect { return reconnecting }
+        if !reachable || reconnecting { return true }
+        switch action {
+        case .sending, .finished: return true
+        case .retry: return sending
+        case .endRest: return coolingDown || snapshot.restEntry == nil
+        case .complete: return coolingDown || snapshot.nextSet?.blockedReason != nil
+        case .next: return coolingDown
+        case .connect: return false
+        }
+    }
+    func performPrimaryAction() {
+        let action = primaryAction()
+        guard !isDisabled(action) else { return }
+        switch action {
+        case .connect: refresh()
+        case .retry: retry()
+        case .endRest: endRest()
+        case .complete: complete()
+        case .next: nextExercise()
+        case .sending, .finished: break
+        }
     }
     func finishBackgroundDelivery() async {
         for _ in 0..<40 {
@@ -68,8 +135,13 @@ import HealthKit
         await reminderTask?.value
     }
     func complete() {
-        guard pending == nil, !coolingDown, let sessionID = snapshot.sessionID, let row = snapshot.nextSet, row.blockedReason == nil else { return }
+        guard pending == nil, !coolingDown, !snapshot.isResting(), let sessionID = snapshot.sessionID, let row = snapshot.nextSet, row.blockedReason == nil else { return }
         send(WatchTrainingCommand(account: snapshot.account, sessionID: sessionID, revision: snapshot.revision, action: "complete", entry: row.entry, index: row.index, side: row.side))
+    }
+    func endRest() {
+        guard pending == nil, !coolingDown, snapshot.isResting(),
+              let sessionID = snapshot.sessionID, let entry = snapshot.restEntry else { return }
+        send(WatchTrainingCommand(account: snapshot.account, sessionID: sessionID, revision: snapshot.revision, action: "skipRest", entry: entry))
     }
     func nextExercise() {
         guard pending == nil, let sessionID = snapshot.sessionID, let entry = snapshot.nextEntry else { return }
@@ -79,7 +151,7 @@ import HealthKit
     private func send(_ command: WatchTrainingCommand) {
         guard !preview, !sending, WCSession.default.activationState == .activated else { return }
         reachable = WCSession.default.isReachable
-        guard reachable else { error = "请靠近 iPhone 并打开 openGym"; return }
+        guard reachable else { refresh(); return }
         pending = command
         UserDefaults.standard.set(try? JSONEncoder().encode(command), forKey: "remote.pending")
         sending = true; error = nil
@@ -88,6 +160,7 @@ import HealthKit
             try? await Task.sleep(for: .seconds(12))
             guard !Task.isCancelled, self?.pending?.id == command.id else { return }
             self?.sending = false; self?.error = "尚未收到手机确认，可重试确认。"
+            self?.reachable = false; self?.refresh()
         }
         WCSession.default.sendMessage(command.payload, replyHandler: { [weak self] message in
             Task { @MainActor in self?.receive(message) }
@@ -95,6 +168,7 @@ import HealthKit
             Task { @MainActor in
                 guard self?.pending?.id == command.id else { return }
                 self?.sending = false; self?.error = "尚未收到手机确认，可重试确认。"
+                self?.reachable = false; self?.refresh()
             }
         })
     }
