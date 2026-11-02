@@ -2,14 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>CFBundleURLTypes</key>
+	<array><dict>
+		<key>CFBundleURLName</key><string>me.itwl.opengym.workout</string>
+		<key>CFBundleURLSchemes</key><array><string>opengym</string></array>
+	</dict></array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSHealthShareUsageDescription</key>
-	<string>读取 Apple 健康中的体重，保存在本机，并同步到你连接的 openGym 账号，用于展示体重趋势。</string>
+	<string>读取体重用于体重趋势并同步到你的 openGym 账号；读取训练、心率与活动能量用于显示运动记录，运动健康指标仅保存在设备与 Apple 健康中。</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>openGym 当前只读取体重用于展示体重趋势，不会向 Apple 健康写入或修改数据。</string>
+	<string>将你在 openGym 开始和结束的训练及系统生成的活动能量保存到 Apple 健康，并在健身 App 中显示。</string>
 </dict>
 </plist>

@@ -1,5 +1,6 @@
 import SwiftUI
 import WatchKit
+import HealthKit
 
 @main struct OpenGymWatchApp: App {
     @WKApplicationDelegateAdaptor(WatchRemoteDelegate.self) private var delegate
@@ -14,6 +15,8 @@ import WatchKit
 @MainActor final class WatchRemoteDelegate: NSObject, WKApplicationDelegate {
     let store = WatchRemoteStore()
     func applicationDidFinishLaunching() { store.start() }
+    func handle(_ workoutConfiguration: HKWorkoutConfiguration) { store.start(); store.authorizeWorkout(); store.refresh() }
+    func handleActiveWorkoutRecovery() { store.start(); store.refresh() }
     func handle(_ backgroundTasks: Set<WKRefreshBackgroundTask>) {
         for task in backgroundTasks {
             if task is WKWatchConnectivityRefreshBackgroundTask {
@@ -29,6 +32,7 @@ import WatchKit
 }
 struct WatchRemoteView: View {
     let store: WatchRemoteStore
+    @State private var confirmHealthEnd = false
     private let green = Color(red: 0.38, green: 0.86, blue: 0.34)
     var body: some View {
         ScrollView {
@@ -68,6 +72,17 @@ struct WatchRemoteView: View {
                         Button("下一个动作") { store.nextExercise() }.tint(green).disabled(!store.reachable)
                     }
                 }
+                if let report = store.healthReport {
+                    if let calories = report.activeCalories { Text("\(calories, specifier: "%.0f") 活动千卡").font(.caption).foregroundStyle(.orange) }
+                    if report.state == .running, let heart = report.heartRate { Text("♥ \(heart, specifier: "%.0f") 次/分").font(.caption).foregroundStyle(.red) }
+                    if report.state == .running { Button("结束运动记录") { confirmHealthEnd = true }.font(.caption2) }
+                }
+                if !store.healthStatus.isEmpty {
+                    Text(store.healthStatus).font(.caption2).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                    if store.healthReport?.state == .failed {
+                        Button("授权并重试运动同步") { store.authorizeWorkout() }.font(.caption2).disabled(store.authorizingHealth)
+                    }
+                }
                 if let error = store.error { Text(error).font(.caption2).foregroundStyle(.orange).multilineTextAlignment(.center) }
                 if !store.reachable {
                     Button("连接 iPhone") { store.refresh() }.font(.caption)
@@ -76,5 +91,8 @@ struct WatchRemoteView: View {
                 if store.notificationStatus == .notDetermined { Button("开启休息提醒") { store.enableReminder() }.font(.caption2) }
             }.padding(.horizontal, 4)
         }.navigationTitle("openGym").task { store.refresh() }
+            .confirmationDialog("结束运动记录？", isPresented: $confirmHealthEnd, titleVisibility: .visible) {
+                Button("结束并保存运动") { store.stopHealthWorkout() }
+            } message: { Text("停止心率与卡路里采集并保存到健康。训练组仍保留在手机，请在手机提交。") }
     }
 }

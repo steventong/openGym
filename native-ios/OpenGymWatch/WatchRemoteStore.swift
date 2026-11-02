@@ -3,8 +3,14 @@ import Observation
 import WatchConnectivity
 import UserNotifications
 import WatchKit
+import HealthKit
 
 @MainActor @Observable final class WatchRemoteStore: NSObject, WCSessionDelegate, UNUserNotificationCenterDelegate {
+    var healthReport: HealthWorkoutReport?
+    var healthStatus = ""
+    var authorizingHealth = false
+    @ObservationIgnored private let healthRecorder = HealthWorkoutRecorder(name: "watch-recorder")
+    @ObservationIgnored private let healthStore = HKHealthStore()
     var snapshot = WatchTrainingSnapshot(generatedAt: .distantPast)
     var reachable = false
     var sending = false
@@ -33,6 +39,8 @@ import WatchKit
     }
     func start() {
         guard !preview else { return }
+        healthRecorder.onReport = { [weak self] report in self?.publishHealth(report) }
+        healthRecorder.accept([])
         UNUserNotificationCenter.current().delegate = self
         guard WCSession.isSupported() else { return }
         WCSession.default.delegate = self
@@ -91,6 +99,15 @@ import WatchKit
         })
     }
     private func receive(_ message: [String: Any]) {
+        let requests = HealthWorkoutWire.requests(from: message).filter { $0.owner == .watch }
+        if !requests.isEmpty {
+            healthRecorder.accept(requests)
+            if requests.contains(where: { $0.phase == .running }),
+               healthStore.authorizationStatus(for: HealthWorkoutAccess.workout) == .notDetermined,
+               WKApplication.shared().applicationState == .active {
+                authorizeWorkout()
+            }
+        }
         if let incoming = WatchTrainingSnapshot.decode(message), incoming.generatedAt >= snapshot.generatedAt {
             snapshot = incoming
             UserDefaults.standard.set(try? JSONEncoder().encode(incoming), forKey: "remote.snapshot")
@@ -106,6 +123,44 @@ import WatchKit
             error = accepted ? nil : message["error"] as? String ?? "请核对手机上的训练。"
             if accepted { acknowledge() }
         }
+    }
+    func authorizeWorkout() {
+        guard !authorizingHealth, HKHealthStore.isHealthDataAvailable() else { return }
+        authorizingHealth = true
+        Task {
+            defer { authorizingHealth = false }
+            do {
+                try await HealthWorkoutAccess.authorize(healthStore)
+                healthStatus = "已授权，等待手机训练同步"
+                healthRecorder.accept([]); refresh()
+            } catch { healthStatus = error.localizedDescription }
+        }
+    }
+    func stopHealthWorkout() { healthRecorder.stopFromWatch() }
+    private func publishHealth(_ report: HealthWorkoutReport) {
+        // Receipts for a previous workout must not replace the current workout's live display.
+        let expected = "\(snapshot.account):\(snapshot.sessionID ?? "")"
+        if report.id == expected || healthReport == nil || healthReport?.id == report.id {
+            healthReport = report
+            switch report.state {
+            case .running: healthStatus = "正在记录运动"
+            case .saved: healthStatus = "运动已保存；训练组请在手机提交"
+            case .discarded: healthStatus = "运动记录已取消"
+            case .failed: healthStatus = report.message ?? "运动同步失败，请重试"
+            }
+        }
+        guard WCSession.default.activationState == .activated else { return }
+        let payload = HealthWorkoutWire.report(report)
+        if WCSession.default.isReachable { WCSession.default.sendMessage(payload, replyHandler: nil, errorHandler: { _ in }) }
+        if report.terminal || report.state == .failed {
+            let queued = WCSession.default.outstandingUserInfoTransfers.contains {
+                HealthWorkoutWire.report(from: $0.userInfo) == report
+            }
+            if !queued { WCSession.default.transferUserInfo(payload) }
+        }
+    }
+    nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any]) {
+        Task { @MainActor [weak self] in self?.receive(userInfo) }
     }
     private func acknowledge() {
         WKInterfaceDevice.current().play(.success)

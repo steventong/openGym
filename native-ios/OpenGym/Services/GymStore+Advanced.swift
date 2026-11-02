@@ -40,12 +40,17 @@ extension GymStore {
         do {
             let info = try WebRules.shared.call("restForCompleted",payload:["active":d.activeJSON,"entry":entry,"index":set,"state":state,"timerRunning":(restUntil ?? .distantPast) > Date()]) as! [String:Any]
             changeActive { raw in var levels = raw["nativeHighWater"] as? [String:Any] ?? [:];levels[String(entry)] = info["highWater"];raw["nativeHighWater"] = levels }
-            if info["preserveRest"] as? Bool == true { return }
-            let seconds = number(info["seconds"]); startRest(entry:entry,seconds:seconds,set:set)
             let rows = d.rawEntries[entry]["sets"] as? [[String:Any]] ?? []
             let exerciseDone = !rows.isEmpty && rows.allSatisfy { $0["done"] as? Bool == true }
-            // Keep a completed exercise visible until the user taps the next-exercise button.
-            changeActive { raw in raw["cur"] = seconds > 0 || exerciseDone ? entry : info["next"] }
+            if exerciseDone {
+                // A completed exercise has no next set to rest for, including rechecked sets.
+                // Keep it visible until the user taps the next-exercise button.
+                changeActive { raw in raw.removeValue(forKey: "nativeRest"); raw["cur"] = entry }
+                return
+            }
+            if info["preserveRest"] as? Bool == true { return }
+            let seconds = number(info["seconds"]); startRest(entry:entry,seconds:seconds,set:set)
+            changeActive { raw in raw["cur"] = seconds > 0 ? entry : info["next"] }
         } catch { self.error = error.localizedDescription }
     }
     var restEntry: Int? { (draft?.activeJSON["nativeRest"] as? [String:Any])?["entry"] as? Int }

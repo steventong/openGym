@@ -4,12 +4,18 @@ import Observation
 @MainActor @Observable final class GymStore {
     private(set) var exercises: [Exercise] = []
     var catalogueError: String?
-    var state: [String: Any] = [:] { didSet { rebuildExerciseIndex(); watchBridge?.publish() } }
+    var state: [String: Any] = [:] {
+        didSet {
+            // Workout, weight and sync metadata changes do not change exercise names or images.
+            if !RecordPatch.equal(oldValue["customEx"],state["customEx"]) { rebuildExerciseIndex() }
+            publishTraining()
+        }
+    }
     var serverURL = UserDefaults.standard.string(forKey: "serverURL") ?? "http://localhost:8080"
     var userName: String?
-    var userID: String? { didSet { watchBridge?.publish() } }
+    var userID: String? { didSet { publishTraining() } }
     var online = false
-    var syncing = false { didSet { watchBridge?.publish() } }
+    var syncing = false { didSet { publishTraining() } }
     var status = "正在连接服务…"
     var error: String?
     var editError: String?
@@ -17,9 +23,11 @@ import Observation
     var selectedTab = 0
     var showSettings = false
     var selectedExercise: Exercise?
-    var draft: TrainingDraft? { didSet { persistDraft(); watchBridge?.publish() } }
+    var draft: TrainingDraft? { didSet { persistDraft(); publishTraining() } }
     @ObservationIgnored var watchBridge: PhoneWatchBridge?
-    var localSaveIssues: [String: String] = [:]
+    @ObservationIgnored var liveActivity: WorkoutActivityCoordinator?
+    var liveActivityIssue: String?
+    var localSaveIssues: [String: String] = [:] { didSet { publishTraining() } }
     var localSaveError: String? {
         get { localSaveIssues.sorted { $0.key < $1.key }.first?.value }
         set { localSaveIssues["general"] = newValue }
@@ -27,6 +35,7 @@ import Observation
     var historyEdits: [String: [String: Any]] = [:]
     let localStorage: LocalTrainingStorage
     @ObservationIgnored lazy var healthSync = HealthWeightSync(store:self)
+    @ObservationIgnored lazy var workoutHealth = WorkoutHealthSync(store: self)
     var restUntil: Date? {
         get { guard let t = draft?.activeJSON["nativeRest"] as? [String: Any] else { return nil }; return Date(timeIntervalSince1970: number(t["end"])) }
         set { changeActive { raw in if let newValue { var rest = raw["nativeRest"] as? [String: Any] ?? [:]; rest["end"] = newValue.timeIntervalSince1970; raw["nativeRest"] = rest } else { raw.removeValue(forKey: "nativeRest") } } }
@@ -36,6 +45,7 @@ import Observation
     private var client: APIClient?
     private var loading = false
     init(client: APIClient? = nil, userID: String? = nil, storage: LocalTrainingStorage = LocalTrainingStorage()) { self.client = client; self.userID = userID; self.localStorage = storage }
+    private func publishTraining() { watchBridge?.publish(); liveActivity?.publish() }
     var unit: String { state["unit"] as? String ?? "kg" }
     var routines: [Routine] { (state["routines"] as? [[String: Any]] ?? []).filter { ($0["id"] as? String) != nil }.map { Routine(raw: $0) } }
     var workouts: [[String: Any]] {
@@ -59,8 +69,11 @@ import Observation
     }
     func exercise(_ id: String) -> Exercise? { index[id] }
     func registerCatalogue(_ list: [Exercise]) {
-        catalogue = list.sorted { $0.english < $1.english }
+        let sorted = list.sorted { $0.english < $1.english }
+        guard catalogue != sorted else { return }
+        catalogue = sorted
         rebuildExerciseIndex()
+        publishTraining()
     }
     private func rebuildExerciseIndex() {
         var customs: [Exercise] = []
@@ -72,12 +85,15 @@ import Observation
         }
         // Keep gym-specific IDs intact. Refresh from scratch so renamed/deleted exercises and
         // account changes cannot retain a stale name from the previous document.
-        exercises = customs + catalogue.filter { positions[$0.id] == nil }
+        let next = customs + catalogue.filter { positions[$0.id] == nil }
+        guard exercises != next else { return }
+        exercises = next
         index = Dictionary(exercises.map { ($0.id, $0) }, uniquingKeysWith: { _, latest in latest })
     }
     func mediaURL(_ id: String, video: Bool = false) -> URL? {
-        guard let address = try? ServerAddress(serverURL), id.range(of: "^[0-9]{4,5}$", options: .regularExpression) != nil else { return nil }
-        return address.endpoint("exercise-media/\(video ? "clip" : "still")/\(id).\(video ? "mp4" : "webp")")
+        guard id.range(of: "^[0-9]{4,5}$", options: .regularExpression) != nil else { return nil }
+        if video { return Bundle.main.url(forResource:id,withExtension:"mp4",subdirectory:"clip") }
+        return Bundle.main.url(forResource:id,withExtension:"webp",subdirectory:"still")
     }
     func prepareOfflineLaunch() {
         do { client = APIClient(address:try ServerAddress(serverURL),token:CredentialStore.read(for:serverURL)) }
@@ -121,7 +137,9 @@ import Observation
                 let changed = userID != user["id"] as? String
                 userName = user["name"] as? String; userID = user["id"] as? String
                 let result = try await client.request("api/data")
-                state = result["state"] as? [String: Any] ?? [:]
+                let next = result["state"] as? [String: Any] ?? [:]
+                // Preserve server stamps too; only suppress a refresh when the complete document matches.
+                if !NSDictionary(dictionary:state).isEqual(to:next) { state = next }
                 if changed { restoreLocalTraining() }
                 cacheProfile()
                 lastSync = Date(); status = "已同步"
@@ -224,6 +242,7 @@ import Observation
         do {
             let raw = try WebRules.shared.call("beginAdvanced",payload:["state":state,"ids":routineIDs,"id":UUID().uuidString,"now":Date().timeIntervalSince1970*1000,"day":dayString()]) as! [String:Any]
             draft = try TrainingDraft.fromWeb(raw,unit:unit);selectedTab = 2
+            if persistDraft(), let draft { workoutHealth.begin(draft) }
         } catch { self.error = error.localizedDescription }
     }
     func finish() async {
@@ -233,6 +252,7 @@ import Observation
         guard persistDraft(), let snapshot = draft else { error = localSaveError; return }
         let active = TrainingInput.clean(snapshot.activeJSON) as! [String:Any]
         let finishAt = number(snapshot.activeJSON["nativeFinishAt"])
+        guard workoutHealth.finish(snapshot, at: Date(timeIntervalSince1970: finishAt / 1000)) else { error = workoutHealth.status; return }
         var expected: [String:Any]?
         let saved = await mutate(verify: { source in
             guard let expected else { return false }
@@ -265,6 +285,7 @@ import Observation
         do {
             // Persist an empty document first: a failed write must keep the live input,
             // and an absent file would allow restoreDraft to adopt a legacy draft.
+            if let draft, !workoutHealth.finish(draft, discard: true, at: Date()) { error = workoutHealth.status; return }
             try localStorage.write([:], to: url)
             draft = nil
             selectedTab = 2

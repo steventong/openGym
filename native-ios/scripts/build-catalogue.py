@@ -12,4 +12,4 @@ for p in sorted((root/'catalogue/exercises').glob('*.json')):
 (out/'catalogue.json').write_text(json.dumps(items,ensure_ascii=False,separators=(',',':')))
 shutil.copy(root/'NOTICE.md',out/'NOTICE.txt')
 shutil.copy(root/'LICENSE',out/'LICENSE.txt')
-print(f'Prepared {len(items)} original catalogue entries; media stays on the openGym server.')
+print(f'Prepared {len(items)} original catalogue entries; videos are bundled from catalogue/media/clip by Xcode.')

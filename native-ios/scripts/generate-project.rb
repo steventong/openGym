@@ -35,3 +35,5 @@ scheme.save_as(root+'/OpenGym.xcodeproj', 'OpenGym', true)
 
 # Add the companion-only watch remote and shared transport models.
 require_relative 'configure-watch'
+require_relative 'configure-live-activity'
+require_relative 'configure-bundled-videos'

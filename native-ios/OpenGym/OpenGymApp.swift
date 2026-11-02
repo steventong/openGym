@@ -1,4 +1,6 @@
 import SwiftUI
+import UserNotifications
+import HealthKitUI
 @main struct OpenGymApp: App {
     @UIApplicationDelegateAdaptor(OpenGymAppDelegate.self) private var delegate
     private var store: GymStore { delegate.store }
@@ -9,12 +11,25 @@ import SwiftUI
         }
     }
 }
-@MainActor final class OpenGymAppDelegate: NSObject, UIApplicationDelegate {
-    let store = GymStore()
+@MainActor final class OpenGymAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    let store = WorkoutActivityRuntime.store
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        store.prepareOfflineLaunch()
-        store.watchBridge = PhoneWatchBridge(store: store)
+        UNUserNotificationCenter.current().delegate = self
         return true
+    }
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let configuration = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        if #available(iOS 26.0, *), options.shouldHandleActiveWorkoutRecovery { store.workoutHealth.retry() }
+        return configuration
+    }
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound])
+    }
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        Task { @MainActor in
+            if response.notification.request.content.userInfo["openGymWorkout"] as? Bool == true { self.store.selectedTab = 2 }
+            completionHandler()
+        }
     }
 }
 struct RootView: View {
@@ -23,15 +38,15 @@ struct RootView: View {
     var body: some View {
         @Bindable var store = store
         VStack(spacing:0) {
-            Group {
-                switch store.selectedTab {
-                case 0: HomeView()
-                case 1: PlanView()
-                case 2: WorkoutView()
-                case 3: StatsView()
-                default: LibraryView()
-                }
-            }.frame(maxWidth:.infinity,maxHeight:.infinity)
+            // Stable tab identities keep scroll positions and editor state when switching pages.
+            TabView(selection:$store.selectedTab) {
+                HomeView().tag(0).toolbar(.hidden,for:.tabBar)
+                PlanView().tag(1).toolbar(.hidden,for:.tabBar)
+                WorkoutView().tag(2).toolbar(.hidden,for:.tabBar)
+                StatsView().tag(3).toolbar(.hidden,for:.tabBar)
+                LibraryView().tag(4).toolbar(.hidden,for:.tabBar)
+            }.id(store.coachIdentity)
+                .frame(maxWidth:.infinity,maxHeight:.infinity)
             if let issue = store.localSaveError { Text(issue).font(.caption).foregroundStyle(.orange).padding(8).accessibilityIdentifier("local-save-error") }
             tabBar
         }.background(GymTheme.background).foregroundStyle(.white)
@@ -42,7 +57,15 @@ struct RootView: View {
             } message: { Text(store.error ?? "") }
             .onChange(of:store.draft?.id,initial:true) { _,_ in updateWake() }
             .onChange(of:store.state["keepAwake"] as? Bool) { _,_ in updateWake() }
-            .onChange(of:scenePhase) { _, phase in updateWake();if phase == .active { Task { await store.refresh(); await store.healthSync.resume() } } }
+            .onChange(of:scenePhase, initial:true) { _, phase in
+                updateWake()
+                if phase == .active {
+                    store.liveActivity?.publish()
+                    store.workoutHealth.retry()
+                    Task { await store.refresh(); await store.healthSync.resume() }
+                }
+            }
+            .onOpenURL { url in if url.scheme == "opengym", url.host == "workout" { store.selectedTab = 2 } }
             .task { while !Task.isCancelled { try? await Task.sleep(for:.seconds(30)); if !Task.isCancelled { await store.refresh(); await store.healthSync.resume() } } }
     }
     private func updateWake() { UIApplication.shared.isIdleTimerDisabled = scenePhase == .active && store.draft != nil && store.state["keepAwake"] as? Bool != false }
@@ -52,7 +75,7 @@ struct RootView: View {
             tab(1,"计划","calendar")
             Button { store.selectedTab = 2 } label: {
                 VStack(spacing:5) {
-                    Image(systemName:store.draft == nil ? "play.fill" : "pause.fill").font(.system(size:19)).foregroundStyle(.black)
+                    Image(systemName:store.draft == nil ? "play.fill" : "figure.strengthtraining.traditional").font(.system(size:19)).foregroundStyle(.black)
                         .frame(width:54,height:54).background(GymTheme.green,in:Circle()).shadow(color:GymTheme.green.opacity(0.17),radius:14)
                     Text(store.draft == nil ? "开始" : "训练中").font(.system(size:10,weight:.medium)).foregroundStyle(GymTheme.green)
                 }.frame(maxWidth:.infinity)
