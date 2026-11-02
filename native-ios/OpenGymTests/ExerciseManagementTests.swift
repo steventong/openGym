@@ -73,6 +73,62 @@ final class ExerciseManagementTests: XCTestCase {
         XCTAssertEqual(result["restSec"] as? Int, 120); XCTAssertEqual(result["note"] as? String, "keep")
         XCTAssertEqual(result["future"] as? String, "keep")
     }
+    @MainActor func testAddingUsesLatestCompletedSameExerciseAndSetCount() throws {
+        func workout(_ id: String, start: Int, exercise: String = "0289", weight: Int, count: Int) -> [String: Any] {
+            ["id": id, "start": start, "entries": [["id": exercise,
+                "target": ["mode": "reps", "sets": 9, "reps": 10],
+                "sets": [["w": 5, "r": 10, "done": true, "phase": "warmup"]]
+                    + Array(repeating: ["w": weight, "r": 8, "done": true], count: count)
+                    + [["w": 99, "r": 10, "done": false]]]]]
+        }
+        let state: [String: Any] = ["unit": "kg", "workouts": [
+            workout("future", start: 5000, weight: 90, count: 6),
+            workout("latest", start: 3000, weight: 25, count: 4),
+            workout("old", start: 1000, weight: 10, count: 2),
+            workout("other", start: 3500, exercise: "1047", weight: 70, count: 5),
+            workout("active", start: 3900, weight: 80, count: 7)
+        ]]
+        let result = try XCTUnwrap(WebRules.shared.call("manageTrainingExercises", payload: [
+            "active": ["id": "active", "start": 4000, "entries": []], "state": state, "action": "add", "id": "0289"
+        ]) as? [String: Any])
+        let added = try XCTUnwrap((result["entries"] as? [[String: Any]])?.first)
+        let rows = try XCTUnwrap(added["sets"] as? [[String: Any]])
+        XCTAssertEqual(rows.count, 4)
+        XCTAssertEqual((added["target"] as? [String: Any])?["sets"] as? Int, 4)
+        XCTAssertEqual(rows.map { number($0["w"]) }, [25, 25, 25, 25])
+        XCTAssertTrue(rows.allSatisfy { $0["done"] as? Bool == false })
+    }
+    @MainActor func testAddingTimedSideHistoryDoesNotDoubleSetCount() throws {
+        let previous: [String: Any] = ["id": "0289", "target": ["mode": "time", "side": true, "sets": 2],
+            "sets": ["L", "R", "L", "R"].map { ["side": $0, "sec": 30, "w": 5, "done": true] as [String: Any] }]
+        let result = try XCTUnwrap(WebRules.shared.call("manageTrainingExercises", payload: [
+            "active": ["start": 2000, "entries": []],
+            "state": ["workouts": [["start": 1000, "entries": [previous]]]], "action": "add", "id": "0289"
+        ]) as? [String: Any])
+        let added = try XCTUnwrap((result["entries"] as? [[String: Any]])?.first)
+        XCTAssertEqual((added["target"] as? [String: Any])?["sets"] as? Int, 2)
+        let rows = try XCTUnwrap(added["sets"] as? [[String: Any]])
+        XCTAssertEqual(rows.count, 4)
+        XCTAssertEqual(rows.compactMap { $0["side"] as? String }, ["L", "R", "L", "R"])
+        XCTAssertTrue(rows.allSatisfy { $0["done"] as? Bool == false })
+    }
+    @MainActor func testAddingPreservesEachPreviousCompletedSetWeightAndReps() throws {
+        let previous: [String: Any] = ["id": "0289", "sets": [
+            ["w": 20, "r": 10, "done": true],
+            ["w": 25, "r": 8, "done": true],
+            ["w": 30, "r": 6, "done": true],
+            ["w": 40, "r": 6, "done": false]
+        ]]
+        let result = try XCTUnwrap(WebRules.shared.call("manageTrainingExercises", payload: [
+            "active": ["entries": []], "state": ["workouts": [["start": 1000, "entries": [previous]]]],
+            "action": "add", "id": "0289"
+        ]) as? [String: Any])
+        let added = try XCTUnwrap((result["entries"] as? [[String: Any]])?.first)
+        let rows = try XCTUnwrap(added["sets"] as? [[String: Any]])
+        XCTAssertEqual(rows.map { number($0["w"]) }, [20, 25, 30])
+        XCTAssertEqual(rows.map { number($0["r"]) }, [10, 8, 6])
+        XCTAssertTrue(rows.allSatisfy { $0["done"] as? Bool == false })
+    }
     @MainActor func testRemoveLastThenAddCanRecoverAnEmptySession() throws {
         let empty = try edit(["entries": [entry()], "cur": 0], "remove")
         XCTAssertTrue((empty["entries"] as! [[String: Any]]).isEmpty)

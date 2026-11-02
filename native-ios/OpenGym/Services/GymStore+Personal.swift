@@ -2,6 +2,14 @@ import Foundation
 
 extension GymStore {
     var favouriteIDs: Set<String> { Set(state["favEx"] as? [String] ?? []) }
+    /// Only logged, completed work counts; planned or unfinished sets do not.
+    var trainedExerciseIDs: Set<String> {
+        Set(workouts.flatMap { $0["entries"] as? [[String: Any]] ?? [] }.compactMap { entry in
+            guard let id = entry["id"] as? String, !id.isEmpty,
+                  (entry["sets"] as? [[String: Any]] ?? []).contains(where: rawCompleted) else { return nil }
+            return id
+        })
+    }
     var customExercises: [[String:Any]] { state["customEx"] as? [[String:Any]] ?? [] }
     func personalInfo(_ action:String, _ extra:[String:Any] = [:]) throws -> [String:Any] {
         var payload = extra; payload["action"] = action; payload["state"] = state

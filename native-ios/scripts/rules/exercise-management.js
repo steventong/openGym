@@ -1,4 +1,4 @@
-import { defaultConfig, buildSets, cleanupSg, pairAdjacent, unpairSuperset } from '../../../frontend/src/lib/history.js';
+import { defaultConfig, freestyleConfig, lastEntryFor, setsFromRows, workoutAt, buildSets, cleanupSg, pairAdjacent, unpairSuperset } from '../../../frontend/src/lib/history.js';
 import { registerCustom } from '../../../frontend/src/lib/exercises.js';
 import { hasCompletedWork } from '../../../frontend/src/lib/workout-model.js';
 import { replaceSlotExercise } from '../../../frontend/src/lib/routines.js';
@@ -30,8 +30,14 @@ export function manageTrainingExercises(input) {
       entries[index] = { ...current, id, target: replaceSlotExercise(current.target || {}, id, s, current.rid) };
       for (const key of ['plan', 'planned', 'topW']) delete entries[index][key];
     } else {
-      const target = { id, ...defaultConfig(id) };
-      const past = { ...s, workouts: s.workouts.filter(w => !active.start || Number(w.start || 0) < active.start) };
+      const past = { ...s, workouts: s.workouts
+        .filter(w => (!active.id || w.id !== active.id) && (!Number.isFinite(active.start) || workoutAt(w) < active.start))
+        .sort((a, b) => (workoutAt(a) || 0) - (workoutAt(b) || 0)) };
+      const defaults = { id, ...defaultConfig(id) };
+      const target = action === 'add' ? freestyleConfig(past, defaults) : defaults;
+      // A timed left/right pair is one set, although history stores two rows.
+      const previous = action === 'add' ? lastEntryFor(past, id) : null;
+      if (previous) target.sets = setsFromRows(target, target.sets);
       const replacement = { id, target, sets: buildSets(past, target, { preferLast: true }) };
       if (history) replacement.sets = replacement.sets.map(row => ({ ...row, done: true }));
       if (action === 'replace') {

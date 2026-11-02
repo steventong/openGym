@@ -14,6 +14,7 @@ import OSLog
     private var startTask: Task<Void, Never>?
     private static let logger = Logger(subsystem:"me.itwl.opengym",category:"ExercisePlayback")
     func load(_ url: URL) {
+        observation = nil; currentItemObservation = nil
         stop(); player.removeAllItems(); looper = nil; ready = false; failed = false; playing = true
         let item = AVPlayerItem(url:url)
         currentItemObservation = player.observe(\.currentItem,options:[.initial,.new]) { [weak self] player, _ in
@@ -23,9 +24,23 @@ import OSLog
         player.isMuted = true; looper = AVPlayerLooper(player:player,templateItem:item); resume()
     }
     private func observeItem(_ item: AVPlayerItem?) {
-        observation = item?.observe(\.status,options:[.initial,.new]) { [weak self] item, _ in
+        guard let item, player.currentItem === item else { return }
+        observation = item.observe(\.status,options:[.initial,.new]) { [weak self] item, _ in
             let status = item.status
-            Task { @MainActor in self?.ready = status == .readyToPlay; self?.failed = status == .failed }
+            Task { @MainActor [weak self, weak item] in
+                guard let self, let item, self.player.currentItem === item else { return }
+                self.updateReadiness(status)
+            }
+        }
+    }
+    // Loading is a one-time state for this URL. Loop item handoffs can briefly
+    // report .unknown; keep the video visible, but still surface real failures.
+    func updateReadiness(_ status: AVPlayerItem.Status) {
+        switch status {
+        case .readyToPlay: ready = true; failed = false
+        case .failed: ready = false; failed = true
+        case .unknown: break
+        @unknown default: break
         }
     }
     func toggle() { playing.toggle(); playing ? resume() : stop() }
@@ -76,7 +91,9 @@ struct PlayerSurface: UIViewRepresentable {
     func makeUIView(context:Context) -> PlayerLayerView {
         let view = PlayerLayerView(); view.backgroundColor = .white; view.playerLayer.videoGravity = .resizeAspect; view.playerLayer.player = player; return view
     }
-    func updateUIView(_ uiView:PlayerLayerView,context:Context) { uiView.playerLayer.player = player }
+    func updateUIView(_ uiView:PlayerLayerView,context:Context) {
+        if uiView.playerLayer.player !== player { uiView.playerLayer.player = player }
+    }
     static func dismantleUIView(_ uiView: PlayerLayerView, coordinator: ()) { uiView.playerLayer.player = nil }
 }
 struct ExerciseDetail: View {

@@ -87,7 +87,7 @@ struct HistoryEditor: View {
                 rows: entry.sets.map { TrainingEditorRow(id: $0.id.uuidString, raw: $0.raw) },
                 unit: form.unit, inputState: store.state.merging(["unit": form.unit]) { _, new in new }, previous: store.previousExerciseText(entry.raw, before: number(form.original["start"]), exclude: record.id),
                 note: Binding(get: { form.entries[i].raw["note"] as? String ?? "" }, set: { form.entries[i].raw["note"] = $0; persist() }),
-                identifier: "history",
+                identifier: "history", entryIdentity: entry.id.uuidString,
                 showDetails: { detail = store.exercise(entry.raw["id"] as? String ?? "") },
                 addSet: { addSet(entry: i) },
                 copySet: { index in

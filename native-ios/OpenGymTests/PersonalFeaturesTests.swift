@@ -2,6 +2,34 @@ import XCTest
 @testable import OpenGym
 
 final class PersonalFeaturesTests:XCTestCase {
+    @MainActor func testTrainedExercisesRequireCompletedHistoryIncludingOneSide() {
+        let store = GymStore()
+        store.state = [
+            "routines": [["id": "plan", "ex": [["id": "planned"]]]],
+            "favEx": ["favourite"],
+            "workouts": [["id": "history", "entries": [
+                ["id": "ordinary", "sets": [["done": true]]],
+                ["id": "ordinary", "sets": [["done": true]]],
+                ["id": "one-side", "sets": [["sides": ["L": ["done": true], "R": ["done": false]]]]],
+                ["id": "unfinished", "sets": [["done": false]]],
+                ["id": "neither-side", "sets": [["done": true, "sides": ["L": ["done": false], "R": ["done": false]]]]],
+                ["id": "empty", "sets": []],
+                ["id": "", "sets": [["done": true]]]
+            ]]]
+        ]
+        XCTAssertEqual(store.trainedExerciseIDs, ["ordinary", "one-side"])
+        store.state = [:]
+        XCTAssertTrue(store.trainedExerciseIDs.isEmpty)
+    }
+    @MainActor func testTrainedExercisesFollowLocalHistoryCorrections() {
+        let store = GymStore()
+        store.state = ["workouts": [workout()]]
+        XCTAssertEqual(store.trainedExerciseIDs, ["0025"])
+        store.historyEdits = ["w": ["proposed": ["entries": [["id": "replacement", "sets": [["done": true]]]]]]]
+        XCTAssertEqual(store.trainedExerciseIDs, ["replacement"])
+        store.historyEdits = [:]
+        XCTAssertEqual(store.trainedExerciseIDs, ["0025"])
+    }
     func testTrendPointIdentitySurvivesRedrawAndValueChanges() {
         let date = Date(timeIntervalSince1970:1000)
         func points(_ value:Double) -> [TrendPoint] {

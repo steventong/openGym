@@ -112,6 +112,9 @@ enum TrainingInput {
         operation["editing"] = editing; operation["now"] = Date().timeIntervalSince1970 * 1000
         var result = try WebRules.shared.call("editAdvancedRow", payload: operation) as! [String: Any]
         if !inputs.isEmpty { result[key] = inputs }
+        // The rule engine receives clean data, but an edit still belongs to the
+        // same native row. Submission continues to strip this local-only key.
+        result["nativeViewID"] = raw["nativeViewID"]
         return result
     }
     @MainActor static func steppedText(_ text: String, path: String, direction: Int, target: [String: Any], state: [String: Any], unit: String) -> String? {

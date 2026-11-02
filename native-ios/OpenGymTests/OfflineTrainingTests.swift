@@ -217,11 +217,13 @@ final class OfflineTrainingTests: XCTestCase {
         let retained: [String: Any] = ["w": 25, "r": 8, "done": false, TrainingInput.key: ["both.w": "25."]]
         s.draft = try TrainingDraft.fromWeb(["id": "delete-sets", "start": 1000, "cur": 0, "nativeFinishAt": 2000,
             "entries": [["id": "0289", "target": ["mode": "reps"], "sets": [["w": 10, "r": 8, "done": true], retained]]]], unit: "kg")
+        let identifiedRetained = try XCTUnwrap((s.draft?.rawEntries[0]["sets"] as? [[String: Any]])?.last)
+        XCTAssertTrue(RecordPatch.equal(identifiedRetained.filter { $0.key != "nativeViewID" }, retained))
         s.removeLiveSet(entry: 0, set: 0)
-        XCTAssertTrue(RecordPatch.equal(s.draft?.rawEntries[0]["sets"], [retained]))
+        XCTAssertTrue(RecordPatch.equal(s.draft?.rawEntries[0]["sets"], [identifiedRetained]))
         XCTAssertNil(s.draft?.activeJSON["nativeFinishAt"])
         let restored = try store(); restored.restoreDraft()
-        XCTAssertTrue(RecordPatch.equal(restored.draft?.rawEntries[0]["sets"], [retained]))
+        XCTAssertTrue(RecordPatch.equal(restored.draft?.rawEntries[0]["sets"], [identifiedRetained]))
         restored.removeLiveSet(entry: 0, set: 0)
         XCTAssertEqual((restored.draft?.rawEntries[0]["sets"] as? [[String: Any]])?.count, 0)
         restored.addLiveSet(entry: 0)

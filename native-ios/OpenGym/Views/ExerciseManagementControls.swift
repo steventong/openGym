@@ -92,7 +92,7 @@ private struct TrainingReplacementPicker: View {
     @State private var selected: Exercise?
     @State private var confirming = false
     var body: some View {
-        ExercisePicker(title: "更换动作") { exercise in
+        ExercisePicker(title: "更换动作", selectionIcon: "arrow.triangle.2.circlepath") { exercise in
             guard exercise.id != currentID else { return }
             selected = exercise; confirming = true
         }.confirmationDialog("更换此动作？", isPresented: $confirming, titleVisibility: .visible) {
@@ -152,7 +152,7 @@ struct RoutineExerciseReplacement: View {
             Label("更换", systemImage: "arrow.triangle.2.circlepath").font(.subheadline).frame(minHeight: 44)
         }.buttonStyle(.borderless).accessibilityIdentifier("replace-routine-exercise")
             .sheet(isPresented: $picking) {
-                ExercisePicker(title: "更换动作") { exercise in
+                ExercisePicker(title: "更换动作", selectionIcon: "arrow.triangle.2.circlepath") { exercise in
                     do {
                         guard let result = try WebRules.shared.call("replaceNativeRoutineExercise", payload: ["slot": slot, "id": exercise.id, "state": store.state, "rid": routineID]) as? [String: Any] else { throw APIError.invalidResponse }
                         slot = result; picking = false

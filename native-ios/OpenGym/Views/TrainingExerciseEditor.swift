@@ -14,6 +14,7 @@ struct TrainingExerciseEditor<Accessory: View>: View {
     let previous: String
     @Binding var note: String
     let identifier: String
+    var entryIdentity: String? = nil
     var timerRunning = false
     var restUntil: Date? = nil
     var startTimer: ((Int) -> Void)? = nil
@@ -85,13 +86,14 @@ struct TrainingExerciseEditor<Accessory: View>: View {
             }.accessibilityIdentifier("previous-exercise")
             ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
                 VStack(alignment: .leading, spacing: 8) {
-                    AdvancedSetEditor(row: row.raw, target: (entry["target"] as? [String: Any] ?? [:]).merging(["id": entry["id"] ?? ""]) { _, new in new }, unit: unit, inputState: inputState, identifier: row.id, setLabel: "第 \(setNumber(index)) 组", copySet: { copySet(index) }, removeSet: { removeSet(index) }, timerRunning: timerRunning,
+                    AdvancedSetEditor(row: row.raw, target: (entry["target"] as? [String: Any] ?? [:]).merging(["id": entry["id"] ?? ""]) { _, new in new }, unit: unit, inputState: inputState, identifier: row.accessibilityIdentifier ?? row.id, setLabel: "第 \(setNumber(index)) 组", copySet: { copySet(index) }, removeSet: { removeSet(index) }, timerRunning: timerRunning,
                                       startTimer: startTimer.map { start in { start(index) } },
                                       startRest: startRest.map { start in { start(index, $0) } }) { editSet(index, $0) }
                 }
                 if index < rows.count - 1 { Divider() }
-            // Reset input focus and row-local controls without recreating the title and thumbnail.
-            }.id([String(selected),entry["id"] as? String ?? ""] + rows.map(\.id))
+            // Reset row-local state only when changing exercises, not when inserting
+            // or deleting a sibling row. Each row has its own stable identity.
+            }.id([entryIdentity ?? String(selected), entry["id"] as? String ?? ""])
             if let undoRemove {
                 HStack { Text("已删除训练组").foregroundStyle(GymTheme.muted); Spacer(); Button("撤销", action: undoRemove).frame(minHeight: 44) }.font(.caption)
             }
@@ -173,4 +175,5 @@ struct TrainingExerciseEditor<Accessory: View>: View {
 struct TrainingEditorRow: Identifiable {
     let id: String
     let raw: [String: Any]
+    var accessibilityIdentifier: String? = nil
 }

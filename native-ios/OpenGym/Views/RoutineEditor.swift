@@ -105,22 +105,120 @@ struct ExercisePicker: View {
     @State private var search = ""
     @State private var available:Set<String>?
     @State private var favouritesOnly = false
+    @State private var trainedOnly = false
+    @State private var customOnly = false
+    @State private var bodyPart = ""
+    @State private var equipment = ""
+    @State private var limit = 60
+    private let bodyParts = ["", "back", "cardio", "chest", "full body", "lower arms", "lower legs", "neck", "shoulders", "upper arms", "upper legs", "waist"]
     private var choices:[Exercise] {
         let favourites = store.favouriteIDs
-        let matching = store.exercises.filter {(search.isEmpty || $0.searchText.localizedCaseInsensitiveContains(search)) && (!favouritesOnly || favourites.contains($0.id)) && (available == nil || available!.contains($0.id))}
+        let trained = trainedOnly ? store.trainedExerciseIDs : []
+        let customs = Set(store.customExercises.compactMap { $0["id"] as? String })
+        let matching = store.exercises.filter {
+            (search.isEmpty || $0.searchText.localizedCaseInsensitiveContains(search)) &&
+            (!favouritesOnly || favourites.contains($0.id)) &&
+            (!trainedOnly || trained.contains($0.id)) &&
+            (!customOnly || customs.contains($0.id)) &&
+            (bodyPart.isEmpty || $0.bodyPart == bodyPart) &&
+            (equipment.isEmpty || $0.equipment == equipment) &&
+            (available == nil || available!.contains($0.id))
+        }
         return matching.filter {favourites.contains($0.id)} + matching.filter {!favourites.contains($0.id)}
     }
+    private var equipments: [String] {
+        [""] + Set(store.exercises.filter { bodyPart.isEmpty || $0.bodyPart == bodyPart }.map(\.equipment)).sorted()
+    }
     var title = "添加动作"
+    var selectionIcon = "plus"
     let select:(Exercise)->Void
     var body: some View {
         NavigationStack {
-            List {
-                TextField("搜索动作",text:$search).accessibilityIdentifier("picker-search")
-                Toggle("只看收藏",isOn:$favouritesOnly)
-                ForEach(Array(choices.prefix(60))) { ex in
-                    Button { select(ex) } label: { HStack { ExerciseThumbnail(id:ex.id,size:45); Text(ex.name).font(.subheadline).foregroundStyle(.primary); Spacer(); Image(systemName:"plus") } }.accessibilityIdentifier("pick-\(ex.id)")
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    searchField
+                    filters
+                    if let error = store.catalogueError { Text(error).foregroundStyle(.orange) }
+                    let results = choices
+                    HStack {
+                        Text("找到 \(results.count) 个动作")
+                        Spacer()
+                        Label("动作库", systemImage: "checkmark.seal")
+                    }.font(.caption).foregroundStyle(GymTheme.muted)
+                    if results.isEmpty {
+                        EmptyCard(icon: "magnifyingglass", title: "没有找到动作", detail: "试试其他关键词，或清除当前筛选。")
+                        Button("清除搜索与筛选") { resetFilters() }
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    LazyVStack(spacing: 10) {
+                        ForEach(Array(results.prefix(limit))) { exercise in
+                            Button { select(exercise) } label: {
+                                ExerciseRow(exercise: exercise, accessoryIcon: selectionIcon)
+                            }.buttonStyle(.plain)
+                                .accessibilityIdentifier("pick-\(exercise.id)")
+                        }
+                        if results.count > limit { ExercisePageTrigger(limit: $limit, total: results.count).id(limit) }
+                    }
+                }.padding(20)
+            }.background(GymTheme.background)
+                .scrollDismissesKeyboard(.interactively)
+                .navigationTitle(title)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("取消") { dismiss() } } }
+                .onAppear { refreshEquipment() }
+                .onChange(of: store.lastSync) { _, _ in refreshEquipment() }
+                .onChange(of: search) { _, _ in limit = 60 }
+                .onChange(of: bodyPart) { _, _ in limit = 60 }
+                .onChange(of: equipment) { _, _ in limit = 60 }
+                .onChange(of: favouritesOnly) { _, _ in limit = 60 }
+                .onChange(of: trainedOnly) { _, _ in limit = 60 }
+                .onChange(of: customOnly) { _, _ in limit = 60 }
+        }.tint(GymTheme.green)
+    }
+    private var searchField: some View {
+        HStack {
+            Image(systemName: "magnifyingglass").foregroundStyle(GymTheme.muted)
+            TextField("搜索动作、肌群…", text: $search)
+                .font(.system(size: 15)).autocorrectionDisabled()
+                .accessibilityIdentifier("picker-search")
+            if !search.isEmpty {
+                Button { search = "" } label: {
+                    Image(systemName: "xmark.circle.fill").foregroundStyle(.gray)
+                }.accessibilityLabel("清除搜索")
+            }
+        }.padding(14).background(Color(white: 0.16), in: RoundedRectangle(cornerRadius: 14))
+    }
+    private var filters: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(bodyParts, id: \.self) { item in
+                        Pill(title: item.isEmpty ? "全部" : Vocabulary.label(item), selected: bodyPart == item) {
+                            bodyPart = item; equipment = ""
+                        }
+                    }
                 }
-            }.onAppear {if store.state["equipFilterOn"] as? Bool == true {available = ((try? store.personalInfo("equipment"))?["available"] as? [String]).map {Set($0)}}}.navigationTitle(title).navigationBarTitleDisplayMode(.inline).toolbar { ToolbarItem(placement:.topBarTrailing) { Button("取消") { dismiss() } } }
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(equipments, id: \.self) { item in
+                        Pill(title: item.isEmpty ? "所有器械" : Vocabulary.label(item), selected: equipment == item) { equipment = item }
+                    }
+                }
+            }
+            HStack(spacing: 8) {
+                Pill(title: "收藏", selected: favouritesOnly) { favouritesOnly.toggle() }
+                Pill(title: "练过", selected: trainedOnly) { trainedOnly.toggle() }
+                Pill(title: "自定义", selected: customOnly) { customOnly.toggle() }
+            }
         }
+    }
+    private func resetFilters() {
+        search = ""; bodyPart = ""; equipment = ""; favouritesOnly = false; trainedOnly = false; customOnly = false; limit = 60
+    }
+    private func refreshEquipment() {
+        if store.state["equipFilterOn"] as? Bool == true {
+            available = ((try? store.personalInfo("equipment"))?["available"] as? [String]).map { Set($0) }
+        } else { available = nil }
     }
 }

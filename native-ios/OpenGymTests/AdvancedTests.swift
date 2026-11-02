@@ -1,8 +1,149 @@
 import XCTest
 import SwiftUI
 import UIKit
+import AVFoundation
 @testable import OpenGym
 @MainActor final class AdvancedTests:XCTestCase {
+    func testLiveRowIdentitySurvivesEditingCopyRemovalUndoAndRestore() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let storage = LocalTrainingStorage(root: root)
+        let store = GymStore(userID: "row-identity", storage: storage)
+        store.draft = try TrainingDraft.fromWeb(begin(state([["id": "0289", "sets": 3, "weight": 20]])), unit: "kg")
+        func rowIDs(_ draft: TrainingDraft?) -> [String] {
+            (draft?.rawEntries.first?["sets"] as? [[String: Any]] ?? []).compactMap { $0["nativeViewID"] as? String }
+        }
+        let original = rowIDs(store.draft)
+        XCTAssertEqual(original.count, 3)
+        XCTAssertEqual(Set(original).count, 3)
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "field", "key": "w", "value": 25]))
+        XCTAssertEqual(rowIDs(store.draft), original)
+        store.copyLiveSet(entry: 0, set: 0)
+        let copied = rowIDs(store.draft)
+        XCTAssertEqual(copied.count, 4)
+        XCTAssertEqual(Set(copied).count, 4)
+        XCTAssertEqual([copied[0], copied[2], copied[3]], original)
+        store.removeLiveSet(entry: 0, set: 1)
+        XCTAssertEqual(rowIDs(store.draft), original)
+        store.undoSetRemoval()
+        XCTAssertEqual(rowIDs(store.draft), copied)
+        store.addLiveSet(entry: 0)
+        XCTAssertEqual(Array(rowIDs(store.draft).prefix(4)), copied)
+        XCTAssertEqual(Set(rowIDs(store.draft)).count, 5)
+        let restored = GymStore(userID: "row-identity", storage: storage)
+        restored.restoreDraft()
+        XCTAssertEqual(rowIDs(restored.draft), rowIDs(store.draft))
+        let cleaned = try JSONSerialization.data(withJSONObject: TrainingInput.clean(try XCTUnwrap(store.draft).activeJSON))
+        XCTAssertFalse(String(decoding: cleaned, as: UTF8.self).contains("nativeViewID"))
+    }
+
+    func testLegacyDraftIdentityIsStableBeforeAndAfterFirstEdit() throws {
+        let raw = begin(state([["id": "0289", "sets": 2]]))
+        var draft = try TrainingDraft.fromWeb(raw, unit: "kg")
+        // Simulate a persisted draft from before native identities existed.
+        draft.webData = try JSONSerialization.data(withJSONObject: raw)
+        let first = draft.activeJSON
+        XCTAssertTrue(RecordPatch.equal(first, draft.activeJSON))
+        var edited = first; edited["note"] = "keep rows"
+        try draft.setActive(edited)
+        XCTAssertTrue(RecordPatch.equal(first["entries"], draft.activeJSON["entries"]))
+        var removed = raw
+        var entries = raw["entries"] as! [[String: Any]]
+        entries[0]["sets"] = Array((entries[0]["sets"] as! [[String: Any]]).dropFirst())
+        removed["entries"] = entries
+        removed["nativeSetUndo"] = ["entries": raw["entries"]!, "expected": entries]
+        draft.webData = try JSONSerialization.data(withJSONObject: removed)
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = GymStore(userID: "legacy-undo", storage: LocalTrainingStorage(root: root))
+        store.draft = draft
+        store.undoSetRemoval()
+        XCTAssertEqual((store.draft?.rawEntries.first?["sets"] as? [[String: Any]])?.count, 2)
+        XCTAssertFalse(store.canUndoSetRemoval)
+    }
+
+    func testExerciseFieldsKeepTheirViewsWhenSiblingRowsChange() async throws {
+        let store = GymStore()
+        func view(_ ids: [String]) -> some View {
+            let rows = ids.map { TrainingEditorRow(id: $0, raw: ["w": 20, "r": 8]) }
+            let entry: [String: Any] = ["id": "0289", "sets": rows.map(\.raw)]
+            return TrainingExerciseEditor(
+                showingOptions: .constant(false), entries: [entry], names: ["卧推"], selected: .constant(0),
+                rows: rows, unit: "kg", previous: "", note: .constant(""), identifier: "identity",
+                showDetails: {}, addSet: {}, copySet: { _ in }, removeSet: { _ in }, editSet: { _, _ in }
+            ) { EmptyView() }.environment(store)
+        }
+        let controller = UIHostingController(rootView: view(["a", "b", "c"]))
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+        window.rootViewController = controller; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        func fields(in view: UIView) -> [UITextField] {
+            if let field = view as? UITextField { return [field] }
+            return view.subviews.flatMap { fields(in: $0) }
+        }
+        controller.view.frame = window.bounds
+        controller.view.layoutIfNeeded()
+        try await Task.sleep(for: .milliseconds(100))
+        let original = fields(in: controller.view)
+        XCTAssertEqual(original.count, 6)
+        let first = try XCTUnwrap(original.first)
+        let last = try XCTUnwrap(original.last)
+        for ids in [["a", "c"], ["a", "new", "c"]] {
+            controller.rootView = view(ids)
+            _ = controller.sizeThatFits(in: window.bounds.size)
+            controller.view.setNeedsLayout()
+            controller.view.layoutIfNeeded()
+            for _ in 0..<20 where fields(in: controller.view).count != ids.count * 2 {
+                try await Task.sleep(for: .milliseconds(50))
+                controller.view.layoutIfNeeded()
+            }
+            let current = fields(in: controller.view)
+            XCTAssertEqual(current.count, ids.count * 2)
+            XCTAssertTrue(current.first === first)
+            XCTAssertTrue(current.last === last)
+        }
+    }
+
+    func testHealthSamplesDoNotResizeReservedMetricsRow() {
+        let reports: [HealthWorkoutReport?] = [nil,
+            HealthWorkoutReport(id: "health", state: .running, activeCalories: 0),
+            HealthWorkoutReport(id: "health", state: .running, activeCalories: 1200, heartRate: 180),
+            HealthWorkoutReport(id: "health", state: .saved, activeCalories: 1200)]
+        for width: CGFloat in [240, 350] {
+            for textSize: DynamicTypeSize in [.large, .accessibility3] {
+                let sizes = reports.map { report in
+                    UIHostingController(rootView: WorkoutHealthMetricsContent(report: report)
+                        .environment(\.dynamicTypeSize, textSize))
+                        .sizeThatFits(in: CGSize(width: width, height: .greatestFiniteMagnitude))
+                }
+                for size in sizes.dropFirst() {
+                    XCTAssertEqual(size.height, sizes[0].height, accuracy: 0.5)
+                    XCTAssertEqual(size.width, sizes[0].width, accuracy: 0.5)
+                }
+            }
+        }
+    }
+
+    func testVideoLoopHandoffDoesNotRestoreLoadingIndicator() {
+        let playback = LoopPlayback()
+        playback.updateReadiness(.unknown)
+        XCTAssertFalse(playback.ready)
+        playback.updateReadiness(.readyToPlay)
+        for _ in 0..<3 {
+            playback.updateReadiness(.unknown)
+            XCTAssertTrue(playback.ready)
+            XCTAssertFalse(playback.failed)
+            playback.updateReadiness(.readyToPlay)
+        }
+        playback.updateReadiness(.failed)
+        XCTAssertTrue(playback.failed)
+        XCTAssertFalse(playback.ready)
+        playback.updateReadiness(.unknown)
+        XCTAssertTrue(playback.failed)
+        playback.updateReadiness(.readyToPlay)
+        XCTAssertTrue(playback.ready)
+        XCTAssertFalse(playback.failed)
+    }
     let day = "2026-10-23"
     let now = 1_792_699_200_000.0
     func testRestCountdownDoesNotResizeExerciseCard() async throws {
@@ -133,7 +274,7 @@ import UIKit
         var a = begin(state([["id":"0150","mode":"time","sec":3,"sets":1]]));a["nativeTimer"] = ["entry":0,"set":0,"end":1000,"paused":true,"remaining":2]
         let draft = try TrainingDraft.fromWeb(a,unit:"kg")
         let restored = try JSONDecoder().decode(TrainingDraft.self,from:JSONEncoder().encode(draft))
-        XCTAssertTrue(RecordPatch.equal(restored.activeJSON,a));XCTAssertEqual((restored.activeJSON["nativeTimer"] as? [String:Any])?["paused"] as? Bool,true)
+        XCTAssertTrue(RecordPatch.equal(restored.activeJSON,draft.activeJSON));XCTAssertEqual((restored.activeJSON["nativeTimer"] as? [String:Any])?["paused"] as? Bool,true)
     }
     func testHistoryClusterEditKeepsAggregateAndOriginalCompletionTime() throws {
         let row:[String:Any] = ["w":20,"r":12,"done":true,"at":1234,"type":"restpause","clusters":[["r":6,"restSec":15],["r":3,"restSec":15],["r":2,"restSec":15],["r":1,"restSec":15]]]
