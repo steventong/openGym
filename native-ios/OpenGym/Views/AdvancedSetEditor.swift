@@ -1,4 +1,28 @@
 import SwiftUI
+
+/// The corner badge adds failure information without changing the set row's layout.
+private struct SetCompletionMark: View {
+    let completed: Bool
+    let failure: Bool
+    let height: CGFloat
+    private let completedColor = Color(red: 0.60, green: 0.88, blue: 0.52)
+
+    var body: some View {
+        Image(systemName: "checkmark").font(.system(size: 15, weight: .bold))
+            .foregroundStyle(completed ? Color.black : .gray)
+            .frame(width: 44, height: height)
+            .background(completed ? completedColor : Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 10))
+            .overlay(alignment: .topTrailing) {
+                if failure {
+                    Image(systemName: "bolt.fill").font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(completed ? Color.black : .orange)
+                        .padding(2).background(completed ? completedColor : GymTheme.card, in: Circle())
+                        .padding(4)
+                }
+            }
+    }
+}
+
 /// The same controls edit a live set and a saved set; writes go through the web's row functions.
 struct AdvancedSetEditor:View {
     let row:[String:Any]
@@ -26,7 +50,6 @@ struct AdvancedSetEditor:View {
         VStack(alignment:.leading,spacing:10) {
             if !compact { HStack(spacing:8) {
                 Text(setLabel).font(.caption).foregroundStyle(GymTheme.muted)
-                if row["failure"] as? Bool == true { Image(systemName: "bolt.fill").foregroundStyle(.orange).accessibilityLabel("力竭") }
                 if warmup { Text("热身").font(.caption).foregroundStyle(.orange) }
                 if row["max"] as? Bool == true { Text("MAX").font(.caption).foregroundStyle(GymTheme.green) }
                 if let side = row["side"] as? String { Text(side == "L" ? "左侧" : "右侧").font(.caption).foregroundStyle(GymTheme.green) }
@@ -61,13 +84,10 @@ Menu {
                 if compact {
                     Text(warmup ? "热" : row["max"] as? Bool == true ? "MAX" : setLabel.replacingOccurrences(of: "第 ", with: "").replacingOccurrences(of: " 组", with: ""))
                         .font(.caption.monospacedDigit()).foregroundStyle(warmup ? .orange : GymTheme.muted).frame(width: 24, height: inputHeight).accessibilityLabel("\(setLabel)\(warmup ? "热身" : "")")
-                        .overlay(alignment: .bottom) {
-                            if row["failure"] as? Bool == true { Image(systemName: "bolt.fill").font(.system(size: 9)).foregroundStyle(.orange).accessibilityHidden(true) }
-                        }.accessibilityValue(row["failure"] as? Bool == true ? "力竭" : "")
                 }
                 if mode == "cardio" { field("分钟","min",data,side);field(TrainingInput.speedUnit(inputState) == "mph" ? "mph" : "km/h","speed",data,side) }
                 else { field(weightUnit,"w",data,side);field(mode == "time" ? "秒" : "次数",mode == "time" ? "sec" : "r",data,side) }
-                Button { focusedField = nil;var p:[String:Any] = ["action":"toggle"];p["side"] = side;action(p) } label:{Image(systemName:"checkmark").font(.system(size:15,weight:.bold)).frame(width:44,height:inputHeight).foregroundStyle(data["done"] as? Bool == true ? .black : .gray).background(data["done"] as? Bool == true ? GymTheme.green : Color.white.opacity(0.07),in:RoundedRectangle(cornerRadius:10))}.buttonStyle(.borderless).accessibilityLabel("\(side == "L" ? "左侧" : side == "R" ? "右侧" : "本组")完成").accessibilityIdentifier("complete-\(identifier)-\(side ?? "both")").accessibilityValue(data["done"] as? Bool == true ? "已完成":"未完成").disabled(timerRunning)
+                completionControl(data, side: side)
                 if compact && !readOnly { setMenu }
             }
             if mode == "reps", let plates = plateText(data) {
@@ -107,6 +127,28 @@ Menu {
                 }
             }
         }
+    }
+    @ViewBuilder private func completionControl(_ data: [String: Any], side: String?) -> some View {
+        let completed = data["done"] as? Bool == true
+        let failure = row["failure"] as? Bool == true || data["failure"] as? Bool == true
+        Group {
+            if readOnly {
+                // A read-only marker is not a disabled Button, so its fill never dims.
+                SetCompletionMark(completed: completed, failure: failure, height: inputHeight)
+                    .accessibilityElement(children: .ignore)
+            } else {
+                Button {
+                    focusedField = nil
+                    var operation: [String: Any] = ["action": "toggle"]
+                    operation["side"] = side
+                    action(operation)
+                } label: { SetCompletionMark(completed: completed, failure: failure, height: inputHeight) }
+                    .buttonStyle(.plain).disabled(timerRunning)
+            }
+        }
+        .accessibilityLabel("\(side == "L" ? "左侧" : side == "R" ? "右侧" : "本组")完成")
+        .accessibilityIdentifier("complete-\(identifier)-\(side ?? "both")")
+        .accessibilityValue((completed ? "已完成" : "未完成") + (failure ? "，力竭" : ""))
     }
     private func effortKey(_ data:[String:Any])->String { data["rpe"] != nil ? "rpe":data["rir"] != nil ? "rir":inputState["effort"] as? String == "rpe" ? "rpe":"rir" }
     private func plateText(_ data: [String: Any]) -> String? {

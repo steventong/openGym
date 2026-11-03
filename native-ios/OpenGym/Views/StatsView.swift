@@ -193,7 +193,7 @@ private struct WorkoutHistoryPreview: View {
                         Text("\(decimal(max(0, number(current.raw["end"]) - number(current.raw["start"])) / 60000)) 分钟 · \(current.completedSetCount) 组")
                             .font(.subheadline).foregroundStyle(GymTheme.muted)
                         if let note = current.raw["note"] as? String, !note.isEmpty { Text(note).font(.subheadline) }
-                    }.gymCard()
+                    }.frame(maxWidth: .infinity, alignment: .leading).gymCard()
                     let entries = current.raw["entries"] as? [[String: Any]] ?? []
                     ForEach(entries.indices, id: \.self) { index in
                         exerciseCard(entries[index], index: index)
