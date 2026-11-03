@@ -48,50 +48,64 @@ struct HomeView: View {
                 }
                 VStack(alignment:.leading,spacing:18) {
                     HStack { Text(Calendar.current.isDateInToday(selectedDay) ? "今天" : selectedDay.formatted(.dateTime.month().day())).font(.system(size:12)).foregroundStyle(GymTheme.muted); Spacer(); Image(systemName:"figure.strengthtraining.traditional").foregroundStyle(GymTheme.green) }
+                        .lineLimit(1).frame(height:20)
                     Text(store.draft?.name ?? (scheduled.isEmpty ? "休息日" : scheduled.map(\.name).joined(separator:" + ")))
-                        .font(.system(size:29,weight:.bold)).lineLimit(1).minimumScaleFactor(0.7)
-                        .frame(height:36, alignment:.leading)
+                        .font(.system(size:29,weight:.bold)).lineLimit(1)
+                        .frame(maxWidth:.infinity, alignment:.leading).frame(height:36, alignment:.leading)
                     Text("\(scheduled.flatMap(\.exercises).count) 个动作")
                         .font(.system(size:13)).foregroundStyle(GymTheme.muted).lineLimit(1, reservesSpace:true)
+                        .frame(height:18, alignment:.leading)
                         .opacity(store.draft == nil && !scheduled.isEmpty ? 1 : 0)
                         .accessibilityHidden(store.draft != nil || scheduled.isEmpty)
-                    if store.draft != nil {
-                        GreenButton(title:"继续训练",icon:"play.fill") {
+                    trainingButton(
+                        store.draft != nil ? "继续训练" : scheduled.isEmpty ? "自由训练" : "开始训练",
+                        icon: store.draft == nil && scheduled.isEmpty ? "figure.strengthtraining.traditional" : "play.fill",
+                        primary: true,
+                        identifier: store.draft == nil && scheduled.isEmpty ? "start-freestyle-workout" : "home-start-workout"
+                    ) {
+                        if store.draft != nil {
                             store.selectedTab = 2
-                        }.frame(height:56).accessibilityIdentifier("home-start-workout")
-                    } else if scheduled.isEmpty {
-                        GreenButton(title:"自由训练",icon:"figure.strengthtraining.traditional") {
+                        } else if scheduled.isEmpty {
                             store.startFreestyle()
-                        }.frame(height:56).accessibilityIdentifier("start-freestyle-workout")
-                        Button {
-                            store.selectedTab = 2
-                        } label: {
-                            Text("选择训练计划")
-                                .font(.subheadline)
-                                .foregroundStyle(GymTheme.green)
-                                .frame(maxWidth:.infinity,minHeight:44)
-                                .contentShape(Rectangle())
-                        }.buttonStyle(.plain).accessibilityIdentifier("home-select-plan")
-                    } else {
-                        GreenButton(title:"开始训练",icon:"play.fill") {
+                        } else {
                             store.start(scheduled)
-                        }.frame(height:56).accessibilityIdentifier("home-start-workout")
-                        secondaryTrainingButton("自由训练",icon:"figure.strengthtraining.traditional",identifier:"start-freestyle-workout") {
+                        }
+                    }
+                    trainingButton(
+                        scheduled.isEmpty ? "选择训练计划" : "自由训练",
+                        icon: scheduled.isEmpty ? "list.bullet" : "figure.strengthtraining.traditional",
+                        primary: false,
+                        identifier: scheduled.isEmpty ? "home-select-plan" : "start-freestyle-workout"
+                    ) {
+                        if scheduled.isEmpty {
+                            store.selectedTab = 2
+                        } else {
                             store.startFreestyle()
                         }
                     }
+                    .opacity(store.draft == nil ? 1 : 0)
+                    .disabled(store.draft != nil)
+                    .accessibilityHidden(store.draft != nil)
                 }.gymCard()
                 if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
             }.padding(22)
         }.refreshable { await store.refresh() }
     }
-    private func secondaryTrainingButton(_ title:String,icon:String,identifier:String,action:@escaping () -> Void) -> some View {
+    private func trainingButton(_ title:String,icon:String,primary:Bool,identifier:String,action:@escaping () -> Void) -> some View {
         Button(action:action) {
-            Label(title,systemImage:icon)
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth:.infinity,minHeight:44)
-                .foregroundStyle(GymTheme.green)
-                .background(GymTheme.green.opacity(0.1),in:RoundedRectangle(cornerRadius:15))
+            HStack(spacing:8) {
+                Image(systemName:icon).frame(width:22,height:22).accessibilityHidden(true)
+                Text(title).frame(maxWidth:.infinity)
+                Color.clear.frame(width:22,height:22).accessibilityHidden(true)
+            }
+            .font(.system(size:primary ? 17 : 15,weight:.semibold))
+            .lineLimit(1).minimumScaleFactor(0.8)
+            .padding(.horizontal,18)
+            // Size the label before its background so every state has identical visible bounds.
+            .frame(maxWidth:.infinity).frame(height:primary ? 56 : 44)
+            .foregroundStyle(primary ? Color.black : GymTheme.green)
+            .background(primary ? GymTheme.green : GymTheme.green.opacity(0.1),in:RoundedRectangle(cornerRadius:15))
+            .contentShape(RoundedRectangle(cornerRadius:15))
         }.buttonStyle(.plain).accessibilityIdentifier(identifier)
     }
 
