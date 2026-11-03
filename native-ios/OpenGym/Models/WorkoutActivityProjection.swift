@@ -19,14 +19,18 @@ extension GymStore {
         } else if let next = snapshot.nextEntry, available {
             command = activityCommand(snapshot, action: "next", entry: next)
         } else { command = nil }
+        let commandTitle: String
+        if localSaveError != nil { commandTitle = "保存失败" }
+        else if row?.blockedReason != nil, !syncing { commandTitle = workTimer != nil ? "正在计时" : "补全数据" }
+        else { commandTitle = row != nil ? "完成本组" : (snapshot.nextEntry != nil ? "下一个动作" : "打开App") }
         return .init(trainingName: String(draft.name.prefix(80)), exercise: snapshot.exercise,
             position: snapshot.exercisePosition, setLabel: row?.label ?? (draft.rawEntries.isEmpty ? "添加动作后开始" : "全部组已完成"), compactSet: compactSet,
             detail: row.map { "\($0.weight) · \($0.detail)" } ?? "",
             message: row?.blockedReason ?? snapshot.message, restEnd: snapshot.restEnd,
             restExercise: snapshot.restExercise, command: command,
-            commandTitle: row != nil ? "完成本组" : (snapshot.nextEntry != nil ? "下一个动作" : "打开App"),
+            commandTitle: commandTitle,
             restCommand: snapshot.restEnd != nil && available ? activityCommand(snapshot, action: "skipRest", entry: restEntry ?? 0) : nil,
-            setWeight: row?.weight, setDetail: row?.detail)
+            setWeight: row?.weight, setDetail: row?.detail, busyTitle: syncing ? "正在保存" : nil)
     }
 
     private func activityCommand(_ snapshot: WatchTrainingSnapshot, action: String, entry: Int, index: Int? = nil, side: String? = nil) -> String? {

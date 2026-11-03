@@ -33,11 +33,42 @@ import XCTest
         var raw = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(state)) as? [String: Any])
         raw.removeValue(forKey: "setWeight")
         raw.removeValue(forKey: "setDetail")
+        raw.removeValue(forKey: "busyTitle")
         let decoded = try JSONDecoder().decode(WorkoutActivityAttributes.ContentState.self, from: JSONSerialization.data(withJSONObject: raw))
         XCTAssertNil(decoded.setWeight)
         XCTAssertNil(decoded.setDetail)
+        XCTAssertNil(decoded.busyTitle)
         XCTAssertEqual(decoded.detail, "40 kg · 10 次")
         XCTAssertEqual(decoded.command, state.command)
+    }
+
+    func testSavingUsesButtonStatusAndRestoresCommandsWithoutChangingTraining() throws {
+        store.startRest(entry: 0, seconds: 90)
+        let before = try XCTUnwrap(store.workoutActivityState())
+        store.syncing = true
+        let saving = try XCTUnwrap(store.workoutActivityState())
+        XCTAssertEqual(saving.busyTitle, "正在保存")
+        XCTAssertNil(saving.command)
+        XCTAssertNil(saving.restCommand)
+        XCTAssertEqual(saving.setLabel, before.setLabel)
+        XCTAssertEqual(saving.setWeight, before.setWeight)
+        XCTAssertEqual(saving.restEnd, before.restEnd)
+        store.syncing = false
+        let after = try XCTUnwrap(store.workoutActivityState())
+        XCTAssertNil(after.busyTitle)
+        XCTAssertEqual(after.command, before.command)
+        XCTAssertEqual(after.restCommand, before.restCommand)
+        XCTAssertEqual(store.draft?.completedSets, 0)
+    }
+
+    func testBlockedStatesHaveShortActionTitlesForOpeningTheApp() throws {
+        store.localSaveError = "private save failure"
+        XCTAssertEqual(store.workoutActivityState()?.commandTitle, "保存失败")
+        XCTAssertNil(store.workoutActivityState()?.command)
+        store.localSaveError = nil
+        store.liveRowAction(entry: 0, set: 0, action: ["action": "input", "path": "both.w", "text": "", "operation": ["action": "field", "key": "w"]])
+        XCTAssertEqual(store.workoutActivityState()?.commandTitle, "补全数据")
+        XCTAssertNil(store.workoutActivityState()?.command)
     }
 
     func testCompleteStartsRestAndDuplicateNeverCompletesNextSet() throws {
