@@ -1,6 +1,28 @@
 import XCTest
 @testable import OpenGym
 final class EditingTests:XCTestCase {
+    @MainActor func testCalendarMarkersPreferRecordsOverPlansAndRespectRestOverrides() throws {
+        let store = GymStore()
+        let dates = try ["2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05", "2026-11-06"].map { try XCTUnwrap(dateFromDay($0)) }
+        store.state = ["routines": [["id": "plan", "name": "训练", "ex": []]],
+            "week": ["1": ["plan"], "2": ["plan"], "3": ["plan"]],
+            "dayPlan": ["2026-11-04": "rest", "2026-11-05": "deleted-plan"],
+            "workouts": [["id": "record", "d": "2026-11-03"], ["id": "freestyle", "d": "2026-11-06"]]]
+        XCTAssertEqual(store.trainingDayMarkers(on: dates), [.planned, .completed, .none, .none, .completed])
+        XCTAssertEqual(store.trainingDayMarkers(on: []), [])
+        store.state["workouts"] = []
+        XCTAssertEqual(store.trainingDayMarkers(on: dates), [.planned, .planned, .none, .none, .none])
+    }
+
+    @MainActor func testCalendarMarkersFollowLocalHistoryDateCorrectionsAndSingleDayPlans() throws {
+        let store = GymStore()
+        let first = try XCTUnwrap(dateFromDay("2026-11-03")), second = try XCTUnwrap(dateFromDay("2026-11-04"))
+        store.state = ["routines": [["id": "plan", "name": "训练", "ex": []]], "week": [:],
+            "dayPlan": ["2026-11-03": "plan"], "workouts": [["id": "record", "d": "2026-11-03"]]]
+        store.historyEdits = ["record": ["proposed": ["id": "record", "d": "2026-11-04"]]]
+        XCTAssertEqual(store.trainingDayMarkers(on: [first, second]), [.planned, .completed])
+    }
+
     func testFieldMergeKeepsRemoteNotesAndRejectsConcurrentSetChanges() throws {
         let old:[String:Any] = ["name":"Old","ex":[["id":"0150","sets":3,"reps":10,"weight":20,"extension":true]],"_ts":1]
         var edited = old; edited["name"] = "New"

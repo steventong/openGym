@@ -53,6 +53,18 @@ extension GymStore {
         let ids = (result as? [[String]])?.first ?? []
         return ids.compactMap { id in routines.first { $0.id == id } }
     }
+    func trainingDayMarkers(on dates: [Date]) -> [TrainingDayMarker] {
+        let recordedDays = Set(workouts.compactMap { $0["d"] as? String })
+        let validRoutineIDs = Set(routines.map(\.id))
+        // Resolve the whole visible week once, using the same overrides and rotation rules as the card.
+        let schedule = (try? WebRules.shared.call("schedule", payload: ["state": state,
+            "dates": dates.map { dayString($0) }, "today": dayString()])) as? [[String]] ?? []
+        return dates.enumerated().map { index, date in
+            if recordedDays.contains(dayString(date)) { return .completed }
+            if schedule.indices.contains(index), schedule[index].contains(where: { validRoutineIDs.contains($0) }) { return .planned }
+            return .none
+        }
+    }
     func saveWorkout(original:[String:Any],proposed:[String:Any],expectedUnit:String) async -> Bool {
         guard keepHistoryEdit(original:original,proposed:proposed,unit:expectedUnit,submit:true) else { editError = localSaveError; return false }
         return await submitHistoryEdit(WorkoutRecord.key(original))
@@ -120,4 +132,8 @@ extension GymStore {
             }
             return state
     }
+}
+
+enum TrainingDayMarker: Equatable {
+    case none, planned, completed
 }
