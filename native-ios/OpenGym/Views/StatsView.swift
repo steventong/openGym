@@ -117,13 +117,14 @@ private struct WorkoutHistoryRow: View {
                                     .accessibilityIdentifier("unsynced-history-\(record.id)")
                             }
                             Spacer(minLength: 0)
+                            let prs = (record.raw["prs"] as? [Any])?.count ?? 0
+                            if prs > 0 {
+                                Label("\(prs) PR", systemImage: "trophy.fill").font(.caption2.weight(.semibold))
+                                    .foregroundStyle(.yellow).fixedSize(horizontal: true, vertical: false)
+                                    .accessibilityLabel("\(prs) 项个人纪录")
+                            }
                         }
                         Text(subtitle).font(.caption).foregroundStyle(GymTheme.muted).fixedSize(horizontal: false, vertical: true)
-                        let prs = (record.raw["prs"] as? [Any])?.count ?? 0
-                        if prs > 0 {
-                            Label("\(prs) PR", systemImage: "trophy.fill").font(.caption2.weight(.semibold))
-                                .foregroundStyle(.yellow).accessibilityLabel("\(prs) 项个人纪录")
-                        }
                     }.frame(maxWidth: .infinity, alignment: .leading)
                     if !unsynced {
                         Image(systemName: "chevron.right").font(.caption.weight(.semibold))
