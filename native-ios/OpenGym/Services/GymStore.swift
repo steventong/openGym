@@ -44,7 +44,8 @@ import Observation
     private var index: [String: Exercise] = [:]
     private var catalogue: [Exercise] = []
     private var client: APIClient?
-    private var loading = false
+    @ObservationIgnored private var loading = false
+    @ObservationIgnored private var backgroundMutation = false
     init(client: APIClient? = nil, userID: String? = nil, storage: LocalTrainingStorage = LocalTrainingStorage()) { self.client = client; self.userID = userID; self.localStorage = storage }
     private func publishTraining() { restNotifications?.publish(); watchBridge?.publish(); liveActivity?.publish() }
     var unit: String { state["unit"] as? String ?? "kg" }
@@ -126,7 +127,7 @@ import Observation
         #endif
     }
     func refresh() async {
-        guard !loading, !syncing, let client else { return }; loading = true; defer { loading = false }
+        guard !loading, !syncing, !backgroundMutation, let client else { return }; loading = true; defer { loading = false }
         do {
             let health = try await client.request("api/health")
             online = health["ok"] as? Bool == true
@@ -136,7 +137,8 @@ import Observation
                 if let token = me["token"] as? String { try CredentialStore.save(token, for: serverURL); client.token = token }
                 let user = me["user"] as? [String: Any] ?? [:]
                 let changed = userID != user["id"] as? String
-                userName = user["name"] as? String; userID = user["id"] as? String
+                if userName != user["name"] as? String { userName = user["name"] as? String }
+                if changed { userID = user["id"] as? String }
                 let result = try await client.request("api/data")
                 let next = result["state"] as? [String: Any] ?? [:]
                 // Preserve server stamps too; only suppress a refresh when the complete document matches.
@@ -151,7 +153,7 @@ import Observation
         }
     }
     func pair(server: String, code: String) async {
-        guard !syncing && !loading else { return }
+        guard !syncing && !loading && !backgroundMutation else { return }
         guard draft == nil else { error = "请先完成当前训练，再切换账号或服务。"; return }
         syncing = true; defer { syncing = false }
         do {
@@ -172,17 +174,18 @@ import Observation
         } catch { self.error = error.localizedDescription }
     }
     /// Rebase a narrow, idempotent operation onto the latest whole document; never replace unknown fields.
-    func mutate(reportError: Bool = true, verify: (([String: Any]) -> Bool)? = nil, _ operation: ([String: Any]) throws -> [String: Any]) async -> Bool {
+    func mutate(reportError: Bool = true, background: Bool = false, verify: (([String: Any]) -> Bool)? = nil, _ operation: ([String: Any]) throws -> [String: Any]) async -> Bool {
         editError = nil
-        guard !syncing && !loading else { if reportError { error = APIError.busy.localizedDescription } else { editError = APIError.busy.localizedDescription }; return false }
+        guard !syncing && !loading && !backgroundMutation else { if reportError { error = APIError.busy.localizedDescription } else { editError = APIError.busy.localizedDescription }; return false }
         guard let client, client.token != nil, userID != nil else { if reportError { error = APIError.signIn.localizedDescription; showSettings = true } else { editError = APIError.signIn.localizedDescription }; return false }
-        syncing = true; defer { syncing = false }
+        if background { backgroundMutation = true } else { syncing = true }
+        defer { if background { backgroundMutation = false } else { syncing = false } }
         do {
             for attempt in 0..<3 {
                 let current = try await client.request("api/data")
                 let source = current["state"] as? [String: Any] ?? ["unit":"kg", "routines":[], "workouts":[], "bodyweight":[], "week":[:]]
                 let next = try operation(source)
-                if RecordPatch.equal(source,next), verify?(source) != false { state = source; cacheProfile(); return true }
+                if RecordPatch.equal(source,next), verify?(source) != false { acceptSyncedState(source); cacheProfile(); return true }
                 var body: [String: Any] = ["state": next, "baseRev": current["rev"] ?? 0]
                 if let wid = source["_wid"] as? String { body["baseWid"] = wid }
                 do {
@@ -190,10 +193,10 @@ import Observation
                     if let verify {
                         let canonical = try await client.request("api/data")
                         guard let doc = canonical["state"] as? [String: Any], verify(doc) else { throw APIError.response(0, "服务器尚未确认这次保存。本机内容已保留，可以重试。") }
-                        state = doc
+                        acceptSyncedState(doc)
                     } else {
-                        state = next
-                        if let canonical = try? await client.request("api/data"), let doc = canonical["state"] as? [String: Any] { state = doc }
+                        acceptSyncedState(next)
+                        if let canonical = try? await client.request("api/data"), let doc = canonical["state"] as? [String: Any] { acceptSyncedState(doc) }
                     }
                     online = true; lastSync = Date(); status = "已同步"; cacheProfile()
                     return true
@@ -201,6 +204,9 @@ import Observation
             }
             throw APIError.response(409, "conflict")
         } catch { if reportError { self.error = error.localizedDescription } else { editError = error.localizedDescription }; return false }
+    }
+    private func acceptSyncedState(_ next: [String: Any]) {
+        if !NSDictionary(dictionary: state).isEqual(to: next) { state = next }
     }
     func addRoutine(name: String, exerciseIDs: [String]) async -> Bool {
         let id = UUID().uuidString
@@ -323,7 +329,7 @@ import Observation
             let value: [String: Any]
             if let draft { value = ["draft": try JSONSerialization.jsonObject(with: JSONEncoder().encode(draft))] }
             else { value = [:] }
-            try localStorage.write(value, to: url); localSaveIssues.removeValue(forKey:"live"); outcome = "saved"; return true
+            try localStorage.write(value, to: url); if localSaveIssues["live"] != nil { localSaveIssues.removeValue(forKey:"live") }; outcome = "saved"; return true
         } catch {
             WorkoutActivityDiagnostics.record("draft.save.failed", WorkoutActivityDiagnostics.errorFields(error), failure: true)
             localSaveIssues["live"] = "训练草稿写入本机失败：\(error.localizedDescription)"; return false
@@ -367,14 +373,14 @@ extension GymStore {
     func waitForCoachIdle() async throws {
         for _ in 0..<50 {
             try Task.checkCancellation()
-            if !loading && !syncing { return }
+            if !loading && !syncing && !backgroundMutation { return }
             try await Task.sleep(for:.milliseconds(100))
         }
         throw APIError.busy
     }
     func refreshCoachState() async throws {
         try await waitForCoachIdle()
-        guard !loading, !syncing else { throw APIError.busy }
+        guard !loading, !syncing, !backgroundMutation else { throw APIError.busy }
         loading = true; defer { loading = false }
         let result = try await coachRequest("api/data")
         guard let document = result["state"] as? [String: Any] else { throw APIError.invalidResponse }

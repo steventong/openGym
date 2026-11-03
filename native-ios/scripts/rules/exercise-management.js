@@ -5,16 +5,24 @@ import { replaceSlotExercise } from '../../../frontend/src/lib/routines.js';
 
 // Remap by occurrence, never by exercise ID: a session may contain the same ID twice.
 export function manageTrainingExercises(input) {
-  const { active, state = {}, action, index, direction, id, history = false } = JSON.parse(input);
+  const { active, state = {}, action, index, direction, id, order: requestedOrder, history = false } = JSON.parse(input);
   const s = { unit: 'kg', workouts: [], routines: [], exWeights: {}, customEx: [], ...state };
   registerCustom(s.customEx);
   let entries = active.entries || [];
-  const order = entries.map((_, i) => i);
+  let order = entries.map((_, i) => i);
   const current = entries[index];
   let selected = active.cur || 0, invalidated = null;
   if (action === 'pair' || action === 'unpair') {
     if (!current || active.nativeTimer) return JSON.stringify(active);
     entries = action === 'pair' ? pairAdjacent(entries,index,index+direction) : unpairSuperset(entries,index);
+  } else if (action === 'reorder') {
+    if (!Array.isArray(requestedOrder) || requestedOrder.length !== entries.length ||
+        new Set(requestedOrder).size !== entries.length ||
+        requestedOrder.some(i => !Number.isInteger(i) || i < 0 || i >= entries.length)) {
+      throw new Error('动作列表已变化，请重新打开顺序调整。');
+    }
+    order = requestedOrder;
+    entries = order.map(i => entries[i]);
   } else if (action === 'move') {
     const to = index + direction;
     if (!current || ![-1, 1].includes(direction) || to < 0 || to >= entries.length) return JSON.stringify(active);
@@ -79,7 +87,7 @@ export function manageTrainingExercises(input) {
     if (old != null && old !== invalidated && active.nativeHighWater?.[old] != null) levels[next] = active.nativeHighWater[old];
   });
   active.nativeHighWater = levels;
-  if (action === 'move' || action === 'remove') {
+  if (action === 'move' || action === 'reorder' || action === 'remove') {
     const mapped = order.indexOf(selected);
     selected = mapped < 0 ? Math.min(selected, entries.length - 1) : mapped;
   }

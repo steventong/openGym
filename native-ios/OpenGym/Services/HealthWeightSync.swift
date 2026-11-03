@@ -164,7 +164,7 @@ enum HealthWeightMerge {
             guard token == epoch, enabled, target == identity else { return }
             if samples.isEmpty && deleted.isEmpty { pending = false; try save(); status = "暂无可读取体重；可能没有记录或未允许读取"; return }
             var expected: Any?
-            let saved = await store.mutate(reportError: false, verify: { RecordPatch.equal($0["bodyweight"], expected) }) { source in
+            let saved = await store.mutate(reportError: false, background: true, verify: { RecordPatch.equal($0["bodyweight"], expected) }) { source in
                 guard self.enabled, self.epoch == token, self.identity == target else { throw APIError.response(0, "同步已停止") }
                 let result = HealthWeightMerge.merge(source, samples: next, deleted: tombstones); expected = result["bodyweight"]; return result
             }

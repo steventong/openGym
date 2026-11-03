@@ -7,6 +7,7 @@ struct RoutineEditor: View {
     @State private var name: String
     @State private var rows: [RawRow]
     @State private var pick = false
+    @State private var sorting = false
     @State private var configuration: RawRow?
     @State private var discard = false
     @State private var confirmDelete = false
@@ -48,13 +49,12 @@ struct RoutineEditor: View {
                             }
                             TextField("动作备注",text:Binding(get:{row.raw["note"] as? String ?? ""},set:{row.raw["note"] = $0})).font(.subheadline)
                             HStack {
-                                Button { shift(row.id,-1) } label: { Label("上移",systemImage:"arrow.up").frame(minWidth:72,minHeight:48).contentShape(Rectangle()) }.disabled(rows.first?.id == row.id)
-                                Button { shift(row.id,1) } label: { Label("下移",systemImage:"arrow.down").frame(minWidth:72,minHeight:48).contentShape(Rectangle()) }.disabled(rows.last?.id == row.id)
+                                Button { sorting = true } label: { Label("顺序调整", systemImage: "arrow.up.arrow.down").frame(minHeight: 48) }.disabled(rows.count < 2)
                                 Spacer()
                                 Button(role:.destructive) { let id = row.id; rows.removeAll { $0.id == id } } label: { Image(systemName:"minus.circle") }.accessibilityLabel("移除动作")
                             }.font(.caption).buttonStyle(.borderless)
                         }.padding(.vertical,7)
-                    }.onMove { rows.move(fromOffsets:$0,toOffset:$1) }.onDelete { rows.remove(atOffsets:$0) }
+                    }.onDelete { rows.remove(atOffsets:$0) }
                     Button { pick = true } label: { Label("添加动作",systemImage:"plus.circle.fill") }.accessibilityIdentifier("edit-add-exercise")
                 } header: { Text("动作 · \(rows.count)") } footer: { Text("保存后更新计划。正在进行的训练草稿不受影响。") }
                 Section {
@@ -66,6 +66,17 @@ struct RoutineEditor: View {
                 .toolbar {
                     ToolbarItem(placement:.topBarLeading) { Button("取消") { if dirty { discard = true } else { dismiss() } }.disabled(store.syncing) }
                     ToolbarItem(placement:.topBarTrailing) { Button(store.syncing && !deleting ? "保存中…" : "保存") { Task { if await store.saveRoutine(original:original,proposed:proposed,expectedUnit:expectedUnit) { dismiss() } else { errorTitle = "无法保存"; error = store.editError } } }.disabled(store.syncing || deleting || !dirty).accessibilityIdentifier("save-routine-edit") }
+                }
+                .sheet(isPresented: $sorting) {
+                    ExerciseOrderSheet(entries: rows.map(\.raw)) { order, baseline in
+                        guard RecordPatch.equal(baseline, rows.map(\.raw)) else { throw APIError.response(0, "动作列表已变化，请重新打开顺序调整。") }
+                        let result = try ExerciseOrder.apply(order, to: ["entries": rows.map(\.raw)])
+                        guard let updated = result["entries"] as? [[String: Any]] else { throw APIError.invalidResponse }
+                        let existing = rows
+                        rows = order.enumerated().map { offset, index in
+                            var row = existing[index]; row.raw = updated[offset]; return row
+                        }
+                    }
                 }
                 .sheet(item:$configuration) { selected in AdvancedConfigEditor(config:selected.raw,unit:expectedUnit) { updated in if let i = rows.firstIndex(where:{$0.id == selected.id}) { rows[i].raw = updated } } }
                 .sheet(isPresented:$pick) { ExercisePicker { exercise in rows.append(RawRow(raw:["id":exercise.id,"sets":3,"reps":10,"weight":0,"restSec":90])); pick = false } }
@@ -86,7 +97,6 @@ struct RoutineEditor: View {
         if await store.deleteRoutine(id:id) { dismiss() }
         else { errorTitle = "无法删除"; error = store.editError }
     }
-    private func shift(_ id:UUID,_ direction:Int) { group(id,"move",direction) }
     private func group(_ id:UUID,_ operation:String,_ direction:Int = 0) {
         guard let i = rows.firstIndex(where:{$0.id == id}) else { return }
         do { let result = try WebRules.shared.call("planGroup",payload:["rows":rows.map(\.raw),"operation":operation,"index":i,"direction":direction]) as! [[String:Any]];rows = result.map { RawRow(raw:$0) } } catch { errorTitle = "无法保存"; self.error = error.localizedDescription }

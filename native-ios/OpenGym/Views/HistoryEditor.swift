@@ -36,7 +36,12 @@ struct HistoryEditor: View {
                         HStack { Text("时长（分钟）"); Spacer(); TextField("分钟", text: binding.minutes).keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 100) }
                         TextField("训练备注", text: binding.note, axis: .vertical).lineLimit(2...5).accessibilityIdentifier("history-note")
                     }.gymCard()
-                    ExerciseManagementControls(entries: form.entries.map(\.value), selected: form.selected, history: true, showExerciseNote: { showExerciseNote = true }) { action, index, direction, id in
+                    ExerciseManagementControls(entries: form.entries.map(\.value), selected: form.selected, history: true, showExerciseNote: { showExerciseNote = true }, reorder: { order, baseline in
+                        guard RecordPatch.equal(baseline, form.entries.map(\.value)) else { throw APIError.response(0, "动作列表已变化，请重新打开顺序调整。") }
+                        try form.reorderExercises(order)
+                        persist()
+                        if let issue = store.localSaveError { throw APIError.response(0, issue) }
+                    }) { action, index, direction, id in
                         do { try form.manageExercise(action: action, index: index, direction: direction, id: id, state: store.state); persist() }
                         catch { self.error = error.localizedDescription }
                     }

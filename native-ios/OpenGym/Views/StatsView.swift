@@ -1,6 +1,22 @@
 import SwiftUI
 struct StatsView: View {
     @Environment(GymStore.self) private var store
+    var body: some View {
+        // Server revision, health samples and unrelated plan updates do not rebuild history.
+        StatsContent(workouts: store.workouts, unsyncedIDs: Set(store.historyEdits.keys), busy: store.syncing)
+            .equatable()
+    }
+}
+
+struct StatsContent: View, Equatable {
+    @Environment(GymStore.self) private var store
+    let workouts: [[String: Any]]
+    let unsyncedIDs: Set<String>
+    let busy: Bool
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.unsyncedIDs == rhs.unsyncedIDs && lhs.busy == rhs.busy && RecordPatch.equal(lhs.workouts, rhs.workouts)
+    }
     @State private var previewing: WorkoutRecord?
     @State private var syncingRecordID: String?
     @State private var syncError: String?
@@ -9,19 +25,19 @@ struct StatsView: View {
     @State private var weightSheet = false
     @State private var search = ""
     private var completedSets: [[String:Any]] {
-        store.workouts.flatMap { $0["entries"] as? [[String:Any]] ?? [] }.flatMap { $0["sets"] as? [[String:Any]] ?? [] }.flatMap { row -> [[String:Any]] in if let sides = row["sides"] as? [String:[String:Any]] {return [sides["L"],sides["R"]].compactMap{$0}};return [row] }.filter { $0["done"] as? Bool == true }
+        workouts.flatMap { $0["entries"] as? [[String:Any]] ?? [] }.flatMap { $0["sets"] as? [[String:Any]] ?? [] }.flatMap { row -> [[String:Any]] in if let sides = row["sides"] as? [String:[String:Any]] {return [sides["L"],sides["R"]].compactMap{$0}};return [row] }.filter { $0["done"] as? Bool == true }
     }
     var body: some View {
         ScrollView {
             VStack(alignment:.leading,spacing:24) {
                 VStack(alignment:.leading,spacing:7) { Text("训练统计").font(.system(size:34,weight:.bold)); Text("每一次训练，都在积累").font(.subheadline).foregroundStyle(GymTheme.muted) }
                 HStack(spacing:12) {
-                    metric("\(store.workouts.count)","累计训练","figure.strengthtraining.traditional")
+                    metric("\(workouts.count)","累计训练","figure.strengthtraining.traditional")
                     metric("\(completedSets.count)","完成组数","checkmark.circle")
                 }
                 VStack(alignment:.leading,spacing:16) {
                     HStack { Text("训练足迹").font(.headline); Spacer(); Text("最近 12 周").font(.caption).foregroundStyle(GymTheme.muted) }
-                    let trained = Set(store.workouts.compactMap { $0["d"] as? String })
+                    let trained = Set(workouts.compactMap { $0["d"] as? String })
                     let cells = (0..<84).map { Calendar.current.date(byAdding:.day,value:$0-83,to:Date())! }
                     HStack(spacing:5) {
                         ForEach(0..<12,id:\.self) { week in
@@ -29,34 +45,20 @@ struct StatsView: View {
                         }
                     }.accessibilityLabel("最近十二周的训练活动图")
                 }.gymCard()
-                VStack(alignment:.leading,spacing:18) {
-                    HStack {
-                        Text("体重趋势").font(.headline)
-                        Spacer()
-                        Button("添加记录") { weightSheet = true }
-                            .font(.caption).foregroundStyle(GymTheme.green)
-                            .frame(minHeight:44)
-                            .accessibilityIdentifier("stats-add-weight")
-                    }
-                    if store.bodyweights.isEmpty {
-                        Text("暂无体重记录").font(.subheadline).foregroundStyle(GymTheme.muted)
-                    } else {
-                        WeightChart(points:store.bodyweights).frame(height:140)
-                    }
-                }.gymCard()
+                StatsWeightSection(showEditor: $weightSheet)
                 Button { analytics = true } label: { Label("动作进步、肌群与身体指标",systemImage:"chart.xyaxis.line").frame(maxWidth:.infinity,minHeight:44) }.gymCard().accessibilityIdentifier("open-personal-analytics")
                 SectionTitle(text:"训练记录")
                 TextField("搜索训练名称、日期、动作",text:$search).textFieldStyle(.roundedBorder)
 
-                if store.workouts.isEmpty { EmptyCard(icon:"chart.line.uptrend.xyaxis",title:"进步，从第一组开始",detail:"完成一场训练后，这里会展示你的真实记录。") }
+                if workouts.isEmpty { EmptyCard(icon:"chart.line.uptrend.xyaxis",title:"进步，从第一组开始",detail:"完成一场训练后，这里会展示你的真实记录。") }
                 LazyVStack(spacing:10) {
-                    ForEach(store.workouts.filter { search.isEmpty || historyMatches($0) }.prefix(historyLimit).map(WorkoutRecord.init),id:\.id) { record in
-                        WorkoutHistoryRow(record: record, unsynced: store.historyEdits[record.id] != nil,
-                                          syncing: syncingRecordID == record.id, busy: store.syncing || syncingRecordID != nil,
-                                          preview: { previewing = record }, sync: { sync(record.id) })
+                    ForEach(workouts.filter { search.isEmpty || historyMatches($0) }.prefix(historyLimit).map(WorkoutRecord.init),id:\.id) { record in
+                        WorkoutHistoryRow(record: record, unsynced: unsyncedIDs.contains(record.id),
+                                          syncing: syncingRecordID == record.id, busy: busy || syncingRecordID != nil,
+                                          preview: { previewing = record }, sync: { sync(record.id) }).equatable()
                     }
                 }
-                if store.workouts.count > historyLimit { Button("更多训练记录") { historyLimit += 30 }.frame(maxWidth:.infinity) }
+                if workouts.count > historyLimit { Button("更多训练记录") { historyLimit += 30 }.frame(maxWidth:.infinity) }
             }.padding(22)
         }.refreshable { await store.refresh() }.sheet(isPresented:$analytics) { PersonalStatsHub() }.sheet(isPresented:$weightSheet) { WeightEntryView() }.sheet(item:$previewing) { record in WorkoutHistoryPreview(record:record) }
             .alert("同步未完成", isPresented: Binding(get: { syncError != nil }, set: { if !$0 { syncError = nil } })) {
@@ -86,13 +88,43 @@ struct StatsView: View {
     }
 }
 
-private struct WorkoutHistoryRow: View {
+private struct StatsWeightSection: View {
+    @Environment(GymStore.self) private var store
+    @Binding var showEditor: Bool
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack {
+                Text("体重趋势").font(.headline)
+                Spacer()
+                Button("添加记录") { showEditor = true }
+                    .font(.caption).foregroundStyle(GymTheme.green).frame(minHeight: 44)
+                    .accessibilityIdentifier("stats-add-weight")
+            }
+            StatsWeightPlot(points: store.bodyweights).equatable()
+        }.gymCard()
+    }
+}
+
+private struct StatsWeightPlot: View, Equatable {
+    let points: [[String: Any]]
+    static func == (lhs: Self, rhs: Self) -> Bool { RecordPatch.equal(lhs.points, rhs.points) }
+    var body: some View {
+        if points.isEmpty { Text("暂无体重记录").font(.subheadline).foregroundStyle(GymTheme.muted) }
+        else { WeightChart(points: points).frame(height: 140) }
+    }
+}
+
+private struct WorkoutHistoryRow: View, Equatable {
     let record: WorkoutRecord
     let unsynced: Bool
     let syncing: Bool
     let busy: Bool
     let preview: () -> Void
     let sync: () -> Void
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.unsynced == rhs.unsynced && lhs.syncing == rhs.syncing && lhs.busy == rhs.busy &&
+            lhs.record.id == rhs.record.id && RecordPatch.equal(lhs.record.raw, rhs.record.raw)
+    }
     private var subtitle: String {
         let day = record.raw["d"] as? String ?? ""
         let date = dateFromDay(day).map { $0.formatted(.dateTime.month().day().weekday(.abbreviated).locale(Locale(identifier:"zh_Hans_CN"))) } ?? day

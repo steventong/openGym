@@ -46,7 +46,7 @@ extension GymStore {
         do {
             try localStorage.write(["state": state, "name": userName ?? ""], to: folder.appendingPathComponent("profile.json"))
             try localStorage.write(["server": serverURL, "user": userID, "name": userName ?? ""], to: localStorage.root.appendingPathComponent("last-account.json"))
-            localSaveIssues.removeValue(forKey:"profile")
+            if localSaveIssues["profile"] != nil { localSaveIssues.removeValue(forKey:"profile") }
         } catch { localSaveIssues["profile"] = "本机保存失败：\(error.localizedDescription)" }
     }
     func restoreOfflineAccount() {

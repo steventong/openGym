@@ -50,7 +50,6 @@ import HealthKitUI
 }
 struct RootView: View {
     @Environment(GymStore.self) private var store
-    @Environment(\.scenePhase) private var scenePhase
     var body: some View {
         @Bindable var store = store
         VStack(spacing:0) {
@@ -63,14 +62,35 @@ struct RootView: View {
                 LibraryView().tag(4).toolbar(.hidden,for:.tabBar)
             }.id(store.coachIdentity)
                 .frame(maxWidth:.infinity,maxHeight:.infinity)
-            if let issue = store.localSaveError { Text(issue).font(.caption).foregroundStyle(.orange).padding(8).accessibilityIdentifier("local-save-error") }
-            tabBar
+            LocalSaveStatus()
+            GymTabBar()
         }.background(GymTheme.background).foregroundStyle(.white)
             .sheet(isPresented:$store.showSettings) { SettingsView() }
             .sheet(item:$store.selectedExercise) { ExerciseDetail(exercise:$0) }
             .alert("openGym",isPresented:Binding(get:{store.error != nil},set:{if !$0 { store.error = nil }})) {
                 Button("知道了",role:.cancel) { store.error = nil }
             } message: { Text(store.error ?? "") }
+            .background { AppLifecycleObserver() }
+            .onOpenURL { url in if url.scheme == "opengym", url.host == "workout" {
+                WorkoutActivityDiagnostics.record("app.open_workout_link")
+                store.selectedTab = 2
+            } }
+    }
+}
+
+private struct LocalSaveStatus: View {
+    @Environment(GymStore.self) private var store
+    var body: some View {
+        if let issue = store.localSaveError { Text(issue).font(.caption).foregroundStyle(.orange).padding(8).accessibilityIdentifier("local-save-error") }
+    }
+}
+
+/// These observations must not invalidate the tab container or an open menu.
+private struct AppLifecycleObserver: View {
+    @Environment(GymStore.self) private var store
+    @Environment(\.scenePhase) private var scenePhase
+    var body: some View {
+        Color.clear.frame(width: 0, height: 0)
             .onChange(of:store.draft?.id,initial:true) { _,_ in updateWake() }
             .onChange(of:store.state["keepAwake"] as? Bool) { _,_ in updateWake() }
             .onChange(of:scenePhase, initial:true) { _, phase in
@@ -83,14 +103,19 @@ struct RootView: View {
                     Task { await store.refresh(); await store.healthSync.resume() }
                 }
             }
-            .onOpenURL { url in if url.scheme == "opengym", url.host == "workout" {
-                WorkoutActivityDiagnostics.record("app.open_workout_link")
-                store.selectedTab = 2
-            } }
-            .task { while !Task.isCancelled { try? await Task.sleep(for:.seconds(30)); if !Task.isCancelled { await store.refresh(); await store.healthSync.resume() } } }
+            .task {
+                while !Task.isCancelled {
+                    do { try await Task.sleep(for: .seconds(30)) } catch { return }
+                    if scenePhase == .active { await store.refresh(); await store.healthSync.resume() }
+                }
+            }
     }
     private func updateWake() { UIApplication.shared.isIdleTimerDisabled = scenePhase == .active && store.draft != nil && store.state["keepAwake"] as? Bool != false }
-    private var tabBar: some View {
+}
+
+private struct GymTabBar: View {
+    @Environment(GymStore.self) private var store
+    var body: some View {
         HStack(alignment:.bottom,spacing:0) {
             tab(0,"首页","house")
             tab(1,"计划","calendar")

@@ -2,7 +2,7 @@ import Foundation
 extension GymStore {
     func changeActive(_ change:(inout [String:Any]) throws -> Void) {
         guard var d = draft else { return }
-        do { var raw = d.activeJSON;try change(&raw);if !RecordPatch.equal(raw["entries"],d.activeJSON["entries"]) { raw.removeValue(forKey:"nativeFinishAt") };if let undo = raw["nativeSetUndo"] as? [String: Any], !RecordPatch.equal(undo["expected"], raw["entries"]) { raw.removeValue(forKey: "nativeSetUndo") };try d.setActive(raw);draft = d } catch { WorkoutActivityDiagnostics.failureIfTracing("draft.mutation.failed", error: error); self.error = error.localizedDescription }
+        do { var raw = d.activeJSON;try change(&raw);guard !RecordPatch.equal(raw,d.activeJSON) else { return };if !RecordPatch.equal(raw["entries"],d.activeJSON["entries"]) { raw.removeValue(forKey:"nativeFinishAt") };if let undo = raw["nativeSetUndo"] as? [String: Any], !RecordPatch.equal(undo["expected"], raw["entries"]) { raw.removeValue(forKey: "nativeSetUndo") };try d.setActive(raw);draft = d } catch { WorkoutActivityDiagnostics.failureIfTracing("draft.mutation.failed", error: error); self.error = error.localizedDescription }
     }
     func replaceLiveRow(entry:Int,set:Int,row:[String:Any]) {
         changeActive { raw in

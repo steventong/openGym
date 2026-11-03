@@ -187,6 +187,34 @@ final class OpenGymTests: XCTestCase {
         XCTAssertEqual(store.exercise("custom")?.name,"自定义动作")
     }
 
+    @MainActor func testBackgroundSyncDoesNotInvalidateMenuDependencies() async throws {
+        let config = URLSessionConfiguration.ephemeral; config.protocolClasses = [StubProtocol.self]
+        let api = APIClient(address: try ServerAddress("https://test.invalid"), token: "test", session: URLSession(configuration: config))
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root); StubProtocol.handler = nil }
+        let store = GymStore(client: api, userID: "background-ui", storage: LocalTrainingStorage(root: root))
+        let server: [String: Any] = ["unit": "kg", "bodyweight": [], "workouts": []]
+        store.state = server; store.userName = "QA"
+        StubProtocol.handler = { request in
+            switch request.url!.path {
+            case "/api/health": return (200, ["ok": true])
+            case "/api/me": return (200, ["user": ["id": "background-ui", "name": "QA"]])
+            default: return (200, ["state": server, "rev": 1])
+            }
+        }
+        let changes = ObservationChangeCount()
+        withObservationTracking {
+            _ = store.coachIdentity; _ = store.localSaveError; _ = store.syncing
+            _ = store.state; _ = store.draft
+        } onChange: { changes.record() }
+        await store.refresh()
+        let saved = await store.mutate(reportError: false, background: true) { source in source }
+        XCTAssertTrue(saved)
+        XCTAssertEqual(changes.value, 0)
+        XCTAssertFalse(store.syncing)
+        XCTAssertNotNil(store.lastSync)
+    }
+
     @MainActor func testIdenticalRefreshDoesNotInvalidateStateButNewServerStampsDo() async throws {
         let config = URLSessionConfiguration.ephemeral; config.protocolClasses = [StubProtocol.self]
         let api = APIClient(address:try ServerAddress("https://test.invalid"),token:"test",session:URLSession(configuration:config))

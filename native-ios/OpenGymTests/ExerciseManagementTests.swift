@@ -22,6 +22,63 @@ final class ExerciseManagementTests: XCTestCase {
         XCTAssertEqual((result["nativeHighWater"] as? [String: Any])?["1"] as? Int, 3)
         XCTAssertNil(result["nativeFinishAt"])
     }
+    @MainActor func testBatchReorderPreservesDuplicateOccurrencesAndRemapsAllReferences() throws {
+        var first = entry(), second = entry(), third = entry("1047")
+        first["note"] = "first"; second["note"] = "second"; third["note"] = "third"
+        first["sg"] = "pair"; second["sg"] = "pair"
+        let active: [String: Any] = ["entries": [first, second, third], "cur": 1,
+            "nativeTimer": ["entry": 0, "set": 0], "nativeRest": ["entry": 2, "set": 0],
+            "nativeHighWater": ["0": 3, "1": 5, "2": 7]]
+        let result = try ExerciseOrder.apply([2, 0, 1], to: active)
+        let entries = try XCTUnwrap(result["entries"] as? [[String: Any]])
+        XCTAssertEqual(entries.compactMap { $0["note"] as? String }, ["third", "first", "second"])
+        XCTAssertEqual(result["cur"] as? Int, 2)
+        XCTAssertEqual((result["nativeTimer"] as? [String: Any])?["entry"] as? Int, 1)
+        XCTAssertEqual((result["nativeRest"] as? [String: Any])?["entry"] as? Int, 0)
+        XCTAssertEqual((result["nativeHighWater"] as? [String: Int]), ["0": 7, "1": 3, "2": 5])
+        XCTAssertEqual(entries[1]["sg"] as? String, "pair")
+        XCTAssertEqual(entries[2]["sg"] as? String, "pair")
+        let separated = try ExerciseOrder.apply([0, 2, 1], to: active)["entries"] as! [[String: Any]]
+        XCTAssertTrue(separated.allSatisfy { $0["sg"] == nil })
+    }
+
+    @MainActor func testBatchReorderRejectsInvalidPermutations() throws {
+        let active: [String: Any] = ["entries": [entry(), entry("1047")]]
+        for order in [[0], [0, 0], [0, 2], [-1, 0]] {
+            XCTAssertThrowsError(try ExerciseOrder.apply(order, to: active))
+        }
+    }
+
+    @MainActor func testSheetOrderUsesLatestSetsAndPersistsOnceWithoutLosingSelection() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let storage = LocalTrainingStorage(root: root)
+        let store = GymStore(userID: "reorder-sheet", storage: storage)
+        store.draft = try TrainingDraft.fromWeb(["id": "sheet", "start": 1000, "cur": 0,
+            "entries": [entry(), entry("1047"), entry()]], unit: "kg")
+        let baseline = store.draft!.rawEntries
+        store.setLiveNote(entry: 0, text: "updated while sheet is open")
+        try store.reorderLiveExercises([2, 0, 1], expectedEntries: baseline, sessionID: "sheet")
+        let restored = GymStore(userID: "reorder-sheet", storage: storage)
+        restored.restoreDraft()
+        XCTAssertEqual(restored.draft?.rawEntries[1]["note"] as? String, "updated while sheet is open")
+        XCTAssertEqual(restored.draft?.activeJSON["cur"] as? Int, 1)
+        XCTAssertThrowsError(try store.reorderLiveExercises([2, 0, 1], expectedEntries: baseline, sessionID: "sheet"))
+        XCTAssertThrowsError(try store.reorderLiveExercises([0, 1, 2], expectedEntries: store.draft!.rawEntries, sessionID: "other"))
+    }
+
+    @MainActor func testHistoryBatchReorderPreservesViewIdentityAndLiteralInput() throws {
+        var first = entry(done: true)
+        first["sets"] = [["w": 15, "r": 10, "done": true, TrainingInput.key: ["both.w": "15."]]]
+        var form = HistoryForm(original: ["entries": [first, entry("1047"), entry()]], unit: "kg")
+        let identity = form.entries[0].id, setID = form.entries[0].sets[0].id
+        try form.reorderExercises([1, 2, 0])
+        XCTAssertEqual(form.selected, 2)
+        XCTAssertEqual(form.entries[2].id, identity)
+        XCTAssertEqual(form.entries[2].sets[0].id, setID)
+        XCTAssertEqual((form.entries[2].sets[0].raw[TrainingInput.key] as? [String: String])?["both.w"], "15.")
+    }
+
     @MainActor func testDeletionClearsOwnedTimerAndDissolvesOrphanSuperset() throws {
         var first = entry(), second = entry("1047")
         first["sg"] = "pair"; second["sg"] = "pair"; second["target"] = ["sg": "pair", "sgRest": 45, "future": "keep"]
