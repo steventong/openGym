@@ -11,6 +11,7 @@ struct RotationEditor:View {
     @State private var initialLabel = ""
     @State private var loaded = false
     @State private var restart = false
+    @State private var confirmClear = false
     @State private var discard = false
     @State private var error:String?
     private var dirty:Bool { ids != initialIDs || label != initialLabel || mode != initialMode }
@@ -19,7 +20,6 @@ struct RotationEditor:View {
             List {
                 Section("训练方式") {
                     Picker("方式",selection:$mode){Text("循环排期").tag("rotation");Text("固定每周").tag("week")}.pickerStyle(.segmented).accessibilityIdentifier("rotation-mode")
-                    if store.rotationSummary()["external"] as? Bool == true {Text("当前是外部教练队列。保存循环会采用此顺序并启用自动循环；切回固定每周不会删除外部队列。").font(.caption).foregroundStyle(.orange)}
                 }
                 if mode == "rotation" {
                     Section("循环名称") {TextField("例如：推 / 拉 / 腿",text:$label).accessibilityIdentifier("rotation-label")}
@@ -35,19 +35,26 @@ struct RotationEditor:View {
                             }
                         }
                         ForEach(store.routines.filter{!ids.contains($0.id)}){r in Button {ids.append(r.id)} label:{Label(r.name,systemImage:"plus.circle")}.accessibilityIdentifier("rotation-add-\(r.id)")}
-                    } header:{Text("训练顺序")} footer:{Text("按未完成的顺序继续。完成一轮后，下一轮从结束当天的次日开始，避免当天的训练被重复计入。清空顺序会停止当前循环。")}
+                    } header: { HStack { Text("训练顺序"); Spacer(); ExplanationButton(title: "循环规则", message: "按顺序继续未完成的训练，下一轮从本轮结束的次日开始。清空顺序会停止循环；切换到固定每周会保留循环顺序。") } }
                     Section("当前一轮") {RotationProgressCard(card:false)}
                     Section {
                         Button("重新开始一轮"){restart = true}.disabled(dirty || ids.isEmpty || store.syncing || (store.state["rotation"] as? [String:Any]) == nil).accessibilityIdentifier("rotation-restart")
-                    } footer:{Text("重新开始保留已有训练记录，但本轮进度会重置。请先保存顺序修改。")}
-                } else {Section {Text("使用已有每周安排。你的循环顺序会保留，以后可以再次启用。").font(.subheadline)}}
+                    }
+                }
             }.navigationTitle("循环排期").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement:.topBarLeading){Button("取消"){if dirty {discard = true}else{dismiss()}}.disabled(store.syncing)}
-                    ToolbarItem(placement:.topBarTrailing){Button(store.syncing ? "保存中…" : "保存"){Task{await save(action:mode == "week" ? "week":"save")}}.disabled(store.syncing || !loaded).accessibilityIdentifier("save-rotation")}
+                    ToolbarItem(placement:.topBarTrailing){Button(store.syncing ? "保存中" : "保存") {
+                        if mode == "rotation", ids.isEmpty, !initialIDs.isEmpty { confirmClear = true }
+                        else { Task { await save(action: mode == "week" ? "week" : "save") } }
+                    }.lineLimit(1).disabled(store.syncing || !loaded).accessibilityIdentifier("save-rotation")}
                 }
                 .onAppear {if !loaded {baseline = store.state;let rotation = store.state["rotation"] as? [String:Any] ?? [:];let queue = store.state["queue"] as? [String:Any] ?? [:];ids = (rotation["sequence"] as? [String] ?? queue["ids"] as? [String] ?? []).filter { id in store.routines.contains { $0.id == id } };label = rotation["label"] as? String ?? queue["label"] as? String ?? "我的循环";mode = store.rotationSummary()["mode"] as? String ?? "week";initialMode = mode;initialIDs = ids;initialLabel = label;loaded = true}}
-                .confirmationDialog("重新开始当前循环？",isPresented:$restart,titleVisibility:.visible){Button("开始新一轮"){Task{await save(action:"restart")}};Button("取消",role:.cancel){}}
+                .confirmationDialog("重新开始当前循环？",isPresented:$restart,titleVisibility:.visible){Button("开始新一轮"){Task{await save(action:"restart")}};Button("取消",role:.cancel){}} message: { Text("重置本轮进度，保留训练记录。") }
+                .confirmationDialog("停止当前循环？", isPresented: $confirmClear, titleVisibility: .visible) {
+                    Button("清空并保存", role: .destructive) { Task { await save(action: "save") } }
+                    Button("取消", role: .cancel) {}
+                } message: { Text("清空训练顺序并停止循环，保留训练记录。") }
                 .confirmationDialog("放弃循环修改？",isPresented:$discard,titleVisibility:.visible){Button("放弃修改",role:.destructive){dismiss()};Button("继续编辑",role:.cancel){}}
                 .alert("无法保存",isPresented:Binding(get:{error != nil},set:{if !$0 {error = nil}})){Button("知道了",role:.cancel){}}message:{Text(error ?? "")}
                 .interactiveDismissDisabled(dirty || store.syncing)
@@ -70,7 +77,7 @@ struct RotationProgressCard:View {
                         HStack {Image(systemName:status == "done" ? "checkmark.circle.fill" : status == "next" ? "play.circle.fill":"circle").foregroundStyle(status == "later" ? GymTheme.muted:GymTheme.green);Text(item["name"] as? String ?? "计划").font(.subheadline);Spacer();Text(status == "done" ? "已完成":status == "next" ? "下一项":status == "pinned" ? item["on"] as? String ?? "已排期":"待训练").font(.caption).foregroundStyle(.secondary)}
                     }
                 }.padding(card ? 16:0).background(card ? GymTheme.card:.clear,in:RoundedRectangle(cornerRadius:18))
-            } else {Text("还没有正在进行的一轮，选择计划并保存即可开始。").font(.subheadline).foregroundStyle(.secondary)}
+            } else {Text("暂无循环").font(.subheadline).foregroundStyle(.secondary)}
         }
     }
 }

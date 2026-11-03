@@ -22,32 +22,43 @@ struct PlanToolsView:View {
     @State private var issue:String?
     @State private var notice:String?
     @State private var loaded = false
+    @State private var confirmImport = false
     private let templates = [("ppl","推 / 拉 / 腿 · 每周 3 天"),("upper-lower","上肢 / 下肢 · 每周 4 天"),("full-body","全身训练 · 每周 3 天"),("5x5","5 × 5 力量训练 · 每周 3 天")]
     var body:some View {
         NavigationStack {
             List {
                 Section("计划文件") {
                     Button("导出全部计划") { exportPlan() }.disabled(store.routines.isEmpty)
-                    Button("导入 openGym 计划") { importing = true }
+                    Button { importing = true } label: { Label(notice == nil ? "导入计划" : "已导入", systemImage: notice == nil ? "square.and.arrow.down" : "checkmark") }
                 }
                 Section("入门模板") {
                     ForEach(templates,id:\.0) { id,name in Button(name) { loadTemplate(id) } }
                 }
                 if let bundle {
-                    Section("导入预览") {
+                    Section {
                         ForEach(Array((bundle["routines"] as? [[String:Any]] ?? []).enumerated()),id:\.offset) { _,r in
                             VStack(alignment:.leading) { Text(r["name"] as? String ?? "训练");Text("\((r["ex"] as? [Any] ?? []).count) 个动作").font(.caption).foregroundStyle(.secondary) }
                         }
-                        if number(bundle["dropped"])>0 { Text("\(Int(number(bundle["dropped"]))) 个无法识别的动作已排除。").foregroundStyle(.orange) }
                         Toggle("采用导入的每周排期",isOn:$applySchedule).disabled(preparedProposed != nil)
-                        Text("计划作为新副本添加。勾选排期将替换当前每周安排；单日安排保留。重量自动换算为 \(expectedUnit)。").font(.caption).foregroundStyle(.secondary)
-                        Button(store.syncing ? "保存中…":"确认导入") { apply() }.disabled(store.syncing || (bundle["routines"] as? [Any] ?? []).isEmpty).accessibilityIdentifier("confirm-plan-import")
+                        Button(store.syncing ? "保存中":"确认导入") {
+                            if applySchedule { confirmImport = true } else { apply() }
+                        }.lineLimit(1).disabled(store.syncing || (bundle["routines"] as? [Any] ?? []).isEmpty).accessibilityIdentifier("confirm-plan-import")
                         Button("取消导入",role:.cancel) { self.bundle = nil;preparedOriginal = nil;preparedProposed = nil }
+                    } header: {
+                        HStack {
+                            Text("导入预览")
+                            Spacer()
+                            if number(bundle["dropped"]) > 0 {
+                                StatusDetailButton(title: "已排除 \(Int(number(bundle["dropped"]))) 项", message: "无法识别的动作不会导入。", warning: true)
+                            }
+                        }
                     }
                 }
-                if let issue { Text(issue).foregroundStyle(.orange) }
-                if let notice { Text(notice).foregroundStyle(GymTheme.green) }
-            }.navigationTitle("计划工具").toolbar { ToolbarItem(placement:.topBarTrailing) {Button("完成"){dismiss()}} }
+            }.operationAlert($issue).navigationTitle("计划工具").toolbar { ToolbarItem(placement:.topBarTrailing) {Button("完成"){dismiss()}} }
+                .confirmationDialog("替换每周排期？", isPresented: $confirmImport, titleVisibility: .visible) {
+                    Button("导入并替换") { apply() }
+                    Button("取消", role: .cancel) {}
+                } message: { Text("计划作为副本添加；现有每周排期将被替换，单日调整保留。") }
                 .fileImporter(isPresented:$importing,allowedContentTypes:[.json]) { result in
                     do {
                         let url = try result.get(), access = url.startAccessingSecurityScopedResource();defer {if access {url.stopAccessingSecurityScopedResource()}}

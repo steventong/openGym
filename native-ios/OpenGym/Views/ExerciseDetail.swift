@@ -136,11 +136,11 @@ struct ExerciseDetail: View {
                   ZStack(alignment:.bottomTrailing) {
                     PlayerSurface(player:playback.player).frame(height:260).background(.white)
                     if !playback.ready && !playback.failed {
-                        VStack(spacing:12) { ProgressView().tint(.gray); Text("正在打开动作视频").font(.caption) }
+                        ProgressView().tint(.gray).accessibilityLabel("正在加载视频")
                             .foregroundStyle(.black).frame(maxWidth:.infinity,maxHeight:.infinity)
                     }
                     if playback.failed {
-                        VStack(spacing:12) { Image(systemName:"exclamationmark.triangle"); Text("动作视频播放失败").font(.caption); Button("重试") { loadVideo() } }.padding().foregroundStyle(.black).frame(maxWidth:.infinity,maxHeight:.infinity).background(.white)
+                        VStack(spacing:12) { Image(systemName:"exclamationmark.triangle").accessibilityLabel("视频播放失败"); Button("重试") { loadVideo() } }.padding().foregroundStyle(.black).frame(maxWidth:.infinity,maxHeight:.infinity).background(.white)
                     } else {
                         Button { playback.toggle() } label: {
                             Label(playback.playing ? "点按暂停" : "继续播放",systemImage:playback.playing ? "pause.fill" : "play.fill").font(.system(size:11,weight:.medium)).padding(9).foregroundStyle(.white).background(.black.opacity(0.4),in:Capsule())
@@ -173,7 +173,6 @@ struct ExerciseDetail: View {
                         VStack(alignment:.leading,spacing:9) { Text("次数").font(.caption).foregroundStyle(GymTheme.muted); Stepper("\(reps)",value:$reps,in:1...30) }
                     }
                     Text(estimateText).font(.system(size:30,weight:.bold,design:.rounded)).foregroundStyle(GymTheme.green).frame(maxWidth:.infinity,alignment:.trailing)
-                    Text("由单组估算，并非实测最大值。").font(.caption).foregroundStyle(GymTheme.muted)
                 }.gymCard()
                 if !exercise.description.isEmpty { Text(exercise.description).font(.system(size:15)).foregroundStyle(GymTheme.muted) }
                 if !exercise.instructions.isEmpty { SectionTitle(text:"动作要领") }

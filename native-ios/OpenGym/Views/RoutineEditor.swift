@@ -2,7 +2,7 @@ import SwiftUI
 struct RoutineEditor: View {
     @Environment(GymStore.self) private var store
     @Environment(\.dismiss) private var dismiss
-    let original: [String:Any]
+    @State private var original: [String:Any]
     let expectedUnit: String
     @State private var name: String
     @State private var rows: [RawRow]
@@ -12,10 +12,11 @@ struct RoutineEditor: View {
     @State private var discard = false
     @State private var confirmDelete = false
     @State private var deleting = false
+    @State private var saving = false
     @State private var errorTitle = "无法保存"
     @State private var error: String?
     init(routine:Routine,unit:String) {
-        original = routine.raw; expectedUnit = unit
+        _original = State(initialValue: routine.raw); expectedUnit = unit
         _name = State(initialValue:routine.name); _rows = State(initialValue:routine.exercises.map { RawRow(raw:$0) })
     }
     private var proposed:[String:Any] { var r = original; r["name"] = name.trimmingCharacters(in:.whitespacesAndNewlines); r["ex"] = rows.map(\.raw); return r }
@@ -40,7 +41,7 @@ struct RoutineEditor: View {
                                     numeric(expectedUnit,key:"weight",fallback:0,row:$row)
                                 }
                                 Stepper("组间休息 \(Int(number(row.raw["restSec"] ?? 90))) 秒",value:Binding(get:{Int(number(row.raw["restSec"] ?? 90))},set:{row.raw["restSec"] = $0}),in:0...900,step:15).font(.subheadline)
-                            } else { Text("已配置高级组型，可在下方调整参数。").font(.caption).foregroundStyle(.secondary) }
+                            } else { Text("高级组型").font(.caption).foregroundStyle(.secondary) }
                             Button { configuration = row } label: { Label("高级组型与计时",systemImage:"slider.horizontal.3") }.buttonStyle(.borderless).accessibilityIdentifier("advanced-slot-\(row.raw["id"] as? String ?? "")")
                             if row.raw["sg"] != nil { Label("超级组",systemImage:"link").font(.caption).foregroundStyle(GymTheme.green) }
                             HStack {
@@ -56,16 +57,16 @@ struct RoutineEditor: View {
                         }.padding(.vertical,7)
                     }.onDelete { rows.remove(atOffsets:$0) }
                     Button { pick = true } label: { Label("添加动作",systemImage:"plus.circle.fill") }.accessibilityIdentifier("edit-add-exercise")
-                } header: { Text("动作 · \(rows.count)") } footer: { Text("保存后更新计划。正在进行的训练草稿不受影响。") }
+                } header: { Text("动作 · \(rows.count)") }
                 Section {
-                    Button(role:.destructive) { confirmDelete = true } label: {
-                        Label(deleting ? "删除中…" : "删除训练计划",systemImage:"trash")
-                    }.disabled(store.syncing || deleting).accessibilityIdentifier("delete-routine")
-                } footer: { Text("删除计划及其排期，保留训练历史和正在进行的训练。") }
+                    Button(role:.destructive) { guard !saving, !deleting else { return }; confirmDelete = true } label: {
+                        Label(deleting ? "删除中" : "删除训练计划",systemImage:"trash")
+                    }.accessibilityIdentifier("delete-routine")
+                }
             }.navigationTitle("编辑计划").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement:.topBarLeading) { Button("取消") { if dirty { discard = true } else { dismiss() } }.disabled(store.syncing) }
-                    ToolbarItem(placement:.topBarTrailing) { Button(store.syncing && !deleting ? "保存中…" : "保存") { Task { if await store.saveRoutine(original:original,proposed:proposed,expectedUnit:expectedUnit) { dismiss() } else { errorTitle = "无法保存"; error = store.editError } } }.disabled(store.syncing || deleting || !dirty).accessibilityIdentifier("save-routine-edit") }
+                    ToolbarItem(placement:.topBarLeading) { Button("取消") { guard !saving, !deleting else { return }; if dirty { discard = true } else { dismiss() } } }
+                    ToolbarItem(placement:.topBarTrailing) { Button(saving ? "保存中" : "保存") { Task { await saveRoutine() } }.accessibilityIdentifier("save-routine-edit") }
                 }
                 .sheet(isPresented: $sorting) {
                     ExerciseOrderSheet(entries: rows.map(\.raw)) { order, baseline in
@@ -88,11 +89,22 @@ struct RoutineEditor: View {
                     Text("将删除「\(original["name"] as? String ?? "训练计划")」及其排期，无法撤销。训练历史和正在进行的训练会保留。" + (dirty ? "当前未保存的修改将被放弃。" : ""))
                 }
                 .confirmationDialog("放弃未保存的修改？",isPresented:$discard,titleVisibility:.visible) { Button("放弃修改",role:.destructive) { dismiss() }; Button("继续编辑",role:.cancel) {} }
-                .interactiveDismissDisabled(dirty || store.syncing)
+                .interactiveDismissDisabled(dirty || saving || deleting)
         }.tint(GymTheme.green)
     }
+    private func saveRoutine() async {
+        guard !saving, !deleting, !store.syncing else { return }
+        guard dirty else { dismiss(); return }
+        saving = true; defer { saving = false }
+        let snapshot = proposed
+        if await store.saveRoutine(original: original, proposed: snapshot, expectedUnit: expectedUnit) {
+            original = snapshot
+            // Keep any edits entered while the request was in flight in this editor.
+            if RecordPatch.equal(proposed, snapshot) { dismiss() }
+        } else { errorTitle = "无法保存"; error = store.editError }
+    }
     private func deleteRoutine() async {
-        guard !deleting, let id = original["id"] as? String else { return }
+        guard !saving, !deleting, let id = original["id"] as? String else { return }
         deleting = true; defer { deleting = false }
         if await store.deleteRoutine(id:id) { dismiss() }
         else { errorTitle = "无法删除"; error = store.editError }
@@ -148,15 +160,15 @@ struct ExercisePicker: View {
                 VStack(alignment: .leading, spacing: 18) {
                     searchField
                     filters
-                    if let error = store.catalogueError { Text(error).foregroundStyle(.orange) }
                     let results = choices
                     HStack {
                         Text("找到 \(results.count) 个动作")
                         Spacer()
-                        Label("动作库", systemImage: "checkmark.seal")
+                        if let error = store.catalogueError { StatusDetailButton(title: "加载失败", message: error, warning: true) }
+                        else { Label("动作库", systemImage: "checkmark.seal") }
                     }.font(.caption).foregroundStyle(GymTheme.muted)
                     if results.isEmpty {
-                        EmptyCard(icon: "magnifyingglass", title: "没有找到动作", detail: "试试其他关键词，或清除当前筛选。")
+                        EmptyCard(icon: "magnifyingglass", title: "没有找到动作")
                         Button("清除搜索与筛选") { resetFilters() }
                             .frame(maxWidth: .infinity, minHeight: 44)
                     }

@@ -30,6 +30,7 @@ struct LibraryView: View {
                         Text("\(store.exercises.count) 个动作").font(.subheadline).foregroundStyle(GymTheme.muted)
                     }
                     Spacer()
+                    if let error = store.catalogueError { StatusDetailButton(title: "加载失败", message: error, warning: true) }
                 }
                 HStack(spacing:10) {
                     HStack {
@@ -52,9 +53,12 @@ struct LibraryView: View {
                     Spacer()
                     Button { createCustom = true } label: { Label("创建",systemImage:"plus") }.accessibilityIdentifier("create-custom-exercise")
                 }
-                if let error = store.catalogueError { Text(error).foregroundStyle(.orange) }
                 HStack { Text(query.isEmpty && bodyPart.isEmpty && equipment.isEmpty && !favouritesOnly && !trainedOnly && !customOnly ? "探索动作" : "找到 \(results.count) 个动作").font(.caption).foregroundStyle(GymTheme.muted); Spacer(); Label("动作库",systemImage:"checkmark.seal").font(.caption2).foregroundStyle(GymTheme.muted) }
-                if results.isEmpty { EmptyCard(icon:"magnifyingglass",title:"没有找到动作",detail:"试试其他关键词，或清除当前筛选。") }
+                if results.isEmpty {
+                    EmptyCard(icon:"magnifyingglass",title:"没有找到动作")
+                    Button("清除搜索与筛选") { query = ""; bodyPart = ""; equipment = ""; favouritesOnly = false; trainedOnly = false; customOnly = false }
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
                 LazyVGrid(columns:grid ? [GridItem(.flexible()),GridItem(.flexible())] : [GridItem(.flexible())],spacing:10) {
                     ForEach(Array(results.prefix(limit))) { exercise in
                         Button { store.selectedExercise = exercise } label: {

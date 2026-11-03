@@ -23,7 +23,7 @@ struct WorkoutView: View {
                         }
                     } else {
                         Text("选择训练计划").font(.system(size: 34, weight: .bold))
-                        EmptyCard(icon: "figure.strengthtraining.traditional", title: "准备好开始了吗？", detail: "选择一个训练计划开始训练。")
+                        EmptyCard(icon: "figure.strengthtraining.traditional", title: "开始训练")
                         let scheduled = store.scheduledRoutines(on: Date())
                         if !scheduled.isEmpty { GreenButton(title: "开始今日安排", icon: "play.fill") { store.start(scheduled) } }
                         ForEach(store.routines) { r in GreenButton(title: r.name, icon: "play.fill") { store.start(r) } }
@@ -31,7 +31,6 @@ struct WorkoutView: View {
                     }
                 }.padding(20)
                     .frame(minHeight: store.draft?.rawEntries.isEmpty == true ? geometry.size.height : nil, alignment: .top)
-                    .disabled(store.syncing)
             }.scrollDismissesKeyboard(.interactively)
         }
             .sheet(isPresented: $showWorkoutDetails) { WorkoutDetailsEditor() }
@@ -46,7 +45,7 @@ struct WorkoutView: View {
                 Button("继续训练", role: .cancel) {}
             }
             .confirmationDialog("删除本次训练？", isPresented: $confirmDelete, titleVisibility: .visible) {
-                Button("删除训练", role: .destructive) { store.deleteCurrentWorkout() }.disabled(store.syncing)
+                Button("删除训练", role: .destructive) { store.deleteCurrentWorkout() }
                 Button("继续训练", role: .cancel) {}
             } message: {
                 Text("将清除本次训练的本机草稿并停止计时，无法撤销。已提交的历史记录和训练计划不受影响。")
@@ -59,7 +58,7 @@ struct WorkoutView: View {
                 .font(.system(size: 44, weight: .light))
                 .foregroundStyle(GymTheme.muted)
                 .accessibilityHidden(true)
-            Text("请添加第一个训练动作")
+            Text("暂无动作")
                 .font(.subheadline)
                 .foregroundStyle(GymTheme.muted)
                 .multilineTextAlignment(.center)

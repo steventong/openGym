@@ -27,9 +27,7 @@ struct ExerciseProgressView:View {
                 Picker("指标",selection:$metric) { Text("最佳组").tag("points");Text("估算 1RM").tag("e1rm");Text("逐组").tag("sets");Text("用力程度").tag("effort");Text("Max 次数").tag("max") }
                 Picker("范围",selection:$days) { Text("1 月").tag(30);Text("3 月").tag(90);Text("1 年").tag(365);Text("全部").tag(0) }.pickerStyle(.segmented)
                 TrendChart(points:points,unit:unit).frame(height:210)
-                if metric == "e1rm" { Text("按所选公式计算，次数过高或无有效负重时不提供估算。").font(.caption).foregroundStyle(.secondary) }
             }
-            if let issue { Text(issue).foregroundStyle(.orange) }
             Section("历史记录") {
                 ForEach(Array(store.workouts.filter { ($0["entries"] as? [[String:Any]] ?? []).contains {$0["id"] as? String == selected} }.enumerated()),id:\.offset) { _,w in
                     VStack(alignment:.leading,spacing:6) {
@@ -40,7 +38,7 @@ struct ExerciseProgressView:View {
                     }
                 }
             }
-        }.navigationTitle("动作进步").navigationBarTitleDisplayMode(.inline)
+        }.operationAlert($issue).navigationTitle("动作进步").navigationBarTitleDisplayMode(.inline)
             .onAppear { if selected.isEmpty { selected = initialID ?? ids.first ?? "" };reload() }
             .onChange(of:selected) {_,_ in reload()}.onChange(of:store.lastSync) {_,_ in reload()}
     }
@@ -63,7 +61,6 @@ struct MuscleAnalyticsView:View {
             Section {
                 Picker("指标",selection:$metric) { Text("完成组数").tag("load");Text("每周计划").tag("plan");Text("疲劳估算").tag("fatigue");Text("力量保留").tag("strength") }
                 if metric == "load" { Picker("范围",selection:$days) { Text("7 天").tag(7);Text("30 天").tag(30);Text("90 天").tag(90);Text("全部").tag(0) }.pickerStyle(.segmented) }
-                if ["fatigue","strength"].contains(metric) { Text("根据训练记录计算的趋势估计，用于了解训练分布。").font(.caption).foregroundStyle(.secondary) }
                 ForEach(Array(muscles.enumerated()),id:\.offset) { _,muscle in
                     let id = muscle["id"] as? String ?? "", value = number((data[metric] as? [String:Any])?[id])
                     VStack(alignment:.leading,spacing:6) {
@@ -72,8 +69,7 @@ struct MuscleAnalyticsView:View {
                     }
                 }
             }
-            if let issue { Text(issue).foregroundStyle(.orange) }
-        }.navigationTitle("肌群训练分布").navigationBarTitleDisplayMode(.inline).onAppear {reload()}.onChange(of:days) {_,_ in reload()}.onChange(of:store.lastSync) {_,_ in reload()}
+        }.operationAlert($issue).navigationTitle("肌群训练分布").navigationBarTitleDisplayMode(.inline).onAppear {reload()}.onChange(of:days) {_,_ in reload()}.onChange(of:store.lastSync) {_,_ in reload()}
     }
     private func reload() {do {data = try store.personalInfo("muscles",["days":days,"now":Date().timeIntervalSince1970*1000]);issue = nil} catch {issue = error.localizedDescription} }
 }
@@ -103,7 +99,7 @@ struct StructuralBalanceView:View {
         List {
             Section {
                 Picker("参考体系",selection:$template) {ForEach(Array((data["templates"] as? [[String:Any]] ?? []).enumerated()),id:\.offset) {_,t in Text(t["name"] as? String ?? "").tag(t["id"] as? String ?? "")} }
-                Text("按网页相同的参考比例比较已记录动作。缺少基准动作或体重时会显示缺项，不会用零替代。").font(.caption).foregroundStyle(.secondary)
+                HStack { Text("参考比例"); Spacer(); ExplanationButton(title: "结构平衡", message: "基于已记录动作比较参考比例；缺少基准动作或体重时不提供比例。") }
             }
             ForEach(Array(roles.enumerated()),id:\.offset) {_,role in
                 let result = (data["result"] as? [[String:Any]] ?? []).first {$0["roleId"] as? String == role["id"] as? String} ?? [:]
@@ -116,8 +112,7 @@ struct StructuralBalanceView:View {
                     if result["isOverridden"] as? Bool == true {Button("恢复默认动作") {assign(role,nil)}}
                 }
             }
-            if let issue {Text(issue).foregroundStyle(.orange)}
-        }.navigationTitle("结构平衡").navigationBarTitleDisplayMode(.inline)
+        }.operationAlert($issue).navigationTitle("结构平衡").navigationBarTitleDisplayMode(.inline)
             .onAppear {reload()}.onChange(of:template){_,_ in reload()}.onChange(of:store.lastSync){_,_ in reload()}
             .sheet(item:$selected) {row in ExercisePicker(title:"选择对应动作") {ex in assign(row.raw,ex.id);selected = nil} }
     }

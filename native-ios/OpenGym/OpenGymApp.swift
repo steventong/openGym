@@ -81,7 +81,10 @@ struct RootView: View {
 private struct LocalSaveStatus: View {
     @Environment(GymStore.self) private var store
     var body: some View {
-        if let issue = store.localSaveError { Text(issue).font(.caption).foregroundStyle(.orange).padding(8).accessibilityIdentifier("local-save-error") }
+        Color.clear.frame(width: 0, height: 0)
+            .onChange(of: store.localSaveError, initial: true) { _, issue in
+                if let issue, store.error == nil { store.error = issue }
+            }
     }
 }
 
@@ -100,15 +103,9 @@ private struct AppLifecycleObserver: View {
                     store.restNotifications?.publish()
                     store.liveActivity?.publish()
                     store.workoutHealth.retry()
-                    Task { await store.refresh(); await store.healthSync.resume() }
                 }
             }
-            .task {
-                while !Task.isCancelled {
-                    do { try await Task.sleep(for: .seconds(30)) } catch { return }
-                    if scenePhase == .active { await store.refresh(); await store.healthSync.resume() }
-                }
-            }
+
     }
     private func updateWake() { UIApplication.shared.isIdleTimerDisabled = scenePhase == .active && store.draft != nil && store.state["keepAwake"] as? Bool != false }
 }
@@ -126,6 +123,7 @@ private struct GymTabBar: View {
                     Text(store.draft == nil ? "开始" : "训练中").font(.system(size:10,weight:.medium)).foregroundStyle(GymTheme.green)
                 }.frame(maxWidth:.infinity)
             }.accessibilityIdentifier("tab-workout")
+                .overlay(alignment: .topTrailing) { LocalSaveIssueIndicator() }
             tab(3,"统计","chart.bar.xaxis")
             tab(4,"动作库","dumbbell")
         }.padding(.horizontal,8).padding(.top,10).padding(.bottom,5).background(Color(white:0.06))
@@ -135,5 +133,18 @@ private struct GymTabBar: View {
             VStack(spacing:7) { Image(systemName:icon).font(.system(size:20)); Text(name).font(.system(size:10,weight:.medium)) }
                 .foregroundStyle(store.selectedTab == id ? GymTheme.green : GymTheme.muted).frame(maxWidth:.infinity).frame(height:53)
         }.accessibilityIdentifier("tab-\(id)")
+    }
+}
+
+private struct LocalSaveIssueIndicator: View {
+    @Environment(GymStore.self) private var store
+    var body: some View {
+        if let issue = store.localSaveError {
+            Button { store.error = issue } label: {
+                Image(systemName: "exclamationmark.circle.fill").foregroundStyle(.orange)
+                    .frame(width: 28, height: 28).background(.black, in: Circle())
+            }.buttonStyle(.plain).accessibilityLabel("本机保存失败，查看详情")
+                .accessibilityIdentifier("local-save-error")
+        }
     }
 }

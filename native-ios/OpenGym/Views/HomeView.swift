@@ -46,7 +46,9 @@ struct HomeView: View {
                 VStack(alignment:.leading,spacing:18) {
                     HStack { Text(Calendar.current.isDateInToday(selectedDay) ? "今天" : selectedDay.formatted(.dateTime.month().day())).font(.system(size:12)).foregroundStyle(GymTheme.muted); Spacer(); Image(systemName:"figure.strengthtraining.traditional").foregroundStyle(GymTheme.green) }
                     Text(store.draft?.name ?? (scheduled.isEmpty ? "休息日" : scheduled.map(\.name).joined(separator:" + "))).font(.system(size:29,weight:.bold))
-                    Text(store.draft != nil ? "你的训练仍在进行，随时继续。" : routine.map { _ in "\(scheduled.flatMap(\.exercises).count) 个动作 · 按自己的节奏训练" } ?? "给身体一点恢复时间，也可以选择其他训练。").font(.system(size:13)).foregroundStyle(GymTheme.muted)
+                    if store.draft == nil, !scheduled.isEmpty {
+                        Text("\(scheduled.flatMap(\.exercises).count) 个动作").font(.system(size:13)).foregroundStyle(GymTheme.muted)
+                    }
                     if store.draft != nil {
                         GreenButton(title:"继续训练",icon:"play.fill") {
                             store.selectedTab = 2
@@ -107,7 +109,7 @@ struct WeightEntryView: View {
         NavigationStack {
             Form {
                 Section("今天的体重（\(store.unit)）") { TextField("输入体重",text:$value).keyboardType(.decimalPad) }
-                Section { Button(store.syncing ? "正在保存…" : "保存到服务端") {
+                Section { Button(store.syncing ? "正在保存" : "保存到服务端") {
                     if let number = Double(value.replacingOccurrences(of:",",with:".")), number > 0 { Task { if await store.recordWeight(number) { dismiss() } } }
                 }.disabled(store.syncing || (Double(value.replacingOccurrences(of:",",with:".")) ?? 0) <= 0) }
             }.navigationTitle("记录体重").toolbar { ToolbarItem(placement:.topBarTrailing) { Button("取消") { dismiss() } } }

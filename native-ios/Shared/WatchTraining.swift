@@ -39,7 +39,7 @@ enum WatchTrainingAction: Equatable {
     var title: String {
         switch self {
         case .connect: "连接 iPhone"
-        case .sending: "正在确认…"
+        case .sending: "正在确认"
         case .retry: "重试确认"
         case .endRest: "结束休息"
         case .complete: "完成训练"

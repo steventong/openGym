@@ -48,9 +48,9 @@ struct AdvancedConfigEditor: View {
                             }
                             Button("添加金字塔组") { var list = pyramid;list.append(10);config["pyramid"] = list }.disabled(pyramid.count>=10)
                         }
-                    } header:{Text("逐组目标")} footer:{Text("金字塔每组可以有不同次数、重量与休息。Max 组记录实际做到的次数；不会自动进阶。")}
+                    } header: { HStack { Text("逐组目标"); Spacer(); ExplanationButton(title: "金字塔与 Max", message: "每组可设置不同次数、重量和休息。Max 组记录实际次数，不自动进阶。") } }
                     if pyramid.isEmpty {
-                        Section("递减 / Rest-pause") {
+                        Section {
                             Picker("组型",selection:Binding(get:{intensifier["type"] as? String ?? "straight"},set:{ kind in
                                 if kind == "straight" { config.removeValue(forKey:"intensifier") }
                                 else if kind == "dropset" { config["intensifier"] = ["type":kind,"count":1,"pct":20] }
@@ -59,9 +59,8 @@ struct AdvancedConfigEditor: View {
                             if intensifier["type"] as? String == "dropset" { intensityField("递减次数",key:"count",fallback:1);intensityField("每次减重 %",key:"pct",fallback:20) }
                             if intensifier["type"] as? String == "restpause" {
                                 intensityField("Rest-pause 总次数",key:"totalReps",fallback:12);intensityField("小组间休息秒数",key:"restSec",fallback:15)
-                                Text("按网页规则生成一组热身与一组 Rest-pause；小组次数合计为工作组总次数，不重复计算训练量。").font(.caption).foregroundStyle(.secondary)
                             }
-                        }
+                        } header: { HStack { Text("递减 / Rest-pause"); Spacer(); ExplanationButton(title: "Rest-pause", message: "生成热身组和 Rest-pause 组；小组次数合计为工作组总次数，训练量不重复计算。") } }
                     }
                 }
                 ProgressionOptions(config:$config,mode:mode,unit:unit)

@@ -11,7 +11,7 @@ struct PlanView: View {
         ScrollView {
             VStack(alignment:.leading,spacing:22) {
                 HStack {
-                    VStack(alignment:.leading,spacing:7) { Text("训练计划").font(.system(size:34,weight:.bold)); Text("安排训练，保持自己的节奏").font(.subheadline).foregroundStyle(GymTheme.muted) }
+                    VStack(alignment:.leading,spacing:7) { Text("训练计划").font(.system(size:34,weight:.bold)) }
                     Spacer()
                     if store.userName != nil {
                         Button { coach = true } label: {
@@ -22,10 +22,10 @@ struct PlanView: View {
                     Button { create = true } label: { Image(systemName:"plus").font(.system(size:20)).foregroundStyle(GymTheme.green).padding(12).background(GymTheme.green.opacity(0.12),in:Circle()) }.accessibilityLabel("新建计划")
                 }
                 if store.userName == nil {
-                    EmptyCard(icon:"link",title:"连接你的训练档案",detail:"配对网页账号后，原有计划和训练记录会出现在这里。")
+                    EmptyCard(icon:"link",title:"连接账号")
                     GreenButton(title:"连接账号",icon:"link") { store.showSettings = true }
                 } else if store.routines.isEmpty {
-                    EmptyCard(icon:"calendar",title:"第一份训练计划",detail:"从喜欢的动作开始，逐步建立自己的训练习惯。")
+                    EmptyCard(icon:"calendar",title:"暂无计划")
                     GreenButton(title:"创建计划",icon:"plus") { create = true }
                 }
                 if store.userName != nil {
@@ -79,15 +79,21 @@ struct RoutineComposer: View {
                         Button {
                             if ids.contains(exercise.id) { ids.removeAll { $0 == exercise.id } } else { ids.append(exercise.id) }
                         } label: {
-                            HStack { ExerciseThumbnail(id:exercise.id,size:44); Text(exercise.name).font(.system(size:14)).foregroundStyle(.white); Spacer(); Image(systemName:ids.contains(exercise.id) ? "checkmark.circle.fill" : "circle").foregroundStyle(ids.contains(exercise.id) ? GymTheme.green : .gray) }
+                            HStack {
+                                ExerciseThumbnail(id:exercise.id,size:44)
+                                Text(exercise.name).font(.system(size:14)).foregroundStyle(.white).lineLimit(1)
+                                Spacer()
+                                Text("3 × 10").font(.caption).foregroundStyle(.secondary).fixedSize()
+                                    .accessibilityLabel("默认 3 组，每组 10 次")
+                                Image(systemName:ids.contains(exercise.id) ? "checkmark.circle.fill" : "circle").foregroundStyle(ids.contains(exercise.id) ? GymTheme.green : .gray)
+                            }
                         }
                     }
                 }
-                Section { Text("默认每个动作 3 组 × 10 次。训练中可修改重量与次数，完成后同步到网页。").font(.footnote).foregroundStyle(.secondary) }
             }.navigationTitle("新建计划").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement:.topBarLeading) { Button("取消") { dismiss() } }
-                    ToolbarItem(placement:.topBarTrailing) { Button(store.syncing ? "保存中…" : "保存") { Task { if await store.addRoutine(name:name.trimmingCharacters(in:.whitespacesAndNewlines),exerciseIDs:ids) { dismiss() } } }.disabled(name.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || ids.isEmpty || store.syncing) }
+                    ToolbarItem(placement:.topBarTrailing) { Button(store.syncing ? "保存中" : "保存") { Task { if await store.addRoutine(name:name.trimmingCharacters(in:.whitespacesAndNewlines),exerciseIDs:ids) { dismiss() } } }.disabled(name.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || ids.isEmpty || store.syncing) }
                 }
         }.tint(GymTheme.green)
     }

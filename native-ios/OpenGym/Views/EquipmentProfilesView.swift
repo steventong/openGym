@@ -19,8 +19,7 @@ struct EquipmentProfilesView:View {
                     .onDelete { offsets in let ids = offsets.compactMap {profiles[$0].raw["id"] as? String};profiles.remove(atOffsets:offsets);if ids.contains(active) {active = ""} }
                 Button("添加健身房") { let id = "eq"+UUID().uuidString;profiles.append(RawRow(raw:["id":id,"name":"新健身房","equipment":[],"accV":1]));if active.isEmpty {active = id} }
             }
-            if let issue {Text(issue).foregroundStyle(.orange)}
-        }.navigationTitle("健身房器械").onAppear {
+        }.operationAlert($issue).navigationTitle("健身房器械").onAppear {
             guard !loaded else{return};loaded = true;original = store.state.filter{["equipProfiles","activeEquipId","equipFilterOn"].contains($0.key)}
             profiles = (original["equipProfiles"] as? [[String:Any]] ?? []).map{RawRow(raw:$0)};active = original["activeEquipId"] as? String ?? "";enabled = original["equipFilterOn"] as? Bool ?? false
         }.toolbar {ToolbarItem(placement:.topBarTrailing) {Button("保存") {

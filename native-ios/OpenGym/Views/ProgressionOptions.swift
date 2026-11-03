@@ -7,7 +7,7 @@ struct ProgressionOptions:View {
     let unit:String
     private var policy:String { config["prog"] as? String ?? "" }
     var body:some View {
-        Section("自动进阶") {
+        Section {
             Picker("进阶规则",selection:Binding(get:{policy},set:{ value in
                 config["prog"] = value.isEmpty ? nil:value
                 if value == "greyskull",config["lastToFailure"] == nil { config["lastToFailure"] = true }
@@ -29,8 +29,7 @@ struct ProgressionOptions:View {
                     }
                 }
             }
-            Text("跟随计划会沿用计划规则。双重进阶先增加次数；三重进阶再增加组数，达到上限后增加负重。留空的参数使用网页默认值。").font(.caption).foregroundStyle(.secondary)
-        }
+        } header: { HStack { Text("自动进阶"); Spacer(); ExplanationButton(title: "进阶规则", message: "双重进阶先增加次数；三重进阶再增加组数，达到上限后增加负重。空白参数使用默认值。") } }
         if mode != "cardio" {
             Section("重量含义") {
                 if ["dumbbell","kettlebell"].contains(store.exercise(config["id"] as? String ?? "")?.equipment ?? "") {

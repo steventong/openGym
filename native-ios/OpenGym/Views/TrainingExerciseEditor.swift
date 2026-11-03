@@ -94,11 +94,12 @@ struct TrainingExerciseEditor<Accessory: View>: View {
             // Reset row-local state only when changing exercises, not when inserting
             // or deleting a sibling row. Each row has its own stable identity.
             }.id([entryIdentity ?? String(selected), entry["id"] as? String ?? ""])
-            if let undoRemove {
-                HStack { Text("已删除训练组").foregroundStyle(GymTheme.muted); Spacer(); Button("撤销", action: undoRemove).frame(minHeight: 44) }.font(.caption)
-            }
-            if rows.isEmpty { Text("暂无训练组，点击下方添加。").font(.subheadline).foregroundStyle(GymTheme.muted) }
+            if rows.isEmpty { Text("暂无训练组").font(.subheadline).foregroundStyle(GymTheme.muted) }
             HStack(spacing: 12) {
+                if let undoRemove {
+                    Button(action: undoRemove) { Image(systemName: "arrow.uturn.backward").frame(width: 44, height: 44) }
+                        .buttonStyle(.borderless).accessibilityLabel("撤销删除训练组")
+                }
                 if startRest != nil {
                     // Keep the same space before, during, and after rest; the overlay cannot resize the card.
                     Color.clear.frame(maxWidth: .infinity)
@@ -143,11 +144,7 @@ struct TrainingExerciseEditor<Accessory: View>: View {
                             Text("lb 磅").tag("lb")
                         }.pickerStyle(.segmented).disabled(timerRunning)
                             .accessibilityIdentifier("\(identifier)-weight-unit")
-                    } header: {
-                        Text("本次重量单位")
-                    } footer: {
-                        Text("按当前器械选择；已有重量自动换算，仅影响本次动作。")
-                    }
+                    } header: { HStack { Text("本次重量单位"); Spacer(); ExplanationButton(title: "重量单位", message: "已有重量自动换算，仅影响本次动作。") } }
                 }
             }.navigationTitle("备注与单位").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { showingOptions = false } } }

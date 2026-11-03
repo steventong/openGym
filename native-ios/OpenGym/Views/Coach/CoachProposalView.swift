@@ -39,7 +39,6 @@ struct CoachProposalView: View {
                 }
                 if !historical {
                     Toggle("使用这份每周安排",isOn:$schedule)
-                    Text("开启后替换每周安排及未来的单日调整，未安排的日期为休息日。原有训练计划和训练记录会保留。").font(.caption).foregroundStyle(.secondary)
                 }
             } else if kind == "debrief" {
                 if let score = p["score"] as? NSNumber { Text("\(score) / 10").font(.system(size:40,weight:.bold)).foregroundStyle(GymTheme.green) }
@@ -48,7 +47,6 @@ struct CoachProposalView: View {
                 strings("需要注意",p["watch"],symbol:"exclamationmark.triangle")
                 strings("下次训练",p["nextTime"],symbol:"arrow.up.right")
             } else {
-                if p["planMoved"] as? Bool == true { Text("计划在其他设备上有过修改。不再适用的建议已禁用。").font(.caption).foregroundStyle(.orange) }
                 CoachInsightsView(data:presentation.coachObject("insights"),session:session)
                 ForEach(Array(p.coachObjects("changes").enumerated()),id:\.offset) { _,change in
                     changeRow(change)
@@ -68,7 +66,7 @@ struct CoachProposalView: View {
         .onChange(of:p.coachObjects("changes").filter { $0.coachText("status") != "stale" }.map { $0.coachText("id") }) { _,ids in selected.formIntersection(ids) }
         .confirmationDialog(kind == "debrief" ? "保存到教练历史？" : "确认应用教练建议？",isPresented:$confirmApply,titleVisibility:.visible) {
             Button(kind == "debrief" ? "保存复盘" : "确认应用") { Task { await session.resolve(proposal,accepted:Array(selected),schedule:schedule) } }
-        } message: { Text(kind == "debrief" ? "不会修改训练计划。" : "保存后会同步到所有设备，可在教练菜单中撤销。") }
+        } message: { Text(kind == "debrief" ? "不会修改训练计划。" : kind == "create" && schedule ? "将替换每周安排及未来单日调整，保留已有计划和训练记录。" : "同步到所有设备，可在教练菜单撤销。") }
         .confirmationDialog("拒绝这份建议？",isPresented:$confirmDismiss,titleVisibility:.visible) {
             Button("拒绝建议",role:.destructive) { Task { await session.resolve(proposal,dismissed:true) } }
         } message: { Text("计划保持不变，建议会保留在历史中。") }
@@ -86,12 +84,11 @@ struct CoachProposalView: View {
         let stale = change.coachText("status") == "stale", id = change.coachText("id")
         return HStack(alignment:.top) {
             VStack(alignment:.leading,spacing:7) {
-                Text(change.coachText("title")).font(.headline)
+                HStack { Text(change.coachText("title")).font(.headline); Spacer(); if stale { StatusDetailButton(title: "已失效", message: "计划已在其他设备修改，请重新评估。", warning: true) } }
                 if !change.coachText("routineName").isEmpty { Text(change.coachText("routineName")).font(.caption).foregroundStyle(.secondary) }
                 let values = change.coachObject("values")
                 if !values.isEmpty { Text(values.coachText("before")+" → "+values.coachText("after")).font(.subheadline).foregroundStyle(GymTheme.green) }
                 Text(change.coachText("why")).font(.subheadline).foregroundStyle(.secondary)
-                if stale { Text("已不适用于当前计划，请重新请求评估。").font(.caption).foregroundStyle(.orange) }
                 if historical { Text(change.coachText("status") == "accepted" ? "已接受" : "未应用").font(.caption).foregroundStyle(.secondary) }
             }
             Spacer(minLength:2)

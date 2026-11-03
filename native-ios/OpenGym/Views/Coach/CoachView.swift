@@ -20,19 +20,15 @@ private struct CoachContent: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var sheet: CoachSheet?
     @State private var confirmUndo = false
+    @State private var composerIssue: String?
     init(store: GymStore) { _session = State(initialValue:CoachSession(store:store)) }
     var body: some View {
         NavigationStack {
             VStack(spacing:0) {
-                if let error = session.error {
-                    VStack(alignment:.leading,spacing:8) {
-                        Label(error,systemImage:"exclamationmark.triangle").font(.subheadline)
-                        Button("重试连接") { Task { await session.refresh() } }.disabled(session.locked)
-                    }.foregroundStyle(.orange).frame(maxWidth:.infinity,alignment:.leading).padding().background(GymTheme.card).accessibilityIdentifier("coach-error")
-                }
-                if !session.loaded { ProgressView("正在连接教练…").frame(maxWidth:.infinity,maxHeight:.infinity) }
+                if !session.loaded { ProgressView().accessibilityLabel("正在连接教练").frame(maxWidth:.infinity,maxHeight:.infinity) }
                 else if !session.enabled {
-                    EmptyCard(icon:"sparkles",title:"教练暂不可用",detail:"请先配对账号，并由管理员在网页后台启用 AI 教练。已有配置会自动用于这个 App。").padding()
+                    EmptyCard(icon:"sparkles",title:"教练暂不可用").padding()
+                    ExplanationButton(title: "启用教练", message: "配对账号后，请管理员在网页后台启用 AI 教练。")
                     Button("重新检查") { Task { await session.refresh() } }.disabled(session.locked)
                     Spacer()
                 } else if !session.hasConsent {
@@ -44,7 +40,15 @@ private struct CoachContent: View {
             .background(GymTheme.background).navigationTitle("AI 教练").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement:.topBarLeading) { Button("完成") { dismiss() } }
-                ToolbarItem(placement:.topBarTrailing) { if session.ready { actions } }
+                ToolbarItem(placement:.topBarTrailing) {
+                    HStack {
+                        if let error = session.error {
+                            StatusDetailButton(title: "需重试", message: error, warning: true).accessibilityIdentifier("coach-error")
+                            Button { Task { await session.refresh() } } label: { Image(systemName: "arrow.clockwise") }
+                                .disabled(session.locked).accessibilityLabel("重试连接")
+                        } else if session.ready { actions }
+                    }
+                }
             }
             .sheet(item:$sheet) { page in
                 NavigationStack {
@@ -78,6 +82,8 @@ private struct CoachContent: View {
             Button("历史建议",systemImage:"clock.arrow.circlepath") { sheet = .history }
             Button("编辑训练问答",systemImage:"pencil") { sheet = .profile }
             Button("自动评估",systemImage:"calendar.badge.clock") { sheet = .cadence }
+            let cap = session.status.coachObject("cap")
+            if number(cap["limit"]) > 0 { Text("今日用量 \(Int(number(cap["used"]))) / \(Int(number(cap["limit"])))") }
             if session.configuration.coachObject("coach")["community"] as? Bool == true { Button("匿名训练对比",systemImage:"person.2") { sheet = .community } }
             if session.info["canRevert"] as? Bool == true { Button("撤销上次教练修改",systemImage:"arrow.uturn.backward") { confirmUndo = true }.disabled(session.running) }
         } label: { Image(systemName:"ellipsis.circle").accessibilityLabel("教练菜单") }.disabled(session.locked).accessibilityIdentifier("coach-menu")
@@ -87,8 +93,6 @@ private struct CoachContent: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(alignment:.leading,spacing:18) {
-                        Text("由服务器提供 · \(session.account.coachText("account").isEmpty ? session.account.coachText("providerLabel") : session.account.coachText("account"))").font(.caption).foregroundStyle(.secondary)
-                        bubble("你好，我会根据你的目标和训练记录设计、调整计划。所有修改都需要你确认。",user:false)
                         ForEach(Array(session.coach.coachObjects("chat").enumerated()),id:\.offset) { _,message in
                             VStack(alignment:.leading,spacing:8) {
                                 let text = message.coachText("kind") == "intake" ? (session.info["profileLines"] as? [String] ?? []).joined(separator:"\n") : message.coachText("text")
@@ -100,14 +104,10 @@ private struct CoachContent: View {
                                 }
                             }
                         }
-                        if session.running { thinking }
                         if let pending = session.pending, !session.running {
                             if session.savedPending != nil {
-                                VStack(alignment:.leading,spacing:10) {
-                                    Label("建议已保存",systemImage:"checkmark.circle")
-                                    Text("等待服务器确认处理状态，重复操作不会再次修改计划。").font(.caption)
-                                    Button("完成同步") { Task { await session.retryResolution() } }.disabled(session.locked).accessibilityIdentifier("coach-finish-sync")
-                                }.gymCard()
+                                Button("完成同步", systemImage: "arrow.clockwise") { Task { await session.retryResolution() } }
+                                    .disabled(session.locked).accessibilityIdentifier("coach-finish-sync")
                             } else { CoachProposalView(session:session,proposal:pending).id(pending.coachText("id")) }
                         }
                         Color.clear.frame(height:1).id("coach-bottom")
@@ -127,18 +127,6 @@ private struct CoachContent: View {
             if !user { Spacer(minLength:20) }
         }
     }
-    private var thinking: some View {
-        TimelineView(.periodic(from:.now,by:1)) { context in
-            let seconds = max(0,Int(context.date.timeIntervalSince1970-number(session.status.coachObject("job")["startedAt"])/1000))
-            HStack(spacing:12) {
-                ProgressView().tint(GymTheme.green)
-                VStack(alignment:.leading,spacing:5) {
-                    Text("教练正在思考… \(seconds / 60):\(String(format:"%02d",seconds % 60))")
-                    Text("可以离开页面，请求会在服务器继续处理。").font(.caption).foregroundStyle(.secondary)
-                }
-            }.gymCard().accessibilityIdentifier("coach-thinking")
-        }
-    }
     private var composer: some View {
         VStack(spacing:10) {
             if !session.running && session.pending == nil {
@@ -151,17 +139,19 @@ private struct CoachContent: View {
                 }
             }
             HStack(alignment:.bottom,spacing:12) {
-                TextField(session.running ? "等待教练完成…" : session.pending?.coachText("kind") == "create" ? "告诉教练需要怎样修改…" : "给教练发消息…",text:$session.draft,axis:.vertical)
+                TextField(session.running ? "正在思考" : session.pending?.coachText("kind") == "create" ? "修改要求" : "发消息",text:$session.draft,axis:.vertical)
                     .lineLimit(1...5).padding(12).background(GymTheme.card,in:RoundedRectangle(cornerRadius:14)).disabled(session.running)
+                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(session.draft.count > session.maxLength ? Color.orange : .clear))
                     .accessibilityIdentifier("coach-composer")
-                Button { Task { await session.send() } } label: { Image(systemName:"arrow.up.circle.fill").font(.system(size:36)) }
-                    .disabled(session.locked || session.running || session.draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || session.draft.count > session.maxLength)
-                    .accessibilityLabel("发送给教练").accessibilityIdentifier("coach-send")
+                Button {
+                    if session.draft.count > session.maxLength { composerIssue = "最多 \(session.maxLength) 字，当前 \(session.draft.count) 字。" }
+                    else { Task { await session.send() } }
+                } label: { Image(systemName: session.running ? "hourglass" : session.draft.count > session.maxLength ? "exclamationmark.circle.fill" : "arrow.up.circle.fill")
+                        .font(.system(size:36)).frame(width: 44, height: 44) }
+                    .disabled(session.locked || session.running || session.draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty)
+                    .accessibilityLabel(session.running ? "教练正在思考" : session.draft.count > session.maxLength ? "字数超限，查看详情" : "发送给教练").accessibilityIdentifier("coach-send")
             }
-            if session.draft.count > session.maxLength { Text("最多 \(session.maxLength) 字，当前 \(session.draft.count) 字。").font(.caption).foregroundStyle(.orange) }
-            let cap = session.status.coachObject("cap")
-            if number(cap["limit"]) > 0 { Text("今日已用 \(Int(number(cap["used"]))) / \(Int(number(cap["limit"]))) 次").font(.caption).foregroundStyle(.secondary) }
-        }.padding().background(.ultraThinMaterial)
+        }.padding().background(.ultraThinMaterial).operationAlert($composerIssue, title: "字数超限")
     }
 }
 
@@ -171,8 +161,7 @@ struct CoachConsentView: View {
         ScrollView {
             VStack(alignment:.leading,spacing:22) {
                 Image(systemName:"sparkles").font(.system(size:42)).foregroundStyle(GymTheme.green)
-                Text("先认识一下你的教练").font(.largeTitle.bold())
-                Text("它会根据你的回答和训练记录给出建议。计划修改由你确认，也可以撤销。")
+                Text("启用 AI 教练").font(.largeTitle.bold())
                 Text("会读取哪些数据").font(.headline)
                 ForEach(session.info.coachObjects("categories").map { CoachRecord(raw:$0) }) { record in
                     let item = record.raw
@@ -180,7 +169,7 @@ struct CoachConsentView: View {
                 }
                 Text("数据发送给服务器配置的 \(session.disclosure.coachText("providerLabel"))，使用管理员的服务账号。你的姓名、登录凭据和其他用户的数据不会包含在请求中。").font(.footnote).foregroundStyle(.secondary)
                 Text("教练不是医生或物理治疗师；如果疼痛，请咨询专业人士。").font(.footnote).foregroundStyle(.orange)
-                CoachPrimaryButton(title:session.busy ? "正在保存…" : "我已了解，继续",icon:"checkmark") { Task { _ = await session.agree() } }
+                CoachPrimaryButton(title:session.busy ? "正在保存" : "我已了解，继续",icon:"checkmark") { Task { _ = await session.agree() } }
                     .disabled(session.locked || session.disclosure.isEmpty).accessibilityIdentifier("coach-consent")
             }.padding(24)
         }
@@ -196,6 +185,7 @@ struct CoachPrimaryButton: View {
     var body: some View {
         Button(action:action) {
             HStack(spacing:8) { if let icon { Image(systemName:icon) }; Text(title).fontWeight(.semibold).multilineTextAlignment(.center) }
+                .lineLimit(1).minimumScaleFactor(0.75)
                 .frame(maxWidth:.infinity,minHeight:24).padding(.horizontal,16).padding(.vertical,14)
                 .foregroundStyle(enabled ? Color.black : Color.white.opacity(0.55))
                 .background(enabled ? GymTheme.green : Color.white.opacity(0.1),in:RoundedRectangle(cornerRadius:15))

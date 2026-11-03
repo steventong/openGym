@@ -8,6 +8,42 @@ enum GymTheme {
 }
 extension View {
     func gymCard() -> some View { padding(18).background(GymTheme.card,in:RoundedRectangle(cornerRadius:20)) }
+    func operationAlert(_ issue: Binding<String?>, title: String = "操作未完成") -> some View {
+        alert(title, isPresented: Binding(get: { issue.wrappedValue != nil }, set: { if !$0 { issue.wrappedValue = nil } })) {
+            Button("好", role: .cancel) {}
+        } message: { Text(issue.wrappedValue ?? "") }
+    }
+    func invalidInput(_ invalid: Bool) -> some View {
+        overlay(RoundedRectangle(cornerRadius: 4).stroke(invalid ? Color.orange : .clear))
+            .accessibilityHint(invalid ? "输入无效，请检查" : "")
+    }
+}
+
+/// Details are available on demand without inserting explanatory rows into the screen.
+struct ExplanationButton: View {
+    let title: String
+    let message: String
+    @State private var showing = false
+    var body: some View {
+        Button { showing = true } label: { Image(systemName: "info.circle").frame(width: 28, height: 28) }
+            .buttonStyle(.borderless).accessibilityLabel("\(title)说明")
+            .alert(title, isPresented: $showing) { Button("好", role: .cancel) {} } message: { Text(message) }
+    }
+}
+
+struct StatusDetailButton: View {
+    let title: String
+    let message: String
+    var warning = false
+    @State private var showing = false
+    var body: some View {
+        Button { showing = true } label: {
+            Label(title, systemImage: warning ? "exclamationmark.circle" : "info.circle")
+                .font(.caption).lineLimit(1).minimumScaleFactor(0.8)
+                .foregroundStyle(warning ? Color.orange : GymTheme.muted)
+        }.buttonStyle(.borderless).accessibilityHint("查看详情")
+            .alert(title, isPresented: $showing) { Button("好", role: .cancel) {} } message: { Text(message) }
+    }
 }
 struct GreenButton: View {
     let title: String
@@ -16,6 +52,7 @@ struct GreenButton: View {
     var body: some View {
         Button(action:action) {
             HStack(spacing:8) { if let icon { Image(systemName:icon) }; Text(title).fontWeight(.semibold) }
+                .lineLimit(1).minimumScaleFactor(0.8)
                 .frame(maxWidth:.infinity).padding(.vertical,16).foregroundStyle(.black)
                 .background(GymTheme.green,in:RoundedRectangle(cornerRadius:15))
         }.buttonStyle(.plain)
@@ -38,12 +75,12 @@ struct SectionTitle: View {
 struct EmptyCard: View {
     let icon: String
     let title: String
-    let detail: String
+    var detail: String? = nil
     var body: some View {
         VStack(spacing:12) {
             Image(systemName:icon).font(.system(size:30,weight:.light)).foregroundStyle(GymTheme.green).padding(.bottom,6)
             Text(title).font(.headline)
-            Text(detail).font(.subheadline).foregroundStyle(GymTheme.muted).multilineTextAlignment(.center)
+            if let detail, !detail.isEmpty { Text(detail).font(.subheadline).foregroundStyle(GymTheme.muted).multilineTextAlignment(.center) }
         }.frame(maxWidth:.infinity).padding(.vertical,30).gymCard()
     }
 }

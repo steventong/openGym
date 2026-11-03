@@ -25,7 +25,6 @@ struct ScheduleEditor: View {
             List {
                 Section {
                     Picker("排期类型",selection:$tab) { Text("每周计划").tag(0); Text("单日调整").tag(1) }.pickerStyle(.segmented).accessibilityIdentifier("schedule-mode")
-                    if store.state["queue"] as? [String:Any] != nil { Text("已有循环或教练排期，首页会按网页规则合并显示；这里编辑每周安排和单日覆盖。").font(.caption).foregroundStyle(.secondary) }
                 }
                 if tab == 0 {
                     Section("选择星期") {
@@ -40,7 +39,7 @@ struct ScheduleEditor: View {
                                 if next.isEmpty { week.removeValue(forKey:String(weekday)) } else { week[String(weekday)] = next }
                             } label: { selectionRow(r.name,selected:ids.contains(r.id),icon:"dumbbell") }.accessibilityIdentifier("weekday-routine-\(r.id)")
                         }
-                    } header: { Text("\(names[weekday])的训练") } footer: { Text("可以选择多个计划，首页可一起开始训练。每周重复，不影响已有的单日调整。") }
+                    } header: { Text("\(names[weekday])的训练") }
                     Section("一周概览") {
                         ForEach([1,2,3,4,5,6,0],id:\.self) { day in
                             let selected = week[String(day)] as? [String] ?? (week[String(day)] as? String).map { [$0] } ?? []
@@ -53,7 +52,7 @@ struct ScheduleEditor: View {
                         Button { overrides.removeValue(forKey:dayString(date)) } label: { selectionRow("恢复每周计划",selected:overrides[dayString(date)] == nil,icon:"arrow.uturn.backward") }.accessibilityIdentifier("restore-weekly")
                         Button { overrides[dayString(date)] = "rest" } label: { selectionRow("这一天休息",selected:overrides[dayString(date)] as? String == "rest",icon:"moon") }.accessibilityIdentifier("date-rest")
                         ForEach(store.routines) { r in Button { overrides[dayString(date)] = r.id } label: { selectionRow(r.name,selected:overrides[dayString(date)] as? String == r.id,icon:"dumbbell") } }
-                    } footer: { Text("只改变所选日期，每周安排保持不变。单日最多指定一个计划，与网页版一致。") }
+                    }
                     if !overrides.isEmpty {
                         Section("已有单日调整") {
                             ForEach(overrides.keys.sorted(),id:\.self) { day in
@@ -65,7 +64,7 @@ struct ScheduleEditor: View {
             }.navigationTitle("训练排期").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement:.topBarLeading) { Button("取消") { if dirty { discard = true } else { dismiss() } }.disabled(store.syncing) }
-                    ToolbarItem(placement:.topBarTrailing) { Button(store.syncing ? "保存中…" : "保存") { Task { if await store.saveSchedule(original:original,proposed:proposed) { dismiss() } else { error = store.editError } } }.disabled(!dirty || store.syncing).accessibilityIdentifier("save-schedule") }
+                    ToolbarItem(placement: .topBarTrailing) { ExplanationButton(title: "排期", message: "每周计划支持多选。单日调整仅影响所选日期，每周安排与已有循环保留。") }; ToolbarItem(placement:.topBarTrailing) { Button(store.syncing ? "保存中" : "保存") { Task { if await store.saveSchedule(original:original,proposed:proposed) { dismiss() } else { error = store.editError } } }.disabled(!dirty || store.syncing).accessibilityIdentifier("save-schedule") }
                 }
                 .onAppear { if !loaded { for key in ["week","dayPlan"] { original[key] = store.state[key] }; week = original["week"] as? [String:Any] ?? [:]; overrides = original["dayPlan"] as? [String:Any] ?? [:]; loaded = true } }
                 .alert("无法保存",isPresented:Binding(get:{error != nil},set:{if !$0 { error = nil }})) { Button("知道了",role:.cancel) {} } message: { Text(error ?? "") }

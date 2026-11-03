@@ -28,8 +28,7 @@ struct PersonalSettingsView: View {
                 }
             }
             Section { NavigationLink("杠铃片与哑铃库存") { EquipmentInventoryView() } }
-            if let issue { Section { Text(issue).foregroundStyle(.orange) } }
-        }.navigationTitle("训练偏好").navigationBarTitleDisplayMode(.inline)
+        }.operationAlert($issue).navigationTitle("训练偏好").navigationBarTitleDisplayMode(.inline)
             .onAppear { if values.isEmpty { original = store.state.filter { keys.contains($0.key) }; values = original } }
             .toolbar { ToolbarItem(placement:.topBarTrailing) { Button("保存") { Task {
                 if await store.savePersonalFields(original:original,proposed:values) { dismiss() } else { issue = store.editError }
@@ -51,6 +50,7 @@ struct EquipmentInventoryView: View {
     @State private var original:[String:Any] = [:]
     @State private var counts:[String:Int] = [:]
     @State private var bells = ""
+    @State private var invalidWeights = false
     @State private var ownPlates = false
     @State private var unit = "kg"
     @State private var loaded = false
@@ -63,14 +63,14 @@ struct EquipmentInventoryView: View {
                 if ownPlates { ForEach(sizes,id:\.self) { weight in
                     Stepper("\(decimal(weight)) \(unit)：\(counts[String(weight)] ?? 0) 对",value:Binding(get:{counts[String(weight)] ?? 0},set:{counts[String(weight)] = $0}),in:0...50)
                 } }
-            } header:{Text("杠铃片")} footer:{Text("按对计数；关闭后使用网页版的标准健身房库存。")}
+            } header: { HStack { Text("杠铃片（对）"); Spacer(); ExplanationButton(title: "器械库存", message: "关闭自定义库存后使用标准配片。哑铃库存用于重量加减和进阶；留空沿用动作步进。") } }
             Section {
-                TextField("例如：2, 4, 6, 8, 10, 12",text:$bells).keyboardType(.numbersAndPunctuation).accessibilityIdentifier("dumbbell-inventory")
+                TextField("例如：2, 4, 6, 8, 10, 12",text:$bells).keyboardType(.numbersAndPunctuation)
+                    .invalidInput(invalidWeights).onChange(of: bells) { _, _ in invalidWeights = false }.accessibilityIdentifier("dumbbell-inventory")
                 Button("填入常用重量") { bells = (unit == "lb" ? stride(from:5,through:100,by:5).map(String.init) : stride(from:2,through:50,by:2).map(String.init)).joined(separator:", ") }
                 Button("清除库存") { bells = "" }
-            } header:{Text("单只哑铃重量（\(unit)）")} footer:{Text("逗号分隔。配置后，加减按钮和进阶会使用现有哑铃重量；留空沿用动作步进。")}
-            if let issue { Text(issue).foregroundStyle(.orange) }
-        }.navigationTitle("器械库存").navigationBarTitleDisplayMode(.inline)
+            } header:{Text("单只哑铃重量（\(unit)）")}
+        }.operationAlert($issue).navigationTitle("器械库存").navigationBarTitleDisplayMode(.inline)
             .onAppear { guard !loaded else { return }; loaded = true; unit = store.unit
                 original = store.state.filter { ["plates","dumbbells"].contains($0.key) }
                 let plates = (original["plates"] as? [String:Any])?[unit] as? [String:Any] ?? [:]
@@ -84,7 +84,7 @@ struct EquipmentInventoryView: View {
     private func save() {
         let parts = bells.split(whereSeparator:{ $0 == "," || $0 == "，" || $0 == " " || $0 == "\n" })
         let weights = parts.compactMap { Double($0) }
-        guard weights.count == parts.count, weights.allSatisfy({$0.isFinite && $0 > 0 && $0 < 10000}) else { issue = "请填写有效的正数重量。"; return }
+        guard weights.count == parts.count, weights.allSatisfy({$0.isFinite && $0 > 0 && $0 < 10000}) else { invalidWeights = true; issue = "请填写有效的正数重量。"; return }
         var proposed = original, plates = original["plates"] as? [String:Any] ?? [:], db = original["dumbbells"] as? [String:Any] ?? [:]
         var stock:[String:Any] = ["_ts":Date().timeIntervalSince1970*1000]
         if ownPlates { for w in sizes { stock[decimalKey(w)] = counts[String(w)] ?? 0 } }

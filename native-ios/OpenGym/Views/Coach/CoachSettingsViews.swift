@@ -4,7 +4,7 @@ struct CoachHistoryView: View {
     let session: CoachSession
     var body: some View {
         List {
-            if session.history.isEmpty { Text("还没有教练建议。处理后的计划、调整和复盘会保存在这里。").foregroundStyle(.secondary) }
+            if session.history.isEmpty { Text("暂无教练建议").foregroundStyle(.secondary) }
             ForEach(session.history.map { CoachRecord(raw:$0) }) { record in
                 NavigationLink {
                     ScrollView { CoachProposalView(session:session,proposal:record.raw,historical:true).padding() }.navigationTitle("建议详情")
@@ -44,10 +44,9 @@ struct CoachCadenceView: View {
                 Picker("评估时机",selection:$mode) { Text("关闭").tag("off");Text("每周").tag("weekly");Text("每完成几次训练").tag("every") }
                 if mode == "weekly" {
                     Picker("星期",selection:$day) { ForEach(0..<7,id:\.self) { Text(Self.days[$0]).tag($0) } }
-                    DatePicker("时间",selection:$time,displayedComponents:.hourAndMinute)
+                    DatePicker("时间（服务器时区）",selection:$time,displayedComponents:.hourAndMinute)
                 } else if mode == "every" { Stepper("每 \(count) 次训练",value:$count,in:1...20) }
-            } footer: { Text(mode == "off" ? "只有你主动请求时才进行评估。" : "由服务器按已同步的训练数据触发，有建议时会出现在教练中。每周时间使用服务器时区。") }
-            if let error = session.error { Text(error).foregroundStyle(.orange) }
+            }
             Button("保存") {
                 Task {
                     let components = Calendar.current.dateComponents([.hour,.minute],from:time)
@@ -55,7 +54,7 @@ struct CoachCadenceView: View {
                     if await session.perform({ try await session.change("cadence",values:["cadence":cadence]) }) { dismiss() }
                 }
             }.disabled(session.locked)
-        }.navigationTitle("自动评估")
+        }.operationAlert(Binding(get: { session.error }, set: { session.error = $0 })).navigationTitle("自动评估")
     }
 }
 struct CoachCommunityView: View {
@@ -68,8 +67,7 @@ struct CoachCommunityView: View {
             Section {
                 Toggle("参与匿名训练对比",isOn:Binding(get:{data["sharing"] as? Bool == true},set:{value in Task { await share(value) }})).disabled(loading || data.isEmpty)
             } footer: { Text("只比较参与者的汇总中位数，不展示姓名、体重或单次训练。关闭后会立即停止参与统计。") }
-            if loading { ProgressView() }
-            if let error { Text(error).foregroundStyle(.orange);Button("重试") { Task { await load() } } }
+            Button(loading ? "正在刷新" : error == nil ? "刷新" : "重试") { Task { await load() } }.disabled(loading).lineLimit(1)
             if data["sharing"] as? Bool == true {
                 if data["ok"] as? Bool == true {
                     LabeledContent("参与人数",value:String(Int(number(data["people"]))))
@@ -84,7 +82,7 @@ struct CoachCommunityView: View {
                     }
                 } else { Text("参与人数还不足：\(Int(number(data["people"]))) / \(Int(number(data["minPeople"] ?? 3))) 人。").foregroundStyle(.secondary) }
             }
-        }.navigationTitle("匿名训练对比").task { await load() }
+        }.operationAlert($error).navigationTitle("匿名训练对比").task { await load() }
     }
     private func load() async {
         loading = true;defer{loading = false}

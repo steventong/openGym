@@ -16,6 +16,7 @@ struct BodyRecordsView: View {
     @State private var goalOriginal:[String:Any] = [:]
     @State private var goalLoaded = false
     @State private var goalUnit = "kg"
+    @State private var invalidGoal = false
     @State private var issue:String?
     private var collection:String { measurements ? "measurements" : "bodyweight" }
     private var records:[[String:Any]] { (store.state[collection] as? [[String:Any]] ?? []).sorted { ($0["d"] as? String ?? "") < ($1["d"] as? String ?? "") } }
@@ -37,15 +38,15 @@ struct BodyRecordsView: View {
             }
             if !measurements {
                 Section("目标体重（\(goalUnit)）") {
-                    TextField("留空取消目标",text:$goal).keyboardType(.decimalPad)
+                    TextField("留空取消目标",text:$goal).keyboardType(.decimalPad).invalidInput(invalidGoal)
+                        .onChange(of: goal) { _, _ in invalidGoal = false }
                     Button("保存目标") {
-                        guard goal.isEmpty || (TrainingInput.value(goal).map { $0 > 0 && $0 < 1000 } ?? false) else { issue = "请输入有效目标体重。"; return }
+                        guard goal.isEmpty || (TrainingInput.value(goal).map { $0 > 0 && $0 < 1000 } ?? false) else { invalidGoal = true; issue = "请输入有效目标体重。"; return }
                         let unit = goalUnit
                         Task { if await store.savePersonalFields(original:goalOriginal,proposed:goal.isEmpty ? [:] : ["targetW":TrainingInput.value(goal)!],unit:unit) { goalOriginal = store.state.filter { $0.key == "targetW" } } else { issue = store.editError } }
                     }.disabled(store.syncing)
                 }
             } else { Section { NavigationLink("选择测量项目") { MeasurementFieldsView() } } }
-            if let issue { Text(issue).foregroundStyle(.orange) }
             Section("记录历史") {
                 if records.isEmpty { Text("暂无记录").foregroundStyle(.secondary) }
                 ForEach(Array(records.reversed().enumerated()),id:\.offset) { _,row in
@@ -60,7 +61,7 @@ struct BodyRecordsView: View {
                     }
                 }
             }
-        }.navigationTitle(measurements ? "身体围度" : "体重记录").navigationBarTitleDisplayMode(.inline)
+        }.operationAlert($issue).navigationTitle(measurements ? "身体围度" : "体重记录").navigationBarTitleDisplayMode(.inline)
             .onAppear { guard !goalLoaded else { return }; goalLoaded = true; goalUnit = store.unit; goalOriginal = store.state.filter{$0.key == "targetW"}; goal = store.state["targetW"].map { personalNumber(number($0)) } ?? "" }
             .sheet(item:$editor) { record in BodyRecordEditor(original:record.raw,measurements:measurements,fields:fields,unit:store.unit) }
             .confirmationDialog("删除这条记录？",isPresented:Binding(get:{deleting != nil},set:{if !$0 { deleting = nil }}),titleVisibility:.visible) {
@@ -96,7 +97,7 @@ struct TrendChart:View {
     let points:[TrendPoint]
     let unit:String
     var body:some View {
-        if points.isEmpty { ContentUnavailableView("暂无数据",systemImage:"chart.xyaxis.line",description:Text("记录完成后，趋势会显示在这里。")) }
+        if points.isEmpty { ContentUnavailableView("暂无数据",systemImage:"chart.xyaxis.line",description: nil) }
         else {
             Chart(points) { p in
                 LineMark(x:.value("日期",p.date),y:.value(unit,p.value)).foregroundStyle(by:.value("组",p.series))
@@ -129,6 +130,7 @@ struct BodyRecordEditor:View {
     @State private var date = Date()
     @State private var values:[String:String] = [:]
     @State private var issue:String?
+    @State private var invalidField: String?
     @State private var ready = false
     private var visible:[MeasureField] {
         guard measurements else { return [MeasureField(id:"w",name:"体重")] }
@@ -146,11 +148,11 @@ struct BodyRecordEditor:View {
                 DatePicker("日期",selection:$date,in:...Date(),displayedComponents:.date)
                 ForEach(visible) { f in HStack {
                     Text(f.name);Spacer()
-                    TextField("未填写",text:Binding(get:{values[f.id] ?? ""},set:{values[f.id] = $0})).keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width:110).accessibilityIdentifier("body-field-\(f.id)")
+                    TextField("未填写",text:Binding(get:{values[f.id] ?? ""},set:{values[f.id] = $0; if invalidField == f.id { invalidField = nil }}))
+                        .keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width:110).invalidInput(invalidField == f.id).accessibilityIdentifier("body-field-\(f.id)")
                     Text(f.id == "bodyFat" ? "%":measurements ? (unit == "lb" ? "in":"cm"):unit).font(.caption).foregroundStyle(.secondary)
                 } }
-                if let issue { Text(issue).foregroundStyle(.orange) }
-            }.navigationTitle(measurements ? "记录围度" : "记录体重").navigationBarTitleDisplayMode(.inline)
+            }.operationAlert($issue).navigationTitle(measurements ? "记录围度" : "记录体重").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement:.topBarLeading) { Button("取消") { dismiss() } };ToolbarItem(placement:.topBarTrailing) { Button("保存") { save() }.disabled(store.syncing).accessibilityIdentifier("save-body-record") } }
                 .onAppear { guard !ready else { return };ready = true;date = (original?["d"] as? String).flatMap(dateFromDay) ?? Date()
                     for f in visible { let v = measurements ? MeasureField.value(original ?? [:],f.id):number(original?["w"]);values[f.id] = v>0 ? personalNumber(v/(measurements && f.id != "bodyFat" && unit == "lb" ? 2.54:1)):"" }
@@ -158,6 +160,7 @@ struct BodyRecordEditor:View {
         }
     }
     private func save() {
+        invalidField = nil
         var row = original ?? [:], hasValue = false
         row["d"] = dayString(date);row["t"] = Date().timeIntervalSince1970*1000
         var others = row["other"] as? [[String:Any]] ?? []
@@ -165,7 +168,7 @@ struct BodyRecordEditor:View {
             let text = (values[f.id] ?? "").trimmingCharacters(in:.whitespacesAndNewlines)
             var value:Double?
             if !text.isEmpty {
-                guard let n = TrainingInput.value(text), n>0, n <= (f.id == "bodyFat" ? 100:2000) else { issue = "请检查\(f.name)的数值。";return }
+                guard let n = TrainingInput.value(text), n>0, n <= (f.id == "bodyFat" ? 100:2000) else { invalidField = f.id; issue = "请检查\(f.name)的数值。";return }
                 value = measurements && f.id != "bodyFat" && unit == "lb" ? (n*2.54*10).rounded()/10 : n;hasValue = true
             }
             if f.id.hasPrefix("other:") {
@@ -174,7 +177,7 @@ struct BodyRecordEditor:View {
                 if let i { others[i] = item } else { others.append(item) }
             } else { row[f.id] = value.map { $0 as Any } ?? NSNull() }
         }
-        guard hasValue else { issue = "请至少填写一项。";return }
+        guard hasValue else { invalidField = visible.first?.id; issue = "请至少填写一项。";return }
         if measurements { row["other"] = others } else { row.removeValue(forKey:"healthKit") }
         Task { if await store.savePersonalRecord(collection:measurements ? "measurements":"bodyweight",key:"d",original:original,proposed:row,unit:unit) { dismiss() } else { issue = store.editError } }
     }
@@ -196,8 +199,7 @@ struct MeasurementFieldsView:View {
                 TextField("项目名称",text:$name)
                 Button("添加项目") { let clean = name.trimmingCharacters(in:.whitespacesAndNewlines);guard !clean.isEmpty else{return};guard !custom.contains(where:{($0["name"] as? String ?? "").localizedCaseInsensitiveCompare(clean) == .orderedSame}) else {issue = "该项目已存在。";return};custom.append(["id":UUID().uuidString,"name":String(clean.prefix(60)),"enabled":true]);name = "" }
             }
-            if let issue { Text(issue).foregroundStyle(.orange) }
-        }.navigationTitle("选择测量项目").onAppear { guard !loaded else {return};loaded = true;original = store.state.filter {["measurementEnabled","customMeasurements"].contains($0.key)};enabled = Set(original["measurementEnabled"] as? [String] ?? MeasureField.builtin.map(\.id));custom = original["customMeasurements"] as? [[String:Any]] ?? [] }
+        }.operationAlert($issue).navigationTitle("选择测量项目").onAppear { guard !loaded else {return};loaded = true;original = store.state.filter {["measurementEnabled","customMeasurements"].contains($0.key)};enabled = Set(original["measurementEnabled"] as? [String] ?? MeasureField.builtin.map(\.id));custom = original["customMeasurements"] as? [[String:Any]] ?? [] }
             .toolbar { ToolbarItem(placement:.topBarTrailing) { Button("保存") { Task { if await store.savePersonalFields(original:original,proposed:["measurementEnabled":enabled.sorted(),"customMeasurements":custom]) { dismiss() } else { issue = store.editError } } }.disabled(store.syncing) } }
     }
 }

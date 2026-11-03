@@ -23,7 +23,7 @@ struct CoachIntakeView: View {
             ScrollView {
                 VStack(alignment:.leading,spacing:22) {
                     Text("\(step+1) / 7").font(.caption).foregroundStyle(.secondary)
-                    Text(titles[step]).font(.largeTitle.bold())
+                    HStack { Text(titles[step]).font(.largeTitle.bold()); if step == 4 { ExplanationButton(title: "器械范围", message: "不选时使用全部动作；可选择多种器械。") } }
                     Group {
                         switch step {
                         case 0: choices(goals,key:"goal")
@@ -36,23 +36,18 @@ struct CoachIntakeView: View {
                                 Toggle(CoachCadenceView.days[day],isOn:Binding(get:{ (value["preferredDays"] as? [Int] ?? []).contains(day) },set:{ on in var days = value["preferredDays"] as? [Int] ?? [];days.removeAll{$0==day};if on {days.append(day)};value["preferredDays"] = days.sorted() }))
                             }
                         case 3:
-                            Text("包括组间休息，选择你实际能坚持的时间。").foregroundStyle(.secondary)
-                            Stepper("每次 \(Int(number(value["sessionMin"]))) 分钟",value:integer("sessionMin"),in:10...235,step:5)
+                            Stepper("每次 \(Int(number(value["sessionMin"]))) 分钟（含休息）",value:integer("sessionMin"),in:10...235,step:5)
                             LazyVGrid(columns:[GridItem(.adaptive(minimum:110))],spacing:10) { ForEach([30,45,60,90],id:\.self) { min in Pill(title:"\(min) 分钟",selected:Int(number(value["sessionMin"])) == min) { value["sessionMin"] = min } } }
                         case 4:
-                            Text("不选表示使用整个动作库。可以选择多种器械。").foregroundStyle(.secondary)
                             ForEach(equipment,id:\.0) { item in Toggle(item.1,isOn:Binding(get:{ (value["equipment"] as? [String] ?? []).contains(item.0) },set:{ on in var items = value["equipment"] as? [String] ?? [];items.removeAll{$0==item.0};if on {items.append(item.0)};value["equipment"] = items })) }
                         case 5:
                             field("伤病、关节不适、不能做的动作或场地限制",key:"limitations",limit:600)
-                            Text("若确实存在疼痛，请咨询专业人士。教练可以保守安排训练，但不能诊断。").font(.footnote).foregroundStyle(.orange)
                         default:
-                            Text("以下都可以留空。").foregroundStyle(.secondary)
                             field("喜欢的动作",key:"likes",limit:300)
                             field("不喜欢的动作",key:"dislikes",limit:300)
                             field("其他目标或偏好",key:"notes",limit:600)
                         }
                     }
-                    if let error = session.error { Text(error).foregroundStyle(.orange).font(.subheadline) }
                 }.padding(24)
             }
             HStack(spacing:14) {
@@ -62,7 +57,7 @@ struct CoachIntakeView: View {
                     else { Task { if await session.saveProfile(value,original:original,create:!editing), editing { dismiss() } } }
                 }.disabled(!canContinue || session.locked).accessibilityIdentifier("coach-intake-next")
             }.padding()
-        }.navigationTitle(editing ? "训练问答" : "认识你").tint(GymTheme.green)
+        }.operationAlert(Binding(get: { session.error }, set: { session.error = $0 })).navigationTitle(editing ? "训练问答" : "认识你").tint(GymTheme.green)
     }
     private func integer(_ key: String) -> Binding<Int> { Binding(get:{Int(number(value[key]))},set:{value[key] = $0}) }
     private func choices(_ items: [(String,String,String)], key: String) -> some View {

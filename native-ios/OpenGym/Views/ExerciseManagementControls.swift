@@ -121,13 +121,12 @@ struct ExerciseOrderSheet: View {
                             }
                         }.accessibilityIdentifier("exercise-order-row-\(index)")
                     }.onMove { order.move(fromOffsets: $0, toOffset: $1) }
-                } footer: {
-                    Text("拖动右侧手柄调整顺序，点击保存后生效。拆开的超级组会解除组合。")
                 }
             }.environment(\.editMode, .constant(.active))
                 .navigationTitle("顺序调整").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() } }
+                    ToolbarItem(placement: .topBarTrailing) { ExplanationButton(title: "超级组", message: "调整顺序时，拆开的超级组会解除组合。") }
                     ToolbarItem(placement: .confirmationAction) {
                         Button("保存") {
                             do { try save(order, entries); dismiss() }

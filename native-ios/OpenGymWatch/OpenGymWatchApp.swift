@@ -34,6 +34,7 @@ struct WatchRemoteView: View {
     let store: WatchRemoteStore
     @State private var showDetails = false
     @State private var confirmHealthEnd = false
+    @State private var showEnergyInfo = false
     private let green = Color(red: 0.38, green: 0.86, blue: 0.34)
 
     var body: some View {
@@ -152,11 +153,11 @@ struct WatchRemoteView: View {
                 if let reason = store.snapshot.nextSet?.blockedReason { Text(reason).foregroundStyle(.orange) }
                 if let error = store.error { Text(error).foregroundStyle(.orange) }
                 if !store.reachable {
-                    Text("当前为上次同步的数据，请靠近 iPhone 并打开 openGym。")
+                    Text("未连接，显示上次同步数据")
                 }
-                Text(store.healthStatus.isEmpty ? "开启 iPhone 的 Apple 健身训练同步并授权，即可显示心率和热量。" : store.healthStatus)
-                Text("总热量包含活动与静息消耗；无可用数据时显示 —。")
-                Button("授权并刷新健康数据") { store.authorizeWorkout() }.disabled(store.authorizingHealth)
+                Text(store.healthStatus.isEmpty ? "未连接健康数据" : store.healthStatus)
+                Button("热量说明", systemImage: "info.circle") { showEnergyInfo = true }
+                Button("授权健康数据") { store.authorizeWorkout() }.disabled(store.authorizingHealth)
                 if store.currentHealthReport?.state == .running {
                     Button("结束运动记录", role: .destructive) { confirmHealthEnd = true }
                 }
@@ -164,6 +165,7 @@ struct WatchRemoteView: View {
                 Button("返回训练") { showDetails = false }
             }.font(.caption2).multilineTextAlignment(.center).padding(.horizontal, 4)
         }
+        .alert("热量", isPresented: $showEnergyInfo) { Button("好", role: .cancel) {} } message: { Text("总热量 = 活动热量 + 静息消耗。") }
         .confirmationDialog("结束运动记录？", isPresented: $confirmHealthEnd, titleVisibility: .visible) {
             Button("结束并保存运动") { store.stopHealthWorkout() }
         } message: { Text("停止心率与卡路里采集并保存到健康。训练组仍保留在手机，请在手机提交。") }

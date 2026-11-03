@@ -10,6 +10,7 @@ struct HistoryEditor: View {
     @State private var detail: Exercise?
     @State private var error: String?
     @State private var deleting = false
+    @State private var submitting = false
     @State private var showExerciseNote = false
     @State private var undoEntries: [HistoryEntryDraft]?
     @State private var undoExpected: [[String: Any]]?
@@ -46,21 +47,22 @@ struct HistoryEditor: View {
                         catch { self.error = error.localizedDescription }
                     }
                     if !form.entries.isEmpty { entryCard(form.selected) }
-                    VStack(alignment: .leading, spacing: 8) {
-                        if let issue = store.localSaveError { Text(issue).foregroundStyle(.orange); Button("重试本机保存") { persist() } }
-                        else { Text(store.historyEdits[record.id] == nil ? "编辑后会自动保存到本机。" : "已保存到本机，右上角菜单可提交。离线或提交失败后可以再次提交。") }
-                    }.font(.caption)
                 }.padding(20)
-            }.scrollDismissesKeyboard(.interactively).background(GymTheme.background).disabled(store.syncing)
+            }.scrollDismissesKeyboard(.interactively).background(GymTheme.background)
                 .navigationTitle("编辑训练记录").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) { Button("关闭") { persist(); if store.localSaveError == nil { dismiss() } else { error = store.localSaveError } }.disabled(store.syncing) }
+                    ToolbarItem(placement: .topBarLeading) { Button("关闭") { persist(); if store.localSaveError == nil { dismiss() } else { error = store.localSaveError } } }
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
-                            Button("保存并提交") { Task { await submit() } }.accessibilityIdentifier("save-history")
+                            if let issue = store.localSaveError {
+                                Button("保存失败详情", systemImage: "exclamationmark.circle") { error = issue }
+                                Button("重试本机保存") { persist() }
+                            }
+                            Button(submitting ? "提交中" : "保存并提交") { Task { await submit() } }.accessibilityIdentifier("save-history")
                             Divider()
                             WorkoutPersonalActions(record:WorkoutRecord(raw:form.proposed)) { deleting = true }
-                        } label: { Image(systemName: "ellipsis.circle").frame(width: 44, height: 44) }.disabled(store.syncing).accessibilityLabel("记录菜单")
+                        } label: { Image(systemName: store.localSaveError == nil ? "ellipsis.circle" : "exclamationmark.circle")
+                            .foregroundStyle(store.localSaveError == nil ? GymTheme.green : .orange).frame(width: 44, height: 44) }.accessibilityLabel("记录菜单")
                     }
                 }
                 .onAppear {
@@ -79,7 +81,7 @@ struct HistoryEditor: View {
                     Text("删除后无法撤销；其他训练保留，并重新核对相关个人纪录。有本机编辑草稿时，请先保存并提交后再删除。")
                 }
                 .alert("内容已保留", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) { Button("知道了", role: .cancel) {} } message: { Text(error ?? "") }
-                .interactiveDismissDisabled(store.syncing || store.localSaveError != nil)
+                .interactiveDismissDisabled(submitting || store.localSaveError != nil)
         }.tint(GymTheme.green)
     }
     private func entryName(_ i: Int) -> String { store.exercise(form.entries[i].raw["id"] as? String ?? "")?.recordName ?? "动作" }
@@ -128,6 +130,8 @@ struct HistoryEditor: View {
         catch { self.error = error.localizedDescription }
     }
     private func submit() async {
+        guard !submitting, !store.syncing else { return }
+        submitting = true; defer { submitting = false }
         persist()
         guard TrainingInput.value(form.minutes) != nil else { error = "请填写有效的时长，输入内容已保留。"; return }
         if await store.saveWorkout(original: form.original, proposed: form.proposed, expectedUnit: form.unit) { dismiss() }

@@ -26,6 +26,7 @@ struct AdvancedSetEditor:View {
         VStack(alignment:.leading,spacing:10) {
             if !compact { HStack(spacing:8) {
                 Text(setLabel).font(.caption).foregroundStyle(GymTheme.muted)
+                if row["failure"] as? Bool == true { Image(systemName: "bolt.fill").foregroundStyle(.orange).accessibilityLabel("力竭") }
                 if warmup { Text("热身").font(.caption).foregroundStyle(.orange) }
                 if row["max"] as? Bool == true { Text("MAX").font(.caption).foregroundStyle(GymTheme.green) }
                 if let side = row["side"] as? String { Text(side == "L" ? "左侧" : "右侧").font(.caption).foregroundStyle(GymTheme.green) }
@@ -35,7 +36,6 @@ struct AdvancedSetEditor:View {
                 if !readOnly { setMenu }
             } }
             if sides != nil { pane("L");Divider();pane("R") } else { pane(nil) }
-            if row["failure"] as? Bool == true { Label("力竭",systemImage:"bolt.fill").font(.caption).foregroundStyle(.orange) }
             if !readOnly, mode == "time",let startTimer { Button {focusedField = nil;startTimer()} label:{ Label(timerRunning ? "计时中" : "开始计时",systemImage:"timer").font(.subheadline).frame(maxWidth:.infinity).padding(9).background(GymTheme.green.opacity(0.12),in:RoundedRectangle(cornerRadius:10)) }.disabled(timerRunning || row["done"] as? Bool == true).accessibilityIdentifier("timer-\(identifier)") }
         }.disabled(readOnly)
     }
@@ -61,13 +61,18 @@ Menu {
                 if compact {
                     Text(warmup ? "热" : row["max"] as? Bool == true ? "MAX" : setLabel.replacingOccurrences(of: "第 ", with: "").replacingOccurrences(of: " 组", with: ""))
                         .font(.caption.monospacedDigit()).foregroundStyle(warmup ? .orange : GymTheme.muted).frame(width: 24, height: inputHeight).accessibilityLabel("\(setLabel)\(warmup ? "热身" : "")")
+                        .overlay(alignment: .bottom) {
+                            if row["failure"] as? Bool == true { Image(systemName: "bolt.fill").font(.system(size: 9)).foregroundStyle(.orange).accessibilityHidden(true) }
+                        }.accessibilityValue(row["failure"] as? Bool == true ? "力竭" : "")
                 }
                 if mode == "cardio" { field("分钟","min",data,side);field(TrainingInput.speedUnit(inputState) == "mph" ? "mph" : "km/h","speed",data,side) }
                 else { field(weightUnit,"w",data,side);field(mode == "time" ? "秒" : "次数",mode == "time" ? "sec" : "r",data,side) }
                 Button { focusedField = nil;var p:[String:Any] = ["action":"toggle"];p["side"] = side;action(p) } label:{Image(systemName:"checkmark").font(.system(size:15,weight:.bold)).frame(width:44,height:inputHeight).foregroundStyle(data["done"] as? Bool == true ? .black : .gray).background(data["done"] as? Bool == true ? GymTheme.green : Color.white.opacity(0.07),in:RoundedRectangle(cornerRadius:10))}.buttonStyle(.borderless).accessibilityLabel("\(side == "L" ? "左侧" : side == "R" ? "右侧" : "本组")完成").accessibilityIdentifier("complete-\(identifier)-\(side ?? "both")").accessibilityValue(data["done"] as? Bool == true ? "已完成":"未完成").disabled(timerRunning)
                 if compact && !readOnly { setMenu }
             }
-            if mode == "reps", let plates = plateText(data) { Text(plates).font(.caption2).foregroundStyle(GymTheme.muted) }
+            if mode == "reps", let plates = plateText(data) {
+                ScrollView(.horizontal, showsIndicators: false) { Text(plates).font(.caption2).foregroundStyle(GymTheme.muted).lineLimit(1).fixedSize(horizontal: true, vertical: false) }
+            }
             if mode == "cardio", ((try? WebRules.shared.call("rowInfo", payload: ["row": row, "target": target])) as? [String: Any])?["incline"] as? Bool == true {
                 field("坡度 %（可选）", "incline", data, side)
             }

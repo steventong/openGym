@@ -3,7 +3,7 @@ struct StatsView: View {
     @Environment(GymStore.self) private var store
     var body: some View {
         // Server revision, health samples and unrelated plan updates do not rebuild history.
-        StatsContent(workouts: store.workouts, unsyncedIDs: Set(store.historyEdits.keys), busy: store.syncing)
+        StatsContent(workouts: store.workouts, unsyncedIDs: Set(store.historyEdits.keys))
             .equatable()
     }
 }
@@ -12,10 +12,9 @@ struct StatsContent: View, Equatable {
     @Environment(GymStore.self) private var store
     let workouts: [[String: Any]]
     let unsyncedIDs: Set<String>
-    let busy: Bool
 
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.unsyncedIDs == rhs.unsyncedIDs && lhs.busy == rhs.busy && RecordPatch.equal(lhs.workouts, rhs.workouts)
+        lhs.unsyncedIDs == rhs.unsyncedIDs && RecordPatch.equal(lhs.workouts, rhs.workouts)
     }
     @State private var previewing: WorkoutRecord?
     @State private var syncingRecordID: String?
@@ -30,7 +29,7 @@ struct StatsContent: View, Equatable {
     var body: some View {
         ScrollView {
             VStack(alignment:.leading,spacing:24) {
-                VStack(alignment:.leading,spacing:7) { Text("训练统计").font(.system(size:34,weight:.bold)); Text("每一次训练，都在积累").font(.subheadline).foregroundStyle(GymTheme.muted) }
+                VStack(alignment:.leading,spacing:7) { Text("训练统计").font(.system(size:34,weight:.bold)) }
                 HStack(spacing:12) {
                     metric("\(workouts.count)","累计训练","figure.strengthtraining.traditional")
                     metric("\(completedSets.count)","完成组数","checkmark.circle")
@@ -50,11 +49,11 @@ struct StatsContent: View, Equatable {
                 SectionTitle(text:"训练记录")
                 TextField("搜索训练名称、日期、动作",text:$search).textFieldStyle(.roundedBorder)
 
-                if workouts.isEmpty { EmptyCard(icon:"chart.line.uptrend.xyaxis",title:"进步，从第一组开始",detail:"完成一场训练后，这里会展示你的真实记录。") }
+                if workouts.isEmpty { EmptyCard(icon:"chart.line.uptrend.xyaxis",title:"暂无训练记录") }
                 LazyVStack(spacing:10) {
                     ForEach(workouts.filter { search.isEmpty || historyMatches($0) }.prefix(historyLimit).map(WorkoutRecord.init),id:\.id) { record in
                         WorkoutHistoryRow(record: record, unsynced: unsyncedIDs.contains(record.id),
-                                          syncing: syncingRecordID == record.id, busy: busy || syncingRecordID != nil,
+                                          syncing: syncingRecordID == record.id,
                                           preview: { previewing = record }, sync: { sync(record.id) }).equatable()
                     }
                 }
@@ -118,11 +117,10 @@ private struct WorkoutHistoryRow: View, Equatable {
     let record: WorkoutRecord
     let unsynced: Bool
     let syncing: Bool
-    let busy: Bool
     let preview: () -> Void
     let sync: () -> Void
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.unsynced == rhs.unsynced && lhs.syncing == rhs.syncing && lhs.busy == rhs.busy &&
+        lhs.unsynced == rhs.unsynced && lhs.syncing == rhs.syncing &&
             lhs.record.id == rhs.record.id && RecordPatch.equal(lhs.record.raw, rhs.record.raw)
     }
     private var subtitle: String {
@@ -163,12 +161,12 @@ private struct WorkoutHistoryRow: View, Equatable {
                             .foregroundStyle(GymTheme.muted).accessibilityHidden(true)
                     }
                 }.contentShape(Rectangle())
-            }.buttonStyle(.plain).disabled(busy).accessibilityIdentifier("preview-history-\(record.id)")
+            }.buttonStyle(.plain).accessibilityIdentifier("preview-history-\(record.id)")
             if unsynced {
-                Button(syncing ? "同步中…" : "同步", action: sync)
+                Button(syncing ? "同步中" : "同步", action: sync)
                     .font(.subheadline).foregroundStyle(GymTheme.green)
                     .frame(minWidth: 44, minHeight: 44).fixedSize()
-                    .buttonStyle(.plain).disabled(busy)
+                    .buttonStyle(.plain)
                     .accessibilityIdentifier("sync-history-\(record.id)")
             }
         }.padding(14).background(GymTheme.card, in: RoundedRectangle(cornerRadius: 16))
@@ -207,7 +205,7 @@ private struct WorkoutHistoryPreview: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) { Button("关闭") { dismiss() } }
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("编辑记录") { editing = current }.disabled(store.syncing)
+                        Button("编辑记录") { editing = current }
                             .accessibilityIdentifier("edit-history-\(record.id)")
                     }
                 }
