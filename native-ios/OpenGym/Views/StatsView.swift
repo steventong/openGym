@@ -217,18 +217,9 @@ private struct WorkoutHistoryPreview: View {
             HStack(spacing: 10) {
                 ExerciseThumbnail(id: entry["id"] as? String ?? "", size: 40)
                 let parts = store.exercise(entry["id"] as? String ?? "")?.titleParts
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(parts?.primary ?? entry["n"] as? String ?? "动作").font(.headline)
-                    if let secondary = parts?.secondary, !secondary.isEmpty {
-                        Text(secondary).font(.caption).foregroundStyle(GymTheme.muted)
-                    }
-                }
+                Text(parts?.primary ?? entry["n"] as? String ?? "动作").font(.headline)
             }
             if entry["sg"] != nil { Label("超级组", systemImage: "link").font(.caption).foregroundStyle(GymTheme.green) }
-            if let note = (entry["target"] as? [String: Any])?["note"] as? String, !note.isEmpty {
-                Text(note).font(.caption).foregroundStyle(GymTheme.muted)
-            }
-            if let note = entry["note"] as? String, !note.isEmpty { Text(note).font(.subheadline) }
             let rows = entry["sets"] as? [[String: Any]] ?? []
             ForEach(rows.indices, id: \.self) { i in
                 let setNumber = (0...i).filter { !(rows[$0]["side"] as? String == "R" && $0 > 0 && rows[$0 - 1]["side"] as? String == "L") }.count
