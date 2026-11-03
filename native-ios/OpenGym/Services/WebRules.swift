@@ -7,7 +7,7 @@ import JavaScriptCore
     private var context: JSContext?
     private var failure: String?
     private init() {
-        guard let context = JSContext(), let url = Bundle.main.url(forResource:"web-rules",withExtension:"js"), let source = try? String(contentsOf:url) else { failure = "无法加载训练规则。"; return }
+        guard let context = JSContext(), let url = Bundle.main.url(forResource:"web-rules",withExtension:"js"), let source = try? String(contentsOf:url,encoding:.utf8) else { failure = "无法加载训练规则。"; return }
         self.context = context
         context.exceptionHandler = { [weak self] _, exception in self?.failure = exception?.toString() ?? "训练规则计算失败。" }
         context.evaluateScript("if(typeof structuredClone==='undefined')globalThis.structuredClone=x=>JSON.parse(JSON.stringify(x));")

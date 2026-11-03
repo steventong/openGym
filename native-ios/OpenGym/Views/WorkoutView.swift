@@ -22,8 +22,14 @@ struct WorkoutView: View {
                             Spacer(minLength: 0)
                         }
                     } else {
-                        Text("选择训练计划").font(.system(size: 34, weight: .bold))
+                        HStack {
+                            Text("选择训练计划").font(.system(size: 34, weight: .bold))
+                            Spacer()
+                            LocalSaveIssueIndicator()
+                        }
                         EmptyCard(icon: "figure.strengthtraining.traditional", title: "开始训练")
+                        GreenButton(title: "自由训练", icon: "figure.strengthtraining.traditional") { store.startFreestyle() }
+                            .accessibilityIdentifier("start-freestyle-workout")
                         let scheduled = store.scheduledRoutines(on: Date())
                         if !scheduled.isEmpty { GreenButton(title: "开始今日安排", icon: "play.fill") { store.start(scheduled) } }
                         ForEach(store.routines) { r in GreenButton(title: r.name, icon: "play.fill") { store.start(r) } }
@@ -82,6 +88,7 @@ struct WorkoutView: View {
                 Text(d.name)
                     .font(.headline).accessibilityIdentifier("live-workout-name-display")
                 Spacer(minLength: 8)
+                LocalSaveIssueIndicator()
                 WorkoutDurationLabel(start: d.start)
                 LiveExerciseManagement(showExerciseNote: { showExerciseNote = true }) {
                     Section("训练") {

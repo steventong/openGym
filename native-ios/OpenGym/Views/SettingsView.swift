@@ -102,7 +102,7 @@ struct SettingsView: View {
                     Button("取消", role: .cancel) {}
                 }
                 .sheet(isPresented:$notice) {
-                    ScrollView { Text((try? String(contentsOf:Bundle.main.url(forResource:"NOTICE",withExtension:"txt")!)) ?? "openGym · GNU AGPL v3.0").font(.system(size:12)).padding() }
+                    ScrollView { Text((try? String(contentsOf:Bundle.main.url(forResource:"NOTICE",withExtension:"txt")!,encoding:.utf8)) ?? "openGym · GNU AGPL v3.0").font(.system(size:12)).padding() }
                 }
         }.tint(GymTheme.green)
     }

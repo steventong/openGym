@@ -3,6 +3,51 @@ import AVFoundation
 import Observation
 import OSLog
 
+// Session calls can block on the audio service. Keep configuration and release
+// ordered on one worker queue, including when views are rapidly opened/closed.
+final class ExerciseAudioSession: Sendable {
+    static let shared = ExerciseAudioSession()
+    private let queue = DispatchQueue(label: "me.itwl.opengym.exercise-audio", qos: .userInitiated)
+    private let configure: @Sendable () throws -> Void
+    private let release: @Sendable () throws -> Void
+    private static let logger = Logger(subsystem: "me.itwl.opengym", category: "ExercisePlayback")
+
+    init(
+        configure: @escaping @Sendable () throws -> Void = {
+            try AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default)
+        },
+        release: @escaping @Sendable () throws -> Void = {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
+    ) {
+        self.configure = configure
+        self.release = release
+    }
+
+    func configureForPlayback() async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            queue.async {
+                do {
+                    try self.configure()
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func deactivate() {
+        queue.async {
+            do {
+                try self.release()
+            } catch {
+                Self.logger.error("Cannot release exercise audio session: \(error.localizedDescription)")
+            }
+        }
+    }
+}
+
 @MainActor @Observable final class LoopPlayback {
     var ready = false
     var failed = false
@@ -59,8 +104,9 @@ import OSLog
                 do {
                     // Older systems cannot disconnect AVPlayer from system audio.
                     // Ambient mixes with music without interrupting or ducking it.
-                    try AVAudioSession.sharedInstance().setCategory(.ambient,mode:.default)
+                    try await ExerciseAudioSession.shared.configureForPlayback()
                 } catch {
+                    guard !Task.isCancelled else { return }
                     Self.logger.error("Cannot configure silent video playback: \(error.localizedDescription)")
                     failed = true
                     return
@@ -75,11 +121,7 @@ import OSLog
     func stop() {
         startTask?.cancel(); startTask = nil
         player.pause()
-        do {
-            try AVAudioSession.sharedInstance().setActive(false,options:.notifyOthersOnDeactivation)
-        } catch {
-            Self.logger.error("Cannot release exercise audio session: \(error.localizedDescription)")
-        }
+        ExerciseAudioSession.shared.deactivate()
     }
 }
 final class PlayerLayerView: UIView {

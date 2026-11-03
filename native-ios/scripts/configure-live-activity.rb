@@ -2,10 +2,11 @@ require 'xcodeproj'
 root = File.expand_path('..', __dir__)
 project = Xcodeproj::Project.open(File.join(root, 'OpenGym.xcodeproj'))
 app = project.targets.find { |t| t.name == 'OpenGym' }
-widget = project.targets.find { |t| t.name == 'OpenGymWidgets' } || project.new_target(:app_extension, 'OpenGymWidgets', :ios, '17.0')
+widget = project.targets.find { |t| t.name == 'OpenGymWidgets' } || project.new_target(:app_extension, 'OpenGymWidgets', :ios, '26.0')
 widget.build_configurations.each do |config|
   config.build_settings.merge!({
     'PRODUCT_BUNDLE_IDENTIFIER' => 'me.itwl.opengym.widgets',
+    'IPHONEOS_DEPLOYMENT_TARGET' => '26.0',
     'SWIFT_VERSION' => '5.0', 'GENERATE_INFOPLIST_FILE' => 'YES',
     'INFOPLIST_FILE' => 'OpenGymWidgets/Info.plist', 'INFOPLIST_KEY_CFBundleDisplayName' => 'openGym 训练',
     'TARGETED_DEVICE_FAMILY' => '1,2', 'SKIP_INSTALL' => 'YES',

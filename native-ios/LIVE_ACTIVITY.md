@@ -15,7 +15,7 @@
 
 完成/下一动作命令的版本校验排除 `nativeRest`，避免调整或结束休息后、系统尚未重绘时误拒绝未变更的目标组；结束休息仍严格校验完整草稿版本，避免取消新计时。旧版实时活动载荷和手表命令保持原有校验。`LiveActivity` 日志记录 Intent 接收、命令接受结果及刷新耗时，不记录账号、训练内容或命令载荷。
 
-工程最低版本仍为 iOS 17。新增 `OpenGymWidgets` 扩展（`me.itwl.opengym.widgets`），共享定义在 `Shared/LiveActivity/`；重建工程运行 `scripts/generate-project.rb`，现有工程可运行 `scripts/configure-live-activity.rb`。扩展无需共享账号凭据或额外 App Group。
+工程最低版本为 iOS 26（App 与 Widget 扩展一致）。新增 `OpenGymWidgets` 扩展（`me.itwl.opengym.widgets`），共享定义在 `Shared/LiveActivity/`；重建工程运行 `scripts/generate-project.rb`，现有工程可运行 `scripts/configure-live-activity.rb`。扩展无需共享账号凭据或额外 App Group。
 
 实现参考：[Apple Live Activities](https://developer.apple.com/documentation/activitykit/displaying-live-data-with-live-activities)、[Apple 交互式实时活动](https://developer.apple.com/documentation/widgetkit/adding-interactivity-to-widgets-and-live-activities)。按钮交互由系统按锁屏认证状态处理；专注模式、静音与通知设置可能影响声音和横幅。
 

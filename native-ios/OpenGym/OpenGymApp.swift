@@ -52,19 +52,28 @@ struct RootView: View {
     @Environment(GymStore.self) private var store
     var body: some View {
         @Bindable var store = store
-        VStack(spacing:0) {
-            // Stable tab identities keep scroll positions and editor state when switching pages.
-            TabView(selection:$store.selectedTab) {
-                HomeView().tag(0).toolbar(.hidden,for:.tabBar)
-                PlanView().tag(1).toolbar(.hidden,for:.tabBar)
-                WorkoutView().tag(2).toolbar(.hidden,for:.tabBar)
-                StatsView().tag(3).toolbar(.hidden,for:.tabBar)
-                LibraryView().tag(4).toolbar(.hidden,for:.tabBar)
-            }.id(store.coachIdentity)
-                .frame(maxWidth:.infinity,maxHeight:.infinity)
-            LocalSaveStatus()
-            GymTabBar()
-        }.background(GymTheme.background).foregroundStyle(.white)
+        // Stable selection values also serve notifications, Live Activities and workout actions.
+        TabView(selection: $store.selectedTab) {
+            Tab(value: 0) { HomeView() } label: {
+                Label("首页", systemImage: "house").accessibilityIdentifier("tab-0")
+            }
+            Tab(value: 1) { PlanView() } label: {
+                Label("计划", systemImage: "calendar").accessibilityIdentifier("tab-1")
+            }
+            Tab(value: 2) { WorkoutView() } label: {
+                Label(store.draft == nil ? "开始" : "训练中",
+                      systemImage: store.draft == nil ? "play.fill" : "figure.strengthtraining.traditional")
+                    .accessibilityIdentifier("tab-workout")
+            }.badge(store.localSaveError == nil ? nil : Text("!"))
+            Tab(value: 3) { StatsView() } label: {
+                Label("统计", systemImage: "chart.bar.xaxis").accessibilityIdentifier("tab-3")
+            }
+            Tab(value: 4) { LibraryView() } label: {
+                Label("动作库", systemImage: "dumbbell").accessibilityIdentifier("tab-4")
+            }
+        }.id(store.coachIdentity)
+            .background(GymTheme.background).foregroundStyle(.white)
+            .background { LocalSaveStatus() }
             .sheet(isPresented:$store.showSettings) { SettingsView() }
             .sheet(item:$store.selectedExercise) { ExerciseDetail(exercise:$0) }
             .alert("openGym",isPresented:Binding(get:{store.error != nil},set:{if !$0 { store.error = nil }})) {
@@ -110,33 +119,7 @@ private struct AppLifecycleObserver: View {
     private func updateWake() { UIApplication.shared.isIdleTimerDisabled = scenePhase == .active && store.draft != nil && store.state["keepAwake"] as? Bool != false }
 }
 
-private struct GymTabBar: View {
-    @Environment(GymStore.self) private var store
-    var body: some View {
-        HStack(alignment:.bottom,spacing:0) {
-            tab(0,"首页","house")
-            tab(1,"计划","calendar")
-            Button { store.selectedTab = 2 } label: {
-                VStack(spacing:5) {
-                    Image(systemName:store.draft == nil ? "play.fill" : "figure.strengthtraining.traditional").font(.system(size:19)).foregroundStyle(.black)
-                        .frame(width:54,height:54).background(GymTheme.green,in:Circle()).shadow(color:GymTheme.green.opacity(0.17),radius:14)
-                    Text(store.draft == nil ? "开始" : "训练中").font(.system(size:10,weight:.medium)).foregroundStyle(GymTheme.green)
-                }.frame(maxWidth:.infinity)
-            }.accessibilityIdentifier("tab-workout")
-                .overlay(alignment: .topTrailing) { LocalSaveIssueIndicator() }
-            tab(3,"统计","chart.bar.xaxis")
-            tab(4,"动作库","dumbbell")
-        }.padding(.horizontal,8).padding(.top,10).padding(.bottom,5).background(Color(white:0.06))
-    }
-    private func tab(_ id: Int, _ name: String, _ icon: String) -> some View {
-        Button { store.selectedTab = id } label: {
-            VStack(spacing:7) { Image(systemName:icon).font(.system(size:20)); Text(name).font(.system(size:10,weight:.medium)) }
-                .foregroundStyle(store.selectedTab == id ? GymTheme.green : GymTheme.muted).frame(maxWidth:.infinity).frame(height:53)
-        }.accessibilityIdentifier("tab-\(id)")
-    }
-}
-
-private struct LocalSaveIssueIndicator: View {
+struct LocalSaveIssueIndicator: View {
     @Environment(GymStore.self) private var store
     var body: some View {
         if let issue = store.localSaveError {

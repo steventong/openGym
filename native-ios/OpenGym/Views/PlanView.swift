@@ -35,7 +35,6 @@ struct PlanView: View {
                     Button {rotation = true} label:{HStack {Label("循环排期",systemImage:"repeat");Spacer();Text("顺序 / 进度").font(.caption);Image(systemName:"chevron.right")}.foregroundStyle(GymTheme.green).gymCard()}.accessibilityIdentifier("open-rotation")
                     if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
                 }
-                Button { tools = true } label: { Label("模板与计划导入 / 导出",systemImage:"square.and.arrow.up").frame(maxWidth:.infinity,minHeight:44) }.accessibilityIdentifier("open-plan-tools")
                 ForEach(store.routines) { routine in
                     VStack(alignment:.leading,spacing:16) {
                         Button { selected = routine } label: {
@@ -53,6 +52,7 @@ struct PlanView: View {
                         GreenButton(title:"开始训练",icon:"play.fill") { store.start(routine) }
                     }.gymCard()
                 }
+                Button { tools = true } label: { Label("模板与计划导入 / 导出",systemImage:"square.and.arrow.up").frame(maxWidth:.infinity,minHeight:44) }.accessibilityIdentifier("open-plan-tools")
             }.padding(22)
         }.refreshable { await store.refresh() }.sheet(isPresented:$create) { RoutineComposer() }
             .sheet(isPresented:$tools) { PlanToolsView() }
