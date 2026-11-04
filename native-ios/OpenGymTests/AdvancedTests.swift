@@ -4,6 +4,49 @@ import UIKit
 import AVFoundation
 @testable import OpenGym
 @MainActor final class AdvancedTests:XCTestCase {
+    func testVerticalPagingOnShortCardsAndListBoundaries() {
+        func destination(_ y: CGFloat, selected: Int = 1, count: Int = 3) -> Int? {
+            TrainingVerticalPaging.destination(geometry: pagingGeometry(y: y, height: 400),
+                from: .interacting, to: .decelerating, selected: selected, count: count)
+        }
+        XCTAssertEqual(destination(-60), 0, "Pull down goes to the previous card")
+        XCTAssertEqual(destination(60), 2, "Pull up goes to the next card even when content fits")
+        XCTAssertNil(destination(-40), "A small bounce must not change cards")
+        XCTAssertNil(destination(40))
+        XCTAssertNil(destination(-80, selected: 0))
+        XCTAssertNil(destination(80, selected: 2))
+        XCTAssertNil(destination(80, selected: 0, count: 1))
+        XCTAssertNil(destination(80, selected: 0, count: 0))
+    }
+
+    func testVerticalPagingKeepsLongCardsScrollableAndAccountsForInsets() {
+        func destination(_ y: CGFloat) -> Int? {
+            TrainingVerticalPaging.destination(geometry: pagingGeometry(y: y, height: 1200, top: 20, bottom: 30),
+                from: .interacting, to: .idle, selected: 1, count: 3)
+        }
+        XCTAssertNil(destination(250), "Scrolling through training rows must not change cards")
+        XCTAssertNil(destination(650), "A small bounce beyond the bottom is still scrolling")
+        XCTAssertEqual(destination(690), 2)
+        XCTAssertNil(destination(-60))
+        XCTAssertEqual(destination(-80), 0)
+    }
+
+    func testVerticalPagingIgnoresMomentumSpringBackAndProgrammaticScrolls() {
+        for phases: (ScrollPhase, ScrollPhase) in [(.decelerating, .idle), (.animating, .idle),
+                                                   (.tracking, .interacting), (.idle, .tracking)] {
+            for y: CGFloat in [-100, 100] {
+                XCTAssertNil(TrainingVerticalPaging.destination(geometry: pagingGeometry(y: y, height: 400),
+                    from: phases.0, to: phases.1, selected: 1, count: 3))
+            }
+        }
+    }
+
+    private func pagingGeometry(y: CGFloat, height: CGFloat, top: CGFloat = 0, bottom: CGFloat = 0) -> ScrollGeometry {
+        ScrollGeometry(contentOffset: CGPoint(x: 0, y: y), contentSize: CGSize(width: 390, height: height),
+            contentInsets: EdgeInsets(top: top, leading: 0, bottom: bottom, trailing: 0),
+            containerSize: CGSize(width: 390, height: 600))
+    }
+
     func testLiveRowIdentitySurvivesEditingCopyRemovalUndoAndRestore() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }

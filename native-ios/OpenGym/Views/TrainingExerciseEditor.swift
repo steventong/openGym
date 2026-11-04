@@ -186,8 +186,8 @@ struct TrainingExerciseEditor<ExerciseActions: View, Accessory: View>: View {
 
 }
 
-/// Page-wide horizontal paging, with interactive dragging and a slide on release.
-/// Vertical scrolling and the previous-workout row keep their own gestures.
+/// Horizontal paging plus pull past the top/bottom to change exercises.
+/// Vertical paging uses the scroll view's release event, so long cards remain scrollable.
 struct TrainingExercisePaging: ViewModifier {
     @Environment(\.inputCommitBuffer) private var inputBuffer
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -196,6 +196,7 @@ struct TrainingExercisePaging: ViewModifier {
     let select: (Int) -> Void
     @GestureState(resetTransaction: Transaction(animation: .spring(response: 0.3, dampingFraction: 0.85))) private var drag = PageDrag()
     @State private var forward = true
+    @State private var vertical = false
     @State private var transitioning = false
     @State private var excludedFrames: [CGRect] = []
 
@@ -208,10 +209,18 @@ struct TrainingExercisePaging: ViewModifier {
         GeometryReader { geometry in
             ZStack {
                 content
+                    .scrollBounceBehavior(.always, axes: .vertical)
+                    .onScrollPhaseChange { oldPhase, newPhase, context in
+                        if let next = TrainingVerticalPaging.destination(
+                            geometry: context.geometry, from: oldPhase, to: newPhase,
+                            selected: selected, count: count) {
+                            changePage(to: next, vertically: true)
+                        }
+                    }
                     .id(selected)
                     .transition(reduceMotion ? .opacity : .asymmetric(
-                        insertion: .move(edge: forward ? .trailing : .leading),
-                        removal: .move(edge: forward ? .leading : .trailing)))
+                        insertion: .move(edge: vertical ? (forward ? .bottom : .top) : (forward ? .trailing : .leading)),
+                        removal: .move(edge: vertical ? (forward ? .top : .bottom) : (forward ? .leading : .trailing))))
                     .offset(x: reduceMotion ? 0 : drag.offset)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
@@ -237,10 +246,17 @@ struct TrainingExercisePaging: ViewModifier {
                 state.offset = value.translation.width * ((0..<count).contains(next) ? 1 : 0.2)
             }
             .onChanged { value in
-                if drag.horizontal == true { forward = value.translation.width < 0 }
+                if drag.horizontal == true {
+                    forward = value.translation.width < 0
+                    vertical = false
+                }
             }
             .onEnded { value in
-                guard drag.horizontal == true, !transitioning else { return }
+                // GestureState can already have reset when onEnded runs. Use the
+                // final gesture value for the commit decision instead.
+                guard !excludedFrames.contains(where: { $0.contains(value.startLocation) }),
+                      abs(value.translation.width) > abs(value.translation.height) * 1.5,
+                      !transitioning else { return }
                 let forward = value.translation.width < 0
                 let next = selected + (forward ? 1 : -1)
                 let threshold = min(100, width * 0.25)
@@ -248,13 +264,35 @@ struct TrainingExercisePaging: ViewModifier {
                     && (abs(value.translation.width) >= threshold
                         || (abs(value.translation.width) >= 30 && abs(value.predictedEndTranslation.width) >= threshold * 2))
                 guard shouldSwitch else { return }
-                inputBuffer?.commitAll()
-                GymKeyboard.dismiss()
-                transitioning = true
-                withAnimation(reduceMotion ? .easeOut(duration: 0.15) : .snappy(duration: 0.3), completionCriteria: .removed) {
-                    select(next)
-                } completion: { transitioning = false }
+                changePage(to: next, vertically: false)
             }
+    }
+
+    private func changePage(to next: Int, vertically: Bool) {
+        guard !transitioning, (0..<count).contains(next), next != selected else { return }
+        inputBuffer?.commitAll()
+        GymKeyboard.dismiss()
+        forward = next > selected
+        vertical = vertically
+        transitioning = true
+        withAnimation(reduceMotion ? .easeOut(duration: 0.15) : .snappy(duration: 0.3), completionCriteria: .removed) {
+            select(next)
+        } completion: { transitioning = false }
+    }
+}
+
+enum TrainingVerticalPaging {
+    static func destination(geometry: ScrollGeometry, from oldPhase: ScrollPhase, to newPhase: ScrollPhase,
+                            selected: Int, count: Int) -> Int? {
+        // Only a finger release can change cards; inertia and spring-back cannot.
+        guard oldPhase == .interacting, newPhase == .decelerating || newPhase == .idle,
+              count > 1, (0..<count).contains(selected) else { return nil }
+        let top = -geometry.contentInsets.top
+        let bottom = max(top, geometry.contentSize.height + geometry.contentInsets.bottom - geometry.containerSize.height)
+        let threshold: CGFloat = 55
+        if geometry.contentOffset.y <= top - threshold, selected > 0 { return selected - 1 }
+        if geometry.contentOffset.y >= bottom + threshold, selected + 1 < count { return selected + 1 }
+        return nil
     }
 }
 
