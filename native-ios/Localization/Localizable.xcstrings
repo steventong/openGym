@@ -9505,6 +9505,24 @@
         }
       }
     },
+    "NEXT_EXERCISE_NAMED": {
+      "comment": "下一个动作：{0}",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next exercise: %1$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下一个动作：%1$@"
+          }
+        }
+      }
+    },
     "NEXT_ROUND_STARTS_COUNT": {
       "comment": "下一轮从 {0} 开始。",
       "extractionState": "manual",
@@ -10959,6 +10977,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "上一个动作"
+          }
+        }
+      }
+    },
+    "PREVIOUS_EXERCISE_NAMED": {
+      "comment": "上一个动作：{0}",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous exercise: %1$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上一个动作：%1$@"
           }
         }
       }
@@ -12854,37 +12890,37 @@
       }
     },
     "SAVE_AND_SUBMIT_WORKOUT": {
-      "comment": "保存训练并提交？",
+      "comment": "保存训练？",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Save and submit workout?"
+            "value": "Save workout?"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "保存训练并提交？"
+            "value": "保存训练？"
           }
         }
       }
     },
     "SAVE_AND_SUBMIT_WORKOUT_A": {
-      "comment": "保存训练并提交",
+      "comment": "保存训练",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Save and submit workout"
+            "value": "Save workout"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "保存训练并提交"
+            "value": "保存训练"
           }
         }
       }

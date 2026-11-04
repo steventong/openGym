@@ -65,7 +65,8 @@ struct HomeView: View {
                                 store.draft != nil ? L10n.text("CONTINUE_WORKOUT" /* 继续训练 */) : scheduled.isEmpty ? L10n.text("FREESTYLE" /* 自由训练 */) : L10n.text("START_WORKOUT" /* 开始训练 */),
                                 icon: store.draft == nil && scheduled.isEmpty ? "figure.strengthtraining.traditional" : "play.fill",
                                 primary: true,
-                                identifier: store.draft == nil && scheduled.isEmpty ? "start-freestyle-workout" : "home-start-workout"
+                                identifier: store.draft == nil && scheduled.isEmpty ? "start-freestyle-workout" : "home-start-workout",
+                                startedAt: store.draft?.start
                             ) {
                                 if store.draft != nil {
                                     store.selectedTab = 2
@@ -79,7 +80,8 @@ struct HomeView: View {
                                 scheduled.isEmpty ? L10n.text("CHOOSE_A_ROUTINE" /* 选择训练计划 */) : L10n.text("FREESTYLE" /* 自由训练 */),
                                 icon: scheduled.isEmpty ? "list.bullet" : "figure.strengthtraining.traditional",
                                 primary: false,
-                                identifier: scheduled.isEmpty ? "home-select-plan" : "start-freestyle-workout"
+                                identifier: scheduled.isEmpty ? "home-select-plan" : "start-freestyle-workout",
+                                enabled: store.draft == nil
                             ) {
                                 if scheduled.isEmpty {
                                     store.selectedTab = 2
@@ -87,9 +89,6 @@ struct HomeView: View {
                                     store.startFreestyle()
                                 }
                             }
-                            .opacity(store.draft == nil ? 1 : 0)
-                            .disabled(store.draft != nil)
-                            .accessibilityHidden(store.draft != nil)
                         }
                     }
                 }.gymCard()
@@ -97,18 +96,27 @@ struct HomeView: View {
             }.padding(22)
         }.refreshable { await store.refresh() }
     }
-    private func trainingButton(_ title:String,icon:String,primary:Bool,identifier:String,action:@escaping () -> Void) -> some View {
+    private func trainingButton(_ title:String,icon:String,primary:Bool,identifier:String,startedAt:Date? = nil,enabled:Bool = true,action:@escaping () -> Void) -> some View {
         let button = Button(action: action) {
             HStack(spacing: 8) {
                 Image(systemName: icon).frame(width: 22, height: 22).accessibilityHidden(true)
-                Text(title).frame(maxWidth: .infinity)
+                Text(title)
+                    .padding(.horizontal, startedAt == nil ? 0 : 32)
+                    .frame(maxWidth: .infinity)
                 Color.clear.frame(width: 22, height: 22).accessibilityHidden(true)
             }
             .font(.system(size: primary ? 17 : 15, weight: .semibold))
             .lineLimit(1).minimumScaleFactor(0.8)
             .frame(maxWidth: .infinity)
-            .foregroundStyle(primary ? Color.black : GymTheme.green)
+            .overlay(alignment: .trailing) {
+                if let startedAt {
+                    HomeWorkoutDurationLabel(start: startedAt)
+                        .allowsHitTesting(false)
+                }
+            }
+            .foregroundStyle(enabled ? (primary ? Color.black : GymTheme.green) : GymTheme.muted)
         }
+        .disabled(!enabled)
         .controlSize(.large)
         .buttonBorderShape(.capsule)
         .accessibilityIdentifier(identifier)
@@ -122,6 +130,27 @@ struct HomeView: View {
         }
     }
 
+}
+private struct HomeWorkoutDurationLabel: View {
+    let start: Date
+
+    var body: some View {
+        // Reserve a stable trailing slot so ticking digits never move the title.
+        Text(verbatim: "00:00:00").hidden()
+            .overlay(alignment: .trailing) {
+                TimelineView(.periodic(from: start, by: 1)) { context in
+                    let elapsed = max(0, Int(context.date.timeIntervalSince(start)))
+                    let duration = Duration.seconds(elapsed).formatted(.time(pattern: .hourMinuteSecond))
+                    Text(duration)
+                        .lineLimit(1).minimumScaleFactor(0.7)
+                        .accessibilityLabel(L10n.text("SESSION_LENGTH" /* 训练时长 */))
+                        .accessibilityValue(duration)
+                }
+            }
+            .font(.system(size: 12, weight: .medium).monospacedDigit())
+            .fixedSize()
+            .accessibilityIdentifier("home-workout-duration")
+    }
 }
 struct WeightChart: View {
     let points: [[String:Any]]

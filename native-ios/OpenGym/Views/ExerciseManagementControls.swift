@@ -149,10 +149,11 @@ private struct TrainingReplacementPicker: View {
 
 struct LiveExerciseManagement: View {
     @Environment(GymStore.self) private var store
+    var entryIndex: Int? = nil
     var showExerciseNote: () -> Void
     var body: some View {
         if let draft = store.draft {
-            let index = min(max(0, draft.activeJSON["cur"] as? Int ?? 0), max(0, draft.rawEntries.count - 1))
+            let index = entryIndex ?? min(max(0, draft.activeJSON["cur"] as? Int ?? 0), max(0, draft.rawEntries.count - 1))
             ExerciseManagementControls(entries: draft.rawEntries, selected: index, timerRunning: store.workTimer != nil, startRest: { store.startExerciseRest(entry: index, seconds: Double($0)) }, showExerciseNote: showExerciseNote, menuIdentifier: "live-exercise-menu") { action, targetIndex, direction, id in
                 store.manageLiveExercise(action: action, index: targetIndex, direction: direction, id: id)
             }

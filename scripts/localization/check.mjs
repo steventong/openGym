@@ -75,7 +75,8 @@ for (const file of [...files('frontend/src'), ...files('native-ios/scripts/rules
 for (const directory of ['OpenGym', 'Shared', 'OpenGymWatch', 'OpenGymWidgets']) {
   for (const file of files(`native-ios/${directory}`).filter(f => f.endsWith('.swift'))) {
     const source = read(file)
-    for (const match of source.matchAll(/L10n\.(?:text|format)\("([^"]+)"/g)) {
+    for (const match of source.matchAll(/L10n\.(?:text|format)\(\s*"([^"]+)"/g)) {
+      if (!keyPattern.test(match[1]) || !Object.hasOwn(en, match[1]) || !Object.hasOwn(zh, match[1])) report(`${file}: missing/invalid key ${match[1]}`)
       if (canonicalKeys[match[1]]) report(`${file}: use shared copy ${canonicalKeys[match[1]]} instead of ${match[1]}`)
     }
     for (const match of source.matchAll(/L10n\.(?:text|format)\("([^"]+)"\s*\/\*([\s\S]*?)\*\//g)) verify(match[1], match[2], file)

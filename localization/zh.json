@@ -2600,12 +2600,12 @@
   "NO_ROTATION_YET": "暂无循环",
   "START_TODAY_S_WORKOUTS": "开始今日安排",
   "GO_TO_ROUTINES": "前往训练计划",
-  "SAVE_AND_SUBMIT_WORKOUT": "保存训练并提交？",
+  "SAVE_AND_SUBMIT_WORKOUT": "保存训练？",
   "THE_LOCAL_DRAFT_WILL_BE_DELETED_AND_ITS_TIMER_STOPPED_THIS_CANNOT": "将清除本次训练的本机草稿并停止计时，无法撤销。已提交的历史记录和训练计划不受影响。",
   "NO_EXERCISES_YET_A": "暂无动作",
   "ADD_WORKOUT_EXERCISE": "添加训练动作",
   "WORKOUT_DETAILS": "训练详情",
-  "SAVE_AND_SUBMIT_WORKOUT_A": "保存训练并提交",
+  "SAVE_AND_SUBMIT_WORKOUT_A": "保存训练",
   "WORKOUT_MENU": "训练菜单",
   "TIMER_PAUSED": "计时已暂停",
   "EXERCISE_TIMER": "动作计时",
@@ -3443,5 +3443,7 @@
   "REST_FIFTEEN_SECONDS": "15秒",
   "RELEASE_TO_SWITCH_EXERCISE": "松开切换",
   "KEEP_PULLING_DOWN_TO_VIEW": "继续下拉查看",
-  "KEEP_PULLING_UP_TO_VIEW": "继续上拉查看"
+  "KEEP_PULLING_UP_TO_VIEW": "继续上拉查看",
+  "PREVIOUS_EXERCISE_NAMED": "上一个动作：{0}",
+  "NEXT_EXERCISE_NAMED": "下一个动作：{0}"
 }

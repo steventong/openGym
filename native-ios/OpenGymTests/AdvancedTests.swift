@@ -4,47 +4,120 @@ import UIKit
 import AVFoundation
 @testable import OpenGym
 @MainActor final class AdvancedTests:XCTestCase {
-    func testVerticalPagingOnShortCardsAndListBoundaries() {
-        func destination(_ y: CGFloat, selected: Int = 1, count: Int = 3) -> Int? {
-            TrainingVerticalPaging.destination(geometry: pagingGeometry(y: y, height: 400),
-                from: .interacting, to: .decelerating, selected: selected, count: count)
-        }
-        XCTAssertEqual(destination(-60), 0, "Pull down goes to the previous card")
-        XCTAssertEqual(destination(60), 2, "Pull up goes to the next card even when content fits")
-        XCTAssertNil(destination(-40), "A small bounce must not change cards")
-        XCTAssertNil(destination(40))
-        XCTAssertNil(destination(-80, selected: 0))
-        XCTAssertNil(destination(80, selected: 2))
-        XCTAssertNil(destination(80, selected: 0, count: 1))
-        XCTAssertNil(destination(80, selected: 0, count: 0))
+    private func pagingGeometry(_ y: CGFloat, height: CGFloat = 400, top: CGFloat = 0, bottom: CGFloat = 0) -> ScrollGeometry {
+        ScrollGeometry(contentOffset: CGPoint(x: 0, y: y), contentSize: CGSize(width: 390, height: height),
+            contentInsets: EdgeInsets(top: top, leading: 0, bottom: bottom, trailing: 0),
+            containerSize: CGSize(width: 390, height: 600))
     }
 
-    func testVerticalPagingKeepsLongCardsScrollableAndAccountsForInsets() {
-        func destination(_ y: CGFloat) -> Int? {
-            TrainingVerticalPaging.destination(geometry: pagingGeometry(y: y, height: 1200, top: 20, bottom: 30),
-                from: .interacting, to: .idle, selected: 1, count: 3)
-        }
-        XCTAssertNil(destination(250), "Scrolling through training rows must not change cards")
-        XCTAssertNil(destination(650), "A small bounce beyond the bottom is still scrolling")
-        XCTAssertEqual(destination(690), 2)
-        XCTAssertNil(destination(-60))
-        XCTAssertEqual(destination(-80), 0)
-    }
-
-    func testVerticalPagingIgnoresMomentumSpringBackAndProgrammaticScrolls() {
-        for phases: (ScrollPhase, ScrollPhase) in [(.decelerating, .idle), (.animating, .idle),
-                                                   (.tracking, .interacting), (.idle, .tracking)] {
-            for y: CGFloat in [-100, 100] {
-                XCTAssertNil(TrainingVerticalPaging.destination(geometry: pagingGeometry(y: y, height: 400),
-                    from: phases.0, to: phases.1, selected: 1, count: 3))
+    func testPullRequiresReadyHintAndFingerRelease() {
+        for direction: CGFloat in [-1, 1] {
+            let small = TrainingExercisePull(geometry: pagingGeometry(direction * 18))
+            let readyGeometry = pagingGeometry(direction * 40)
+            let ready = TrainingExercisePull(geometry: readyGeometry)
+            XCTAssertEqual(direction < 0 ? small.top : small.bottom, 1)
+            XCTAssertEqual(direction < 0 ? ready.top : ready.bottom, 2)
+            XCTAssertNil(small.destinationOnRelease(geometry: readyGeometry, from: .interacting, to: .idle, selected: 1, count: 3),
+                "The ready hint must have appeared before switching")
+            XCTAssertNil(ready.destinationOnRelease(geometry: readyGeometry, from: .tracking, to: .interacting, selected: 1, count: 3),
+                "Holding beyond the threshold must not switch")
+            for phase: ScrollPhase in [.idle, .decelerating] {
+                XCTAssertEqual(ready.destinationOnRelease(geometry: readyGeometry, from: .interacting, to: phase, selected: 1, count: 3), direction < 0 ? 0 : 2)
+            }
+            XCTAssertNil(ready.destinationOnRelease(geometry: pagingGeometry(direction * 18), from: .interacting, to: .idle, selected: 1, count: 3),
+                "Pulling back before release cancels")
+            for phases: (ScrollPhase, ScrollPhase) in [(.decelerating, .idle), (.animating, .idle), (.interacting, .animating)] {
+                XCTAssertNil(ready.destinationOnRelease(geometry: readyGeometry, from: phases.0, to: phases.1, selected: 1, count: 3))
             }
         }
     }
 
-    private func pagingGeometry(y: CGFloat, height: CGFloat, top: CGFloat = 0, bottom: CGFloat = 0) -> ScrollGeometry {
-        ScrollGeometry(contentOffset: CGPoint(x: 0, y: y), contentSize: CGSize(width: 390, height: height),
-            contentInsets: EdgeInsets(top: top, leading: 0, bottom: bottom, trailing: 0),
-            containerSize: CGSize(width: 390, height: 600))
+    func testNextHintIsAlreadyVisibleWhenStartingAnotherPullAtTheBottom() {
+        for (height, bottomEdge): (CGFloat, CGFloat) in [(140, 0), (1200, 600)] {
+            for distance: CGFloat in [0, 0.5, 2, 10, 23] {
+                let geometry = pagingGeometry(bottomEdge + distance, height: height)
+                let pull = TrainingExercisePull(geometry: geometry)
+                XCTAssertEqual(pull.bottom, 1, "Show the hint as soon as a new interaction starts at the bottom")
+                XCTAssertNil(pull.destinationOnRelease(geometry: geometry, from: .interacting, to: .idle, selected: 1, count: 3),
+                    "An immediately visible hint does not arm an accidental switch")
+            }
+            let readyGeometry = pagingGeometry(bottomEdge + 24, height: height)
+            let ready = TrainingExercisePull(geometry: readyGeometry)
+            XCTAssertEqual(ready.bottom, 2)
+            XCTAssertEqual(ready.destinationOnRelease(geometry: readyGeometry, from: .interacting, to: .idle, selected: 1, count: 3), 2)
+        }
+        XCTAssertEqual(TrainingExercisePull(geometry: pagingGeometry(580, height: 1200)).bottom, 0,
+            "Reading the last rows must not show an early switching hint")
+        XCTAssertEqual(TrainingExercisePull(geometry: pagingGeometry(-2)).bottom, 0,
+            "Pulling down on a short card must not show the next-exercise hint")
+    }
+
+    func testPullRespectsLongContentInsetsAndFirstLastBoundaries() {
+        for y: CGFloat in [0, 250, 650] {
+            let geometry = pagingGeometry(y, height: 1200, top: 20, bottom: 30)
+            let pull = TrainingExercisePull(geometry: geometry)
+            XCTAssertNil(pull.destinationOnRelease(geometry: geometry, from: .interacting, to: .idle, selected: 1, count: 3))
+        }
+        for (y, expected): (CGFloat, Int) in [(-60, 0), (670, 2)] {
+            let geometry = pagingGeometry(y, height: 1200, top: 20, bottom: 30)
+            let pull = TrainingExercisePull(geometry: geometry)
+            XCTAssertEqual(pull.destinationOnRelease(geometry: geometry, from: .interacting, to: .idle, selected: 1, count: 3), expected)
+            XCTAssertNil(pull.destinationOnRelease(geometry: geometry, from: .interacting, to: .idle, selected: expected, count: 3))
+            for count in [0, 1] {
+                XCTAssertNil(pull.destinationOnRelease(geometry: geometry, from: .interacting, to: .idle, selected: 0, count: count))
+            }
+        }
+    }
+
+    func testPullHintAppearanceInBothLanguages() throws {
+        let original = L10n.preferences.language
+        defer { L10n.preferences.language = original }
+        for language in ["zh", "en"] {
+            L10n.preferences.language = language
+            let content = VStack(spacing: 20) {
+                TrainingExercisePagingHint(name: language == "zh" ? "杠铃卧推" : "Barbell bench press", previous: true, ready: false)
+                TrainingExercisePagingHint(name: language == "zh" ? "杠铃卧推" : "Barbell bench press", previous: true, ready: true)
+                TrainingExercisePagingHint(name: language == "zh" ? "深蹲" : "Squat", previous: false, ready: false)
+                TrainingExercisePagingHint(name: language == "zh" ? "深蹲" : "Squat", previous: false, ready: true)
+            }.padding(.vertical, 20).frame(width: 390).background(GymTheme.background).preferredColorScheme(.dark)
+            let renderer = ImageRenderer(content: content)
+            renderer.scale = 2
+            let attachment = XCTAttachment(image: try XCTUnwrap(renderer.uiImage))
+            attachment.name = "pull-hints-\(language)"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+    }
+
+    func testNativePagerOnlyHostsSelectedCardAndKeepsLongContentScrollable() async throws {
+        let state = NativePagerTestState()
+        let controller = UIHostingController(rootView: NativePagerTestView(state: state, buffer: InputCommitBuffer()))
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 600))
+        window.rootViewController = controller; window.makeKeyAndVisible()
+        defer { window.isHidden = true }
+        controller.view.frame = window.bounds
+        func settle() async throws {
+            controller.view.setNeedsLayout(); controller.view.layoutIfNeeded()
+            try await Task.sleep(for: .milliseconds(250))
+        }
+        func scrollViews(_ view: UIView) -> [UIScrollView] {
+            (view as? UIScrollView).map { [$0] } ?? view.subviews.flatMap(scrollViews)
+        }
+        try await settle()
+        let scroll = try XCTUnwrap(scrollViews(controller.view).first)
+        XCTAssertEqual(scrollViews(controller.view).count, 1)
+        XCTAssertEqual(scroll.contentOffset.y, 0, accuracy: 2)
+        XCTAssertEqual(scroll.contentSize.height, 1240, accuracy: 2, "Adjacent cards must not enter the scroll view")
+        scroll.setContentOffset(CGPoint(x: 0, y: 250), animated: false)
+        try await settle()
+        XCTAssertEqual(state.selected, 1)
+        XCTAssertEqual(scroll.contentOffset.y, 250, accuracy: 2)
+        state.selected = 2
+        try await settle()
+        let nextScroll = try XCTUnwrap(scrollViews(controller.view).first)
+        XCTAssertEqual(nextScroll.contentOffset.y, 0, accuracy: 2)
+        XCTAssertEqual(nextScroll.contentSize.height, 140, accuracy: 2,
+            "Short cards must not acquire a full screen of filler before reaching their bottom")
     }
 
     func testLiveRowIdentitySurvivesEditingCopyRemovalUndoAndRestore() throws {
@@ -613,5 +686,22 @@ extension AdvancedTests {
         XCTAssertTrue(cancelled)
         XCTAssertEqual(store.draft?.id, "second")
         XCTAssertEqual(store.draft?.name, "A")
+    }
+}
+
+@MainActor @Observable private final class NativePagerTestState {
+    var selected = 1
+}
+
+private struct NativePagerTestView: View {
+    let state: NativePagerTestState
+    let buffer: InputCommitBuffer
+
+    var body: some View {
+        TrainingExercisePager(selected: state.selected, names: ["A", "B", "C"], select: { state.selected = $0 }) { index in
+            Text("Exercise \(index)").frame(height: index == 1 ? 1200 : 100)
+        }
+        .environment(\.inputCommitBuffer, buffer)
+        .ignoresSafeArea()
     }
 }

@@ -36,25 +36,27 @@ struct HistoryEditor: View {
     }
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text(L10n.text("WORKOUT_INFORMATION" /* 训练信息 */)).font(.headline)
-                        BufferedTextField(L10n.text("WORKOUT_TITLE" /* 训练标题 */), text: textBinding(\.name)).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.accessibilityIdentifier("history-name")
-                        DatePicker(L10n.text("DATE_AND_START_TIME" /* 日期和开始时间 */), selection: Binding(get: { form.date }, set: { inputBuffer.commitAll(); form.date = $0; persist() }), in: ...Date(), displayedComponents: [.date, .hourAndMinute]).environment(\.locale, L10n.locale)
-                        HStack { Text(L10n.text("DURATION_MIN" /* 时长（分钟） */)); Spacer(); BufferedTextField(L10n.text("MINUTES" /* 分钟 */), text: textBinding(\.minutes)).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 100) }
-                        BufferedTextField(L10n.text("SESSION_NOTE" /* 训练备注 */), text: textBinding(\.note), axis: .vertical).textFieldStyle(.plain).submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.lineLimit(2...5).accessibilityIdentifier("history-note")
-                    }.gymCard()
-                    if form.entries.isEmpty {
-                        Button(L10n.text("ADD_EXERCISE" /* 添加动作 */), systemImage: "plus") { inputBuffer.commitAll(); exerciseSheet = .add }
-                            .accessibilityIdentifier("empty-history-add-exercise")
+            Group {
+                if form.entries.isEmpty {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20) {
+                            workoutInformation
+                            Button(L10n.text("ADD_EXERCISE" /* 添加动作 */), systemImage: "plus") { inputBuffer.commitAll(); exerciseSheet = .add }
+                                .accessibilityIdentifier("empty-history-add-exercise")
+                        }.padding(20)
+                    }.scrollDismissesKeyboard(.interactively)
+                } else {
+                    TrainingExercisePager(selected: form.selected, names: form.entries.indices.map(entryName), select: { index in
+                        inputBuffer.commitAll(); form.selected = index; persist()
+                    }) { index in
+                        VStack(alignment: .leading, spacing: 20) {
+                            workoutInformation
+                            entryCard(index)
+                        }
                     }
-                    if !form.entries.isEmpty { entryCard(form.selected) }
-                }.padding(20).disabled(submitting)
-            }.scrollDismissesKeyboard(.interactively).background(GymTheme.background)
-                .modifier(TrainingExercisePaging(selected: form.selected, names: form.entries.indices.map(entryName)) { index in
-                    inputBuffer.commitAll(); form.selected = index; persist()
-                })
+                }
+            }.disabled(submitting).background(GymTheme.background)
+                .onChange(of: form.selected) { _, _ in showExerciseNote = false }
                 .navigationTitle(L10n.text("EDIT_WORKOUT" /* 编辑训练 */)).navigationBarTitleDisplayMode(.inline)
                 .keyboardDismissToolbar()
                 .toolbar {
@@ -112,8 +114,17 @@ struct HistoryEditor: View {
             }
             .onDisappear { inputBuffer.commitAll() }
     }
-    private var exerciseManagement: some View {
-        ExerciseManagementControls(entries: form.entries.map(\.value), selected: form.selected, history: true, showExerciseNote: { inputBuffer.commitAll(); showExerciseNote = true }, change: manageExercise)
+    private var workoutInformation: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(L10n.text("WORKOUT_INFORMATION" /* 训练信息 */)).font(.headline)
+            BufferedTextField(L10n.text("WORKOUT_TITLE" /* 训练标题 */), text: textBinding(\.name)).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.accessibilityIdentifier("history-name")
+            DatePicker(L10n.text("DATE_AND_START_TIME" /* 日期和开始时间 */), selection: Binding(get: { form.date }, set: { inputBuffer.commitAll(); form.date = $0; persist() }), in: ...Date(), displayedComponents: [.date, .hourAndMinute]).environment(\.locale, L10n.locale)
+            HStack { Text(L10n.text("DURATION_MIN" /* 时长（分钟） */)); Spacer(); BufferedTextField(L10n.text("MINUTES" /* 分钟 */), text: textBinding(\.minutes)).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(width: 100) }
+            BufferedTextField(L10n.text("SESSION_NOTE" /* 训练备注 */), text: textBinding(\.note), axis: .vertical).textFieldStyle(.plain).submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.lineLimit(2...5).accessibilityIdentifier("history-note")
+        }.gymCard()
+    }
+    private func exerciseManagement(_ index: Int) -> some View {
+        ExerciseManagementControls(entries: form.entries.map(\.value), selected: index, history: true, showExerciseNote: { inputBuffer.commitAll(); form.selected = index; showExerciseNote = true }, change: manageExercise)
     }
     private func reorderExercises(_ order: [Int], baseline: [[String: Any]]) throws {
         inputBuffer.commitAll()
@@ -133,8 +144,8 @@ struct HistoryEditor: View {
             let entry = form.entries[i]
             let previous = store.previousExerciseReference(entry.raw, before: number(form.original["start"]), exclude: record.id)
             TrainingExerciseEditor(
-                showingOptions: $showExerciseNote, entries: form.entries.map(\.value), names: form.entries.indices.map(entryName),
-                selected: Binding(get: { form.selected }, set: { inputBuffer.commitAll(); form.selected = $0; persist() }),
+                showingOptions: Binding(get: { showExerciseNote && form.selected == i }, set: { showExerciseNote = $0 }), entries: form.entries.map(\.value), names: form.entries.indices.map(entryName),
+                selected: Binding(get: { i }, set: { inputBuffer.commitAll(); form.selected = $0; persist() }),
                 rows: entry.sets.map { TrainingEditorRow(id: $0.id.uuidString, raw: $0.raw) },
                 unit: form.unit, inputState: store.state.merging(["unit": form.unit]) { _, new in new }, previous: previous.text, previousNote: previous.note,
                 note: Binding(get: { form.entries[i].raw["note"] as? String ?? "" }, set: { form.entries[i].raw["note"] = $0; persist() }),
@@ -153,7 +164,7 @@ struct HistoryEditor: View {
                     guard RecordPatch.equal(undoExpected, form.entries.map(\.value)) else { return }
                     if let undoEntries { form.entries = undoEntries; self.undoEntries = nil; persist() }
                 } : nil,
-                exerciseActions: { exerciseManagement }
+                exerciseActions: { exerciseManagement(i) }
             ) { EmptyView() }
         }
     }

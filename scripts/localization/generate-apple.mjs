@@ -10,6 +10,19 @@ export function appleFormat(value) {
     ? value.replaceAll('%', '%%').replace(/\{(\d+)\}/g, (_, index) => `%${Number(index) + 1}$@`)
     : value
 }
+// Validate direct lookups even when a call has no translator comment.
+export function nativeLocalizationKeys(source, en, zh, file = 'Swift source') {
+  for (const match of source.matchAll(/L10n\.(?:text|format)\(\s*"([^"]+)"/g)) {
+    for (const [language, pack] of [['en', en], ['zh', zh]]) {
+      if (typeof pack[match[1]] !== 'string' || !pack[match[1]].trim()) {
+        throw Error(`${file}: missing ${language} translation for ${match[1]}`)
+      }
+    }
+  }
+  return [...source.matchAll(/"([A-Z]+(?:_[A-Z]+)*)"/g)]
+    .map(match => match[1]).filter(key => Object.hasOwn(en, key))
+}
+
 export function appleCatalogs() {
   const en = JSON.parse(readFileSync(resolve(root, 'localization/en.json')))
   const zh = JSON.parse(readFileSync(resolve(root, 'localization/zh.json')))
@@ -31,9 +44,7 @@ export function appleCatalogs() {
       const path = resolve(directory, entry.name)
       if (entry.isDirectory()) { if (entry.name !== 'Resources') scan(path) }
       else if (entry.name.endsWith('.swift')) {
-        for (const match of readFileSync(path, 'utf8').matchAll(/"([A-Z]+(?:_[A-Z]+)*)"/g)) {
-          if (Object.hasOwn(en, match[1])) used.add(match[1])
-        }
+        for (const key of nativeLocalizationKeys(readFileSync(path, 'utf8'), en, zh, path)) used.add(key)
       }
     }
   }

@@ -2600,12 +2600,12 @@
   "NO_ROTATION_YET": "No rotation yet",
   "START_TODAY_S_WORKOUTS": "Start today's workouts",
   "GO_TO_ROUTINES": "Go to routines",
-  "SAVE_AND_SUBMIT_WORKOUT": "Save and submit workout?",
+  "SAVE_AND_SUBMIT_WORKOUT": "Save workout?",
   "THE_LOCAL_DRAFT_WILL_BE_DELETED_AND_ITS_TIMER_STOPPED_THIS_CANNOT": "The local draft will be deleted and its timer stopped. This cannot be undone. Saved workout history and routines are kept.",
   "NO_EXERCISES_YET_A": "No exercises yet",
   "ADD_WORKOUT_EXERCISE": "Add workout exercise",
   "WORKOUT_DETAILS": "Workout details",
-  "SAVE_AND_SUBMIT_WORKOUT_A": "Save and submit workout",
+  "SAVE_AND_SUBMIT_WORKOUT_A": "Save workout",
   "WORKOUT_MENU": "Workout menu",
   "TIMER_PAUSED": "Timer paused",
   "EXERCISE_TIMER": "Exercise timer",
@@ -3443,5 +3443,7 @@
   "REST_FIFTEEN_SECONDS": "15s",
   "RELEASE_TO_SWITCH_EXERCISE": "Release to switch",
   "KEEP_PULLING_DOWN_TO_VIEW": "Keep pulling down to view",
-  "KEEP_PULLING_UP_TO_VIEW": "Keep pulling up to view"
+  "KEEP_PULLING_UP_TO_VIEW": "Keep pulling up to view",
+  "PREVIOUS_EXERCISE_NAMED": "Previous exercise: {0}",
+  "NEXT_EXERCISE_NAMED": "Next exercise: {0}"
 }

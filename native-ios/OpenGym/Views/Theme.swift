@@ -80,6 +80,7 @@ struct StatusDetailButton: View {
     }
 }
 struct GreenButton: View {
+    @Environment(\.isEnabled) private var isEnabled
     let title: String
     var icon: String? = nil
     var action: () -> Void
@@ -87,8 +88,9 @@ struct GreenButton: View {
         Button(action:action) {
             HStack(spacing:8) { if let icon { Image(systemName:icon) }; Text(title).fontWeight(.semibold) }
                 .lineLimit(1).minimumScaleFactor(0.8)
-                .frame(maxWidth:.infinity).padding(.vertical,16).foregroundStyle(.black)
-                .background(GymTheme.green,in:RoundedRectangle(cornerRadius:15))
+                .frame(maxWidth:.infinity).padding(.vertical,16)
+                .foregroundStyle(isEnabled ? Color.black : GymTheme.muted)
+                .background(isEnabled ? GymTheme.green : Color.gray.opacity(0.25),in:RoundedRectangle(cornerRadius:15))
         }.buttonStyle(.plain)
     }
 }

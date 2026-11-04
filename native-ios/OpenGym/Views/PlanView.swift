@@ -48,6 +48,8 @@ struct PlanView: View {
                             RoutineExercisePreview(exercises:routine.exercises)
                         }
                         GreenButton(title:L10n.text("START_WORKOUT" /* 开始训练 */),icon:"play.fill") { store.start(routine) }
+                            .disabled(store.draft != nil)
+                            .accessibilityIdentifier("start-routine-\(routine.id)")
                     }.gymCard()
                 }
                 Button { tools = true } label: { Label(L10n.text("TEMPLATES_AND_ROUTINE_IMPORT_EXPORT" /* 模板与计划导入 / 导出 */),systemImage:"square.and.arrow.up").frame(maxWidth:.infinity,minHeight:44) }.accessibilityIdentifier("open-plan-tools")

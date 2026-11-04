@@ -91,11 +91,6 @@ struct TrainingExerciseEditor<ExerciseActions: View, Accessory: View>: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     Text(previous).font(.caption).foregroundStyle(GymTheme.muted).lineLimit(1).fixedSize(horizontal: true, vertical: false)
                 }.accessibilityIdentifier("previous-exercise")
-                    .background {
-                        GeometryReader { geometry in
-                            Color.clear.preference(key: TrainingPagingExcludedFrames.self, value: [geometry.frame(in: .global)])
-                        }
-                    }
                 if let previousNote {
                     Text(L10n.text("PREVIOUS_WORKOUT_NOTE" /* 上次备注：{0} */, previousNote))
                         .font(.caption).foregroundStyle(GymTheme.muted)
@@ -186,82 +181,115 @@ struct TrainingExerciseEditor<ExerciseActions: View, Accessory: View>: View {
 
 }
 
-/// Horizontal paging plus pull past the top/bottom to change exercises.
-/// Vertical paging uses the scroll view's release event, so long cards remain scrollable.
-struct TrainingExercisePaging: ViewModifier {
+/// Native scrolling owns dragging and rubber-banding. Only a deliberate pull
+/// beyond an edge followed by release changes the displayed exercise.
+struct TrainingExercisePager<Page: View>: View {
     @Environment(\.inputCommitBuffer) private var inputBuffer
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let selected: Int
     let names: [String]
     let select: (Int) -> Void
-    private var count: Int { names.count }
-    @GestureState(resetTransaction: Transaction(animation: .spring(response: 0.3, dampingFraction: 0.85))) private var drag = PageDrag()
-    @State private var forward = true
-    @State private var vertical = false
-    @State private var transitioning = false
-    @State private var excludedFrames: [CGRect] = []
-    @State private var pull = TrainingPagingPull()
-    @State private var interacting = false
+    @ViewBuilder let page: (Int) -> Page
+    @State private var pull = TrainingExercisePull()
+    @State private var draggingEntry: Int?
 
-    private struct PageDrag {
-        var horizontal: Bool?
-        var offset: CGFloat = 0
-    }
-
-    func body(content: Content) -> some View {
-        GeometryReader { geometry in
-            ZStack {
-                content
-                    .scrollBounceBehavior(.always, axes: .vertical)
-                    .onScrollGeometryChange(for: TrainingPagingPull.self) { geometry in
-                        TrainingPagingPull(geometry: geometry)
-                    } action: { _, value in pull = value }
-                    .onScrollPhaseChange { oldPhase, newPhase, context in
-                        interacting = newPhase == .interacting
-                        if let next = TrainingVerticalPaging.destination(
-                            geometry: context.geometry, from: oldPhase, to: newPhase,
-                            selected: selected, count: count) {
-                            changePage(to: next, vertically: true)
-                        }
-                    }
-                    .id(selected)
-                    .transition(reduceMotion ? .opacity : .asymmetric(
-                        insertion: .move(edge: vertical ? (forward ? .bottom : .top) : (forward ? .trailing : .leading)),
-                        removal: .move(edge: vertical ? (forward ? .top : .bottom) : (forward ? .leading : .trailing))))
-                    .offset(x: reduceMotion ? 0 : drag.offset)
+    var body: some View {
+        ScrollView(.vertical) {
+            if names.indices.contains(selected) {
+                page(selected)
+                    .padding(20)
+                    .frame(maxWidth: .infinity, alignment: .top)
             }
-            .frame(width: geometry.size.width, height: geometry.size.height)
-            .overlay(alignment: .top) {
-                if interacting, pull.top > 0, selected > 0, names.indices.contains(selected - 1) {
-                    pagingHint(name: names[selected - 1], previous: true, stage: pull.top)
-                }
-            }
-            .overlay(alignment: .bottom) {
-                if interacting, pull.bottom > 0, names.indices.contains(selected + 1) {
-                    pagingHint(name: names[selected + 1], previous: false, stage: pull.bottom)
-                }
-            }
-            .clipped()
-            .contentShape(Rectangle())
-            .simultaneousGesture(pagingGesture(width: geometry.size.width))
         }
-        .onPreferenceChange(TrainingPagingExcludedFrames.self) { excludedFrames = $0 }
-        .onChange(of: selected) { _, _ in pull = TrainingPagingPull(); interacting = false }
-        .onDisappear { transitioning = false }
+        .scrollBounceBehavior(.always, axes: .vertical)
+        .scrollDismissesKeyboard(.interactively)
+        .onScrollGeometryChange(for: TrainingExercisePull.self) { geometry in
+            TrainingExercisePull(geometry: geometry)
+        } action: { _, value in pull = value }
+        .onScrollPhaseChange { oldPhase, newPhase, context in
+            if newPhase == .interacting {
+                draggingEntry = selected
+                // A new upward pull at the bottom should show its hint even
+                // before another geometry update crosses an overscroll distance.
+                pull = TrainingExercisePull(geometry: context.geometry)
+            }
+            guard oldPhase == .interacting else { return }
+            let startedOn = draggingEntry
+            draggingEntry = nil
+            guard startedOn == selected,
+                  let next = pull.destinationOnRelease(geometry: context.geometry,
+                    from: oldPhase, to: newPhase, selected: selected, count: names.count) else { return }
+            inputBuffer?.commitAll()
+            GymKeyboard.dismiss()
+            select(next)
+        }
+        .id(selected)
+        .overlay(alignment: .top) {
+            if draggingEntry == selected, pull.top > 0, names.indices.contains(selected - 1) {
+                TrainingExercisePagingHint(name: names[selected - 1], previous: true, ready: pull.top == 2)
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if draggingEntry == selected, pull.bottom > 0, names.indices.contains(selected + 1) {
+                TrainingExercisePagingHint(name: names[selected + 1], previous: false, ready: pull.bottom == 2)
+            }
+        }
+        .onChange(of: selected) { _, _ in pull = TrainingExercisePull(); draggingEntry = nil }
+        .onDisappear { pull = TrainingExercisePull(); draggingEntry = nil }
+    }
+}
+
+struct TrainingExercisePull: Equatable {
+    // Hint visibility and release confirmation are separate: the bottom hint
+    // appears at the edge, while a deliberate native overscroll arms switching.
+    static let threshold: CGFloat = 36
+    static let bottomThreshold: CGFloat = 24
+    var top = 0
+    var bottom = 0
+
+    init() {}
+    init(geometry: ScrollGeometry) {
+        let topEdge = -geometry.contentInsets.top
+        let bottomEdge = max(topEdge, geometry.contentSize.height + geometry.contentInsets.bottom - geometry.containerSize.height)
+        func stage(_ distance: CGFloat) -> Int {
+            distance >= Self.threshold ? 2 : (distance >= 6 ? 1 : 0)
+        }
+        top = stage(topEdge - geometry.contentOffset.y)
+        let bottomDistance = geometry.contentOffset.y - bottomEdge
+        if bottomDistance >= Self.bottomThreshold {
+            bottom = 2
+        } else if bottomDistance >= -1, geometry.contentOffset.y >= topEdge {
+            bottom = 1
+        }
     }
 
-    private func pagingHint(name: String, previous: Bool, stage: Int) -> some View {
-        let ready = interacting && stage == 2
-        let instruction = ready ? L10n.text("RELEASE_TO_SWITCH_EXERCISE" /* 松开切换 */)
-            : previous
-                ? L10n.text("KEEP_PULLING_DOWN_TO_VIEW" /* 继续下拉查看 */)
-                : L10n.text("KEEP_PULLING_UP_TO_VIEW" /* 继续上拉查看 */)
-        return HStack(spacing: 8) {
+    func destinationOnRelease(geometry: ScrollGeometry, from oldPhase: ScrollPhase, to newPhase: ScrollPhase,
+                              selected: Int, count: Int) -> Int? {
+        guard oldPhase == .interacting, newPhase == .decelerating || newPhase == .idle,
+              (0..<count).contains(selected) else { return nil }
+        let released = Self(geometry: geometry)
+        // Require both the displayed ready hint and the release position. Pulling
+        // back cancels; inertia, spring-back and an unseen fast flick cannot switch.
+        if top == 2, released.top == 2, selected > 0 { return selected - 1 }
+        if bottom == 2, released.bottom == 2, selected + 1 < count { return selected + 1 }
+        return nil
+    }
+}
+
+struct TrainingExercisePagingHint: View {
+    let name: String
+    let previous: Bool
+    let ready: Bool
+
+    var body: some View {
+        HStack(spacing: 8) {
             Image(systemName: ready ? "arrow.turn.down.right" : (previous ? "arrow.down" : "arrow.up"))
                 .accessibilityHidden(true)
             VStack(spacing: 3) {
-                Text(instruction).font(.caption2)
-                Text(previous ? L10n.text("PREVIOUS_EXERCISE_NAMED", name) : L10n.text("NEXT_EXERCISE_NAMED", name))
+                Text(ready ? L10n.text("RELEASE_TO_SWITCH_EXERCISE" /* 松开切换 */)
+                    : previous ? L10n.text("KEEP_PULLING_DOWN_TO_VIEW" /* 继续下拉查看 */)
+                    : L10n.text("KEEP_PULLING_UP_TO_VIEW" /* 继续上拉查看 */)).font(.caption2)
+                Text(previous ? L10n.text("PREVIOUS_EXERCISE_NAMED" /* 上一个动作：{0} */, name)
+                    : L10n.text("NEXT_EXERCISE_NAMED" /* 下一个动作：{0} */, name))
                     .font(.caption).lineLimit(2).multilineTextAlignment(.center)
             }
         }
@@ -273,91 +301,6 @@ struct TrainingExercisePaging: ViewModifier {
         .accessibilityIdentifier(previous ? "previous-exercise-pull-hint" : "next-exercise-pull-hint")
         .allowsHitTesting(false)
     }
-
-    private func pagingGesture(width: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 20, coordinateSpace: .global)
-            .updating($drag) { value, state, transaction in
-                guard count > 1, !transitioning else { return }
-                transaction.animation = nil
-                if state.horizontal == nil {
-                    state.horizontal = !excludedFrames.contains(where: { $0.contains(value.startLocation) })
-                        && abs(value.translation.width) > abs(value.translation.height) * 1.5
-                }
-                guard state.horizontal == true else { return }
-                let next = selected + (value.translation.width < 0 ? 1 : -1)
-                state.offset = value.translation.width * ((0..<count).contains(next) ? 1 : 0.2)
-            }
-            .onChanged { value in
-                if drag.horizontal == true {
-                    forward = value.translation.width < 0
-                    vertical = false
-                }
-            }
-            .onEnded { value in
-                // GestureState can already have reset when onEnded runs. Use the
-                // final gesture value for the commit decision instead.
-                guard !excludedFrames.contains(where: { $0.contains(value.startLocation) }),
-                      abs(value.translation.width) > abs(value.translation.height) * 1.5,
-                      !transitioning else { return }
-                let forward = value.translation.width < 0
-                let next = selected + (forward ? 1 : -1)
-                let threshold = min(100, width * 0.25)
-                let shouldSwitch = (0..<count).contains(next)
-                    && (abs(value.translation.width) >= threshold
-                        || (abs(value.translation.width) >= 30 && abs(value.predictedEndTranslation.width) >= threshold * 2))
-                guard shouldSwitch else { return }
-                changePage(to: next, vertically: false)
-            }
-    }
-
-    private func changePage(to next: Int, vertically: Bool) {
-        guard !transitioning, (0..<count).contains(next), next != selected else { return }
-        inputBuffer?.commitAll()
-        GymKeyboard.dismiss()
-        forward = next > selected
-        vertical = vertically
-        transitioning = true
-        withAnimation(reduceMotion ? .easeOut(duration: 0.15) : .snappy(duration: 0.3), completionCriteria: .removed) {
-            select(next)
-        } completion: { transitioning = false }
-    }
-}
-
-enum TrainingVerticalPaging {
-    static let threshold: CGFloat = 55
-    static func destination(geometry: ScrollGeometry, from oldPhase: ScrollPhase, to newPhase: ScrollPhase,
-                            selected: Int, count: Int) -> Int? {
-        // Only a finger release can change cards; inertia and spring-back cannot.
-        guard oldPhase == .interacting, newPhase == .decelerating || newPhase == .idle,
-              count > 1, (0..<count).contains(selected) else { return nil }
-        let top = -geometry.contentInsets.top
-        let bottom = max(top, geometry.contentSize.height + geometry.contentInsets.bottom - geometry.containerSize.height)
-        if geometry.contentOffset.y <= top - threshold, selected > 0 { return selected - 1 }
-        if geometry.contentOffset.y >= bottom + threshold, selected + 1 < count { return selected + 1 }
-        return nil
-    }
-}
-
-private struct TrainingPagingPull: Equatable {
-    var top = 0
-    var bottom = 0
-
-    init() {}
-
-    init(geometry: ScrollGeometry) {
-        let topEdge = -geometry.contentInsets.top
-        let bottomEdge = max(topEdge, geometry.contentSize.height + geometry.contentInsets.bottom - geometry.containerSize.height)
-        func stage(_ distance: CGFloat) -> Int {
-            distance >= TrainingVerticalPaging.threshold ? 2 : (distance > 0 ? 1 : 0)
-        }
-        top = stage(topEdge - geometry.contentOffset.y)
-        bottom = stage(geometry.contentOffset.y - bottomEdge)
-    }
-}
-
-private struct TrainingPagingExcludedFrames: PreferenceKey {
-    static let defaultValue: [CGRect] = []
-    static func reduce(value: inout [CGRect], nextValue: () -> [CGRect]) { value += nextValue() }
 }
 
 struct TrainingEditorRow: Identifiable {

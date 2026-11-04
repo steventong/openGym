@@ -25,6 +25,24 @@ import XCTest
         XCTAssertEqual(L10n.format("ADMIN_LOGIN_NAME_OR_EMAIL", language: "en", arguments: ["{1}", "a@example.com"]), "{1} (or sign-in email a@example.com)") // 参数不再次展开
     }
 
+    func testExercisePagingCopyResolvesInBothLanguages() {
+        for (key, english, chinese) in [
+            ("PREVIOUS_EXERCISE_NAMED", "Previous exercise: Squat", "上一个动作：深蹲"),
+            ("NEXT_EXERCISE_NAMED", "Next exercise: Squat", "下一个动作：深蹲")
+        ] {
+            XCTAssertEqual(L10n.format(key, language: "en", arguments: ["Squat"]), english)
+            XCTAssertEqual(L10n.format(key, language: "zh", arguments: ["深蹲"]), chinese)
+        }
+        for (key, english, chinese) in [
+            ("KEEP_PULLING_DOWN_TO_VIEW", "Keep pulling down to view", "继续下拉查看"),
+            ("KEEP_PULLING_UP_TO_VIEW", "Keep pulling up to view", "继续上拉查看"),
+            ("RELEASE_TO_SWITCH_EXERCISE", "Release to switch", "松开切换")
+        ] {
+            XCTAssertEqual(L10n.format(key, language: "en"), english)
+            XCTAssertEqual(L10n.format(key, language: "zh"), chinese)
+        }
+    }
+
     func testLanguageSwitchUpdatesExerciseAndVocabularyWithoutChangingUserContent() {
         let original = L10n.preferences.language
         defer { L10n.preferences.language = original }

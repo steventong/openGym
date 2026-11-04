@@ -51,41 +51,41 @@ struct WorkoutView: View {
         .environment(\.inputCommitBuffer, store.liveInputBuffer)
         .onChange(of: scenePhase) { _, phase in if phase != .active { store.liveInputBuffer.commitAll() } }
         .onDisappear { store.liveInputBuffer.commitAll() }
+        .onChange(of: store.draft?.activeJSON["cur"] as? Int) { _, _ in showExerciseNote = false }
     }
     private var workoutContent: some View {
         GeometryReader { geometry in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    if let d = store.draft {
-                        if let note = d.activeJSON["note"] as? String, !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                            Text(note).font(.subheadline).foregroundStyle(GymTheme.muted)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .accessibilityIdentifier("live-workout-note-display")
-                        }
-                        // Keep health metrics off the phone page until their layout is settled.
-                        if !d.rawEntries.isEmpty {
-                            let index = min(max(0, d.activeJSON["cur"] as? Int ?? 0), d.rawEntries.count - 1)
+            Group {
+                if let d = store.draft, !d.rawEntries.isEmpty {
+                    TrainingExercisePager(selected: min(max(0, d.activeJSON["cur"] as? Int ?? 0), d.rawEntries.count - 1),
+                        names: d.rawEntries.map(name), select: store.selectLiveEntry) { index in
+                        VStack(alignment: .leading, spacing: 20) {
+                            workoutNote(d)
                             exerciseCard(d, index: index)
-                        } else {
-                            Spacer(minLength: 0)
-                            emptyWorkout
-                            Spacer(minLength: 0)
                         }
-                    } else {
-                        EmptyCard(icon: "figure.strengthtraining.traditional", title: L10n.text("START_WORKOUT" /* 开始训练 */))
-                        GreenButton(title: L10n.text("FREESTYLE" /* 自由训练 */), icon: "figure.strengthtraining.traditional") { store.startFreestyle() }
-                            .accessibilityIdentifier("start-freestyle-workout")
-                        let scheduled = store.scheduledRoutines(on: Date())
-                        if !scheduled.isEmpty { GreenButton(title: L10n.text("START_TODAY_S_WORKOUTS" /* 开始今日安排 */), icon: "play.fill") { store.start(scheduled) } }
-                        ForEach(store.routines) { r in GreenButton(title: r.name, icon: "play.fill") { store.start(r) } }
-                        if store.routines.isEmpty { GreenButton(title: L10n.text("GO_TO_ROUTINES" /* 前往训练计划 */)) { store.selectedTab = 1 } }
-                    }
-                }.padding(20)
-                    .frame(minHeight: store.draft?.rawEntries.isEmpty == true ? geometry.size.height : nil, alignment: .top)
-            }.scrollDismissesKeyboard(.interactively)
-                .modifier(TrainingExercisePaging(selected: store.draft?.activeJSON["cur"] as? Int ?? 0,
-                    names: store.draft?.rawEntries.map(name) ?? [], select: store.selectLiveEntry))
-                .keyboardDismissToolbar()
+                    }.id(d.id)
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20) {
+                            if let d = store.draft {
+                                workoutNote(d)
+                                Spacer(minLength: 0)
+                                emptyWorkout
+                                Spacer(minLength: 0)
+                            } else {
+                                EmptyCard(icon: "figure.strengthtraining.traditional", title: L10n.text("START_WORKOUT" /* 开始训练 */))
+                                GreenButton(title: L10n.text("FREESTYLE" /* 自由训练 */), icon: "figure.strengthtraining.traditional") { store.startFreestyle() }
+                                    .accessibilityIdentifier("start-freestyle-workout")
+                                let scheduled = store.scheduledRoutines(on: Date())
+                                if !scheduled.isEmpty { GreenButton(title: L10n.text("START_TODAY_S_WORKOUTS" /* 开始今日安排 */), icon: "play.fill") { store.start(scheduled) } }
+                                ForEach(store.routines) { r in GreenButton(title: r.name, icon: "play.fill") { store.start(r) } }
+                                if store.routines.isEmpty { GreenButton(title: L10n.text("GO_TO_ROUTINES" /* 前往训练计划 */)) { store.selectedTab = 1 } }
+                            }
+                        }.padding(20)
+                            .frame(minHeight: store.draft != nil ? geometry.size.height : nil, alignment: .top)
+                    }.scrollDismissesKeyboard(.interactively)
+                }
+            }.keyboardDismissToolbar()
         }
             .sheet(isPresented: $showWorkoutDetails) { WorkoutDetailsEditor() }
             .sheet(isPresented: $showExercisePicker) {
@@ -99,8 +99,8 @@ struct WorkoutView: View {
                     try store.reorderLiveExercises(order, expectedEntries: baseline, sessionID: draft.id)
                 }
             }
-            .confirmationDialog(L10n.text("SAVE_AND_SUBMIT_WORKOUT" /* 保存训练并提交？ */), isPresented: $confirmFinish, titleVisibility: .visible) {
-                Button(L10n.text("SAVE_AND_SUBMIT" /* 保存并提交 */)) { Task { await store.finish() } }
+            .confirmationDialog(L10n.text("SAVE_AND_SUBMIT_WORKOUT" /* 保存训练？ */), isPresented: $confirmFinish, titleVisibility: .visible) {
+                Button(L10n.text("SAVE_AND_SUBMIT_WORKOUT_A" /* 保存训练 */)) { Task { await store.finish() } }
                 Button(L10n.text("CONTINUE_WORKOUT" /* 继续训练 */), role: .cancel) {}
             }
             .confirmationDialog(L10n.text("DELETE_THIS_WORKOUT" /* 删除训练记录？ */), isPresented: $confirmDelete, titleVisibility: .visible) {
@@ -110,6 +110,13 @@ struct WorkoutView: View {
                 Text(L10n.text("THE_LOCAL_DRAFT_WILL_BE_DELETED_AND_ITS_TIMER_STOPPED_THIS_CANNOT" /* 将清除本次训练的本机草稿并停止计时，无法撤销。已提交的历史记录和训练计划不受影响。 */))
             }
             .task { while !Task.isCancelled { store.settleTimer(); try? await Task.sleep(for: .seconds(1)) } }
+    }
+    @ViewBuilder private func workoutNote(_ draft: TrainingDraft) -> some View {
+        if let note = draft.activeJSON["note"] as? String, !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            Text(note).font(.subheadline).foregroundStyle(GymTheme.muted)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityIdentifier("live-workout-note-display")
+        }
     }
     private var emptyWorkout: some View {
         VStack(spacing: 16) {
@@ -146,7 +153,7 @@ struct WorkoutView: View {
             Section(L10n.text("WORKOUT" /* 训练 */)) {
                 Button(L10n.text("WORKOUT_DETAILS" /* 训练详情 */), systemImage: "note.text") { store.liveInputBuffer.commitAll(); showWorkoutDetails = true }
                     .accessibilityIdentifier("workout-details-menu")
-                Button(L10n.text("SAVE_AND_SUBMIT_WORKOUT_A" /* 保存训练并提交 */), systemImage: "checkmark.circle") { confirmFinish = true }
+                Button(L10n.text("SAVE_AND_SUBMIT_WORKOUT_A" /* 保存训练 */), systemImage: "checkmark.circle") { confirmFinish = true }
                     .disabled(d.completedSets == 0 || store.workTimer != nil).accessibilityIdentifier("finish-workout")
                 Button(role: .destructive) { confirmDelete = true } label: {
                     Label(L10n.text("DELETE_WORKOUT_A" /* 删除训练 */), systemImage: "trash")
@@ -161,7 +168,7 @@ struct WorkoutView: View {
         let rows = entry["sets"] as? [[String: Any]] ?? []
         let previous = store.previousExerciseReference(entry, before: d.start.timeIntervalSince1970 * 1000, exclude: d.id)
         return TrainingExerciseEditor(
-            showingOptions: $showExerciseNote, entries: d.rawEntries, names: d.rawEntries.map(name),
+            showingOptions: Binding(get: { showExerciseNote && (store.draft?.activeJSON["cur"] as? Int ?? 0) == e }, set: { showExerciseNote = $0 }), entries: d.rawEntries, names: d.rawEntries.map(name),
             selected: Binding(get: { e }, set: { store.selectLiveEntry($0) }),
             rows: rows.enumerated().map { TrainingEditorRow(id: $0.element["nativeViewID"] as? String ?? "\(d.id)-\(e)-\($0.offset)", raw: $0.element, accessibilityIdentifier: "\(e)-\($0.offset)") },
             unit: d.unit, inputState: store.state.merging(["unit": d.unit]) { _, new in new }, previous: previous.text, previousNote: previous.note,
@@ -176,7 +183,7 @@ struct WorkoutView: View {
             removeSet: { store.removeLiveSet(entry: e, set: $0) },
             editSet: { store.liveRowAction(entry: e, set: $0, action: $1) },
             undoRemove: store.canUndoSetRemoval ? { store.undoSetRemoval() } : nil,
-            exerciseActions: { LiveExerciseManagement(showExerciseNote: { store.liveInputBuffer.commitAll(); showExerciseNote = true }) }
+            exerciseActions: { LiveExerciseManagement(entryIndex: e, showExerciseNote: { store.liveInputBuffer.commitAll(); store.selectLiveEntry(e); showExerciseNote = true }) }
         ) {
             if let timer = store.workTimer, timer["entry"] as? Int == e { timerCard(timer) }
         }
