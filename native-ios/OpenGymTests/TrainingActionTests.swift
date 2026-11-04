@@ -110,9 +110,11 @@ import UIKit
 
     func testSharedControlProtectionExpiresButExplicitAndParentDisablingRemain() async throws {
         var observations: [(Bool, Bool)] = []
-        func content(deadline: Date?, busy: Bool = false, parentDisabled: Bool = false) -> some View {
+        func content(deadline: Date?, busy: Bool = false, parentDisabled: Bool = false,
+                     systemDeadlinePassed: Bool = false) -> some View {
             TrainingActionControl(title: "完成本组", symbol: "checkmark",
-                timing: .init(readyAt: deadline), disabled: busy, readyHint: "准备好后开始下一组") { label in
+                timing: .init(readyAt: deadline), disabled: busy, quietReady: true,
+                systemDeadlinePassed: systemDeadlinePassed) { label in
                     Button {} label: {
                         label.background(ActionAvailabilityProbe(disabled: label.disabled) { observations.append(($0, $1)) })
                     }
@@ -133,11 +135,23 @@ import UIKit
         XCTAssertEqual(observations.last?.0, false)
         XCTAssertEqual(observations.last?.1, true)
 
-        controller.rootView = content(deadline: deadline, busy: true)
+        // WidgetKit can resolve the stale-state variant while archiving the
+        // view before the deadline. System expiry must override that old date.
+        let archivedDeadline = Date().addingTimeInterval(60)
+        controller.rootView = content(deadline: archivedDeadline)
         try await Task.sleep(for: .milliseconds(100))
         XCTAssertEqual(observations.last?.0, true)
         XCTAssertEqual(observations.last?.1, false)
-        controller.rootView = content(deadline: deadline, parentDisabled: true)
+        controller.rootView = content(deadline: archivedDeadline, systemDeadlinePassed: true)
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(observations.last?.0, false)
+        XCTAssertEqual(observations.last?.1, true)
+
+        controller.rootView = content(deadline: archivedDeadline, busy: true, systemDeadlinePassed: true)
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(observations.last?.0, true)
+        XCTAssertEqual(observations.last?.1, false)
+        controller.rootView = content(deadline: archivedDeadline, parentDisabled: true, systemDeadlinePassed: true)
         try await Task.sleep(for: .milliseconds(100))
         XCTAssertEqual(observations.last?.0, false)
         XCTAssertEqual(observations.last?.1, false)
@@ -162,8 +176,6 @@ import UIKit
                         state.actionReadyAt = phase == "protected" ? now.addingTimeInterval(5) : nil
                         state.busyTitle = phase == "busy" ? (language == "zh" ? "正在保存" : "Saving") : nil
                         let view = WorkoutActivityContent(state: state, island: island)
-                            .padding(island ? EdgeInsets(top: 4, leading: 12, bottom: 10, trailing: 12)
-                                : EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12))
                             .environment(\.colorScheme, .dark).environment(\.dynamicTypeSize, .large)
                             .frame(width: width).background(Color(white: 0.07))
                         let controller = UIHostingController(rootView: view)

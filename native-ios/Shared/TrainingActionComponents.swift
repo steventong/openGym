@@ -1,5 +1,58 @@
 import SwiftUI
 
+enum TrainingDisplayStyle {
+    static let green = Color(red: 0.47, green: 0.89, blue: 0.42)
+    static let summaryHeight: CGFloat = 30
+    static let actionGap: CGFloat = 14
+}
+
+struct TrainingExerciseTitle: View {
+    let title: String
+    var scale: CGFloat = 1
+
+    var body: some View {
+        Text(title).font(.system(size: 15 * scale, weight: .semibold))
+            .foregroundStyle(.white)
+            .lineLimit(1, reservesSpace: true).minimumScaleFactor(0.75)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+struct TrainingExercisePosition: View {
+    let position: String
+    var scale: CGFloat = 1
+
+    var body: some View {
+        Text(position).font(.system(size: 9 * scale)).foregroundStyle(.secondary)
+            .lineLimit(1).minimumScaleFactor(0.65)
+            .fixedSize(horizontal: true, vertical: false)
+    }
+}
+
+struct TrainingSetSummary: View {
+    let weight: String
+    let detail: String
+    let label: String
+    var scale: CGFloat = 1
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 4 * scale) {
+            HStack(alignment: .firstTextBaseline, spacing: 5 * scale) {
+                Text(weight).font(.system(size: 23 * scale, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+                Text(detail).font(.system(size: 11 * scale)).foregroundStyle(.secondary)
+            }.lineLimit(1).minimumScaleFactor(0.65)
+            Spacer(minLength: 0)
+            Text(label).font(.system(size: 23 * scale, weight: .semibold, design: .rounded))
+                .foregroundStyle(TrainingDisplayStyle.green)
+                .multilineTextAlignment(.trailing).lineLimit(1).minimumScaleFactor(0.65)
+        }
+        .padding(.horizontal, 9 * scale)
+        .frame(maxWidth: .infinity)
+        .frame(height: TrainingDisplayStyle.summaryHeight * scale)
+    }
+}
+
 enum TrainingCountdownPresentation {
     case seconds
     case systemTimer
@@ -65,10 +118,11 @@ struct TrainingActionControl<Content: View>: View {
     var disabled = false
     var tint: Color = .green
     var scale: CGFloat = 1
-    var readyHint: String? = nil
+    var quietReady = false
     var language: String? = nil
-    // An invalidation input for ActivityKit's stale-date redraw, not permission to
-    // unlock early: the absolute deadline remains authoritative on every surface.
+    // ActivityKit's stale date is the protection deadline. Its system-rendered
+    // state must unlock the archived view even when Date() was evaluated earlier.
+    // Command execution still checks the persisted absolute deadline.
     var systemDeadlinePassed = false
     var countdownPresentation: TrainingCountdownPresentation = .seconds
     @ViewBuilder var control: (TrainingActionLabel) -> Content
@@ -77,12 +131,12 @@ struct TrainingActionControl<Content: View>: View {
     @State private var evaluatedAt = Date()
 
     var body: some View {
-        let protected = timing.isProtected(at: max(evaluatedAt, Date()))
+        let protected = !systemDeadlinePassed && timing.isProtected(at: max(evaluatedAt, Date()))
         let unavailable = disabled || protected
         control(TrainingActionLabel(title: title, symbol: symbol,
             protectionEnd: protected ? timing.readyAt : nil,
             disabled: unavailable, tint: tint, scale: scale,
-            restEnd: timing.restEnd, readyHint: readyHint, language: language, countdownPresentation: countdownPresentation))
+            restEnd: timing.restEnd, quietReady: quietReady, language: language, countdownPresentation: countdownPresentation))
             .buttonStyle(.plain).disabled(unavailable)
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: unavailable)
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: title)
@@ -108,13 +162,14 @@ struct TrainingActionLabel: View {
     let tint: Color
     var scale: CGFloat = 1
     var restEnd: Date? = nil
-    var readyHint: String? = nil
+    var quietReady = false
     var language: String? = nil
     var countdownPresentation: TrainingCountdownPresentation = .seconds
     @Environment(\.isEnabled) private var isEnabled
 
     private var unavailable: Bool { disabled || !isEnabled }
-    private var isQuietReady: Bool { restEnd == nil && readyHint != nil }
+    private var hidesRestAction: Bool { restEnd != nil && protectionEnd != nil }
+    private var isQuietReady: Bool { restEnd == nil && quietReady }
     private var foreground: Color {
         unavailable ? .secondary : (isQuietReady ? tint : .black)
     }
@@ -142,24 +197,21 @@ struct TrainingActionLabel: View {
                     HStack(alignment: .firstTextBaseline, spacing: 2 * scale) {
                         TrainingCountdownText(end: restEnd, minimumIntegerDigits: 3, suffix: "", presentation: countdownPresentation)
                             .font(.system(size: 32 * scale, weight: .semibold, design: .monospaced))
+                            .multilineTextAlignment(.trailing)
                             .frame(width: countdownPresentation == .systemTimer ? 120 * scale : nil, alignment: .trailing)
                         if countdownPresentation == .seconds {
                             Text("S").font(.system(size: 20 * scale, weight: .semibold))
                         }
                     }.layoutPriority(1)
-                }
-            } else if let readyHint {
-                Text(readyHint).font(.system(size: 10 * scale))
+                }.padding(.leading, 12 * scale).padding(.trailing, 6 * scale)
             }
             HStack(spacing: 4 * scale) {
                 Image(systemName: symbol)
                 Text(title).contentTransition(.opacity)
-                if let protectionEnd {
-                    TrainingCountdownText(end: protectionEnd, presentation: countdownPresentation)
-                        .font(.system(size: 10 * scale, weight: .medium))
-                        .frame(width: 24 * scale, alignment: .trailing)
-                }
             }.font(.system(size: (restEnd == nil ? 15 : 12) * scale, weight: .semibold))
-        }.padding(.horizontal, 12 * scale)
+                .padding(.horizontal, 12 * scale)
+                .opacity(hidesRestAction ? 0 : 1)
+                .accessibilityHidden(hidesRestAction)
+        }
     }
 }

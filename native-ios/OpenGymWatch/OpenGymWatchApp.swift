@@ -34,7 +34,7 @@ import HealthKit
 }
 struct WatchRemoteView: View {
     let store: WatchRemoteStore
-    private let green = Color(red: 0.47, green: 0.89, blue: 0.42)
+    private let green = TrainingDisplayStyle.green
 
     var body: some View {
         Group {
@@ -46,8 +46,9 @@ struct WatchRemoteView: View {
                 }
             } else {
                 GeometryReader { geometry in
-                    dashboard(scale: min(1, geometry.size.height / 191, geometry.size.width / 184))
+                    dashboard(scale: min(1, (geometry.size.height - 8) / 183, geometry.size.width / 184))
                 }
+                .ignoresSafeArea(.container, edges: .bottom)
             }
         }
         .task { store.refresh() }
@@ -55,39 +56,27 @@ struct WatchRemoteView: View {
 
     private func dashboard(scale: CGFloat) -> some View {
         return VStack(spacing: 4 * scale) {
-            Text(store.snapshot.exercise).font(.system(size: 15 * scale, weight: .semibold))
-                .lineLimit(1, reservesSpace: true).minimumScaleFactor(0.75)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(height: 22 * scale)
-            setSummary(scale: scale).frame(height: 52 * scale)
+            HStack(alignment: .firstTextBaseline, spacing: 4 * scale) {
+                TrainingExerciseTitle(title: store.snapshot.exercise, scale: scale)
+                TrainingExercisePosition(position: store.snapshot.exercisePosition, scale: scale)
+            }.frame(height: 22 * scale)
+            setSummary(scale: scale)
             metrics(scale: scale).frame(height: 43 * scale)
+            Spacer(minLength: (TrainingDisplayStyle.actionGap - 4) * scale)
             WatchPrimaryActionButton(store: store, scale: scale, tint: green)
                 .frame(height: 62 * scale)
         }
         .padding(.horizontal, 5)
+        .padding(.bottom, 8)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
     }
 
     private func setSummary(scale: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 4 * scale) {
-            HStack(alignment: .firstTextBaseline, spacing: 4 * scale) {
-                Text(store.snapshot.nextSet?.label ?? L10n.text("ALL_SETS_COMPLETE" /* 全部组已完成 */))
-                    .font(.system(size: 10 * scale, weight: .medium)).foregroundStyle(green)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Text(store.snapshot.exercisePosition)
-                    .font(.system(size: 9 * scale)).foregroundStyle(.secondary)
-            }.lineLimit(1).minimumScaleFactor(0.65)
-            HStack(alignment: .firstTextBaseline, spacing: 5 * scale) {
-                Text(store.snapshot.nextSet?.weight ?? L10n.text("SAVE_ON_IPHONE" /* 请在 iPhone 保存 */))
-                    .font(.system(size: 23 * scale, weight: .semibold, design: .rounded))
-                Text(store.snapshot.nextSet?.detail ?? "")
-                    .font(.system(size: 11 * scale)).foregroundStyle(.secondary)
-            }.lineLimit(1).minimumScaleFactor(0.65)
-        }
-        .padding(.horizontal, 9 * scale)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .background(.white.opacity(0.09), in: RoundedRectangle(cornerRadius: 12 * scale))
+        TrainingSetSummary(weight: store.snapshot.nextSet?.weight ?? L10n.text("SAVE_ON_IPHONE" /* 请在 iPhone 保存 */),
+            detail: store.snapshot.nextSet?.detail ?? "",
+            label: store.snapshot.nextSet?.label ?? L10n.text("ALL_SETS_COMPLETE" /* 全部组已完成 */), scale: scale)
+            .background(.white.opacity(0.09), in: RoundedRectangle(cornerRadius: 12 * scale))
     }
 
     private func metrics(scale: CGFloat) -> some View {
@@ -122,7 +111,7 @@ private struct WatchPrimaryActionButton: View {
         TrainingActionControl(title: action.title, symbol: action.symbol, timing: store.snapshot.actionTiming,
             disabled: store.isDisabled(action, includeProtection: false), tint: tint,
             scale: scale,
-            readyHint: action == .complete ? L10n.text("READY_FOR_YOUR_NEXT_SET" /* 准备好后开始下一组 */) : nil) { label in
+            quietReady: action == .complete) { label in
                 Button { store.performPrimaryAction() } label: { label }
             }.accessibilityIdentifier("watch-primary-action")
     }

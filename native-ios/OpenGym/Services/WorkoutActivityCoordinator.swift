@@ -33,8 +33,38 @@ import UIKit
     private var pending = false
     private var pendingTraces: Set<String> = []
     private var actionMessage: String?
+    private var protectionRefreshTask: Task<Void, Never>?
+    private var scheduledProtectionDeadline: Date?
 
     init(store: GymStore) { self.store = store }
+
+    private func scheduleProtectionRefresh(for deadline: Date?) {
+        let futureDeadline = deadline.flatMap { $0 > Date() ? $0 : nil }
+        guard futureDeadline != scheduledProtectionDeadline else { return }
+        protectionRefreshTask?.cancel()
+        scheduledProtectionDeadline = futureDeadline
+        guard let futureDeadline else { protectionRefreshTask = nil; return }
+
+        // staleDate can be coalesced by the system for minutes. Keep this brief
+        // handoff alive when an intent runs in the background, then publish an
+        // unprotected snapshot instead of waiting for the stale-state redraw.
+        let backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "Training action unlock") { [weak self] in
+            Task { @MainActor in self?.protectionRefreshTask?.cancel() }
+        }
+        protectionRefreshTask = Task { [weak self] in
+            defer {
+                if backgroundTask != .invalid { UIApplication.shared.endBackgroundTask(backgroundTask) }
+            }
+            do { try await Task.sleep(for: .seconds(max(0, futureDeadline.timeIntervalSinceNow))) }
+            catch { return }
+            guard !Task.isCancelled, let self,
+                  self.scheduledProtectionDeadline == futureDeadline else { return }
+            self.scheduledProtectionDeadline = nil
+            self.protectionRefreshTask = nil
+            WorkoutActivityDiagnostics.record("activity.protection.expired")
+            await self.flush()
+        }
+    }
 
     static func content(for state: WorkoutActivityAttributes.ContentState, now: Date = Date()) -> ActivityContent<WorkoutActivityAttributes.ContentState> {
         // The protection deadline requests one system redraw. Once it has
@@ -87,6 +117,7 @@ import UIKit
         }
         let snapshot = store.watchSnapshot()
         var state = store.workoutActivityState()
+        scheduleProtectionRefresh(for: state?.actionReadyAt)
         if let actionMessage { state?.message = actionMessage; self.actionMessage = nil }
         var fields = WorkoutActivityDiagnostics.state(store, snapshot: snapshot)
         fields["has_content"] = String(state != nil)

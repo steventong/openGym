@@ -56,19 +56,27 @@ import ActivityKit
         let initial = try XCTUnwrap(store.workoutActivityState())
         let activity = try Activity.request(attributes: WorkoutActivityAttributes(account: snapshot.account,
             sessionID: try XCTUnwrap(snapshot.sessionID)), content: ActivityContent(state: initial, staleDate: nil), pushType: nil)
+        let coordinator = WorkoutActivityCoordinator(store: store)
+        store.liveActivity = coordinator
+        defer { store.liveActivity = nil }
         do {
             try await Task.sleep(for: .seconds(3))
             XCTAssertNil(store.performActivityCommand(try XCTUnwrap(initial.command)))
             let resting = try XCTUnwrap(store.workoutActivityState())
             XCTAssertNotNil(resting.restEnd)
-            await activity.update(WorkoutActivityCoordinator.content(for: resting))
+            await coordinator.flush()
             print("ACTIVITY_RENDER_QA_REST_UPDATED")
             try await Task.sleep(for: .seconds(30))
+            XCTAssertNil(activity.content.staleDate, "Protection expiry must publish without waiting for system stale delivery")
+            XCTAssertFalse(activity.content.state.actionTiming.isProtected(at: Date()))
             XCTAssertNil(store.performActivityCommand(try XCTUnwrap(resting.restCommand)))
             let ready = try XCTUnwrap(store.workoutActivityState())
-            await activity.update(WorkoutActivityCoordinator.content(for: ready))
+            XCTAssertNil(ready.restEnd)
+            await coordinator.flush()
             print("ACTIVITY_RENDER_QA_READY_UPDATED")
             try await Task.sleep(for: .seconds(20))
+            XCTAssertNil(activity.content.staleDate)
+            XCTAssertFalse(activity.content.state.actionTiming.isProtected(at: Date()))
             await activity.end(nil, dismissalPolicy: .immediate)
         } catch {
             await activity.end(nil, dismissalPolicy: .immediate)

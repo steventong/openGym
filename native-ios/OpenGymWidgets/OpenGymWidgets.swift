@@ -9,26 +9,20 @@ struct WorkoutLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: WorkoutActivityAttributes.self) { context in
             WorkoutActivityContent(state: context.state, systemDeadlinePassed: context.isStale)
-                .padding(12)
                 .activityBackgroundTint(Color(white: 0.07))
                 .activitySystemActionForegroundColor(.green)
                 .widgetURL(URL(string: "opengym://workout"))
         } dynamicIsland: { context in
-            DynamicIsland {
+            let content = WorkoutActivityContent(state: context.state, island: true, systemDeadlinePassed: context.isStale)
+            return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Text(context.state.trainingName).font(.caption).foregroundStyle(.secondary).lineLimit(1).padding(.leading, 12)
+                    content.islandLeading
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text(context.state.restEnd != nil ? L10n.format("REST_BETWEEN_SETS" /* 组间休息 */, language: context.state.language ?? L10n.language) : context.state.position)
-                        .font(.caption).foregroundStyle(.secondary).lineLimit(1)
-                        .frame(width: 76, alignment: .trailing).padding(.trailing, 12)
+                    content.islandTrailing
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    WorkoutActivityContent(state: context.state, island: true, systemDeadlinePassed: context.isStale)
-                        .padding(.top, 4)
-                        // Keep the full-width control inside the island's curved edge.
-                        .padding(.horizontal, 12)
-                        .padding(.bottom, 10)
+                    content
                 }
             } compactLeading: {
                 HStack(spacing: 4) {

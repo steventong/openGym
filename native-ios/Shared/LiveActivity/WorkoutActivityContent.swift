@@ -7,30 +7,49 @@ struct WorkoutActivityContent: View {
     var island = false
     var systemDeadlinePassed = false
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if !island {
-                HStack {
-                    Text(state.trainingName).lineLimit(1)
-                    Spacer(minLength: 8)
-                    Text(state.position).lineLimit(1)
-                }.font(.caption).foregroundStyle(.secondary)
-            }
-            Text(state.exercise.isEmpty ? L10n.format("READY_TO_START", language: state.language ?? L10n.language) : state.exercise)
-                .font(.headline).lineLimit(1).minimumScaleFactor(0.8)
-            setSummary.font(.subheadline).lineLimit(1).minimumScaleFactor(0.75)
-            actionControl.accessibilityHint(state.message)
-        }.foregroundStyle(.white)
+    private static func contentInsets(island: Bool) -> EdgeInsets {
+        // Move space from above the island's button to below it so the whole
+        // control clears the system's curved lower edge within the same budget.
+        EdgeInsets(top: island ? 0 : 10, leading: 12,
+            bottom: TrainingDisplayStyle.actionGap + (island ? 6 : 0), trailing: 12)
     }
 
-    private var setSummary: Text {
-        let label = Text(state.setLabel).foregroundColor(.green)
-        if let weight = state.setWeight {
-            return Text("\(label)  \(Text(weight).foregroundColor(.white))  \(Text(state.setDetail ?? "").foregroundColor(.secondary))")
+    // WidgetKit places these same header views around the camera. All styling
+    // stays here; the widget only supplies the system's expanded-region wrappers.
+    var islandLeading: some View {
+        exerciseTitle.padding(.leading, 12)
+    }
+
+    var islandTrailing: some View {
+        exercisePosition.frame(height: 18, alignment: .bottom).padding(.trailing, 12)
+    }
+
+    private var exerciseTitle: some View {
+        TrainingExerciseTitle(title: state.exercise.isEmpty
+            ? L10n.format("READY_TO_START", language: state.language ?? L10n.language)
+            : state.exercise)
+    }
+
+    private var exercisePosition: some View {
+        TrainingExercisePosition(position: state.position)
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            if !island {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    exerciseTitle
+                    exercisePosition
+                }.frame(height: 22).padding(.bottom, 4)
+            }
+            // Older activities may only contain the combined detail string.
+            TrainingSetSummary(weight: state.setWeight ?? state.detail,
+                detail: state.setWeight == nil ? "" : (state.setDetail ?? ""), label: state.setLabel)
+            Color.clear.frame(height: TrainingDisplayStyle.actionGap - (island ? 6 : 0)).accessibilityHidden(true)
+            actionControl.accessibilityHint(state.message)
         }
-        // Preserve data from a still-running activity encoded by an older app version.
-        if !state.detail.isEmpty { return Text("\(label)  \(Text(state.detail).foregroundColor(.secondary))") }
-        return label
+        .padding(Self.contentInsets(island: island))
+        .foregroundStyle(.white)
     }
 
     private var actionControl: some View {
@@ -39,9 +58,8 @@ struct WorkoutActivityContent: View {
         let command = rest ? state.restCommand : state.command
         let symbol = state.busyTitle != nil ? "arrow.triangle.2.circlepath" : (rest ? "forward.end.fill" : "checkmark")
         return TrainingActionControl(title: title, symbol: symbol, timing: state.actionTiming,
-            disabled: state.busyTitle != nil, tint: Color(red: 0.47, green: 0.89, blue: 0.42),
-            readyHint: !rest && command != nil && state.busyTitle == nil && state.setWeight != nil
-                ? L10n.format("READY_FOR_YOUR_NEXT_SET" /* 准备好后开始下一组 */, language: state.language ?? L10n.language) : nil,
+            disabled: state.busyTitle != nil, tint: TrainingDisplayStyle.green,
+            quietReady: !rest && command != nil && state.busyTitle == nil && state.setWeight != nil,
             language: state.language, systemDeadlinePassed: systemDeadlinePassed, countdownPresentation: .systemTimer) { label in
                 if let command {
                     Button(intent: WorkoutActivityIntent(command: command)) { label }
