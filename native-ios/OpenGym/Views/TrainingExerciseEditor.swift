@@ -192,13 +192,16 @@ struct TrainingExercisePaging: ViewModifier {
     @Environment(\.inputCommitBuffer) private var inputBuffer
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let selected: Int
-    let count: Int
+    let names: [String]
     let select: (Int) -> Void
+    private var count: Int { names.count }
     @GestureState(resetTransaction: Transaction(animation: .spring(response: 0.3, dampingFraction: 0.85))) private var drag = PageDrag()
     @State private var forward = true
     @State private var vertical = false
     @State private var transitioning = false
     @State private var excludedFrames: [CGRect] = []
+    @State private var pull = TrainingPagingPull()
+    @State private var interacting = false
 
     private struct PageDrag {
         var horizontal: Bool?
@@ -210,7 +213,11 @@ struct TrainingExercisePaging: ViewModifier {
             ZStack {
                 content
                     .scrollBounceBehavior(.always, axes: .vertical)
+                    .onScrollGeometryChange(for: TrainingPagingPull.self) { geometry in
+                        TrainingPagingPull(geometry: geometry)
+                    } action: { _, value in pull = value }
                     .onScrollPhaseChange { oldPhase, newPhase, context in
+                        interacting = newPhase == .interacting
                         if let next = TrainingVerticalPaging.destination(
                             geometry: context.geometry, from: oldPhase, to: newPhase,
                             selected: selected, count: count) {
@@ -224,12 +231,47 @@ struct TrainingExercisePaging: ViewModifier {
                     .offset(x: reduceMotion ? 0 : drag.offset)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
+            .overlay(alignment: .top) {
+                if interacting, pull.top > 0, selected > 0, names.indices.contains(selected - 1) {
+                    pagingHint(name: names[selected - 1], previous: true, stage: pull.top)
+                }
+            }
+            .overlay(alignment: .bottom) {
+                if interacting, pull.bottom > 0, names.indices.contains(selected + 1) {
+                    pagingHint(name: names[selected + 1], previous: false, stage: pull.bottom)
+                }
+            }
             .clipped()
             .contentShape(Rectangle())
             .simultaneousGesture(pagingGesture(width: geometry.size.width))
         }
         .onPreferenceChange(TrainingPagingExcludedFrames.self) { excludedFrames = $0 }
+        .onChange(of: selected) { _, _ in pull = TrainingPagingPull(); interacting = false }
         .onDisappear { transitioning = false }
+    }
+
+    private func pagingHint(name: String, previous: Bool, stage: Int) -> some View {
+        let ready = interacting && stage == 2
+        let instruction = ready ? L10n.text("RELEASE_TO_SWITCH_EXERCISE" /* 松开切换 */)
+            : previous
+                ? L10n.text("KEEP_PULLING_DOWN_TO_VIEW" /* 继续下拉查看 */)
+                : L10n.text("KEEP_PULLING_UP_TO_VIEW" /* 继续上拉查看 */)
+        return HStack(spacing: 8) {
+            Image(systemName: ready ? "arrow.turn.down.right" : (previous ? "arrow.down" : "arrow.up"))
+                .accessibilityHidden(true)
+            VStack(spacing: 3) {
+                Text(instruction).font(.caption2)
+                Text(previous ? L10n.text("PREVIOUS_EXERCISE_NAMED", name) : L10n.text("NEXT_EXERCISE_NAMED", name))
+                    .font(.caption).lineLimit(2).multilineTextAlignment(.center)
+            }
+        }
+        .foregroundStyle(ready ? GymTheme.green : GymTheme.muted)
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20).padding(.vertical, 8)
+        .background(GymTheme.background)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier(previous ? "previous-exercise-pull-hint" : "next-exercise-pull-hint")
+        .allowsHitTesting(false)
     }
 
     private func pagingGesture(width: CGFloat) -> some Gesture {
@@ -282,6 +324,7 @@ struct TrainingExercisePaging: ViewModifier {
 }
 
 enum TrainingVerticalPaging {
+    static let threshold: CGFloat = 55
     static func destination(geometry: ScrollGeometry, from oldPhase: ScrollPhase, to newPhase: ScrollPhase,
                             selected: Int, count: Int) -> Int? {
         // Only a finger release can change cards; inertia and spring-back cannot.
@@ -289,10 +332,26 @@ enum TrainingVerticalPaging {
               count > 1, (0..<count).contains(selected) else { return nil }
         let top = -geometry.contentInsets.top
         let bottom = max(top, geometry.contentSize.height + geometry.contentInsets.bottom - geometry.containerSize.height)
-        let threshold: CGFloat = 55
         if geometry.contentOffset.y <= top - threshold, selected > 0 { return selected - 1 }
         if geometry.contentOffset.y >= bottom + threshold, selected + 1 < count { return selected + 1 }
         return nil
+    }
+}
+
+private struct TrainingPagingPull: Equatable {
+    var top = 0
+    var bottom = 0
+
+    init() {}
+
+    init(geometry: ScrollGeometry) {
+        let topEdge = -geometry.contentInsets.top
+        let bottomEdge = max(topEdge, geometry.contentSize.height + geometry.contentInsets.bottom - geometry.containerSize.height)
+        func stage(_ distance: CGFloat) -> Int {
+            distance >= TrainingVerticalPaging.threshold ? 2 : (distance > 0 ? 1 : 0)
+        }
+        top = stage(topEdge - geometry.contentOffset.y)
+        bottom = stage(geometry.contentOffset.y - bottomEdge)
     }
 }
 

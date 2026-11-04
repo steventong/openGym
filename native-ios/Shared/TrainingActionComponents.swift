@@ -1,28 +1,27 @@
 import SwiftUI
 
-/// System-driven text updates do not invalidate the enclosing button or page.
+enum TrainingCountdownPresentation {
+    case seconds
+    case systemTimer
+}
+
+/// Live Activities use WidgetKit's native timer text. App and Watch seconds
+/// tick only this leaf view, without rebuilding their enclosing control.
 struct TrainingCountdownText: View {
     let end: Date
     var pausedRemaining: TimeInterval? = nil
     var minimumIntegerDigits = 1
     var suffix = "S"
+    var presentation: TrainingCountdownPresentation = .seconds
 
     var body: some View {
         Group {
             if let pausedRemaining {
                 Text(TrainingCountdownSecondsStyle(end: end, minimumIntegerDigits: minimumIntegerDigits, suffix: suffix)
                     .formattedSeconds(pausedRemaining))
-            } else if #available(iOS 18, watchOS 11, *) {
-                // Live Activities are decoded in a system renderer that cannot
-                // resolve app-defined DiscreteFormatStyle types. Keep the live
-                // format entirely in Foundation; append our shared unit as Text.
-                ZStack(alignment: .trailing) {
-                    Text(String(repeating: "0", count: minimumIntegerDigits) + suffix).hidden()
-                    Text("\(Text(.dateRange(endingAt: Self.displayDeadline(end)), format: Self.secondsFormat))\(suffix)")
-                        .fixedSize()
-                }
+            } else if presentation == .systemTimer {
+                Text(timerInterval: Self.timerInterval(endingAt: end), countsDown: true, showsHours: false)
             } else {
-                // watchOS 10 fallback: only this text has a periodic timeline.
                 TimelineView(.periodic(from: .now, by: 1)) { context in
                     Text(TrainingCountdownSecondsStyle(end: end,
                         minimumIntegerDigits: minimumIntegerDigits, suffix: suffix).format(context.date))
@@ -31,20 +30,12 @@ struct TrainingCountdownText: View {
         }.monospacedDigit().contentTransition(.numericText(countsDown: true))
     }
 
-    @available(iOS 18, watchOS 11, *)
-    static var secondsFormat: Date.ComponentsFormatStyle {
-        var format = Date.ComponentsFormatStyle.timeDuration
-        format.fields = [.second]
-        format.locale = Locale(identifier: "en_US_POSIX")
-        return format
+    static func timerInterval(endingAt end: Date, now: Date = Date()) -> ClosedRange<Date> {
+        now...max(now, end)
     }
-
-    // Foundation truncates fractional seconds; shift by just under one second
-    // to retain the existing ceil-to-seconds display. dateRange clamps at zero.
-    static func displayDeadline(_ end: Date) -> Date { end.addingTimeInterval(0.999999) }
 }
 
-// Static formatting only (paused timers and the watchOS 10 local timeline).
+// Static formatting only (paused timers and the App/Watch local timeline).
 // Never pass this app-defined type to Text's TimeDataSource initializer.
 struct TrainingCountdownSecondsStyle {
     var end: Date
@@ -79,6 +70,7 @@ struct TrainingActionControl<Content: View>: View {
     // An invalidation input for ActivityKit's stale-date redraw, not permission to
     // unlock early: the absolute deadline remains authoritative on every surface.
     var systemDeadlinePassed = false
+    var countdownPresentation: TrainingCountdownPresentation = .seconds
     @ViewBuilder var control: (TrainingActionLabel) -> Content
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -90,7 +82,7 @@ struct TrainingActionControl<Content: View>: View {
         control(TrainingActionLabel(title: title, symbol: symbol,
             protectionEnd: protected ? timing.readyAt : nil,
             disabled: unavailable, tint: tint, scale: scale,
-            restEnd: timing.restEnd, readyHint: readyHint, language: language))
+            restEnd: timing.restEnd, readyHint: readyHint, language: language, countdownPresentation: countdownPresentation))
             .buttonStyle(.plain).disabled(unavailable)
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: unavailable)
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: title)
@@ -118,6 +110,7 @@ struct TrainingActionLabel: View {
     var restEnd: Date? = nil
     var readyHint: String? = nil
     var language: String? = nil
+    var countdownPresentation: TrainingCountdownPresentation = .seconds
     @Environment(\.isEnabled) private var isEnabled
 
     private var unavailable: Bool { disabled || !isEnabled }
@@ -147,10 +140,12 @@ struct TrainingActionLabel: View {
                         .font(.system(size: 10 * scale, weight: .medium))
                     Spacer(minLength: 2)
                     HStack(alignment: .firstTextBaseline, spacing: 2 * scale) {
-                        TrainingCountdownText(end: restEnd, minimumIntegerDigits: 3, suffix: "")
+                        TrainingCountdownText(end: restEnd, minimumIntegerDigits: 3, suffix: "", presentation: countdownPresentation)
                             .font(.system(size: 32 * scale, weight: .semibold, design: .monospaced))
-                        Text("S")
-                            .font(.system(size: 20 * scale, weight: .semibold))
+                            .frame(width: countdownPresentation == .systemTimer ? 120 * scale : nil, alignment: .trailing)
+                        if countdownPresentation == .seconds {
+                            Text("S").font(.system(size: 20 * scale, weight: .semibold))
+                        }
                     }.layoutPriority(1)
                 }
             } else if let readyHint {
@@ -160,7 +155,7 @@ struct TrainingActionLabel: View {
                 Image(systemName: symbol)
                 Text(title).contentTransition(.opacity)
                 if let protectionEnd {
-                    TrainingCountdownText(end: protectionEnd)
+                    TrainingCountdownText(end: protectionEnd, presentation: countdownPresentation)
                         .font(.system(size: 10 * scale, weight: .medium))
                         .frame(width: 24 * scale, alignment: .trailing)
                 }

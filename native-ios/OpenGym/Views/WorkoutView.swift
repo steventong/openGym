@@ -84,7 +84,7 @@ struct WorkoutView: View {
                     .frame(minHeight: store.draft?.rawEntries.isEmpty == true ? geometry.size.height : nil, alignment: .top)
             }.scrollDismissesKeyboard(.interactively)
                 .modifier(TrainingExercisePaging(selected: store.draft?.activeJSON["cur"] as? Int ?? 0,
-                    count: store.draft?.rawEntries.count ?? 0, select: store.selectLiveEntry))
+                    names: store.draft?.rawEntries.map(name) ?? [], select: store.selectLiveEntry))
                 .keyboardDismissToolbar()
         }
             .sheet(isPresented: $showWorkoutDetails) { WorkoutDetailsEditor() }

@@ -3989,6 +3989,20 @@ nonisolated extension LocalizedStringResource {
     }
 
     /**
+     Localized string for key “KEEP_PULLING_DOWN_TO_VIEW” in table “Localizable.xcstrings”.
+     */
+    static var keepPullingDownToView: LocalizedStringResource {
+        LocalizedStringResource("KEEP_PULLING_DOWN_TO_VIEW", table: "Localizable", bundle: resourceBundleDescription)
+    }
+
+    /**
+     Localized string for key “KEEP_PULLING_UP_TO_VIEW” in table “Localizable.xcstrings”.
+     */
+    static var keepPullingUpToView: LocalizedStringResource {
+        LocalizedStringResource("KEEP_PULLING_UP_TO_VIEW", table: "Localizable", bundle: resourceBundleDescription)
+    }
+
+    /**
      训练时保持屏幕常亮
      
      Localized string for key “KEEP_SCREEN_AWAKE_DURING_WORKOUTS” in table “Localizable.xcstrings”.
@@ -4763,6 +4777,13 @@ nonisolated extension LocalizedStringResource {
     }
 
     /**
+     Localized string for key “NEXT_EXERCISE_NAMED” in table “Localizable.xcstrings”.
+     */
+    static func nextExerciseNamed(_ arg1: String) -> LocalizedStringResource {
+        LocalizedStringResource("NEXT_EXERCISE_NAMED", defaultValue: "\(arg1)", table: "Localizable", bundle: resourceBundleDescription)
+    }
+
+    /**
      下一轮从 {0} 开始。
      
      Localized string for key “NEXT_ROUND_STARTS_COUNT” in table “Localizable.xcstrings”.
@@ -5494,6 +5515,13 @@ nonisolated extension LocalizedStringResource {
     }
 
     /**
+     Localized string for key “PREVIOUS_EXERCISE_NAMED” in table “Localizable.xcstrings”.
+     */
+    static func previousExerciseNamed(_ arg1: String) -> LocalizedStringResource {
+        LocalizedStringResource("PREVIOUS_EXERCISE_NAMED", defaultValue: "\(arg1)", table: "Localizable", bundle: resourceBundleDescription)
+    }
+
+    /**
      上一周
      
      Localized string for key “PREVIOUS_WEEK” in table “Localizable.xcstrings”.
@@ -5566,12 +5594,26 @@ nonisolated extension LocalizedStringResource {
     }
 
     /**
+     Localized string for key “PULL_DOWN_TO_VIEW” in table “Localizable.xcstrings”.
+     */
+    static var pullDownToView: LocalizedStringResource {
+        LocalizedStringResource("PULL_DOWN_TO_VIEW", table: "Localizable", bundle: resourceBundleDescription)
+    }
+
+    /**
      单杠
      
      Localized string for key “PULL_UP_BAR_A” in table “Localizable.xcstrings”.
      */
     static var pullUpBarA: LocalizedStringResource {
         LocalizedStringResource("PULL_UP_BAR_A", table: "Localizable", bundle: resourceBundleDescription)
+    }
+
+    /**
+     Localized string for key “PULL_UP_TO_VIEW” in table “Localizable.xcstrings”.
+     */
+    static var pullUpToView: LocalizedStringResource {
+        LocalizedStringResource("PULL_UP_TO_VIEW", table: "Localizable", bundle: resourceBundleDescription)
     }
 
     /**
@@ -5725,6 +5767,13 @@ nonisolated extension LocalizedStringResource {
      */
     static var refreshing: LocalizedStringResource {
         LocalizedStringResource("REFRESHING", table: "Localizable", bundle: resourceBundleDescription)
+    }
+
+    /**
+     Localized string for key “RELEASE_TO_SWITCH_EXERCISE” in table “Localizable.xcstrings”.
+     */
+    static var releaseToSwitchExercise: LocalizedStringResource {
+        LocalizedStringResource("RELEASE_TO_SWITCH_EXERCISE", table: "Localizable", bundle: resourceBundleDescription)
     }
 
     /**

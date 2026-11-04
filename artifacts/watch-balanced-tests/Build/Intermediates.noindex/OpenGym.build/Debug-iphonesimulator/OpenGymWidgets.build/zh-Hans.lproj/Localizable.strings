@@ -885,6 +885,10 @@
 	<string>继续编辑</string>
 	<key>KEEP_NUMBERS_CHANGE_UNIT_ONLY</key>
 	<string>保留数字，只更改单位</string>
+	<key>KEEP_PULLING_DOWN_TO_VIEW</key>
+	<string>继续下拉查看</string>
+	<key>KEEP_PULLING_UP_TO_VIEW</key>
+	<string>继续上拉查看</string>
 	<key>KEEP_SCREEN_AWAKE_DURING_WORKOUTS</key>
 	<string>训练时保持屏幕常亮</string>
 	<key>KETTLEBELL</key>
@@ -1057,6 +1061,8 @@
 	<string>刚开始训练</string>
 	<key>NEXT_EXERCISE</key>
 	<string>下一个动作</string>
+	<key>NEXT_EXERCISE_NAMED</key>
+	<string>下一个动作：%1$@</string>
 	<key>NEXT_ROUND_STARTS_COUNT</key>
 	<string>下一轮从 %1$@ 开始。</string>
 	<key>NEXT_WEEK</key>
@@ -1221,6 +1227,8 @@
 	<string>练过</string>
 	<key>PREVIOUS_EXERCISE</key>
 	<string>上一个动作</string>
+	<key>PREVIOUS_EXERCISE_NAMED</key>
+	<string>上一个动作：%1$@</string>
 	<key>PREVIOUS_WEEK</key>
 	<string>上一周</string>
 	<key>PREVIOUS_WORKOUT_EMPTY</key>
@@ -1237,8 +1245,12 @@
 	<string>进阶规则</string>
 	<key>PROGRESS_ANALYSIS</key>
 	<string>进步分析</string>
+	<key>PULL_DOWN_TO_VIEW</key>
+	<string>下拉查看</string>
 	<key>PULL_UP_BAR_A</key>
 	<string>单杠</string>
+	<key>PULL_UP_TO_VIEW</key>
+	<string>上拉查看</string>
 	<key>PUSH_PULL_LEGS_THREE_DAYS_A_WEEK</key>
 	<string>推 / 拉 / 腿 · 每周 3 天</string>
 	<key>PYRAMID_AND_MAX_SETS</key>
@@ -1273,6 +1285,8 @@
 	<string>刷新</string>
 	<key>REFRESHING</key>
 	<string>正在刷新</string>
+	<key>RELEASE_TO_SWITCH_EXERCISE</key>
+	<string>松开切换</string>
 	<key>REMOVE_EXERCISE</key>
 	<string>移除动作</string>
 	<key>REMOVE_EXERCISE_AND_SETS</key>

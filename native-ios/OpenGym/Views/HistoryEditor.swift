@@ -52,7 +52,7 @@ struct HistoryEditor: View {
                     if !form.entries.isEmpty { entryCard(form.selected) }
                 }.padding(20).disabled(submitting)
             }.scrollDismissesKeyboard(.interactively).background(GymTheme.background)
-                .modifier(TrainingExercisePaging(selected: form.selected, count: form.entries.count) { index in
+                .modifier(TrainingExercisePaging(selected: form.selected, names: form.entries.indices.map(entryName)) { index in
                     inputBuffer.commitAll(); form.selected = index; persist()
                 })
                 .navigationTitle(L10n.text("EDIT_WORKOUT" /* 编辑训练 */)).navigationBarTitleDisplayMode(.inline)

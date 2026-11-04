@@ -885,6 +885,10 @@ Used in openGym under the original license.</string>
 	<string>Keep editing</string>
 	<key>KEEP_NUMBERS_CHANGE_UNIT_ONLY</key>
 	<string>Keep numbers, change unit only</string>
+	<key>KEEP_PULLING_DOWN_TO_VIEW</key>
+	<string>Keep pulling down to view</string>
+	<key>KEEP_PULLING_UP_TO_VIEW</key>
+	<string>Keep pulling up to view</string>
 	<key>KEEP_SCREEN_AWAKE_DURING_WORKOUTS</key>
 	<string>Keep screen awake during workouts</string>
 	<key>KETTLEBELL</key>
@@ -1057,6 +1061,8 @@ Used in openGym under the original license.</string>
 	<string>New to training</string>
 	<key>NEXT_EXERCISE</key>
 	<string>Next exercise</string>
+	<key>NEXT_EXERCISE_NAMED</key>
+	<string>Next exercise: %1$@</string>
 	<key>NEXT_ROUND_STARTS_COUNT</key>
 	<string>Next round starts %1$@.</string>
 	<key>NEXT_WEEK</key>
@@ -1221,6 +1227,8 @@ Only new workouts started after enabling sync are included. Past workouts are no
 	<string>Previously trained</string>
 	<key>PREVIOUS_EXERCISE</key>
 	<string>Previous exercise</string>
+	<key>PREVIOUS_EXERCISE_NAMED</key>
+	<string>Previous exercise: %1$@</string>
 	<key>PREVIOUS_WEEK</key>
 	<string>Previous week</string>
 	<key>PREVIOUS_WORKOUT_EMPTY</key>
@@ -1237,8 +1245,12 @@ Only new workouts started after enabling sync are included. Past workouts are no
 	<string>Progression rule</string>
 	<key>PROGRESS_ANALYSIS</key>
 	<string>Progress analysis</string>
+	<key>PULL_DOWN_TO_VIEW</key>
+	<string>Pull down to view</string>
 	<key>PULL_UP_BAR_A</key>
 	<string>Pull-up bar</string>
+	<key>PULL_UP_TO_VIEW</key>
+	<string>Pull up to view</string>
 	<key>PUSH_PULL_LEGS_THREE_DAYS_A_WEEK</key>
 	<string>Push / Pull / Legs · 3 days a week</string>
 	<key>PYRAMID_AND_MAX_SETS</key>
@@ -1273,6 +1285,8 @@ Only new workouts started after enabling sync are included. Past workouts are no
 	<string>Refresh</string>
 	<key>REFRESHING</key>
 	<string>Refreshing</string>
+	<key>RELEASE_TO_SWITCH_EXERCISE</key>
+	<string>Release to switch</string>
 	<key>REMOVE_EXERCISE</key>
 	<string>Remove exercise</string>
 	<key>REMOVE_EXERCISE_AND_SETS</key>

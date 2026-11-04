@@ -42,7 +42,7 @@ struct WorkoutActivityContent: View {
             disabled: state.busyTitle != nil, tint: Color(red: 0.47, green: 0.89, blue: 0.42),
             readyHint: !rest && command != nil && state.busyTitle == nil && state.setWeight != nil
                 ? L10n.format("READY_FOR_YOUR_NEXT_SET" /* 准备好后开始下一组 */, language: state.language ?? L10n.language) : nil,
-            language: state.language, systemDeadlinePassed: systemDeadlinePassed) { label in
+            language: state.language, systemDeadlinePassed: systemDeadlinePassed, countdownPresentation: .systemTimer) { label in
                 if let command {
                     Button(intent: WorkoutActivityIntent(command: command)) { label }
                 } else {

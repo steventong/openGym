@@ -89,18 +89,11 @@ import UIKit
         XCTAssertNil(style.discreteInput(after: end))
     }
 
-    func testSystemCountdownFormatMatchesProtectionAndStopsAtZero() throws {
-        let end = now.addingTimeInterval(90)
-        let displayEnd = TrainingCountdownText.displayDeadline(end)
-        let format = TrainingCountdownText.secondsFormat
-        // This concrete system type is what WidgetKit must serialize, not our
-        // app's static formatter. Include sub-second and expired boundaries.
-        let decoded = try JSONDecoder().decode(Date.ComponentsFormatStyle.self,
-            from: JSONEncoder().encode(format))
-        for (remaining, expected) in [(1000.0, "1,000"), (90, "90"), (89.9, "90"),
-                                      (5, "5"), (4.999, "5"), (1, "1"), (0.1, "1"), (0, "0"), (-1, "0")] {
-            let date = end.addingTimeInterval(-remaining)
-            XCTAssertEqual(decoded.format(min(date, displayEnd)..<displayEnd), expected)
+    func testSystemTimerIntervalHandlesFutureAndExpiredRestWithoutInvalidRange() {
+        for remaining in [90.0, 5, 0.1, 0, -1, -3600] {
+            let interval = TrainingCountdownText.timerInterval(endingAt: now.addingTimeInterval(remaining), now: now)
+            XCTAssertEqual(interval.lowerBound, now)
+            XCTAssertEqual(interval.upperBound.timeIntervalSince(now), max(0, remaining), accuracy: 0.00001)
         }
     }
 
@@ -155,7 +148,7 @@ import UIKit
             for width: CGFloat in [296, 347, 384] {
                 for island in [false, true] {
                     var baseline: CGFloat?
-                    for phase in ["rest", "ready", "protected", "busy"] {
+                    for phase in ["rest", "expired", "ready", "protected", "busy"] {
                         var state = try XCTUnwrap(store.workoutActivityState())
                         state.language = language
                         state.trainingName = language == "zh" ? "力量训练" : "Strength training"
@@ -164,7 +157,7 @@ import UIKit
                         state.setLabel = L10n.format("SET_COUNT_OF_COUNT", language: language, arguments: [2, 4])
                         state.setWeight = "40 kg"; state.setDetail = language == "zh" ? "10 次" : "10 reps"
                         state.commandTitle = language == "zh" ? "完成本组" : "Complete set"
-                        state.restEnd = phase == "ready" ? nil : now.addingTimeInterval(55)
+                        state.restEnd = phase == "ready" ? nil : now.addingTimeInterval(phase == "expired" ? -55 : 55)
                         state.restCommand = phase == "ready" ? nil : "preview-rest"
                         state.actionReadyAt = phase == "protected" ? now.addingTimeInterval(5) : nil
                         state.busyTitle = phase == "busy" ? (language == "zh" ? "正在保存" : "Saving") : nil

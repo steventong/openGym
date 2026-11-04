@@ -38,7 +38,7 @@ struct WorkoutLiveActivity: Widget {
                 }.foregroundStyle(.green)
             } compactTrailing: {
                 if let end = context.state.restEnd {
-                    TrainingCountdownText(end: end).frame(width: 48)
+                    TrainingCountdownText(end: end, presentation: .systemTimer).frame(width: 48)
                 } else {
                     Text(context.state.compactSet).font(.caption.monospacedDigit()).foregroundStyle(.green)
                         .lineLimit(1).minimumScaleFactor(0.8)
