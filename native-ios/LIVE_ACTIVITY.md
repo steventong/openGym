@@ -85,8 +85,14 @@ xcrun simctl spawn <SIMULATOR-UDID> log show --last 10m --style compact \
 
 在系统托管的 Live Activity 中复现完成组后整块内容成为占位块。系统 `WidgetRenderer_Activities` 日志明确报告 `Errors.noType(...OpenGymWidgets.TrainingCountdownSecondsStyle...)`：普通 App 内可以运行的自定义 `DiscreteFormatStyle` 不能由系统渲染进程解码。原来的同进程 SwiftUI 尺寸测试无法覆盖这个问题。
 
-`TrainingCountdownText` 的动态文本现在使用 Foundation 自带的 `Date.ComponentsFormatStyle.timeDuration`（仅秒字段）及 `TimeDataSource.dateRange(endingAt:)`，保留秒数与大写 `S`，到期停在零。数字区域保留最小宽度；自定义格式器仅用于暂停文本与 watchOS 10 的本地 Timeline，不再参与跨进程实时文本。5 秒保护与训练状态逻辑保持原样。
+后续真机排查确认 `Date.ComponentsFormatStyle.timeDuration` 与 `TimeDataSource.dateRange(endingAt:)` 仍不兼容：格式器试图移动数据源固定的上界，触发 `Misconfigured Text(_:format:)` 并导致内容空白。此前仅检查 `noType` 的验证不充分。最终 `TrainingCountdownText` 在 Live Activity 中改用系统 `Text(timerInterval:countsDown:showsHours:)`，经用户同意采用 `1:30` 格式；App／Watch 使用仅刷新数字子视图的 Timeline 保留秒数和大写 `S`。保留 62 pt 大按钮、配色和操作文案。到期区间钳制到零，补充到期布局检查。
 
 `WorkoutActivityTests.testSystemRendererAfterCompletingSet` 是仅限模拟器的显式集成探针：在 QA 模拟器为 App 设置 `OpenGymActivityRendererQA=true` 后运行，创建测试活动，执行完成组及结束休息，再结束活动。普通测试默认跳过；验证后应删除该开关。需同时检查系统渲染日志，不能仅把 ActivityKit 更新成功当作画面成功。修复前解码错误、修复后 iOS 26.5 的系统日志保存在忽略目录 `artifacts/live-activity-render-fix/`。
 
 同轮跨端文案检查将已核对的同义入口收敛到既有翻译键，映射位于 `localization/metadata/canonical-keys.json`。本地化检查拒绝再次引用这些旧键，以及直接拼接 Rest / Reps / Set / Increase / Decrease 的英文模板；旧导入值仍通过别名映射解析。按钮、状态、空列表、组数及动作进度共享文案，区分体重／自重、测量／肌群等不同语义。
+
+### 真机恢复与最终验证
+
+真机曾在活动请求成功、授权开启的情况下始终处于 `stale`。协调器现在仅把未来的五秒保护截止时间作为 stale date；已过期的截止时间转为 nil。是否需要更新同时比较训练状态、stale date 和 relevance score，训练数据相同时也能恢复活动元数据。
+
+本轮 33 项原生回归通过，1 项手动系统渲染探针按默认设置跳过。真机构建成功并更新安装到已连接的 iPhone 17 Pro Max；用户确认展开后内容正常显示。保留当前大尺寸；Watch 与 Live Activity 的独立外观设计按用户要求留待以后。
