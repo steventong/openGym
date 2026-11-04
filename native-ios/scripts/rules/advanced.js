@@ -1,3 +1,4 @@
+import { t } from '../../../frontend/src/lib/i18n-core.js';
 import {buildCombinedEntries,deriveSessionName} from '../../../frontend/src/lib/session-merge.js';
 import {buildCompletedWorkout,sessionEnd} from '../../../frontend/src/lib/finish-workout.js';
 import {defaultConfig,modeOf,lastEntryFor,setLabel,workoutVolume,bestWeightForEntry,bestWeightFor,cleanupSg,pairAdjacent,unpairSuperset,supersetUnits,doneUnits,setUnitsTotal,setsDoneActive,copyRowAt,setSpanAt,moveRoutineEntry,canBeWarmup} from '../../../frontend/src/lib/history.js';
@@ -40,14 +41,14 @@ export function advancedConfig(input) {
 export function planGroup(input){const {rows,operation,index,direction}=JSON.parse(input);let next=rows;if(operation==='pair')next=pairAdjacent(rows,index,index+1);else if(operation==='unpair')next=unpairSuperset(rows,index);else if(operation==='move')next=moveRoutineEntry(rows,index,direction)||rows;cleanupSg(next);return JSON.stringify(next);}
 export function beginAdvanced(input){
  const {state,ids,id,now,day}=JSON.parse(input),s=defaults(state),built=buildCombinedEntries(s,ids);
- if(ids.length&&!built.entries.length)throw Error('计划没有可训练的动作。');
- return JSON.stringify({id,d:day,start:now,name:ids.length?deriveSessionName(built.routines.map(r=>r.name)):'自由训练',routineIds:built.routineIds,routineId:built.routineIds[0]??null,entries:built.entries,bw:s.bodyweight.at(-1)?.w??null,cur:0});
+ if(ids.length&&!built.entries.length)throw Error(t("RULE_ROUTINE_EMPTY" /* 计划没有可训练的动作。 */));
+ return JSON.stringify({id,d:day,start:now,name:ids.length?deriveSessionName(built.routines.map(r=>r.name)):t("FREESTYLE" /* 自由训练 */),routineIds:built.routineIds,routineId:built.routineIds[0]??null,entries:built.entries,bw:s.bodyweight.at(-1)?.w??null,cur:0});
 }
 export function finishAdvanced(input){
  const {state,active,now,today}=JSON.parse(input),s=defaults(state);
  if(s.workouts.some(w=>w.id===active.id))return JSON.stringify(s);
  const w=buildCompletedWorkout(active,{end:sessionEnd(active,now),prs:[]});
- if(!w.entries.length)throw Error('至少完成一组或一侧后再保存。');
+ if(!w.entries.length)throw Error(t("RULE_COMPLETE_SET_FIRST" /* 至少完成一组或一侧后再保存。 */));
  for(const entry of w.entries){const top=bestWeightForEntry(entry);const before=bestWeightFor(s,entry.id,entryDbLoad(entry));if(beatsWeight(entry.id,top,before))w.prs.push(entry.id);if(beatsWeight(entry.id,top,s.exWeights[entry.id]?.w||0))s.exWeights[entry.id]={w:top,d:w.d};}
  w.prs=[...new Set(w.prs)];w.vol=workoutVolume(w);s.workouts.push(w);s.workouts.sort((a,b)=>(a.d||'').localeCompare(b.d||'')||(a.start||0)-(b.start||0));refillAfter(s,w,today,now);delete s.active;return JSON.stringify(s);
 }
@@ -98,7 +99,7 @@ export function rotationInfo(input){const {state,today}=JSON.parse(input);const 
 export function rotationChange(input){
  const {state,action,ids=[],label='',today,now,active}=JSON.parse(input),s=defaults(state);if(active)s.active=active;
  if(action==='save'){
-   const unique=[...new Set(ids)];if(unique.some(id=>!s.routines.some(r=>r.id===id)))throw Error('循环中的计划已被删除。');
+   const unique=[...new Set(ids)];if(unique.some(id=>!s.routines.some(r=>r.id===id)))throw Error(t("RULE_ROTATION_ROUTINE_MISSING" /* 循环中的计划已被删除。 */));
    s.scheduleMode='rotation';if(unique.length)saveRotation(s,unique,label,today,now);else{stopPass(s,today);s.rotation={...(s.rotation||{}),sequence:[],label};}
  }else if(action==='week')chooseFixedWeek(s,today);
  else if(action==='resume')chooseRotation(s,today,now);
@@ -122,7 +123,7 @@ export function copyAdvancedSet(input){
 // Copy exactly the selected span; untouched rows retain their literal input caches.
 export function copySelectedSet(input){
  const {sets,index,editing=false}=JSON.parse(input);
- if(!Number.isInteger(index)||!sets[index])throw Error('训练组不存在。');
+ if(!Number.isInteger(index)||!sets[index])throw Error(t("RULE_SET_MISSING" /* 训练组不存在。 */));
  const {start,end}=copySpanAt(sets,index),at=end+1,count=end-start+1;
  const next=copyRowAt(sets,index);
  for(const row of next.slice(at,at+count)) {
@@ -146,7 +147,7 @@ export function stepTrainingValue(input){
 }
 export function removeAdvancedSet(input){
  const {sets,index}=JSON.parse(input);
- if(!Number.isInteger(index)||!sets[index])throw Error('训练组不存在。');
+ if(!Number.isInteger(index)||!sets[index])throw Error(t("RULE_SET_MISSING" /* 训练组不存在。 */));
  const [start,count]=setSpanAt(sets,index),next=sets.slice();next.splice(start,count);
  return JSON.stringify({sets:next,start,count,highWater:setProgressHighWater({sets:next}).highWater});
 }

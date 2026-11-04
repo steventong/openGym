@@ -33,14 +33,14 @@ const noRoom = e => e?.name === 'QuotaExceededError' || e?.name === 'NS_ERROR_DO
 /** The sentence for a refused file (MediaError codes from lib/media-ingest.js), or for a device
  *  that had no room to keep it. */
 export function mediaErrorText(e) {
-  if (noRoom(e)) return t('There is no room left on this device for that file.')
+  if (noRoom(e)) return t("THERE_IS_NO_ROOM_LEFT_ON_THIS_DEVICE_FOR_THAT_FILE" /* 此设备上已没有空间存放该文件。 */)
   switch (e?.code) {
-    case 'type': return t('That file type isn’t supported. Use a photo, a GIF, or an MP4, MOV or WebM video.')
-    case 'too-large': return t('That file is too big. Max {0} MB.', fmtMB(e.mb))
-    case 'too-long': return t('That video is too long. Max {0} seconds.', e.sec)
-    case 'photo-too-big': return t('That photo is too large to process on this device.')
-    case 'offline': return t('You’re offline. Try again once you’re back online.')
-    default: return t('This browser cannot read that file.')
+    case 'type': return t("THAT_FILE_TYPE_ISN_T_SUPPORTED_USE_A_PHOTO_A_GIF_OR" /* 不支持该文件类型。请使用照片、GIF，或 MP4、MOV、WebM 视频。 */)
+    case 'too-large': return t("THAT_FILE_IS_TOO_BIG_MAX_COUNT_MB" /* 文件太大了。最大 {0} MB。 */, fmtMB(e.mb))
+    case 'too-long': return t("THAT_VIDEO_IS_TOO_LONG_MAX_COUNT_SECONDS" /* 视频太长了。最长 {0} 秒。 */, e.sec)
+    case 'photo-too-big': return t("THAT_PHOTO_IS_TOO_LARGE_TO_PROCESS_ON_THIS_DEVICE" /* 照片太大，无法在此设备上处理。 */)
+    case 'offline': return t("YOU_RE_OFFLINE_TRY_AGAIN_ONCE_YOU_RE_BACK_ONLINE" /* 当前离线。等网络恢复后再试一次。 */)
+    default: return t("THIS_BROWSER_CANNOT_READ_THAT_FILE" /* 此浏览器无法读取该文件。 */)
   }
 }
 
@@ -96,7 +96,7 @@ export function useMediaPicker() {
       // A guest's or a local phone's copy is the only one: ask the browser not to evict it under
       // storage pressure. Best effort, and absent on plain http.
       if (!user) { try { globalThis.navigator?.storage?.persist?.()?.catch?.(() => {}) } catch { /* not offered */ } }
-      if (out.warnings.includes('codec')) setWarning(t('This video may not play on every device. MP4 (H.264) plays everywhere.'))
+      if (out.warnings.includes('codec')) setWarning(t("THIS_VIDEO_MAY_NOT_PLAY_ON_EVERY_DEVICE_MPFOUR_H_TWOSIXFOUR_PLAYS" /* 此视频可能无法在所有设备上播放。MP4（H.264）在哪儿都能播。 */))
       return out.media
     } catch (e) {
       toast(mediaErrorText(e))
@@ -105,9 +105,9 @@ export function useMediaPicker() {
       setBusy(false)
     }
   }
-  const note = !storable ? t('This browser cannot store photos or videos here.')
-    : serverLacks ? t('Your server does not store photos and videos yet.')
-      : !user ? t('Kept on this device only. Export with photos & videos keeps a copy.')
+  const note = !storable ? t("THIS_BROWSER_CANNOT_STORE_PHOTOS_OR_VIDEOS_HERE" /* 此浏览器无法在这里存储照片或视频。 */)
+    : serverLacks ? t("YOUR_SERVER_DOES_NOT_STORE_PHOTOS_AND_VIDEOS_YET" /* 你的服务器尚不能存储照片和视频。 */)
+      : !user ? t("KEPT_ON_THIS_DEVICE_ONLY_EXPORT_WITH_PHOTOS_VIDEOS_KEEPS_A_COPY" /* 仅保存在此设备上。“连同照片和视频导出”可以保留一份副本。 */)
         : null
   return { pick, busy, warning, setWarning, note, storable, showAdd: !serverLacks, canAdd: !busy && storable && !serverLacks }
 }
@@ -135,28 +135,28 @@ export default function CustomMediaField({ media, url, onChange }) {
   // "0:07 · 2.4 MB": the length of a clip or an animation, and the size of the file itself (the
   // unit through the packs' own "{0} MB", so it reads Mo, МБ, م.ب where it should, and the
   // number with the language's own decimal mark).
-  const sizeLine = m ? [m.dur != null && m.kind !== 'image' ? fmtClip(m.dur) : null, t('{0} MB', fmtMB(Math.max(0.1, m.size / MB), { fixed: true }))].filter(Boolean).join(' · ') : null
+  const sizeLine = m ? [m.dur != null && m.kind !== 'image' ? fmtClip(m.dur) : null, t("COUNT_MB" /* 术语：{0} MB */, fmtMB(Math.max(0.1, m.size / MB), { fixed: true }))].filter(Boolean).join(' · ') : null
   const subtitle = m
     ? <span className="cmf-sub"><Icon name={KIND_ICON[m.kind]} />{sizeLine}</span>
-    : t('Optional. A picture makes it easier to spot in a list.')
+    : t("OPTIONAL_A_PICTURE_MAKES_IT_EASIER_TO_SPOT_IN_A_LIST" /* 可选。有图片更容易在列表中找到它。 */)
 
   return <div className="cmf">
-    <Row icon="image" iconTint="var(--blue)" title={t('Photo, GIF or video')} subtitle={subtitle}>
+    <Row icon="image" iconTint="var(--blue)" title={t("PHOTO_GIF_OR_VIDEO" /* 照片、GIF 或视频 */)} subtitle={subtitle}>
       <div className="cmf-act">
         {m && <span className="cmf-thumb"><CustomThumb ex={{ custom: true, media: m }} /></span>}
         {/* Hidden on a server that will never take a file; shown but off where this browser
             cannot keep one, with the note below saying why. */}
         {showAdd && <Button variant="tinted" size="sm" icon={busy ? undefined : 'image'} disabled={!canAdd} onClick={() => fileRef.current?.click()}>
-          {busy ? t('Loading…') : m ? t('Change') : t('Add')}
+          {busy ? t("LOADING" /* 加载中… */) : m ? t("CHANGE" /* 更换 */) : t("ADD" /* 添加 */)}
         </Button>}
-        {m && <Button variant="ghost" size="sm" icon="xmark" aria-label={t('Remove')} title={t('Remove')} disabled={busy} onClick={() => { setWarning(null); onChange({ media: null }) }} />}
+        {m && <Button variant="ghost" size="sm" icon="xmark" aria-label={t("REMOVE" /* 移除 */)} title={t("REMOVE" /* 移除 */)} disabled={busy} onClick={() => { setWarning(null); onChange({ media: null }) }} />}
       </div>
     </Row>
     <input ref={fileRef} type="file" accept="image/*,video/*" hidden onChange={onFile} />
     {warning && <div className="small dim cmf-note">{warning}</div>}
     {note && <div className="small dim cmf-note">{note}</div>}
     <input className="input cmf-link" type="url" inputMode="url" autoCapitalize="off" autoCorrect="off" spellCheck={false}
-      dir={url ? 'ltr' : undefined} placeholder={t('Video or guide link (optional)')}
+      dir={url ? 'ltr' : undefined} placeholder={t("VIDEO_OR_GUIDE_LINK_OPTIONAL" /* 视频或教程链接（可选） */)}
       value={url || ''} onChange={e => onChange({ url: e.target.value })} />
   </div>
 }

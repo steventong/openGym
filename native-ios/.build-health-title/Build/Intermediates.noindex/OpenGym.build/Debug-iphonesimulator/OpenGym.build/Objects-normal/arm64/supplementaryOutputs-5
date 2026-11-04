@@ -1,0 +1,37 @@
+{
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGym/Models/TrainingInput.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingInput.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingInput.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingInput.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingInput.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingInput.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGym/Services/LocalTrainingStorage.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/LocalTrainingStorage.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/LocalTrainingStorage.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/LocalTrainingStorage.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/LocalTrainingStorage.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/LocalTrainingStorage.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGym/Views/StatsView.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/StatsView.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/StatsView.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/StatsView.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/StatsView.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/StatsView.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGym/Views/Theme.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Theme.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Theme.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Theme.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Theme.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Theme.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGym/Views/WorkoutView.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutView.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutView.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutView.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutView.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/native-ios/.build-health-title/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutView.swiftdeps"
+  }
+}

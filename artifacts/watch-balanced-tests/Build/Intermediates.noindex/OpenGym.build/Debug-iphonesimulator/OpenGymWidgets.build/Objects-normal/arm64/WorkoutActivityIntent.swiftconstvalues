@@ -1,0 +1,220 @@
+[
+  {
+    "typeName": "OpenGymWidgets.WorkoutActivityIntent",
+    "mangledTypeName": "14OpenGymWidgets21WorkoutActivityIntentV",
+    "kind": "struct",
+    "file": "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/LiveActivity/WorkoutActivityIntent.swift",
+    "line": 6,
+    "conformances": [
+      "AppIntents.LiveActivityIntent",
+      "AppIntents.SystemIntent",
+      "AppIntents.AppIntent",
+      "AppIntents.PersistentlyIdentifiable",
+      "AppIntents._SupportsAppDependencies",
+      "Swift.Sendable",
+      "Swift.SendableMetatype"
+    ],
+    "allConformances": [
+      {
+        "protocolName": "AppIntents.LiveActivityIntent",
+        "conformanceDefiningModule": "OpenGymWidgets"
+      },
+      {
+        "protocolName": "AppIntents.SystemIntent",
+        "conformanceDefiningModule": "OpenGymWidgets"
+      },
+      {
+        "protocolName": "AppIntents.AppIntent",
+        "conformanceDefiningModule": "OpenGymWidgets"
+      },
+      {
+        "protocolName": "AppIntents.PersistentlyIdentifiable",
+        "conformanceDefiningModule": "OpenGymWidgets"
+      },
+      {
+        "protocolName": "AppIntents._SupportsAppDependencies",
+        "conformanceDefiningModule": "OpenGymWidgets"
+      },
+      {
+        "protocolName": "Swift.Sendable",
+        "conformanceDefiningModule": "OpenGymWidgets"
+      },
+      {
+        "protocolName": "Swift.SendableMetatype",
+        "conformanceDefiningModule": "OpenGymWidgets"
+      }
+    ],
+    "associatedTypeAliases": [
+      {
+        "typeAliasName": "PerformResult",
+        "substitutedTypeName": "some AppIntents.IntentResult",
+        "substitutedMangledTypeName": "14OpenGymWidgets21WorkoutActivityIntentV7performQryYaKFQOy_Qo_",
+        "opaqueTypeProtocolRequirements": [
+          "AppIntents.IntentResult"
+        ],
+        "opaqueTypeSameTypeRequirements": []
+      },
+      {
+        "typeAliasName": "SummaryContent",
+        "substitutedTypeName": "some AppIntents.ParameterSummary",
+        "substitutedMangledTypeName": "10AppIntents0A6IntentPAAE16parameterSummaryQrvpZQOy14OpenGymWidgets015WorkoutActivityC0V_Qo_",
+        "opaqueTypeProtocolRequirements": [
+          "AppIntents.ParameterSummary"
+        ],
+        "opaqueTypeSameTypeRequirements": []
+      }
+    ],
+    "properties": [
+      {
+        "label": "_command",
+        "type": "AppIntents.IntentParameter<Swift.String>",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "false",
+        "isComputed": "false",
+        "file": "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/LiveActivity/WorkoutActivityIntent.swift",
+        "line": 11,
+        "valueKind": "InitCall",
+        "value": {
+          "type": "AppIntents.IntentParameter<Swift.String>",
+          "arguments": [
+            {
+              "label": "title",
+              "type": "Foundation.LocalizedStringResource",
+              "valueKind": "RawLiteral",
+              "value": "WORKOUT_ACTION"
+            },
+            {
+              "label": "description",
+              "type": "Swift.Optional<Foundation.LocalizedStringResource>",
+              "valueKind": "NilLiteral"
+            },
+            {
+              "label": "default",
+              "type": "Swift.Optional<Swift.String>",
+              "valueKind": "NilLiteral"
+            },
+            {
+              "label": "inputOptions",
+              "type": "Swift.Optional<Swift.String.IntentInputOptions>",
+              "valueKind": "NilLiteral"
+            },
+            {
+              "label": "requestValueDialog",
+              "type": "Swift.Optional<AppIntents.IntentDialog>",
+              "valueKind": "NilLiteral"
+            },
+            {
+              "label": "inputConnectionBehavior",
+              "type": "AppIntents.InputConnectionBehavior",
+              "valueKind": "Runtime"
+            }
+          ]
+        }
+      },
+      {
+        "label": "title",
+        "type": "Foundation.LocalizedStringResource",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "true",
+        "isComputed": "false",
+        "file": "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/LiveActivity/WorkoutActivityIntent.swift",
+        "line": 7,
+        "valueKind": "RawLiteral",
+        "value": "UPDATE_CURRENT_WORKOUT"
+      },
+      {
+        "label": "isDiscoverable",
+        "type": "Swift.Bool",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "true",
+        "isComputed": "false",
+        "file": "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/LiveActivity/WorkoutActivityIntent.swift",
+        "line": 8,
+        "valueKind": "RawLiteral",
+        "value": "false"
+      },
+      {
+        "label": "openAppWhenRun",
+        "type": "Swift.Bool",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "true",
+        "isComputed": "false",
+        "file": "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/LiveActivity/WorkoutActivityIntent.swift",
+        "line": 9,
+        "valueKind": "RawLiteral",
+        "value": "false"
+      },
+      {
+        "label": "command",
+        "type": "Swift.String",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "false",
+        "isComputed": "true",
+        "file": "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/LiveActivity/WorkoutActivityIntent.swift",
+        "line": 11,
+        "valueKind": "InitCall",
+        "value": {
+          "type": "AppIntents.IntentParameter<Swift.String>",
+          "arguments": [
+            {
+              "label": "title",
+              "type": "Foundation.LocalizedStringResource",
+              "valueKind": "RawLiteral",
+              "value": "WORKOUT_ACTION"
+            },
+            {
+              "label": "description",
+              "type": "Swift.Optional<Foundation.LocalizedStringResource>",
+              "valueKind": "NilLiteral"
+            },
+            {
+              "label": "default",
+              "type": "Swift.Optional<Swift.String>",
+              "valueKind": "NilLiteral"
+            },
+            {
+              "label": "inputOptions",
+              "type": "Swift.Optional<Swift.String.IntentInputOptions>",
+              "valueKind": "NilLiteral"
+            },
+            {
+              "label": "requestValueDialog",
+              "type": "Swift.Optional<AppIntents.IntentDialog>",
+              "valueKind": "NilLiteral"
+            },
+            {
+              "label": "inputConnectionBehavior",
+              "type": "AppIntents.InputConnectionBehavior",
+              "valueKind": "Runtime"
+            }
+          ]
+        },
+        "propertyWrappers": [
+          {
+            "type": "AppIntents.IntentParameter",
+            "file": "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/LiveActivity/WorkoutActivityIntent.swift",
+            "line": 11,
+            "arguments": [
+              {
+                "label": "title",
+                "type": "Foundation.LocalizedStringResource",
+                "valueKind": "RawLiteral",
+                "value": "WORKOUT_ACTION"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "label": "$command",
+        "type": "AppIntents.IntentParameter<Swift.String>",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "false",
+        "isComputed": "true",
+        "file": "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/LiveActivity/WorkoutActivityIntent.swift",
+        "line": 11,
+        "valueKind": "Runtime"
+      }
+    ]
+  }
+]

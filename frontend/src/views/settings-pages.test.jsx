@@ -1,3 +1,4 @@
+import { englishText } from '../lib/i18n-core.js'
 // @vitest-environment happy-dom
 // Settings v1.3.11: the root, the pages, the search and the rest wheels. Every row the search
 // knows has to be a row on its page, and every page and row title has a word in each pack.
@@ -159,7 +160,7 @@ describe('the root', () => {
     expect(titles()).toEqual(['Vibrate'])
     expect(host.querySelector('.lrow .lrow-s').textContent).toBe('Timer alerts')
     act(() => rowTitled('Vibrate').click())
-    expect(mocks.navs.at(-1)).toEqual(['/settings/alerts', { state: { find: 'Vibrate' } }])
+    expect(mocks.navs.at(-1)).toEqual(['/settings/alerts', { state: { find: 'VIBRATE' } }])
     type('zzzz')
     expect(host.querySelector('.sp-empty').textContent).toBe('No setting matches “zzzz”.')
   })
@@ -185,7 +186,7 @@ describe('the search lands on a row', () => {
     setUp()
     const ctx = ctxNow()
     const byPage = {}
-    for (const e of SEARCH) if (pageVisible(PAGES[e.page].parent || e.page, ctx) && (!e.when || e.when(ctx))) (byPage[e.page] ||= []).push(e.title)
+    for (const e of SEARCH) if (pageVisible(PAGES[e.page].parent || e.page, ctx) && (!e.when || e.when(ctx))) (byPage[e.page] ||= []).push(englishText(e.title))
     for (const [page, want] of Object.entries(byPage)) {
       if (page === 'coach') continue
       mount(page)
@@ -196,19 +197,19 @@ describe('the search lands on a row', () => {
   })
 
   it('finds the rows that used to be missing', () => {
-    const tr = s => s
+    const tr = englishText
     const web = { ...guestWeb, user: { id: 'u' }, synced: true, pushOK: true, reminderOn: true, nudge: true }
-    expect(searchSettings('reminder time', web, tr).map(h => h.title)).toEqual(['Reminder time'])
-    expect(searchSettings('tone', web, tr).map(h => h.title)).toContain('Nudge tone')
-    expect(searchSettings('test notification', web, tr).map(h => h.title)).toEqual(['Send test notification'])
-    expect(searchSettings('server', web, tr).map(h => h.title)).toContain('Sync now')
-    expect(searchSettings('sync', web, tr).map(h => h.title)).toContain('Sync now')
-    expect(searchSettings('loop', web, tr).map(h => h.title)).toContain('How you train')
-    expect(searchSettings('swipe', web, tr)[0].title).toBe('Swipe actions')
-    expect(searchSettings('gesture', web, tr).map(h => h.title)).toEqual(['Swipe actions'])
-    expect(searchSettings('home screen', web, tr).map(h => h.title)).toEqual(['In Safari: Share → Add to Home Screen'])
-    expect(searchSettings('install', { ...web, androidWeb: true }, tr).map(h => h.title)).toEqual(['In Chrome: ⋮ menu → Add to Home screen'])
-    expect(searchSettings('backup folder', { ...guestWeb, mobile: true, android: true, autoBackup: true }, tr).map(h => h.title)).toEqual(['Backup folder'])
+    expect(searchSettings('reminder time', web, tr).map(h => englishText(h.title))).toEqual(['Reminder time'])
+    expect(searchSettings('tone', web, tr).map(h => englishText(h.title))).toContain('Nudge tone')
+    expect(searchSettings('test notification', web, tr).map(h => englishText(h.title))).toEqual(['Send test notification'])
+    expect(searchSettings('server', web, tr).map(h => englishText(h.title))).toContain('Sync now')
+    expect(searchSettings('sync', web, tr).map(h => englishText(h.title))).toContain('Sync now')
+    expect(searchSettings('loop', web, tr).map(h => englishText(h.title))).toContain('How you train')
+    expect(searchSettings('swipe', web, tr)[0].label).toBe('Swipe actions')
+    expect(searchSettings('gesture', web, tr).map(h => englishText(h.title))).toEqual(['Swipe actions'])
+    expect(searchSettings('home screen', web, tr).map(h => englishText(h.title))).toEqual(['In Safari: Share → Add to Home Screen'])
+    expect(searchSettings('install', { ...web, androidWeb: true }, tr).map(h => englishText(h.title))).toEqual(['In Chrome: ⋮ menu → Add to Home screen'])
+    expect(searchSettings('backup folder', { ...guestWeb, mobile: true, android: true, autoBackup: true }, tr).map(h => englishText(h.title))).toEqual(['Backup folder'])
     expect(searchSettings('backup folder', { ...guestWeb, mobile: true, android: true }, tr)).toEqual([])
   })
 
@@ -262,7 +263,7 @@ describe('the search query', () => {
 describe('the pages', () => {
   it('each search entry is a row on its page (guest in a browser)', () => {
     const byPage = {}
-    for (const e of SEARCH) if (pageVisible(PAGES[e.page].parent || e.page, guestWeb) && (!e.when || e.when(guestWeb))) (byPage[e.page] ||= []).push(e.title)
+    for (const e of SEARCH) if (pageVisible(PAGES[e.page].parent || e.page, guestWeb) && (!e.when || e.when(guestWeb))) (byPage[e.page] ||= []).push(englishText(e.title))
     expect(Object.keys(byPage).sort()).toEqual(['about', 'advanced', 'alerts', 'data', 'equipment', 'look', 'plan', 'units', 'workout'])
     for (const [page, want] of Object.entries(byPage)) {
       mount(page)
@@ -369,21 +370,21 @@ describe('the rest wheels', () => {
 })
 
 describe('searchSettings', () => {
-  const tr = s => s
+  const tr = englishText
   it('matches titles, synonyms and pages, ignoring case and accents', () => {
-    expect(searchSettings('Vibrate', guestWeb, tr).map(h => h.title)).toEqual(['Vibrate'])
-    expect(searchSettings('buzz', guestWeb, tr).map(h => h.title)).toEqual(['Vibrate'])
-    expect(searchSettings('pounds', guestWeb, tr).map(h => h.title)).toEqual(['Weight unit'])
-    expect(searchSettings('dark mode', guestWeb, tr).map(h => h.title)).toEqual(['Theme'])
-    expect(searchSettings('gif', guestWeb, tr).map(h => h.title)).toEqual(['Exercise animations'])
-    expect(searchSettings('RÉST TIMER', guestWeb, tr)[0].title).toBe('Rest timer')
+    expect(searchSettings('Vibrate', guestWeb, tr).map(h => englishText(h.title))).toEqual(['Vibrate'])
+    expect(searchSettings('buzz', guestWeb, tr).map(h => englishText(h.title))).toEqual(['Vibrate'])
+    expect(searchSettings('pounds', guestWeb, tr).map(h => englishText(h.title))).toEqual(['Weight unit'])
+    expect(searchSettings('dark mode', guestWeb, tr).map(h => englishText(h.title))).toEqual(['Theme'])
+    expect(searchSettings('gif', guestWeb, tr).map(h => englishText(h.title))).toEqual(['Exercise animations'])
+    expect(searchSettings('RÉST TIMER', guestWeb, tr)[0].label).toBe('Rest timer')
     expect(fold('Thème')).toBe('theme')
   })
 
   it('pages are hits too, and a title starting with the query comes first', () => {
     const hits = searchSettings('units', guestWeb, tr)
-    expect(hits[0]).toMatchObject({ title: 'Units & language', isPage: true, page: 'units' })
-    expect(searchSettings('rest', guestWeb, tr).slice(0, 2).map(h => h.title)).toEqual(['Rest timer', 'Rest-pause rest'])
+    expect(hits[0]).toMatchObject({ title: 'UNITS_LANGUAGE', isPage: true, page: 'units' })
+    expect(searchSettings('rest', guestWeb, tr).slice(0, 2).map(h => englishText(h.title))).toEqual(['Rest timer', 'Rest-pause rest'])
   })
 
   it('names Fine-tuning under Workout, and keeps to the rows this device shows', () => {
@@ -392,25 +393,25 @@ describe('searchSettings', () => {
     expect(searchSettings('nudge', guestWeb, tr)).toEqual([])                              // no Reminders for a web guest
     expect(searchSettings('nudge', { ...guestWeb, user: { id: 'u' } }, tr)).toEqual([])         // no push in this browser
     expect(searchSettings('nudge', { ...guestWeb, user: { id: 'u' }, pushOK: true }, tr)).toEqual([])   // the reminder is off
-    expect(searchSettings('nudge', { ...guestWeb, user: { id: 'u' }, pushOK: true, reminderOn: true }, tr).map(h => h.title)).toEqual(['Nudge me when I skip a planned workout'])
-    expect(searchSettings('nudge', { ...guestWeb, mobile: true, reminderOn: true }, tr).map(h => h.title)).toEqual(['Nudge me when I skip a planned workout'])
+    expect(searchSettings('nudge', { ...guestWeb, user: { id: 'u' }, pushOK: true, reminderOn: true }, tr).map(h => englishText(h.title))).toEqual(['Nudge me when I skip a planned workout'])
+    expect(searchSettings('nudge', { ...guestWeb, mobile: true, reminderOn: true }, tr).map(h => englishText(h.title))).toEqual(['Nudge me when I skip a planned workout'])
     expect(searchSettings('coach', guestWeb, tr)).toEqual([])
     expect(searchSettings('coach', { ...guestWeb, mobile: true }, tr)[0].page).toBe('coach')
-    expect(searchSettings('vibrate silent', { ...guestWeb, mobile: true, android: true }, tr).map(h => h.title)).toEqual(['Vibrate on silent too'])
+    expect(searchSettings('vibrate silent', { ...guestWeb, mobile: true, android: true }, tr).map(h => englishText(h.title))).toEqual(['Vibrate on silent too'])
     expect(searchSettings('   ', guestWeb, tr)).toEqual([])
   })
 
   it('searches in the app language as well', () => {
-    const de = { Vibrate: 'Vibration', 'Timer alerts': 'Timer-Hinweise', Settings: 'Einstellungen' }
+    const de = { VIBRATE: 'Vibration', TIMER_ALERTS: 'Timer-Hinweise', SETTINGS: 'Einstellungen' }
     const hits = searchSettings('vibration', guestWeb, s => de[s] || s)
-    expect(hits[0]).toMatchObject({ title: 'Vibrate', label: 'Vibration', trail: 'Timer-Hinweise' })
+    expect(hits[0]).toMatchObject({ title: 'VIBRATE', label: 'Vibration', trail: 'Timer-Hinweise' })
   })
 
   it('finds the translated choices of a row, and words of its own language', async () => {
     const { setLang, t } = await import('../lib/i18n.js')
     try {
       await setLang('de')
-      const first = q => searchSettings(q, guestWeb, t)[0]?.title
+      const first = q => englishText(searchSettings(q, guestWeb, t)[0]?.title)
       expect(first('Dunkel')).toBe('Theme')
       expect(first('Feste Woche')).toBe('How you train')
       expect(first('Wochenstart')).toBe('Week starts on')
@@ -418,7 +419,7 @@ describe('searchSettings', () => {
       expect(first('wischen')).toBe('Swipe actions')
       expect(first('Geste')).toBe('Swipe actions')
       await setLang('ar')
-      expect(searchSettings('تناوب', guestWeb, t).map(h => h.title)).toContain('How you train')
+      expect(searchSettings('تناوب', guestWeb, t).map(h => englishText(h.title))).toContain('How you train')
     } finally { await setLang('en') }
   })
 
@@ -426,17 +427,17 @@ describe('searchSettings', () => {
     const { setLang, t } = await import('../lib/i18n.js')
     try {
       await setLang('de')
-      const titles = searchSettings('ton', guestWeb, t).map(h => h.title)
+      const titles = searchSettings('ton', guestWeb, t).map(h => englishText(h.title))
       expect(titles).not.toContain('Weight and reps buttons')
       expect(titles).not.toContain('Superset buttons in the exercise header')
     } finally { await setLang('en') }
-    expect(searchSettings('tone', { ...guestWeb, user: { id: 'u' }, pushOK: true, reminderOn: true, nudge: true }, s => s).map(h => h.title)).toContain('Nudge tone')
-    expect(searchSettings('json', guestWeb, s => s).map(h => h.title)).toContain('Export backup (JSON)')
+    expect(searchSettings('tone', { ...guestWeb, user: { id: 'u' }, pushOK: true, reminderOn: true, nudge: true }, englishText).map(h => englishText(h.title))).toContain('Nudge tone')
+    expect(searchSettings('json', guestWeb, englishText).map(h => englishText(h.title))).toContain('Export backup (JSON)')
   })
 })
 
 describe('translations', () => {
-  const packs = import.meta.glob('../locales/*.js', { eager: true, import: 'default' })
+  const packs = import.meta.glob(['../../../localization/*.json', '!../../../localization/metadata/legacy-values.json'], { eager: true, import: 'default' })
   it('every page and searchable row title has a word in each pack', () => {
     const keys = [...new Set([...PAGE_IDS.map(id => PAGES[id].title), ...SEARCH.map(e => e.title)])]
     for (const [file, pack] of Object.entries(packs)) {

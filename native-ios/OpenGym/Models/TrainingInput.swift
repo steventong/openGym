@@ -28,7 +28,7 @@ enum TrainingInput {
     static func validateWeightSwitch(_ row: [String: Any]) throws {
         let inputs = row[key] as? [String: String] ?? [:]
         guard !inputs.contains(where: { $0.key.hasSuffix(".w") && !valid($0.value, path: $0.key) }) else {
-            throw APIError.response(0, "请先填完重量再切换单位，原输入已保留。")
+            throw APIError.response(0, L10n.text("FINISH_ENTERING_THE_WEIGHT_BEFORE_CHANGING_UNITS_YOUR_INPUT_HAS_BEEN_KEPT" /* 请先填完重量再切换单位，原输入已保留。 */))
         }
     }
     static func value(_ text: String) -> Double? {
@@ -54,7 +54,7 @@ enum TrainingInput {
     static func validate(_ object: Any) throws {
         if let map = object as? [String: Any] {
             if let inputs = map[key] as? [String: String], inputs.contains(where: { !valid($0.value,path:$0.key) }) {
-                throw APIError.response(0, "还有未填完的数字，请检查重量、次数或时长。原输入已保留。")
+                throw APIError.response(0, L10n.text("SOME_NUMBERS_ARE_INCOMPLETE_CHECK_THE_WEIGHT_REPS_OR_DURATION_YOUR_INPUT" /* 还有未填完的数字，请检查重量、次数或时长。原输入已保留。 */))
             }
             for (k, v) in map where k != key { try validate(v) }
         } else if let list = object as? [Any] { for v in list { try validate(v) } }

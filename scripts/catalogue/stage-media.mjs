@@ -35,7 +35,8 @@ const copyDir = (from, to, ext) => {
   return n
 }
 const dest = path.join(out, 'exercise-media')
-const stills = copyDir(path.join(media, 'still'), path.join(dest, 'still'), '.webp')
+// Keep the public still/ URL compatible with existing web and Android clients.
+const stills = copyDir(path.join(media, 'thumbnails'), path.join(dest, 'still'), '.webp')
 const clips = copyDir(appDir || path.join(media, 'clip'), path.join(dest, 'clip'), clipExt)
 fs.copyFileSync(path.join(media, 'NOTICE.md'), path.join(dest, 'NOTICE.md'))
 console.log(`media: ${stills} stills, ${clips} animations${appDir ? ' (app size)' : ''} -> ${path.relative(ROOT, out) || out}`)

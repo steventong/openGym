@@ -6,6 +6,10 @@ on:
   pull_request:
     paths:
       - 'frontend/**'
+      - 'localization/**'
+      - 'scripts/localization/**'
+      - 'native-ios/scripts/**'
+      - 'native-ios/Shared/Localization.swift'
       - 'api/**'
       - 'mcp/**'
       - 'scripts/build-coach-assets.mjs'
@@ -18,6 +22,10 @@ on:
     branches: [main, coach]
     paths:
       - 'frontend/**'
+      - 'localization/**'
+      - 'scripts/localization/**'
+      - 'native-ios/scripts/**'
+      - 'native-ios/Shared/Localization.swift'
       - 'api/**'
       - 'mcp/**'
       - 'scripts/build-coach-assets.mjs'
@@ -53,13 +61,10 @@ jobs:
       # A broken import or bad JSX fails the build long before any test covers it.
       - run: npm run build
         working-directory: frontend
-      - run: node scripts/check-locales.mjs
-        working-directory: frontend
-      # check-locales compares the packs to each other, so a key missing from ALL of them is
-      # invisible to it. This walks src/ instead. Report-only for now: there is a known
-      # backlog of untranslated demo-view strings to clear before it can fail the build.
-      - run: node scripts/check-source-strings.mjs
-        working-directory: frontend
+      - run: npm ci --ignore-scripts
+        working-directory: native-ios
+      # 共享 JSON、所有页面引用、系统资源和原生规则包必须同步。
+      - run: npm run check:localization
       # The fatigue model must never read higher after a rest day than before it.
       # Property probe over ~108k comparisons; too slow for the unit suite, cheap here.
       - run: npm run test:fatigue-probe

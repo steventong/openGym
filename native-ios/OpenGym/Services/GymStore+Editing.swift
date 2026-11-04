@@ -23,9 +23,9 @@ extension GymStore {
     }
     func saveRoutine(original:[String:Any],proposed:[String:Any],expectedUnit:String) async -> Bool {
         await mutate(reportError:false) { source in
-            guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409,"重量单位已改变，请重新打开编辑器。") }
+            guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409,L10n.text("THE_WEIGHT_UNIT_CHANGED_REOPEN_THE_EDITOR" /* 重量单位已改变，请重新打开编辑器。 */)) }
             var state = source; var list = state["routines"] as? [[String:Any]] ?? []
-            guard let i = list.firstIndex(where: { $0["id"] as? String == original["id"] as? String }) else { throw APIError.response(404,"计划已被删除，不能保存旧副本。") }
+            guard let i = list.firstIndex(where: { $0["id"] as? String == original["id"] as? String }) else { throw APIError.response(404,L10n.text("THIS_ROUTINE_WAS_DELETED_AN_OLD_COPY_CANNOT_BE_SAVED_OVER_IT" /* 计划已被删除，不能保存旧副本。 */)) }
             var merged = try RecordPatch.apply(original:original,proposed:proposed,current:list[i])
             if let rows = merged["ex"] as? [[String:Any]] {
                 merged["ex"] = try WebRules.shared.call("planGroup",payload:["rows":rows,"operation":"cleanup","index":0])
@@ -42,7 +42,7 @@ extension GymStore {
                 let before = original[key] as? [String:Any] ?? [:], after = proposed[key] as? [String:Any] ?? [:]
                 for day in Set(before.keys).union(after.keys) where !RecordPatch.equal(before[day],after[day]) {
                     let ids = after[day] as? [String] ?? (after[day] as? String).map { [$0] } ?? []
-                    guard ids.allSatisfy({ $0 == "rest" || valid.contains($0) }) else { throw APIError.response(409,"排期中的计划已被删除，请重新选择。") }
+                    guard ids.allSatisfy({ $0 == "rest" || valid.contains($0) }) else { throw APIError.response(409,L10n.text("A_SCHEDULED_ROUTINE_WAS_DELETED_CHOOSE_ANOTHER_ROUTINE" /* 排期中的计划已被删除，请重新选择。 */)) }
                 }
             }
             return next
@@ -73,7 +73,7 @@ extension GymStore {
         guard let item = historyEdits[key], let original = item["original"] as? [String:Any],
               let proposed = item["proposed"] as? [String:Any], let generation = item["generation"] as? String else { return false }
         if let fields = item["form"] as? [String:Any], let minutes = fields["minutes"] as? String, TrainingInput.value(minutes) == nil {
-            editError = "时长还未填完，本机输入已保留。"; return false
+            editError = L10n.text("THE_DURATION_IS_INCOMPLETE_YOUR_LOCAL_INPUT_HAS_BEEN_KEPT" /* 时长还未填完，本机输入已保留。 */); return false
         }
         do { try TrainingInput.validate(proposed) } catch { editError = error.localizedDescription; return false }
         guard persistHistoryEdits() else { editError = localSaveError; return false }
@@ -88,38 +88,38 @@ extension GymStore {
             let baseline = prior != nil && RecordPatch.equal(prior,current) ? prior! : original
             let next = try self.patchedWorkoutState(source:source,original:baseline,proposed:TrainingInput.clean(proposed) as! [String:Any],expectedUnit:item["unit"] as? String ?? "kg")
             expected = (next["workouts"] as? [[String:Any]])?.first { WorkoutRecord.key($0) == key }
-            guard self.historyEdits[key]?["generation"] as? String == generation else { throw APIError.response(0,"本机编辑已更新，请提交最新内容。") }
+            guard self.historyEdits[key]?["generation"] as? String == generation else { throw APIError.response(0,L10n.text("YOUR_LOCAL_EDITS_HAVE_CHANGED_SUBMIT_THE_LATEST_VERSION" /* 本机编辑已更新，请提交最新内容。 */)) }
             self.historyEdits[key]?["expected"] = expected
             self.historyEdits[key]?["submitted"] = true
-            guard self.persistHistoryEdits() else { throw APIError.response(0,self.localSaveError ?? "本机保存失败") }
+            guard self.persistHistoryEdits() else { throw APIError.response(0,self.localSaveError ?? L10n.text("COULD_NOT_SAVE_ON_THIS_DEVICE" /* 本机保存失败 */)) }
             return next
         }
         if ok {
             let archived = archiveHistoryEdit(key,generation:generation)
-            if !archived { editError = localSaveError ?? "提交后有更新的本机输入，已保留，请继续核对。" }
+            if !archived { editError = localSaveError ?? L10n.text("NEW_INPUT_WAS_ENTERED_AFTER_SUBMITTING_IT_HAS_BEEN_KEPT_FOR_YOU" /* 提交后有更新的本机输入，已保留，请继续核对。 */) }
             return archived
         }
         return false
     }
     func patchedWorkoutState(source:[String:Any],original:[String:Any],proposed:[String:Any],expectedUnit:String) throws -> [String:Any] {
-            guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409,"重量单位已改变，请重新打开编辑器。") }
+            guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409,L10n.text("THE_WEIGHT_UNIT_CHANGED_REOPEN_THE_EDITOR" /* 重量单位已改变，请重新打开编辑器。 */)) }
             var state = source; var list = state["workouts"] as? [[String:Any]] ?? []
             let key = WorkoutRecord.key(original)
-            guard let i = list.firstIndex(where:{WorkoutRecord.key($0) == key}) else { throw APIError.response(404,"这条训练已被删除，你的修改不会重新创建它。") }
+            guard let i = list.firstIndex(where:{WorkoutRecord.key($0) == key}) else { throw APIError.response(404,L10n.text("THIS_WORKOUT_WAS_DELETED_SAVING_YOUR_EDITS_WILL_NOT_RECREATE_IT" /* 这条训练已被删除，你的修改不会重新创建它。 */)) }
             var next = try RecordPatch.apply(original:original,proposed:proposed,current:list[i])
-            guard !(next["name"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines).isEmpty else { throw APIError.response(0,"请输入训练名称。") }
+            guard !(next["name"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines).isEmpty else { throw APIError.response(0,L10n.text("ENTER_A_WORKOUT_NAME" /* 请输入训练名称。 */)) }
             let timeChanged = !RecordPatch.equal(original["start"],proposed["start"]) || !RecordPatch.equal(original["end"],proposed["end"])
             if timeChanged {
                 let start = number(next["start"]), end = number(next["end"])
-                guard start.isFinite, end.isFinite, end >= start, end-start <= 86_400_000, end <= Date().timeIntervalSince1970*1000 else { throw APIError.response(0,"结束时间不能在未来，时长需要在 0–1440 分钟内。") }
+                guard start.isFinite, end.isFinite, end >= start, end-start <= 86_400_000, end <= Date().timeIntervalSince1970*1000 else { throw APIError.response(0,L10n.text("THE_END_TIME_CANNOT_BE_IN_THE_FUTURE_DURATION_MUST_BE_BETWEEN" /* 结束时间不能在未来，时长需要在 0–1440 分钟内。 */)) }
             }
             let entriesChanged = !RecordPatch.equal(original["entries"],proposed["entries"])
             if entriesChanged {
                 let entries = next["entries"] as? [[String:Any]] ?? []
-                guard entries.contains(where: { ($0["sets"] as? [[String:Any]] ?? []).contains(where:rawCompleted) }) else { throw APIError.response(0,"请至少保留一组已完成的训练。") }
+                guard entries.contains(where: { ($0["sets"] as? [[String:Any]] ?? []).contains(where:rawCompleted) }) else { throw APIError.response(0,L10n.text("KEEP_AT_LEAST_ONE_COMPLETED_SET" /* 请至少保留一组已完成的训练。 */)) }
                 for entry in entries {
                     for set in entry["sets"] as? [[String:Any]] ?? [] where EditValidation.ordinarySet(set,entry:entry) {
-                        guard EditValidation.validNumber(set["w"] ?? 0,0...2000), EditValidation.validNumber(set["r"] ?? 0,0...1000) else { throw APIError.response(0,"请检查每组的重量和次数。") }
+                        guard EditValidation.validNumber(set["w"] ?? 0,0...2000), EditValidation.validNumber(set["r"] ?? 0,0...1000) else { throw APIError.response(0,L10n.text("CHECK_THE_WEIGHT_AND_REPS_FOR_EACH_SET" /* 请检查每组的重量和次数。 */)) }
                     }
                 }
             }

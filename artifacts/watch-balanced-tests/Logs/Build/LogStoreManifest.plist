@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>13</integer>
+	<key>logs</key>
+	<dict>
+		<key>83E4C3D8-87CF-47B2-8D81-E20D64B0C17C</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>83E4C3D8-87CF-47B2-8D81-E20D64B0C17C.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>OpenGym project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>OpenGym</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Testing project OpenGym with scheme OpenGym</string>
+			<key>timeStartedRecording</key>
+			<real>815503298.082623</real>
+			<key>timeStoppedRecording</key>
+			<real>815503445.44198298</real>
+			<key>title</key>
+			<string>Testing project OpenGym with scheme OpenGym</string>
+			<key>uniqueIdentifier</key>
+			<string>83E4C3D8-87CF-47B2-8D81-E20D64B0C17C</string>
+		</dict>
+		<key>A7FA60F6-8F31-4C97-9350-0CEC50746F2F</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>A7FA60F6-8F31-4C97-9350-0CEC50746F2F.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>OpenGym project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>OpenGym</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Testing project OpenGym with scheme OpenGym</string>
+			<key>timeStartedRecording</key>
+			<real>815503934.32634795</real>
+			<key>timeStoppedRecording</key>
+			<real>815504087.73875999</real>
+			<key>title</key>
+			<string>Testing project OpenGym with scheme OpenGym</string>
+			<key>uniqueIdentifier</key>
+			<string>A7FA60F6-8F31-4C97-9350-0CEC50746F2F</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

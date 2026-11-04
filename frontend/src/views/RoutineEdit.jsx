@@ -5,7 +5,7 @@ import { useUI } from '../store/useUI.js'
 import { exOr } from '../lib/exercises.js'
 import { activeProfile, exAvailable } from '../lib/equipment.js'
 import { uid, exerciseNameText } from '../lib/format.js'
-import { t, exerciseNameFor, exerciseNameClass } from '../lib/i18n.js'
+import { t, exerciseNameFor, exerciseNameClass , translateValue } from '../lib/i18n.js'
 import { supersetUnits, moveRoutineEntry, cleanupSg, exLine, defaultConfig } from '../lib/history.js'
 import { Thumb } from '../components/Media.jsx'
 import { glyphPicker, exercisePicker, exConfigSheet, confirmSheet, supersetSheet } from '../sheets.jsx'
@@ -342,13 +342,13 @@ export function removeRoutineExercise(routineId, i) {
   const now = useStore.getState().S.routines.find(x => x.id === routineId)
   const after = JSON.stringify(now?.ex)
   const del = Number(now?._f?.ex) || 0
-  useUI.getState().toast(t('“{0}” left the routine.', exerciseNameText(exOr(slot.id))),
-    { action: t('Undo'), onAction: () => undoRemoveRoutineExercise({ routineId, i, before, after, base, del }) })
+  useUI.getState().toast(t("COUNT_LEFT_THE_ROUTINE" /* 已从训练计划移除“{0}”。 */, exerciseNameText(exOr(slot.id))),
+    { action: t("UNDO" /* 撤销 */), onAction: () => undoRemoveRoutineExercise({ routineId, i, before, after, base, del }) })
   return true
 }
 export function undoRemoveRoutineExercise({ routineId, i, before, after, base, del }) {
   if (!useStore.getState().S.routines.some(x => x.id === routineId)) {
-    useUI.getState().toast(t('Too late, that one’s gone'))
+    useUI.getState().toast(t("TOO_LATE_THAT_ONE_S_GONE" /* 太晚了，那组已经没了 */))
     return false
   }
   useStore.getState().update(s => {
@@ -402,7 +402,7 @@ export default function RoutineEdit() {
       picker.close()
       let done = false
       edit(x => { if (x[i] && x[i].id === openedOn) { x[i] = fn(x[i]); done = true } })
-      if (done) toast(t('Replaced with “{0}”', exerciseNameText(ex)))
+      if (done) toast(t("REPLACED_WITH_COUNT" /* 已替换为“{0}” */, exerciseNameText(ex)))
     }
     const picker = exercisePicker((ex, quick) => {
       // The slot and the history as they are now, not as this render saw them: a sync can land
@@ -415,8 +415,8 @@ export default function RoutineEdit() {
       if (quick && ex.id === openedOn) { picker.close(); return }
       if (quick) { commit(ex, current => replaceSlotExercise(current, ex.id, live, id)); return }
       const next = replaceSlotExercise(slot, ex.id, live, id)
-      exConfigSheet(ex, next, cfg => commit(ex, current => ({ id: ex.id, sg: current.sg, ...cfg })), null, r, null, null, t('Replace'))
-    }, { title: t('Replace exercise'), like: openedOn })
+      exConfigSheet(ex, next, cfg => commit(ex, current => ({ id: ex.id, sg: current.sg, ...cfg })), null, r, null, null, t("REPLACE" /* 替换 */))
+    }, { title: t("REPLACE_EXERCISE" /* 替换动作 */), like: openedOn })
   }
   // This routine on paper (#282): the weekly printout's page for one session, through the same
   // two print paths — the browser's print dialog (→ Save as PDF) on the web, the native Print
@@ -425,7 +425,7 @@ export default function RoutineEdit() {
     const owner = useStore.getState().user?.name || ''
     // Android's print manager refuses a job without a name. The editor never leaves a name blank,
     // but a routine that arrived from an import or another client may have none.
-    if (MOBILE) printHtml(planPrintHTML(S, owner, { routineId: id }), r.name || t('Routine')).catch(() => { /* dismissed */ })
+    if (MOBILE) printHtml(planPrintHTML(S, owner, { routineId: id }), r.name || t("ROUTINE" /* 训练计划 */)).catch(() => { /* dismissed */ })
     else printPlan(S, owner, { routineId: id })
   }
   const toggleLink = i => edit(ex => {
@@ -439,7 +439,7 @@ export default function RoutineEdit() {
   const addExercise = () => exercisePicker((ex, quick) => {
     if (quick) {
       edit(x => x.push({ id: ex.id, ...defaultConfig(ex.id) }))
-      toast(t('“{0}” added to {1}', exerciseNameText(ex), r.name))
+      toast(t("COUNT_ADDED_TO_COUNT" /* “{0}”已加入 {1} */, exerciseNameText(ex), r.name))
     } else {
       exConfigSheet(ex, null, cfg => edit(x => { x.push({ id: ex.id, ...cfg }) }), null, r)
     }
@@ -464,25 +464,25 @@ export default function RoutineEdit() {
 
   return <div className="narrow">
     <div className="hdr">
-      <button className="iconbtn" onClick={() => nav('/plan')} aria-label={t('Plan')}><Icon name="chevronLeft" /></button>
+      <button className="iconbtn" onClick={() => nav('/plan')} aria-label={t("PLAN" /* 计划 */)}><Icon name="chevronLeft" /></button>
       <div style={{ flex: 1, margin: '0 12px' }}>
         <input className="input" defaultValue={r.name} style={{ fontWeight: 600, fontSize: 20, letterSpacing: '-.021em' }}
-          onChange={e => update(s => { s.routines.find(x => x.id === id).name = e.target.value.trim() || t('Routine') })} />
+          onChange={e => update(s => { s.routines.find(x => x.id === id).name = e.target.value.trim() || t("ROUTINE" /* 训练计划 */) })} />
       </div>
-      <button className="iconbtn" aria-label={t('Pick an icon')} onClick={() => glyphPicker(r.emoji, g => update(s => { s.routines.find(x => x.id === id).emoji = g }))}><Icon name={glyphOf(r.emoji)} /></button>
+      <button className="iconbtn" aria-label={t("PICK_AN_ICON" /* 选择图标 */)} onClick={() => glyphPicker(r.emoji, g => update(s => { s.routines.find(x => x.id === id).emoji = g }))}><Icon name={glyphOf(r.emoji)} /></button>
     </div>
 
     <div className="sect-b" style={{ marginBottom: 16 }}>
-      <SelectRow icon="chartLine" title={t('Progression')} sheetTitle={t('Progression')}
+      <SelectRow icon="chartLine" title={t("PROGRESSION" /* 进阶方式 */)} sheetTitle={t("PROGRESSION" /* 进阶方式 */)}
         value={r.prog || 'linear'} onChange={v => update(s => { s.routines.find(x => x.id === id).prog = v })}
-        options={POLICIES_FOR.reps.map(p => ({ value: p, label: t(POLICY_NAME[p]), subtitle: t(POLICY_DESC[p]) }))} />
+        options={POLICIES_FOR.reps.map(p => ({ value: p, label: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(POLICY_NAME[p]), subtitle: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(POLICY_DESC[p]) }))} />
       {/* Two controls that read alike and are not (issue #294). Progression picks how this
           routine's own targets move, and "No automatic progression" keeps them where they are.
           This switch decides whether the routine's workouts count at all: a deload routine's
           sessions open at its own numbers and are never the baseline the next regular session
           progresses from (session-start.js, history.js entryExcluded). */}
-      <Row icon="chartLineSlash" iconTint="var(--orange)" title={t('Deload routine')}
-        subtitle={t('Its workouts do not count toward progression. They still show in history and statistics.')}>
+      <Row icon="chartLineSlash" iconTint="var(--orange)" title={t("DELOAD_ROUTINE" /* 减载训练计划 */)}
+        subtitle={t("ITS_WORKOUTS_DO_NOT_COUNT_TOWARD_PROGRESSION_THEY_STILL_SHOW_IN_HISTORY" /* 它的训练不计入进阶，但仍会显示在历史记录和统计中。 */)}>
         <Switch checked={r.excludeFromProgression === true} onChange={v => update(s => {
           const routine = s.routines.find(x => x.id === id)
           if (v) routine.excludeFromProgression = true
@@ -492,22 +492,22 @@ export default function RoutineEdit() {
     </div>
     <div className="small dim" style={{ margin: '-10px 2px 16px' }}>
       {r.excludeFromProgression
-        ? t('A deload routine opens at the numbers set here, so the progression above does not apply to it.') + ' ' + t('The next regular target continues from the last included workout.')
-        : t(POLICY_DESC[r.prog || 'linear'] || POLICY_DESC.linear) + ' ' + t('Applies to every exercise in this routine that does not set its own rule.')}
+        ? t("A_DELOAD_ROUTINE_OPENS_AT_THE_NUMBERS_SET_HERE_SO_THE_PROGRESSION" /* 减载训练计划按这里设定的数值开始，因此上面的进阶方式对它不适用。 */) + ' ' + t("THE_NEXT_REGULAR_TARGET_CONTINUES_FROM_THE_LAST_INCLUDED_WORKOUT" /* 下一个常规目标从上一次计入的训练继续。 */)
+        : translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(POLICY_DESC[r.prog || 'linear'] || POLICY_DESC.linear) + ' ' + t("APPLIES_TO_EVERY_EXERCISE_IN_THIS_ROUTINE_THAT_DOES_NOT_SET_ITS" /* 适用于此计划中未单独设置规则的每个动作。 */)}
     </div>
 
     {missingCount > 0 && <div className="card" style={{ marginBottom: 16, borderColor: 'var(--orange)' }}>
       <div className="row" style={{ gap: 8, alignItems: 'center' }}>
         <Icon name="warning" style={{ color: 'var(--orange)' }} />
-        <div className="small">{t('{0} of {1} exercises need equipment outside "{2}"', missingCount, r.ex.length, profile.name)}</div>
+        <div className="small">{t("COUNT_OF_COUNT_EXERCISES_NEED_EQUIPMENT_OUTSIDE_COUNT" /* {1} 个动作中有 {0} 个需要“{2}”之外的器械 */, missingCount, r.ex.length, profile.name)}</div>
       </div>
     </div>}
 
     {/* "Add exercise" heads the list (v1.3.11): with it under the last exercise, a long routine
         had to be scrolled to the bottom before anything could be added. */}
     <div className="row between plan-sec-h routine-ex-h">
-      <h4 className="sec">{t('Exercises')}</h4>
-      <Button size="sm" variant="tinted" icon="plus" onClick={addExercise}>{t('Add exercise')}</Button>
+      <h4 className="sec">{t("EXERCISES" /* 动作库 */)}</h4>
+      <Button size="sm" variant="tinted" icon="plus" onClick={addExercise}>{t("ADD_EXERCISE" /* 添加动作 */)}</Button>
     </div>
     {r.ex.length ? <div ref={reorder.listRef} onClickCapture={reorder.onClickCapture}
       className={'list routine-list' + (reorder.drag ? ' is-reordering' : '')}>{r.ex.map((e, i) => {
@@ -530,17 +530,17 @@ export default function RoutineEdit() {
         }}>
           {/* Shown on pointer devices only (index.css .routine-grip); the Move buttons and the
               long press stay the way in for a keyboard and a finger. */}
-          <span className="routine-grip" data-drag-handle aria-hidden="true" title={t('Reorder exercises')}><Icon name="grip" /></span>
-          {ssPos.has(i) && <span className="ss-pos" aria-label={t('Superset position {0}', ssPos.get(i))}>{ssPos.get(i)}</span>}
+          <span className="routine-grip" data-drag-handle aria-hidden="true" title={t("REORDER_EXERCISES" /* 调整动作顺序 */)}><Icon name="grip" /></span>
+          {ssPos.has(i) && <span className="ss-pos" aria-label={t("SUPERSET_POSITION_COUNT" /* 超级组位置 {0} */, ssPos.get(i))}>{ssPos.get(i)}</span>}
           <Thumb ex={ex} />
           <button type="button" className="grow item-open" data-row-open><span className={`tt ${exerciseNameClass(ex)}`}>{exerciseNameFor(ex)}</span><span className="ss">{exLine(e, S.unit, speedUnitOf(S))}</span>
             {e.note && <span className="small dim" style={{ marginTop: 2 }}>{e.note}</span>}</button>
-          {noEquip && <span className="tag" style={{ color: 'var(--orange)', borderColor: 'var(--orange)' }} title={t('Needs {0}, which isn’t in your active profile', t(ex.eq))}><Icon name="warning" /></span>}
+          {noEquip && <span className="tag" style={{ color: 'var(--orange)', borderColor: 'var(--orange)' }} title={t("NEEDS_COUNT_WHICH_ISN_T_IN_YOUR_ACTIVE_PROFILE" /* 需要{0}，但它不在你的当前配置中 */, translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(ex.eq))}><Icon name="warning" /></span>}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 'none', alignItems: 'center' }}>
-            {i > 0 && <button className={'iconbtn' + (linkedPrev ? ' on-ss' : '')} title={t('Superset with exercise above')} style={{ width: 32, height: 28, borderRadius: 8, fontSize: 15 }} onClick={ev => { ev.stopPropagation(); toggleLink(i) }}><Icon name="link" /></button>}
+            {i > 0 && <button className={'iconbtn' + (linkedPrev ? ' on-ss' : '')} title={t("SUPERSET_WITH_EXERCISE_ABOVE" /* 与上面的动作组成超级组 */)} style={{ width: 32, height: 28, borderRadius: 8, fontSize: 15 }} onClick={ev => { ev.stopPropagation(); toggleLink(i) }}><Icon name="link" /></button>}
             <div style={{ display: 'flex', gap: 2 }}>
-              <button className="iconbtn" aria-label={t('Move up')} title={leavesUp ? t('Move out of the superset') : t('Move up')} disabled={!moveRoutineEntry(r.ex, i, -1)} style={{ width: 28, height: 24, borderRadius: 7, fontSize: 12 }} onClick={ev => { ev.stopPropagation(); move(i, -1) }}><Icon name="chevronUp" /></button>
-              <button className="iconbtn" aria-label={t('Move down')} title={leavesDown ? t('Move out of the superset') : t('Move down')} disabled={!moveRoutineEntry(r.ex, i, 1)} style={{ width: 28, height: 24, borderRadius: 7, fontSize: 12 }} onClick={ev => { ev.stopPropagation(); move(i, 1) }}><Icon name="chevronDown" /></button>
+              <button className="iconbtn" aria-label={t("MOVE_UP" /* 上移 */)} title={leavesUp ? t("MOVE_OUT_OF_THE_SUPERSET" /* 移出超级组 */) : t("MOVE_UP" /* 上移 */)} disabled={!moveRoutineEntry(r.ex, i, -1)} style={{ width: 28, height: 24, borderRadius: 7, fontSize: 12 }} onClick={ev => { ev.stopPropagation(); move(i, -1) }}><Icon name="chevronUp" /></button>
+              <button className="iconbtn" aria-label={t("MOVE_DOWN" /* 下移 */)} title={leavesDown ? t("MOVE_OUT_OF_THE_SUPERSET" /* 移出超级组 */) : t("MOVE_DOWN" /* 下移 */)} disabled={!moveRoutineEntry(r.ex, i, 1)} style={{ width: 28, height: 24, borderRadius: 7, fontSize: 12 }} onClick={ev => { ev.stopPropagation(); move(i, 1) }}><Icon name="chevronDown" /></button>
             </div>
           </div>
         </div>
@@ -549,9 +549,9 @@ export default function RoutineEdit() {
         style={isDragging ? { transform: `translate3d(0, ${reorder.drag.deltaY}px, 0)` } : undefined}>
         {unitFirst.has(i) && (() => {
           const meta = supersetMeta(r.ex, unitOf.get(i))
-          return <button type="button" className="ss-label ss-label-btn" onClick={() => editSuperset(i)} title={t('Name and rest of this superset')}>
-            <Icon name="link" /><span className="ss-label-name">{meta.name || t('Superset')}</span>
-            {meta.rest > 0 && <span className="dim">· {t('{0} rest after each round', fmtRest(meta.rest))}</span>}
+          return <button type="button" className="ss-label ss-label-btn" onClick={() => editSuperset(i)} title={t("NAME_AND_REST_OF_THIS_SUPERSET" /* 这个超级组的名称和休息 */)}>
+            <Icon name="link" /><span className="ss-label-name">{meta.name || t("SUPERSET" /* 超级组 */)}</span>
+            {meta.rest > 0 && <span className="dim">· {t("COUNT_REST_AFTER_EACH_ROUND" /* 每轮后休息 {0} */, fmtRest(meta.rest))}</span>}
             <Icon name="pencil" />
           </button>
         })()}
@@ -560,12 +560,12 @@ export default function RoutineEdit() {
             reorder it (a press that has lifted keeps the swipe out), and the row's sheet keeps
             Remove for a keyboard. Rows are keyed by index, so the row shuts when the count changes. */}
         {swipe
-          ? <SwipeRow className="swrow-item" deleteLabel={t('Remove')} deleteIcon="minus" closeKey={r.ex.length}
+          ? <SwipeRow className="swrow-item" deleteLabel={t("REMOVE" /* 移除 */)} deleteIcon="minus" closeKey={r.ex.length}
             canSwipe={() => !reorder.lifted()} onDelete={removeHere}>{item}</SwipeRow>
           : item}
       </div>
     })}{reorder.drag && <div className="routine-drop-indicator" data-testid="routine-drop-indicator"
-      aria-hidden="true" style={{ top: `${reorder.drag.indicatorTop}px` }} />}</div> : <div className="empty"><div className="ico"><Icon name="dumbbell" /></div>{t('No exercises yet. Add your first one!')}</div>}
+      aria-hidden="true" style={{ top: `${reorder.drag.indicatorTop}px` }} />}</div> : <div className="empty"><div className="ico"><Icon name="dumbbell" /></div>{t("NO_EXERCISES_YET_ADD_YOUR_FIRST_ONE" /* 还没有动作。添加第一个吧！ */)}</div>}
 
     {/* Coverage of the routine as planned, so a gap shows up while you're building it
         rather than after a month of training around it. */}
@@ -573,29 +573,29 @@ export default function RoutineEdit() {
       const load = loadOfRoutine(r)
       const { worked } = rankOf(load)
       return <div className="card" style={{ marginTop: 12 }}>
-        <h2>{t('What this session hits')}</h2>
+        <h2>{t("WHAT_THIS_SESSION_HITS" /* 这次训练练到哪里 */)}</h2>
         <BodyMap load={load} body={S.body} />
         <div className="mchips">
-          {worked.slice(0, 6).map(m => <span key={m} className="mchip">{t(MUSCLE_NAME[m])}</span>)}
+          {worked.slice(0, 6).map(m => <span key={m} className="mchip">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[m])}</span>)}
         </div>
       </div>
     })()}
 
-    <div className="small dim row" style={{ margin: '10px 2px', gap: 5 }}><Icon name="link" style={{ fontSize: 13 }} />{t('Tap the link button on an exercise to superset it with the one above. You’ll do them back-to-back.')}</div>
+    <div className="small dim row" style={{ margin: '10px 2px', gap: 5 }}><Icon name="link" style={{ fontSize: 13 }} />{t("TAP_THE_LINK_BUTTON_ON_AN_EXERCISE_TO_SUPERSET_IT_WITH_THE" /* 点动作上的链接按钮，就能和上面的动作组成超级组。你会连着做完它们。 */)}</div>
     <Button onClick={() => {
-      const copy = copyRoutine(r, t('Copy'))
+      const copy = copyRoutine(r, t("COPY" /* 副本 */))
       update(s => { s.routines.push(copy) })
       nav('/plan/r/' + copy.id)
-    }}>{t('Copy routine')}</Button>
+    }}>{t("COPY_ROUTINE" /* 复制训练计划 */)}</Button>
     <div style={{ height: 10 }} />
-    <Button disabled={!r.ex.length} onClick={printRoutine}>{t('Print / Save as PDF')}</Button>
+    <Button disabled={!r.ex.length} onClick={printRoutine}>{t("PRINT_SAVE_AS_PDF" /* 打印 / 保存为 PDF */)}</Button>
     <div style={{ height: 10 }} />
     <Button variant="danger" onClick={() => confirmSheet({
-      title: t('Delete routine?'), message: t('“{0}” and its exercises will be removed.', r.name), confirmText: t('Delete'), danger: true,
+      title: t("DELETE_ROUTINE" /* 删除训练计划？ */), message: t("COUNT_AND_ITS_EXERCISES_WILL_BE_REMOVED" /* “{0}”及其动作将被移除。 */, r.name), confirmText: t("DELETE" /* 删除 */), danger: true,
       onConfirm: () => {
         update(s => { deleteRoutine(s, id) })
         nav('/plan')
       }
-    })}>{t('Delete routine')}</Button>
+    })}>{t("DELETE_ROUTINE_A" /* 删除训练计划 */)}</Button>
   </div>
 }

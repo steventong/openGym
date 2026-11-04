@@ -35,3 +35,5 @@ export * from './exercise-management.js';
 export * from './training-operations.js';
 
 export * from './personal.js';
+
+export { setLanguage } from './localization.js';

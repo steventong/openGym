@@ -14,7 +14,7 @@ import { speedUnitOf, toSpeed, fromSpeed } from '../lib/speed.js'
 import { clampIncline, hasIncline, inclineFits, inclineFrom, INCLINE_STEP } from '../lib/incline.js'
 import { beep, vibrate, unlock } from '../lib/sound.js'
 import { pinState } from '../lib/queue.js'
-import { t, tn, exerciseNameFor, exerciseNameClass } from '../lib/i18n.js'
+import { t, tn, exerciseNameFor, exerciseNameClass , translateValue } from '../lib/i18n.js'
 import { api, beacon } from '../lib/api.js'
 import { pyramidRestFor, maxRecordAt, isPyramid, pyramidLabel } from '../lib/pyramid.js'
 import { insertionIndexAfterCurrentUnit, nextUnfinishedUnit, setProgressHighWater, supersetFlowStep, restAfterSet, restOnRecheck, restSecFor, warmupRestSecFor } from '../lib/supersetFlow.js'
@@ -63,23 +63,23 @@ function StartChooser() {
   const idSet = new Set(todayIds)
   const others = S.routines.filter(r => !idSet.has(r.id))
   return <div className="narrow">
-    <div className="hdr"><div><h1>{t('Start workout')}</h1><div className="sub">{t(DAYN[new Date().getDay()])} · {todayRoutines.length ? t('today is {0}', todayName) : t('rest day, but no one’s stopping you')}</div></div></div>
+    <div className="hdr"><div><h1>{t("START_WORKOUT" /* 开始训练 */)}</h1><div className="sub">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAYN[new Date().getDay()])} · {todayRoutines.length ? t("TODAY_IS_COUNT" /* 今天是{0} */, todayName) : t("REST_DAY_BUT_NO_ONE_S_STOPPING_YOU" /* 休息日，但没人拦着你 */)}</div></div></div>
     {todayRoutines.length > 0 && <div className="card" style={{ borderColor: 'var(--acc)' }}>
-      <h2 className="accent">{t("Today's plan")}{todayOvr ? ' · ' + t('rescheduled') : ''}</h2>
+      <h2 className="accent">{t("TODAY_S_PLAN" /* 今日计划 */)}{todayOvr ? ' · ' + t("RESCHEDULED" /* 已改期 */) : ''}</h2>
       <div className="row between" style={{ marginBottom: 12 }}>
         <div><div className="big">{todayName}</div><div className="muted small">{exCount(todayRoutines.reduce((n, r) => n + r.ex.length, 0))}</div></div>
         <span className="lrow-i" style={{ width: 38, height: 38, borderRadius: 9, fontSize: 22 }}><Icon name={glyphOf(todayRoutines[0].emoji)} /></span>
       </div>
-      <Button variant="primary" icon="play" onClick={() => startFlow(todayIds)}>{t('Start {0}', todayName)}</Button>
+      <Button variant="primary" icon="play" onClick={() => startFlow(todayIds)}>{t("START_COUNT_A" /* 开始 {0} */, todayName)}</Button>
     </div>}
-    {others.length > 0 && <><h4 className="sec">{t('Other routines')}</h4>
+    {others.length > 0 && <><h4 className="sec">{t("OTHER_ROUTINES" /* 其他训练计划 */)}</h4>
       <div className="list">{others.map(r => <div key={r.id} className="item" onClick={() => startFlow([r.id])}>
         <span className="lrow-i"><Icon name={glyphOf(r.emoji)} /></span>
         <div className="grow"><div className="tt">{r.name}</div><div className="ss">{exCount(r.ex.length)}</div></div>
-        <span className="tag acc">{t('Start')}</span></div>)}</div></>}
+        <span className="tag acc">{t("START" /* 开始 */)}</span></div>)}</div></>}
     <div style={{ height: 14 }} />
-    <Button icon="shuffle" onClick={() => startFlow([])}>{t('Freestyle workout (pick as you go)')}</Button>
-    {!S.routines.length && <><div style={{ height: 10 }} /><Button variant="primary" onClick={() => nav('/plan')}>{t('Build a plan first')}</Button></>}
+    <Button icon="shuffle" onClick={() => startFlow([])}>{t("FREESTYLE_WORKOUT_PICK_AS_YOU_GO" /* 自由训练（边练边选） */)}</Button>
+    {!S.routines.length && <><div style={{ height: 10 }} /><Button variant="primary" onClick={() => nav('/plan')}>{t("BUILD_A_PLAN_FIRST" /* 先创建一个计划 */)}</Button></>}
   </div>
 }
 
@@ -219,16 +219,16 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     const today = entry.target || {}
     // A pyramid reads as its targets, as on the routine row: "12 · 8 · 6 · Max · 12", never the
     // set count times the first target (#367). Its rows are the plan; nothing moves them.
-    if (isPyramid(today)) return <div className="small dim planline" style={{ marginBottom: 4 }}>{t('Plan: {0}', pyramidLabel(today.pyramid))}</div>
+    if (isPyramid(today)) return <div className="small dim planline" style={{ marginBottom: 4 }}>{t("PLAN_COUNT" /* 计划：{0} */, pyramidLabel(today.pyramid))}</div>
     const todaySets = today.sets || planned.sets || 1
     const inPlan = timed
       ? today.sec == null || today.sec === planned.sec
       : today.reps == null || (planned.repsMin > 0 ? today.reps >= planned.repsMin && today.reps <= planned.reps : today.reps === planned.reps)
     const note = todaySets !== (planned.sets || 1) || !inPlan
-      ? t('today {0}', setsRepsOf({ mode, sets: todaySets, reps: today.reps, sec: today.sec }))
-      : entry.carried ? t('reps from your last session') : null
+      ? t("TODAY_COUNT" /* 今天 {0} */, setsRepsOf({ mode, sets: todaySets, reps: today.reps, sec: today.sec }))
+      : entry.carried ? t("REPS_FROM_YOUR_LAST_SESSION" /* 次数沿用上次训练 */) : null
     return <div className="small dim planline" style={{ marginBottom: 4 }}>
-      {t('Plan: {0}', setsRepsOf({ ...planned, mode }))}{note ? ' · ' + note : ''}
+      {t("PLAN_COUNT" /* 计划：{0} */, setsRepsOf({ ...planned, mode }))}{note ? ' · ' + note : ''}
     </div>
   })()
   // What the rows are held against (#173): the last time in this routine (#216), or the best set
@@ -243,11 +243,11 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // How long ago reads at a glance (#363): "3 days ago", counted from the session's own day, so a
   // workout logged into the past is not told its last time was "today". The date itself stays
   // in the hover title and in what a screen reader hears.
-  const refLabel = refBest ? t('Best set') : t('Last time')
+  const refLabel = refBest ? t("BEST_SET" /* 最佳组 */) : t("LAST_TIME" /* 上次 */)
   const refAgo = ref ? fmtDaysAgo(ref.d, S.active.d || todayISO()) : ''
   const refSets = ref ? (refBest ? [ref.set] : ref.sets).map(s => setLabel(entry.id, s, ref.target, speedUnitOf(S))) : []
-  const refText = ref ? `${refLabel} (${refAgo}, ${fmtDate(ref.d, true, true)}): ` + refSets.join(', ') : refBest && last ? t('Best set: nothing logged this way yet') : null
-  const refAction = refBest ? t('Show last time instead') : t('Show your best set instead')
+  const refText = ref ? `${refLabel} (${refAgo}, ${fmtDate(ref.d, true, true)}): ` + refSets.join(', ') : refBest && last ? t("BEST_SET_NOTHING_LOGGED_THIS_WAY_YET" /* 最佳组：还没有这样记录过 */) : null
+  const refAction = refBest ? t("SHOW_LAST_TIME_INSTEAD" /* 改为显示上次 */) : t("SHOW_YOUR_BEST_SET_INSTEAD" /* 改为显示你的最佳组 */)
   // The button's text is the reference, which says nothing about what a tap does; its name
   // carries both, the reference first as it reads on screen, then the switch.
   const refLine = refText ? <button type="button" className="refline small dim"
@@ -274,18 +274,18 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // The weight column says what a dumbbell weight means when the exercise has said (#474): one
   // bell or both together. A one-arm exercise holds one bell, so its plain heading is already true.
   const bells = !bw && bellsIn(cfg) === 2 ? meaning : 'as'
-  const loadCol = { f: 'w', step: loadStep, dec: true, hd: bw ? t('Added ({0})', S.unit)
-    : bells === 'each' ? t('Each ({0})', S.unit) : bells === 'total' ? t('Both ({0})', S.unit) : t('Weight ({0})', S.unit) }
+  const loadCol = { f: 'w', step: loadStep, dec: true, hd: bw ? t("ADDED_COUNT_A" /* 负重（{0}） */, S.unit)
+    : bells === 'each' ? t("EACH_COUNT" /* 每只 ({0}) */, S.unit) : bells === 'total' ? t("BOTH_COUNT" /* 两只合计 ({0}) */, S.unit) : t("WEIGHT_COUNT" /* 重量（{0}） */, S.unit) }
   // The reps column is the total in every mode, unilateral included — the stepper walks in
   // twos there so the number you land on is one you can actually split evenly.
-  const repCol = { f: 'r', step: repStep(cfg), dec: false, hd: t('Reps') }
-  const col1 = cardio ? { f: 'min', step: 1, dec: false, hd: t('Duration (min)') }
-    : timed ? { f: 'sec', step: 5, dec: false, hd: t('Seconds') }
+  const repCol = { f: 'r', step: repStep(cfg), dec: false, hd: t("REPS" /* 次数 */) }
+  const col1 = cardio ? { f: 'min', step: 1, dec: false, hd: t("DURATION_MIN" /* 时长（分钟） */) }
+    : timed ? { f: 'sec', step: 5, dec: false, hd: t("SECONDS" /* 秒数 */) }
       : loadCol
   // Speed is stored in km/h and shown in the profile's unit (lib/speed.js): `view` turns the
   // stored number into the one on screen, `store` the one typed or stepped back into km/h.
   const speedUnit = speedUnitOf(S)
-  const col2 = cardio ? { f: 'speed', step: 0.5, dec: true, hd: speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)'),
+  const col2 = cardio ? { f: 'speed', step: 0.5, dec: true, hd: speedUnit === 'mph' ? t("SPEED_MPH" /* 速度（mph） */) : t("SPEED_KM_H" /* 速度（km/h） */),
     view: v => toSpeed(v, speedUnit), store: v => fromSpeed(v, speedUnit) }
     : timed ? loadCol : repCol
   // Effort (RIR or RPE, whichever the profile logs) only makes sense for weighted rep sets,
@@ -299,8 +299,8 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // one and on any whose rows already carry a grade. `opt` again: a cleared field is no incline,
   // and `store` keeps whatever is typed on the half percent between 0 and 40.
   const inclineCol = cardio && (inclineFits(ex) || entry.sets.some(hasIncline))
-    ? { f: 'incline', step: INCLINE_STEP, dec: true, opt: true, hd: t('Incline (%)'), store: clampIncline } : null
-  const col3 = cardio ? inclineCol : mode === 'reps' && eff ? { f: eff.f, eff: kind, hd: t(eff.hd) } : null
+    ? { f: 'incline', step: INCLINE_STEP, dec: true, opt: true, hd: t("INCLINE" /* 坡度 (%) */), store: clampIncline } : null
+  const col3 = cardio ? inclineCol : mode === 'reps' && eff ? { f: eff.f, eff: kind, hd: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(eff.hd) } : null
   // The effort column walks its own scale — see stepEffort. Weight and reps step up from 0
   // with no ceiling, as they always did.
   const bump = (s, i, col, dir) => {
@@ -324,10 +324,10 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   const wc = workoutControls(S)
   const cell = (s, i, col, cls) => (
     <div className={'stp ' + cls + (wc.steppers ? '' : ' plain')}>
-      {wc.steppers && <button aria-label={t('Decrease')} onClick={() => bump(s, i, col, -1)}><Icon name="minus" /></button>}
+      {wc.steppers && <button aria-label={t("DECREASE" /* 减少 */)} onClick={() => bump(s, i, col, -1)}><Icon name="minus" /></button>}
       <span className="val"><NumberField decimal={col.dec} nullable={col.opt} value={viewOf(col, s[col.f]) ?? ''}
         onChange={v => onField(i, col.f, col.store ? col.store(v) : v)} /></span>
-      {wc.steppers && <button aria-label={t('Increase')} onClick={() => bump(s, i, col, 1)}><Icon name="plus" /></button>}
+      {wc.steppers && <button aria-label={t("INCREASE" /* 增加 */)} onClick={() => bump(s, i, col, 1)}><Icon name="plus" /></button>}
     </div>
   )
   // Plate loading, per set row (lib/plates.js): which plates make THIS row's weight, from the
@@ -359,10 +359,10 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   })()
   // Only a bar is named as one: a plate-loaded machine set to per side with its own weight is
   // not a "Bar 50 lb".
-  const loadSummary = loadKind === 'none' ? t('Off')
-    : loadKind === 'single' ? t('Single stack')
-      : !usesBar(ex) ? t('Per side')
-        : base > 0 ? t('Bar {0}', fmtNum(base) + ' ' + S.unit) : t('No bar')
+  const loadSummary = loadKind === 'none' ? t("OFF" /* 关 */)
+    : loadKind === 'single' ? t("SINGLE_STACK" /* 单堆 */)
+      : !usesBar(ex) ? t("PER_SIDE" /* 每侧 */)
+        : base > 0 ? t("BAR_COUNT_A" /* 杆 {0} */, fmtNum(base) + ' ' + S.unit) : t("NO_BAR" /* 无杠铃杆 */)
   // The line under a set row (or a drop sub-row): shown on the first loaded row and whenever the
   // stack changes from the loaded row before it, so a run of equal weights shows its plates once.
   // What to strip and what to add rides along, except in the compact view.
@@ -376,13 +376,13 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     if (prev && sameLoad(prev, L)) return null
     // "+" between plates: "45 + 5 per side" reads as a sum, a dot did not (Boris, 2026-09-13).
     const stack = L.plates.map(w => fmtPlate(w)).join(' + ')
-    const text = L.barOnly ? t('Bar only')
-      : L.kind === 'pairs' ? t('{0} per side', stack || '–') : t('Load {0}', stack || '–')
+    const text = L.barOnly ? t("BAR_ONLY" /* 空杠 */)
+      : L.kind === 'pairs' ? t("COUNT_PER_SIDE" /* 每侧 {0} */, stack || '–') : t("LOAD_COUNT_A" /* 负重 {0} */, stack || '–')
     const d = prev && !dense ? plateDelta(prev.plates, L.plates) : null
     const moves = d ? [...d.strip.map(w => '−' + fmtPlate(w)), ...d.add.map(w => '+' + fmtPlate(w))] : []
     return <div className="plateline">
       <Icon name="plate" />
-      <span>{text}{L.missing > 0 && <> · <span className="short">{t('{0} short', fmtPlate(L.missing) + ' ' + S.unit)}</span></>}</span>
+      <span>{text}{L.missing > 0 && <> · <span className="short">{t("COUNT_SHORT" /* 差 {0} */, fmtPlate(L.missing) + ' ' + S.unit)}</span></>}</span>
       {moves.length > 0 && <span className="moves">{moves.join(' ')}</span>}
     </div>
   }
@@ -393,35 +393,35 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // the order of the session, and Remove on its own at the end.
   // The exercise's own rest, or the default it falls back to (lib/supersetFlow.js restSecFor).
   const ownRest = entry.target?.restSec > 0 ? entry.target.restSec : 0
-  const restSub = ownRest ? fmtRest(ownRest) : t('Default ({0})', fmtRest(S.restSec))
+  const restSub = ownRest ? fmtRest(ownRest) : t("DEFAULT_COUNT" /* 默认（{0}） */, fmtRest(S.restSec))
   const openMore = () => menuSheet({
     title: exerciseNameFor(ex),
     titleClass: exerciseNameClass(ex),
     sections: [
-      { title: t('Today'), items: [
-        onSwap && { icon: 'swap', label: t('Swap exercise'), onClick: onSwap, disabled: busy },
-        { icon: 'sunrise', label: t('Add warm-up set'), onClick: onAddWarmup },
-        { icon: 'note', label: entry.note ? t('Edit note') : t('Add note'), sub: entry.note || undefined, onClick: () => exerciseNoteSheet(entryIdx) },
-        onNoProg && { icon: 'chartLineSlash', label: t('Don’t count for progression'), sub: t('This exercise, this session only'), on: entry.noProg === true, onClick: () => onNoProg(entry.noProg !== true) },
+      { title: t("TODAY" /* 今天 */), items: [
+        onSwap && { icon: 'swap', label: t("SWAP_EXERCISE" /* 更换动作 */), onClick: onSwap, disabled: busy },
+        { icon: 'sunrise', label: t("ADD_WARM_UP_SET" /* 添加热身组 */), onClick: onAddWarmup },
+        { icon: 'note', label: entry.note ? t("EDIT_NOTE" /* 编辑备注 */) : t("ADD_NOTE" /* 添加备注 */), sub: entry.note || undefined, onClick: () => exerciseNoteSheet(entryIdx) },
+        onNoProg && { icon: 'chartLineSlash', label: t("DON_T_COUNT_FOR_PROGRESSION" /* 不计入进阶 */), sub: t("THIS_EXERCISE_THIS_SESSION_ONLY" /* 仅限此动作，仅限本次训练 */), on: entry.noProg === true, onClick: () => onNoProg(entry.noProg !== true) },
       ] },
-      { title: t('Look it up'), items: [
-        { icon: 'history', label: t('History'), sub: last ? t('Last time') + ' ' + fmtDate(last.d) : undefined, onClick: () => exerciseHistorySheet(entry.id) },
-        { icon: 'info', label: t('How to do it'), onClick: () => exerciseDetailSheet(ex) },
+      { title: t("LOOK_IT_UP" /* 查看 */), items: [
+        { icon: 'history', label: t("HISTORY" /* 历史 */), sub: last ? t("LAST_TIME" /* 上次 */) + ' ' + fmtDate(last.d) : undefined, onClick: () => exerciseHistorySheet(entry.id) },
+        { icon: 'info', label: t("HOW_TO_DO_IT" /* 动作要领 */), onClick: () => exerciseDetailSheet(ex) },
       ] },
-      { title: t('Settings'), items: [
-        onProgressionSettings && { icon: 'slider', label: t('Exercise settings'), sub: guidance ? t(guidance.policyLabel) : t('Sets, reps, rest, progression'), onClick: onProgressionSettings },
-        onRest && { icon: 'timer', label: t('Rest timer'), sub: restSub, onClick: onRest },
-        plateLoading && { icon: 'plate', label: t('Plate loading'), sub: loadSummary, onClick: () => barWeightSheet(entry.id, cfg) },
-        routineUpdate && { icon: 'clipboard', label: t('Update routine'), sub: routineUpdate.sub, onClick: routineUpdate.run },
+      { title: t("SETTINGS" /* 设置 */), items: [
+        onProgressionSettings && { icon: 'slider', label: t("EXERCISE_SETTINGS" /* 动作设置 */), sub: guidance ? translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(guidance.policyLabel) : t("SETS_REPS_REST_PROGRESSION" /* 组数、次数、休息与进阶 */), onClick: onProgressionSettings },
+        onRest && { icon: 'timer', label: t("REST_TIMER" /* 休息计时 */), sub: restSub, onClick: onRest },
+        plateLoading && { icon: 'plate', label: t("PLATE_LOADING" /* 配重 */), sub: loadSummary, onClick: () => barWeightSheet(entry.id, cfg) },
+        routineUpdate && { icon: 'clipboard', label: t("UPDATE_ROUTINE" /* 更新训练计划 */), sub: routineUpdate.sub, onClick: routineUpdate.run },
       ] },
-      { title: t('Order and supersets'), items: [
-        onPairPrev && { icon: 'link', label: t('Make superset with previous'), onClick: onPairPrev },
-        onPairNext && { icon: 'link', label: t('Make superset with next'), onClick: onPairNext },
-        onMoveUp && { icon: 'chevronUp', label: t('Move up'), onClick: onMoveUp, disabled: busy || !canMoveUp },
-        onMoveDown && { icon: 'chevronDown', label: t('Move down'), onClick: onMoveDown, disabled: busy || !canMoveDown },
+      { title: t("ORDER_AND_SUPERSETS" /* 顺序与超级组 */), items: [
+        onPairPrev && { icon: 'link', label: t("MAKE_SUPERSET_WITH_PREVIOUS" /* 与上一个组成超级组 */), onClick: onPairPrev },
+        onPairNext && { icon: 'link', label: t("MAKE_SUPERSET_WITH_NEXT" /* 与下一个组成超级组 */), onClick: onPairNext },
+        onMoveUp && { icon: 'chevronUp', label: t("MOVE_UP" /* 上移 */), onClick: onMoveUp, disabled: busy || !canMoveUp },
+        onMoveDown && { icon: 'chevronDown', label: t("MOVE_DOWN" /* 下移 */), onClick: onMoveDown, disabled: busy || !canMoveDown },
       ] },
       { items: [
-        onRemoveExercise && { icon: 'trash', label: t('Remove exercise'), onClick: onRemoveExercise, danger: true, disabled: busy },
+        onRemoveExercise && { icon: 'trash', label: t("REMOVE_EXERCISE" /* 移除动作 */), onClick: onRemoveExercise, danger: true, disabled: busy },
       ] },
     ],
   })
@@ -431,32 +431,32 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // halves of a pair read as one set number — "Set 1 — Left" then "Set 1 — Right" — rather than
   // counting every row and making the second half look like an extra set.
   const setNumOf = (s, i) => setNumberAt(entry.sets, i)
-  const sideTagOf = s => s.side === 'L' ? t('Left') : s.side === 'R' ? t('Right') : null
+  const sideTagOf = s => s.side === 'L' ? t("LEFT" /* 左侧 */) : s.side === 'R' ? t("RIGHT" /* 右侧 */) : null
   const openSetMenu = (s, i) => {
     const warm = isWarmupRow(s)
     const sideTag = sideTagOf(s)
     menuSheet({
-      title: warm ? t('Warm-up') : sideTag ? t('Set {0} ({1})', setNumOf(s, i), sideTag) : t('Set {0}', setNumOf(s, i)),
+      title: warm ? t("WARM_UP" /* 热身 */) : sideTag ? t("SET_COUNT_COUNT" /* 第 {0} 组（{1}） */, setNumOf(s, i), sideTag) : t("SET_COUNT" /* 第 {0} 组 */, setNumOf(s, i)),
       subtitle: setLabel(entry.id, s, entry.target, speedUnit),
       sections: [
         // A warm-up logged as a work set (or the other way round) changes phase here. Reps sets
         // only, the kind a warm-up is added as; one work set always stays, and a per-side
         // exercise's work sets keep their sides, so a warm-up there is not made one again.
         { items: [
-          !warm && mode === 'reps' && canBeWarmup(s) && entry.sets.some((x, j) => j !== i && !isWarmupRow(x)) && { icon: 'sunrise', label: t('Make it a warm-up set'), onClick: () => setPhaseAt(i, true) },
-          warm && mode === 'reps' && !perSide && { icon: 'dumbbell', label: t('Count it as a working set'), onClick: () => setPhaseAt(i, false) },
+          !warm && mode === 'reps' && canBeWarmup(s) && entry.sets.some((x, j) => j !== i && !isWarmupRow(x)) && { icon: 'sunrise', label: t("MARK_AS_WARM_UP" /* 标记为热身组 */), onClick: () => setPhaseAt(i, true) },
+          warm && mode === 'reps' && !perSide && { icon: 'dumbbell', label: t("MARK_AS_WORK_SET" /* 标记为工作组 */), onClick: () => setPhaseAt(i, false) },
           // Taken to failure: a toggle with its check, like the menu's other on/off rows. It counts
           // as RIR 0 wherever effort is read, unless a rating was logged on the set. A timed
           // per-side pair is one set, so both halves get it.
-          !warm && mode !== 'cardio' && { icon: 'gauge', label: t('Taken to failure'), sub: t('Nothing left in the tank'), on: isFailureSet(s), onClick: () => toggleFailureAt(i) },
+          !warm && mode !== 'cardio' && { icon: 'gauge', label: t("TAKEN_TO_FAILURE" /* 做到力竭 */), sub: t("NOTHING_LEFT_IN_THE_TANK" /* 油箱见底了 */), on: isFailureSet(s), onClick: () => toggleFailureAt(i) },
         ] },
-        { title: t('Add to this set'), items: [
-          !warm && mode === 'reps' && !isRestPauseSet(s) && { icon: 'arrowDown', label: t('Drop set'), sub: t('+ Drop'), onClick: () => addDropRow(i) },
-          !warm && mode === 'reps' && !isDropSet(s) && { icon: 'bolt', label: t('Rest-pause burst'), sub: t('+ Burst'), onClick: () => addBurstRow(i) },
+        { title: t("ADD_TO_THIS_SET" /* 添加到这一组 */), items: [
+          !warm && mode === 'reps' && !isRestPauseSet(s) && { icon: 'arrowDown', label: t("ADD_DROP_SET" /* 添加递减组 */), sub: t("DROP" /* + 递减组 */), onClick: () => addDropRow(i) },
+          !warm && mode === 'reps' && !isDropSet(s) && { icon: 'bolt', label: t("ADD_REST_PAUSE_MINI_SET" /* 添加休息暂停小组 */), sub: t("BURST" /* + 爆发组 */), onClick: () => addBurstRow(i) },
         ] },
         { items: [
-          onCopySetAt && { icon: 'copy', label: t('Copy this set'), onClick: () => onCopySetAt(i) },
-          { icon: 'trash', label: t('Remove this set'), danger: true, disabled: !editing && entry.sets.length <= setSpanAt(entry.sets, i)[1], onClick: () => onRemoveSetAt(i) },
+          onCopySetAt && { icon: 'copy', label: t("COPY_SET" /* 复制本组 */), onClick: () => onCopySetAt(i) },
+          { icon: 'trash', label: t("DELETE_SET" /* 删除本组 */), danger: true, disabled: !editing && entry.sets.length <= setSpanAt(entry.sets, i)[1], onClick: () => onRemoveSetAt(i) },
         ] },
       ],
     })
@@ -489,9 +489,9 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     return (
       <div className={'stp effcell-stp' + (wc.steppers ? '' : ' plain')}
         style={color ? { color, borderColor: color, background: `color-mix(in srgb, ${color} 20%, var(--surface-2))` } : undefined}>
-        {wc.steppers && <button aria-label={t('Decrease')} onClick={() => step(-1)}><Icon name="minus" /></button>}
+        {wc.steppers && <button aria-label={t("DECREASE" /* 减少 */)} onClick={() => step(-1)}><Icon name="minus" /></button>}
         <button className="val" aria-label={col.hd} onClick={open}>{fmtNum(v)}</button>
-        {wc.steppers && <button aria-label={t('Increase')} onClick={() => step(1)}><Icon name="plus" /></button>}
+        {wc.steppers && <button aria-label={t("INCREASE" /* 增加 */)} onClick={() => step(1)}><Icon name="plus" /></button>}
       </div>
     )
   }
@@ -510,10 +510,10 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   }
   const sideCell = (sd, i, side, col, cls) => (
     <div className={'stp ' + cls + (wc.steppers ? '' : ' plain')}>
-      {wc.steppers && <button aria-label={t('Decrease')} onClick={() => sideBump(i, side, col, -1)}><Icon name="minus" /></button>}
+      {wc.steppers && <button aria-label={t("DECREASE" /* 减少 */)} onClick={() => sideBump(i, side, col, -1)}><Icon name="minus" /></button>}
       <span className="val"><NumberField decimal={col.dec} value={sd[col.f] ?? ''}
         onChange={v => setSide(i, side, col.f, v)} /></span>
-      {wc.steppers && <button aria-label={t('Increase')} onClick={() => sideBump(i, side, col, 1)}><Icon name="plus" /></button>}
+      {wc.steppers && <button aria-label={t("INCREASE" /* 增加 */)} onClick={() => sideBump(i, side, col, 1)}><Icon name="plus" /></button>}
     </div>
   )
   const sideEffortCell = (sd, i, side, col) => {
@@ -530,9 +530,9 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     return (
       <div className={'stp effcell-stp' + (wc.steppers ? '' : ' plain')}
         style={color ? { color, borderColor: color, background: `color-mix(in srgb, ${color} 20%, var(--surface-2))` } : undefined}>
-        {wc.steppers && <button aria-label={t('Decrease')} onClick={() => step(-1)}><Icon name="minus" /></button>}
+        {wc.steppers && <button aria-label={t("DECREASE" /* 减少 */)} onClick={() => step(-1)}><Icon name="minus" /></button>}
         <button className="val" aria-label={col.hd} onClick={open}>{fmtNum(v)}</button>
-        {wc.steppers && <button aria-label={t('Increase')} onClick={() => step(1)}><Icon name="plus" /></button>}
+        {wc.steppers && <button aria-label={t("INCREASE" /* 增加 */)} onClick={() => step(1)}><Icon name="plus" /></button>}
       </div>
     )
   }
@@ -541,11 +541,11 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   const sideRow = (s, i, side, col1, col2, col3) => {
     const sd = (s.sides && s.sides[side]) || { w: 0, r: 0, done: false }
     return <div className={'setrow side' + (sd.done ? ' done' : '') + (col3 ? ' eff3' : '')}>
-      <span className="sidetag" aria-hidden="true">{side === 'L' ? t('L') : t('R')}</span>
+      <span className="sidetag" aria-hidden="true">{side === 'L' ? t("LABEL_L" /* 左 */) : t("LABEL_R" /* 右 */)}</span>
       {sideCell(sd, i, side, col1, 'w')}
       {col2 && sideCell(sd, i, side, col2, 'r')}
       {col3 && sideEffortCell(sd, i, side, col3)}
-      <Check checked={sd.done} label={t('Set {0} ({1}) done', setNumOf(s, i), side === 'L' ? t('Left') : t('Right'))} onChange={() => onToggleSide(i, side)} />
+      <Check checked={sd.done} label={t("SET_COUNT_COUNT_DONE" /* 第 {0} 组（{1}）完成 */, setNumOf(s, i), side === 'L' ? t("LEFT" /* 左侧 */) : t("RIGHT" /* 右侧 */))} onChange={() => onToggleSide(i, side)} />
     </div>
   }
   // A side's own drop-set/rest-pause sub-rows (issue #60): the intensifier is logged per limb, so
@@ -556,18 +556,18 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     return <>
       {dropsOf(sd).map((d, di) => (
         <div className="subrow" key={'d' + di}>
-          <span className="subn">{t('Drop {0}', di + 1)}</span>
+          <span className="subn">{t("DROP_COUNT" /* 递减 {0} */, di + 1)}</span>
           {miniStepper(d.w, loadStep, true, v => setDropField(i, di, 'w', v, side), true)}
           {miniStepper(d.r, 1, false, v => setDropField(i, di, 'r', v, side))}
-          <button className="iconbtn" aria-label={t('Remove drop')} onClick={() => removeDrop(i, di)}><Icon name="xmark" /></button>
+          <button className="iconbtn" aria-label={t("REMOVE_DROP" /* 移除递减组 */)} onClick={() => removeDrop(i, di)}><Icon name="xmark" /></button>
         </div>
       ))}
       {clustersOf(sd).map((c, ci) => (
         <div className="subrow" key={'c' + ci}>
-          <span className="subn">{t('Burst {0}', ci + 1)}</span>
+          <span className="subn">{t("MINI_SET_COUNT" /* 小组 {0} */, ci + 1)}</span>
           {miniStepper(c.r, 1, false, v => setClusterField(i, ci, v, side))}
           <span className="dim small">{c.restSec}s</span>
-          <button className="iconbtn" aria-label={t('Remove burst')} onClick={() => removeCluster(i, ci)}><Icon name="xmark" /></button>
+          <button className="iconbtn" aria-label={t("REMOVE_BURST" /* 移除爆发组 */)} onClick={() => removeCluster(i, ci)}><Icon name="xmark" /></button>
         </div>
       ))}
     </>
@@ -576,32 +576,32 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
   // live "+ Drop"/"+ Burst" tap) already put on the row, not typing into a fresh field.
   const miniStepper = (value, step, dec, onChange, snapWeightStep = false) => (
     <div className="stp mini">
-      <button aria-label={t('Decrease')} onClick={() => onChange(snapWeightStep ? stepLoad(value, step, -1) : Math.max(0, Math.round(((value || 0) - step) * 100) / 100))}><Icon name="minus" /></button>
+      <button aria-label={t("DECREASE" /* 减少 */)} onClick={() => onChange(snapWeightStep ? stepLoad(value, step, -1) : Math.max(0, Math.round(((value || 0) - step) * 100) / 100))}><Icon name="minus" /></button>
       <span className="val"><NumberField decimal={dec} value={value ?? ''} onChange={onChange} /></span>
-      <button aria-label={t('Increase')} onClick={() => onChange(snapWeightStep ? stepLoad(value, step, 1) : Math.max(0, Math.round(((value || 0) + step) * 100) / 100))}><Icon name="plus" /></button>
+      <button aria-label={t("INCREASE" /* 增加 */)} onClick={() => onChange(snapWeightStep ? stepLoad(value, step, 1) : Math.max(0, Math.round(((value || 0) + step) * 100) / 100))}><Icon name="plus" /></button>
     </div>
   )
   // A plain set row (anything but a reps L/R stack). Its own function since a timed per-side
   // hold draws two of them, L then R, inside one swipe so the pair slides as the one set it is.
   // A set taken to failure wears a small "F" on its number, the button every row's menu opens
   // from. The button's own label speaks for it, so a screen reader hears it with the set number.
-  const failMark = s => isFailureSet(s) ? <span className="failmark" aria-hidden="true">{t('F')}</span> : null
-  const failSay = (s, label) => isFailureSet(s) ? label + ', ' + t('Taken to failure') : label
+  const failMark = s => isFailureSet(s) ? <span className="failmark" aria-hidden="true">{t("LABEL_F" /* 术语：F */)}</span> : null
+  const failSay = (s, label) => isFailureSet(s) ? label + ', ' + t("TAKEN_TO_FAILURE" /* 做到力竭 */) : label
   const plainRow = (s, i) => (
     <div ref={el => onSetRowRef?.(i, el)} className={'setrow' + (s.done ? ' done' : '') + (col3 ? ' eff3' : '') + (timed ? ' timed' : '')}>
-      <button type="button" className="n" aria-label={failSay(s, sideTagOf(s) ? t('Set {0} ({1})', setNumOf(s, i), sideTagOf(s)) : t('Set {0}', setNumOf(s, i)))} aria-describedby={optsId} title={t('More')} onClick={() => openSetMenu(s, i)}>{setNumOf(s, i)}{failMark(s)}</button>
+      <button type="button" className="n" aria-label={failSay(s, sideTagOf(s) ? t("SET_COUNT_COUNT" /* 第 {0} 组（{1}） */, setNumOf(s, i), sideTagOf(s)) : t("SET_COUNT" /* 第 {0} 组 */, setNumOf(s, i)))} aria-describedby={optsId} title={t("MORE" /* 更多 */)} onClick={() => openSetMenu(s, i)}>{setNumOf(s, i)}{failMark(s)}</button>
       {/* Both words sit in the pill's one grid cell (::before/::after, hidden), so Left and
           Right are as wide as the longer of the two in every language and the inputs
           after them line up (#322). */}
-      {sideTagOf(s) && <span className="tag acc nocap sidepill" data-l={t('Left')} data-r={t('Right')}><span>{sideTagOf(s)}</span></span>}
+      {sideTagOf(s) && <span className="tag acc nocap sidepill" data-l={t("LEFT" /* 左侧 */)} data-r={t("RIGHT" /* 右侧 */)}><span>{sideTagOf(s)}</span></span>}
       {cell(s, i, col1, 'w')}
       {col2 && cell(s, i, col2, 'r')}
       {col3 && (col3.eff ? effortCell(s, i, col3) : cell(s, i, col3, 'r inc'))}
       {/* A timed set is started, not typed: the timer counts the hold down and checks the
           set off itself. The checkbox stays for anyone who timed it on their own watch. */}
-      {timed && !editing && <button className="setgo" aria-label={t('Start set')} disabled={s.done || !!working}
+      {timed && !editing && <button className="setgo" aria-label={t("START_SET" /* 开始这一组 */)} disabled={s.done || !!working}
         onClick={() => onStartTimed(i)}><Icon name="play" /></button>}
-      <Check checked={s.done} label={sideTagOf(s) ? t('Set {0} ({1}) done', setNumOf(s, i), sideTagOf(s)) : t('Set {0} done', setNumOf(s, i))} onChange={() => onToggle(i)} />
+      <Check checked={s.done} label={sideTagOf(s) ? t("SET_COUNT_COUNT_DONE" /* 第 {0} 组（{1}）完成 */, setNumOf(s, i), sideTagOf(s)) : t("SET_COUNT_DONE" /* 第 {0} 组完成 */, setNumOf(s, i))} onChange={() => onToggle(i)} />
     </div>
   )
   // Swipe on sets (v1.3.11, Settings → Workout): a set row swiped toward the start of the line is
@@ -618,7 +618,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     const mine = j => j != null && j >= from && j < from + count
     return <SwipeRow canDelete={editing || entry.sets.length > count}
       onDelete={() => onRemoveSetAt(i)} onCopy={() => onCopySetAt(i)}
-      onBlocked={() => useUI.getState().toast(t('Keep at least one set, champ'))}
+      onBlocked={() => useUI.getState().toast(t("KEEP_AT_LEAST_ONE_SET_CHAMP" /* 至少留一组吧，冠军 */))}
       onStart={dismissHint}
       closeKey={[entry.sets.length, s.done ? 1 : 0, count === 2 && entry.sets[from + 1]?.done ? 1 : 0, s.sides?.L?.done ? 1 : 0, s.sides?.R?.done ? 1 : 0, restEnds || 0, working?.endsAt || 0, S.active.cur].join('|')}
       flash={setFlash && mine(setFlash.i) ? setFlash.id : 0}
@@ -634,37 +634,37 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
       {thumb && <WorkoutThumb ex={ex} onExpand={() => update(s => { s.gifSize = 'full' })} />}
       <div style={{ flex: 1, minWidth: 0, fontSize: (compact || dense) ? 17 : 20, fontWeight: 600, letterSpacing: '-.02em', lineHeight: 1.2 }} className={exerciseNameClass(ex)}>{exerciseNameFor(ex)}</div>
       <div className="row" style={{ gap: 2, flex: 'none' }}>
-        {entry.note && <button className="iconbtn" aria-label={t('Note')} title={t('Note')} style={{ color: 'var(--acc)' }}
+        {entry.note && <button className="iconbtn" aria-label={t("NOTE" /* 备注 */)} title={t("NOTE" /* 备注 */)} style={{ color: 'var(--acc)' }}
           onClick={() => exerciseNoteSheet(entryIdx)}><Icon name="note" /></button>}
-        <button className="iconbtn" aria-label={t('More')} title={t('More')} onClick={openMore}><Icon name="more" /></button>
+        <button className="iconbtn" aria-label={t("MORE" /* 更多 */)} title={t("MORE" /* 更多 */)} onClick={openMore}><Icon name="more" /></button>
       </div>
     </div>
     {/* Kept out of progression: by hand for this session (the ⋯ menu, with its undo right here),
         or by a deload or rehab routine, which owns that choice and offers no undo. On in every
         view, compact included: it changes what the next session is built from. */}
     {entry.noProg === true && <div className="noprog">
-      <Icon name="chartLineSlash" /><span>{t('Not counted for progression')}</span>
-      {onNoProg && <button type="button" className="chip" onClick={() => onNoProg(false)}>{t('Undo')}</button>}
+      <Icon name="chartLineSlash" /><span>{t("NOT_COUNTED_FOR_PROGRESSION" /* 未计入进阶 */)}</span>
+      {onNoProg && <button type="button" className="chip" onClick={() => onNoProg(false)}>{t("UNDO" /* 撤销 */)}</button>}
     </div>}
     {/* compact view keeps the plan line: it is what the rows are measured against */}
     {dense && planLine}
     {wc.pairButtons && !compact && !dense && (onPairPrev || onPairNext) && <div className="row" style={{ gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
-      {onPairPrev && <Button size="xs" variant="tinted" icon="link" title={t('Make superset with previous')} onClick={onPairPrev}>{t('Make superset with previous')}</Button>}
-      {onPairNext && <Button size="xs" variant="tinted" icon="link" title={t('Make superset with next')} onClick={onPairNext}>{t('Make superset with next')}</Button>}
+      {onPairPrev && <Button size="xs" variant="tinted" icon="link" title={t("MAKE_SUPERSET_WITH_PREVIOUS" /* 与上一个组成超级组 */)} onClick={onPairPrev}>{t("MAKE_SUPERSET_WITH_PREVIOUS" /* 与上一个组成超级组 */)}</Button>}
+      {onPairNext && <Button size="xs" variant="tinted" icon="link" title={t("MAKE_SUPERSET_WITH_NEXT" /* 与下一个组成超级组 */)} onClick={onPairNext}>{t("MAKE_SUPERSET_WITH_NEXT" /* 与下一个组成超级组 */)}</Button>}
     </div>}
     {/* compact view drops everything from here to the sets card — it is all still on the ⋯ menu
         (note, details, history, bar weight, progression) or is display-only (tags, "last time"). */}
     {!dense && <>
     <div className="row" style={{ gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
-      {cardio && <span className="tag acc"><Icon name="figureRun" />{t('Cardio')}</span>}
+      {cardio && <span className="tag acc"><Icon name="figureRun" />{t("CARDIO" /* 有氧 */)}</span>}
       {/* A unilateral exercise is logged per side directly (the L/R rows below for reps, a
           "Left"/"Right" tag on each doubled row for a timed hold), so the old "{n} per side"
           chip — which halved the combined total for display — is gone: the split is no longer
           derived, it is what you enter. The tag only flags that this is per-side. */}
-      {!cardio && isPerSide(cfg) && <span className="tag acc nocap"><Icon name="sides" />{t('Per side')}</span>}
-      {(ex.tg || ex.bp) && <span className="tag">{t(MUSCLE_NAME[ex.tg] || ex.tg || ex.bp)}</span>}
-      {ex.eq && <span className="tag">{t(ex.eq)}</span>}
-      {best > 0 && <span className="tag nocap">{t('Best:')} {fmtNum(best)} {S.unit}</span>}
+      {!cardio && isPerSide(cfg) && <span className="tag acc nocap"><Icon name="sides" />{t("PER_SIDE" /* 每侧 */)}</span>}
+      {(ex.tg || ex.bp) && <span className="tag">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[ex.tg] || ex.tg || ex.bp)}</span>}
+      {ex.eq && <span className="tag">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(ex.eq)}</span>}
+      {best > 0 && <span className="tag nocap">{t("BEST" /* 最佳： */)} {fmtNum(best)} {S.unit}</span>}
     </div>
     {/* Three notes can apply to one exercise and they are not interchangeable, so each keeps its
         own line and its own icon: the plan's instruction (cfg.note, from the routine), the
@@ -674,22 +674,22 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
     {standingNote && <div className="exnote"><Icon name="info" style={{ fontSize: 13, marginInlineEnd: 5, verticalAlign: '-2px' }} />{standingNote}</div>}
     {pinnedNote && <div className="exnote" style={{ color: 'var(--yellow)' }}>
       <Icon name="pin" style={{ fontSize: 13, marginInlineEnd: 5, verticalAlign: '-2px' }} />
-      {t('From {0}:', fmtDate(pinnedNote.d, true))} {pinnedNote.note}
+      {t("FROM_COUNT" /* 来自 {0}： */, fmtDate(pinnedNote.d, true))} {pinnedNote.note}
     </div>}
     {entry.note && <div className="exnote">{entry.note}</div>}
     {planLine}
     {refLine}
     {guidance && onProgressionSettings && <button type="button" className={'progline' + (plan.kind === 'deload' ? ' warn' : '')}
-      aria-label={t('Open exercise settings')} onClick={onProgressionSettings}>
+      aria-label={t("OPEN_EXERCISE_SETTINGS" /* 打开动作设置 */)} onClick={onProgressionSettings}>
       <Icon name={plan.kind === 'up' ? 'arrowUp' : plan.kind === 'deload' ? 'arrowDown' : 'lightbulb'} />
-      <span><strong>{t(guidance.policyLabel)}</strong> · {t(...guidance.why)}</span>
+      <span><strong>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(guidance.policyLabel)}</strong> · {translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(...guidance.why)}</span>
     </button>}
     </>}
     <div className="card" style={{ marginTop: 10, marginBottom: 0 }}>
       {/* the header carries the same eff3/timed sizing as the rows, or the labels drift off their
           columns; over L/R rows it also has to skip the side badge that sits in front of the weight cell */}
       <div className={'sethead' + (col3 ? ' eff3' : '') + (timed ? ' timed' : '') + (perSide ? ' per-side' : '') + (wc.steppers ? '' : ' plain')}><span className="n-sp" /><span className="w-sp">{col1.hd}</span>{col2 && <span className="r-sp">{col2.hd}</span>}{col3 && <span className={col3.eff ? 'eff-sp' : 'r-sp'}>{col3.hd}</span>}{timed && <span className="ck-sp" />}<span className="ck-sp" /></div>
-      <span id={optsId} className="vh">{t('Options: copy, remove')}</span>
+      <span id={optsId} className="vh">{t("OPTIONS_COPY_REMOVE" /* 选项：复制、删除 */)}</span>
       {entry.sets.map((s, i) => {
         const warm = isWarmupRow(s)
         const warmBefore = i > 0 && isWarmupRow(entry.sets[i - 1])
@@ -702,21 +702,21 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
         const pairHead = spanCount === 2 && spanStart === i
         const pairTail = spanCount === 2 && spanStart !== i
         return <div key={i}>
-          {isFirstWarmup && <div className="setph">{t('Warm-up')}</div>}
+          {isFirstWarmup && <div className="setph">{t("WARM_UP" /* 热身 */)}</div>}
           {!warm && warmBefore && <div className="setsep" />}
           {/* A pyramid's Max set: the reps are what you managed, not a number to hit. */}
           {/* With the record to beat at this set's weight or heavier, from before this session. */}
-          {!warm && s.max && <div className="setph">{t('Max: as many reps as you can')}{(() => {
+          {!warm && s.max && <div className="setph">{t("MAX_AS_MANY_REPS_AS_YOU_CAN" /* 力竭：能做多少做多少 */)}{(() => {
             const rec = maxRecordAt(H.workouts, entry.id, s.w)
             if (!rec) return null
-            return ' · ' + (rec.w > 0 ? tn('Record: {0} rep at {1}', 'Record: {0} reps at {1}', rec.r, fmtNum(rec.w) + ' ' + S.unit) : tn('Record: {0} rep', 'Record: {0} reps', rec.r))
+            return ' · ' + (rec.w > 0 ? tn("RECORD_COUNT_REP_AT_COUNT" /* 纪录：{1} 做 {0} 次 */, "RECORD_COUNT_REPS_AT_COUNT" /* 纪录：{1} 做 {0} 次 */, rec.r, fmtNum(rec.w) + ' ' + S.unit) : tn("RECORD_COUNT_REP" /* 纪录：{0} 次 */, "RECORD_COUNT_REPS" /* 纪录：{0} 次 */, rec.r))
           })()}</div>}
           {!pairTail && swipeRow(s, i, perSide && isSideSet(s) ? (
             // Unilateral set: the number sits beside a two-row L/R stack, each side logged and
             // ticked on its own (issue #60). Warm-ups split the same way as the work sets they
             // ramp toward, so a warm-up side set shows L/R too (#388).
             <div ref={el => onSetRowRef?.(i, el)} className={'setrow-side' + (s.done ? ' done' : '')}>
-              <button type="button" className="n" aria-label={failSay(s, t('Set {0}', phaseNum))} aria-describedby={optsId} title={t('More')} onClick={() => openSetMenu(s, i)}>{phaseNum}{failMark(s)}</button>
+              <button type="button" className="n" aria-label={failSay(s, t("SET_COUNT" /* 第 {0} 组 */, phaseNum))} aria-describedby={optsId} title={t("MORE" /* 更多 */)} onClick={() => openSetMenu(s, i)}>{phaseNum}{failMark(s)}</button>
               <div className="side-rows">
                 {sideRow(s, i, 'L', col1, col2, col3)}
                 {sideExtras(s, i, 'L')}
@@ -727,7 +727,7 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
           ) : pairHead ? <>{plainRow(s, i)}{plainRow(entry.sets[i + 1], i + 1)}</> : plainRow(s, i))}
           {swipeHint && swipeHint.i === i && swipeOn && <div className="swhint">
             <button type="button" onClick={() => setUI({ swipeHint: null })}>
-              <Icon name="swap" /><span>{t('Psst: swipe a set. Left deletes, right copies.')}</span><Icon name="xmark" />
+              <Icon name="swap" /><span>{t("PSST_SWIPE_A_SET_LEFT_DELETES_RIGHT_COPIES" /* 悄悄告诉你：滑动一组。左滑删除，右滑复制。 */)}</span><Icon name="xmark" />
             </button>
           </div>}
           {loadLine(String(i))}
@@ -737,33 +737,33 @@ function ExerciseBlock({ entryIdx, compact, dense, editing, onToggle, onToggleSi
           {!warm && mode === 'reps' && <>
             {dropsOf(s).map((d, di) => (
               <div className="subrow" key={'d' + di}>
-                <span className="subn">{t('Drop {0}', di + 1)}</span>
+                <span className="subn">{t("DROP_COUNT" /* 递减 {0} */, di + 1)}</span>
                 {miniStepper(d.w, loadStep, true, v => setDropField(i, di, 'w', v), true)}
                 {miniStepper(d.r, 1, false, v => setDropField(i, di, 'r', v))}
-                <button className="iconbtn" aria-label={t('Remove drop')} onClick={() => removeDrop(i, di)}><Icon name="xmark" /></button>
+                <button className="iconbtn" aria-label={t("REMOVE_DROP" /* 移除递减组 */)} onClick={() => removeDrop(i, di)}><Icon name="xmark" /></button>
               </div>
             )).flatMap((el, di) => [el, <Fragment key={'dl' + di}>{loadLine(i + ':d' + di)}</Fragment>])}
             {clustersOf(s).map((c, ci) => (
               <div className="subrow" key={'c' + ci}>
-                <span className="subn">{t('Burst {0}', ci + 1)}</span>
+                <span className="subn">{t("MINI_SET_COUNT" /* 小组 {0} */, ci + 1)}</span>
                 {miniStepper(c.r, 1, false, v => setClusterField(i, ci, v))}
                 <span className="dim small">{c.restSec}s</span>
-                <button className="iconbtn" aria-label={t('Remove burst')} onClick={() => removeCluster(i, ci)}><Icon name="xmark" /></button>
+                <button className="iconbtn" aria-label={t("REMOVE_BURST" /* 移除爆发组 */)} onClick={() => removeCluster(i, ci)}><Icon name="xmark" /></button>
               </div>
             ))}
             {wc.setShortcuts && <div className="setextra">
-              {!isRestPauseSet(s) && <button className="chip add" onClick={() => addDropRow(i)}><Icon name="arrowDown" />{t('+ Drop')}</button>}
-              {!isDropSet(s) && <button className="chip add" onClick={() => addBurstRow(i)}><Icon name="bolt" />{t('+ Burst')}</button>}
+              {!isRestPauseSet(s) && <button className="chip add" onClick={() => addDropRow(i)}><Icon name="arrowDown" />{t("DROP" /* + 递减组 */)}</button>}
+              {!isDropSet(s) && <button className="chip add" onClick={() => addBurstRow(i)}><Icon name="bolt" />{t("BURST" /* + 爆发组 */)}</button>}
             </div>}
           </>}
         </div>
       })}
       <div style={{ height: 8 }} />
       {wc.setShortcuts ? <div className="row" style={{ flexWrap: 'wrap' }}>
-        <Button size="sm" icon="sunrise" onClick={onAddWarmup}>{t('Add warm-up set')}</Button>
-        <Button size="sm" icon="minus" disabled={entry.sets.length <= setSpanAt(entry.sets, entry.sets.length - 1)[1]} onClick={onRemoveSet}>{t('Remove set')}</Button>
-        <Button size="sm" icon="plus" onClick={onAddSet}>{t('Add set')}</Button>
-      </div> : <Button size="sm" icon="plus" onClick={onAddSet}>{t('Add set')}</Button>}
+        <Button size="sm" icon="sunrise" onClick={onAddWarmup}>{t("ADD_WARM_UP_SET" /* 添加热身组 */)}</Button>
+        <Button size="sm" icon="minus" disabled={entry.sets.length <= setSpanAt(entry.sets, entry.sets.length - 1)[1]} onClick={onRemoveSet}>{t("REMOVE_SET" /* 减一组 */)}</Button>
+        <Button size="sm" icon="plus" onClick={onAddSet}>{t("ADD_SET" /* 添加一组 */)}</Button>
+      </div> : <Button size="sm" icon="plus" onClick={onAddSet}>{t("ADD_SET" /* 添加一组 */)}</Button>}
     </div>
   </>
 }
@@ -809,7 +809,7 @@ export function deleteActiveSet(idx, i, { editing = false } = {}) {
   const ui = useUI.getState()
   // A timed per-side hold is an L row and an R row that read as one set: both go, and both come back.
   const [start, count] = setSpanAt(e.sets, i)
-  if (!editing && e.sets.length <= count) { ui.toast(t('Keep at least one set, champ')); return false }
+  if (!editing && e.sets.length <= count) { ui.toast(t("KEEP_AT_LEAST_ONE_SET_CHAMP" /* 至少留一组吧，冠军 */)); return false }
   const inSpan = j => j != null && j >= start && j < start + count
   let stopped = false
   const holdHere = ui.work && ((holdAt && holdAt.idx === idx && inSpan(holdAt.i)) || (ui.work.owner && ui.work.owner.idx === idx && inSpan(ui.work.owner.i)))
@@ -826,8 +826,8 @@ export function deleteActiveSet(idx, i, { editing = false } = {}) {
     if (editing) en.sets.splice(start, count)
     else en.sets = removeRowAt(en.sets, i)
   }, true)
-  const msg = warm ? t('Warm-up gone.') : stopped ? t('Set {0} gone. Its timer stopped too.', n) : t('Set {0} gone.', n)
-  ui.toast(msg, { action: t('Undo'), onAction: () => undoDeleteSet(token) })
+  const msg = warm ? t("WARM_UP_GONE" /* 热身组已删除。 */) : stopped ? t("SET_COUNT_GONE_ITS_TIMER_STOPPED_TOO" /* 第 {0} 组已删除，它的计时器也停了。 */, n) : t("SET_COUNT_GONE" /* 第 {0} 组已删除。 */, n)
+  ui.toast(msg, { action: t("UNDO" /* 撤销 */), onAction: () => undoDeleteSet(token) })
   return true
 }
 /** Puts a removed set back exactly as it was, at its old place in the same exercise. If the
@@ -839,7 +839,7 @@ export function undoDeleteSet(token) {
   const at = !A || A.id !== token.activeId ? -1
     : A.entries[token.idx]?.id === token.entryId ? token.idx
       : A.entries.findIndex(en => en.id === token.entryId)
-  if (at < 0) { ui.toast(t('Too late, that one’s gone')); return false }
+  if (at < 0) { ui.toast(t("TOO_LATE_THAT_ONE_S_GONE" /* 太晚了，那组已经没了 */)); return false }
   const rows = token.rows || [token.row]
   const i = Math.min(token.i, A.entries[at].sets.length)
   shiftRowRefs(at, i, rows.length)
@@ -861,7 +861,7 @@ export function copyActiveSet(idx, i) {
     if (en) en.sets = copyRowAt(en.sets, i)
   }, true)
   setUI({ setFlash: { idx, i: end + 1, id: ++flashSeq } })
-  useUI.getState().toast(t('Copied. One more like that one.'))
+  useUI.getState().toast(t("COPIED_ONE_MORE_LIKE_THAT_ONE" /* 已复制。再来一组一样的。 */))
   return true
 }
 
@@ -949,8 +949,8 @@ function ActiveWorkout() {
   // A superset's heading: its own name and rest between rounds when it has them (#292).
   const ssTitle = u => {
     const m = supersetMeta(A.entries, u, { onTarget: true })
-    if (m.rest > 0) return t('{0} · back-to-back, {1} rest after each round', m.name || t('Superset'), fmtRest(m.rest))
-    return m.name ? t('{0} · do these back-to-back, rest when done', m.name) : t('Superset · do these back-to-back, rest when done')
+    if (m.rest > 0) return t("COUNT_BACK_TO_BACK_COUNT_REST_AFTER_EACH_ROUND" /* {0} · 连续完成，每轮后休息 {1} */, m.name || t("SUPERSET" /* 超级组 */), fmtRest(m.rest))
+    return m.name ? t("COUNT_DO_THESE_BACK_TO_BACK_REST_WHEN_DONE" /* {0} · 连续完成这些，做完再休息 */, m.name) : t("SUPERSET_DO_THESE_BACK_TO_BACK_REST_WHEN_DONE" /* 超级组 · 连续完成，全部做完再休息 */)
   }
   // Collapse finished exercises in the list (#241). The current unit stays open, superset
   // members included, until you move on (ticking its last set does that, see toggle); an empty
@@ -1237,7 +1237,7 @@ function ActiveWorkout() {
   // edits it (lib/session-routines.js). This is the explicit way to keep them — an item in the
   // exercise's ⋯ menu, there only while the routine's slot says something else than the session
   // did. Sets, reps and weight are not part of it (routineChangesFromEntry).
-  const restWord = v => (Number(v) > 0 ? fmtRest(v) : t('Default ({0})', fmtRest(S.restSec)))
+  const restWord = v => (Number(v) > 0 ? fmtRest(v) : t("DEFAULT_COUNT" /* 默认（{0}） */, fmtRest(S.restSec)))
   const routineUpdateFor = idx => {
     const entry = A.entries[idx]
     const routine = !editing && entry?.rid ? S.routines.find(r => r.id === entry.rid) : null
@@ -1247,13 +1247,13 @@ function ActiveWorkout() {
     const entryId = entry.id
     return {
       // A rest reads as the wheel shows it: "3:00", and 0 (no rest of its own) as the default.
-      sub: found.changes.map(c => c.key === 'note' ? t('Note')
-        : c.key === 'warmupSets' ? t('Warm-up sets') + ' ' + c.from + ' → ' + c.to
-        : t('Rest') + ' ' + restWord(c.from) + ' → ' + restWord(c.to)).join(' · '),
+      sub: found.changes.map(c => c.key === 'note' ? t("NOTE" /* 备注 */)
+        : c.key === 'warmupSets' ? t("WARM_UP_SETS" /* 热身组 */) + ' ' + c.from + ' → ' + c.to
+        : t("REST" /* 休息 */) + ' ' + restWord(c.from) + ' → ' + restWord(c.to)).join(' · '),
       run: () => confirmSheet({
-        title: t('Update “{0}”?', routine.name),
-        message: t('Copy this exercise’s warm-up sets, and the rest and note from its Exercise settings, into the routine. A note added for today stays with this workout. Your workout history is kept.'),
-        confirmText: t('Update routine'),
+        title: t("UPDATE_COUNT" /* 更新训练日「{0}」？ */, routine.name),
+        message: t("COPY_THIS_EXERCISE_S_WARM_UP_SETS_AND_THE_REST_AND_NOTE" /* 将该动作的热身组，以及其动作设置中的休息时间和备注，复制到训练计划中。为今天添加的备注会留在本次训练中。训练历史会保留。 */),
+        confirmText: t("UPDATE_ROUTINE" /* 更新训练计划 */),
         onConfirm: () => {
           let applied = null
           update(s => {
@@ -1262,7 +1262,7 @@ function ActiveWorkout() {
             if (!target || s.active?.id !== activeId || s.active.entries?.[idx]?.id !== entryId) return
             applied = updateRoutineFromEntry(target, s.active.entries, idx)
           })
-          if (applied) useUI.getState().toast(t('Routine updated'))
+          if (applied) useUI.getState().toast(t("ROUTINE_UPDATED" /* 训练计划已更新 */))
         },
       }),
     }
@@ -1338,20 +1338,20 @@ function ActiveWorkout() {
   // render above prefers over S.workoutView.
   const setWorkoutView = v => update(s => { if (s.active) s.active.workoutView = v })
   const LAYOUT_LABEL = {
-    cards: t('Cards'),
-    list: t('List'),
-    compact: t('Compact'),
-    focus: t('Focus'),
+    cards: t("CARDS" /* 卡片 */),
+    list: t("LIST" /* 列表 */),
+    compact: t("COMPACT" /* 紧凑 */),
+    focus: t("FOCUS" /* 专注 */),
   }
   const openLayoutMenu = () => menuSheet({
-    title: t('Layout'),
+    title: t("LAYOUT" /* 布局 */),
     items: [
-      { icon: 'layout', label: t('Cards'), on: workoutView === 'cards', onClick: () => setWorkoutView('cards') },
-      { icon: 'list', label: t('List'), on: workoutView === 'list', onClick: () => setWorkoutView('list') },
-      { icon: 'compact', label: t('Compact'), on: workoutView === 'compact', onClick: () => setWorkoutView('compact') },
-      { icon: 'target', label: t('Focus'), on: workoutView === 'focus', onClick: () => setWorkoutView('focus') },
-      listMode && { icon: 'minimize', label: t('Collapse completed exercises'),
-        sub: t('Keep the current exercise open'), on: collapseOn,
+      { icon: 'layout', label: t("CARDS" /* 卡片 */), on: workoutView === 'cards', onClick: () => setWorkoutView('cards') },
+      { icon: 'list', label: t("LIST" /* 列表 */), on: workoutView === 'list', onClick: () => setWorkoutView('list') },
+      { icon: 'compact', label: t("COMPACT" /* 紧凑 */), on: workoutView === 'compact', onClick: () => setWorkoutView('compact') },
+      { icon: 'target', label: t("FOCUS" /* 专注 */), on: workoutView === 'focus', onClick: () => setWorkoutView('focus') },
+      listMode && { icon: 'minimize', label: t("COLLAPSE_COMPLETED_EXERCISES" /* 折叠已完成的动作 */),
+        sub: t("KEEP_THE_CURRENT_EXERCISE_OPEN" /* 保持当前动作展开 */), on: collapseOn,
         onClick: () => update(s => { if (s.active) s.active.collapseCompleted = !collapseOn }) },
     ],
   })
@@ -1411,14 +1411,14 @@ function ActiveWorkout() {
     // button. Quick-add commits with the same default (or, freestyle, last-session) config
     // the sheet would have opened with; tapping the row still opens that sheet for anyone
     // who wants to set sets/reps first.
-    if (quick) { commit(seed || defaultConfig(ex.id)); useUI.getState().toast(t('“{0}” added to {1}', exerciseNameText(ex), routine ? routine.name : t('Freestyle'))) }
+    if (quick) { commit(seed || defaultConfig(ex.id)); useUI.getState().toast(t("COUNT_ADDED_TO_COUNT" /* “{0}”已加入 {1} */, exerciseNameText(ex), routine ? routine.name : t("FREESTYLE" /* 自由训练 */))) }
     // The confirm names what it changes: this workout, never the routine behind it.
-    else exConfigSheet(ex, null, commit, null, routine, seed, null, t('Add to this workout'))
+    else exConfigSheet(ex, null, commit, null, routine, seed, null, t("ADD_TO_THIS_WORKOUT" /* 添加到本次训练 */))
   })
   // Ending the session without saving it. The ⋯ menu's last item since the header's ✕ became the
   // ⌄ that only leaves the screen (v1.3.11).
   const discardWorkout = () => confirmSheet({
-    title: t('Discard workout?'), message: t('The sets you logged in this session will be lost.'), confirmText: t('Discard'), danger: true,
+    title: t("DISCARD_WORKOUT" /* 放弃训练？ */), message: t("THE_SETS_YOU_LOGGED_IN_THIS_SESSION_WILL_BE_LOST" /* 本次记录的组数将丢失。 */), confirmText: t("DISCARD" /* 放弃 */), danger: true,
     onConfirm: () => { update(s => { s.active = null }); stopRest(); stopWork(); nav('/home') },
   })
   // The header ⋯, in groups: the settings you change at the gym first (their own sheet, the same
@@ -1428,23 +1428,23 @@ function ActiveWorkout() {
   const openViewMenu = () => menuSheet({
     sections: [
       { items: [
-        { icon: 'gear', accent: true, chevron: true, label: t('Workout settings'),
-          sub: [S.restSec > 0 ? t('{0} rest', fmtRest(S.restSec)) : t('No rest timer'), S.sound ? t('Sound') : t('Silent')].join(' · '),
+        { icon: 'gear', accent: true, chevron: true, label: t("WORKOUT_SETTINGS" /* 训练设置 */),
+          sub: [S.restSec > 0 ? t("COUNT_REST" /* 休息 {0} */, fmtRest(S.restSec)) : t("NO_REST_TIMER" /* 不计时休息 */), S.sound ? t("SOUND" /* 提示音 */) : t("SILENT" /* 静音 */)].join(' · '),
           onClick: workoutSettingsSheet },
       ] },
-      { title: t('Add'), items: [
-        { icon: 'plusCircle', label: t('Add exercise'), onClick: addExercise },
-        !editing && { icon: 'clipboard', label: t('Add routine'), sub: t('Bring another routine into this session'), onClick: addRoutineToSessionSheet },
+      { title: t("ADD" /* 添加 */), items: [
+        { icon: 'plusCircle', label: t("ADD_EXERCISE" /* 添加动作 */), onClick: addExercise },
+        !editing && { icon: 'clipboard', label: t("ADD_ROUTINE" /* 添加训练计划 */), sub: t("BRING_ANOTHER_ROUTINE_INTO_THIS_SESSION" /* 把另一个训练计划并入本次训练 */), onClick: addRoutineToSessionSheet },
       ] },
-      { title: t('This workout'), items: [
-        A.backfill && A.entries.length > 0 && { icon: 'checkCircle', label: t('Mark all sets done'), onClick: markAllDone },
-        { icon: 'pencil', label: t('Rename workout'), onClick: renameWorkoutSheet },
-        { icon: 'layout', label: t('Layout'), sub: LAYOUT_LABEL[workoutView] || LAYOUT_LABEL.cards, onClick: openLayoutMenu },
-        { icon: 'note', label: A.note ? t('Edit session note') : t('Add session note'), onClick: sessionNoteSheet },
-        noProgSwitchable && { icon: 'chartLineSlash', label: t('Don’t count for progression'), sub: t('Every exercise in this workout'), on: sessionNoProg(A), onClick: toggleSessionNoProg },
+      { title: t("THIS_WORKOUT" /* 本次训练 */), items: [
+        A.backfill && A.entries.length > 0 && { icon: 'checkCircle', label: t("MARK_ALL_SETS_DONE" /* 将所有组标为完成 */), onClick: markAllDone },
+        { icon: 'pencil', label: t("RENAME_WORKOUT" /* 重命名训练 */), onClick: renameWorkoutSheet },
+        { icon: 'layout', label: t("LAYOUT" /* 布局 */), sub: LAYOUT_LABEL[workoutView] || LAYOUT_LABEL.cards, onClick: openLayoutMenu },
+        { icon: 'note', label: A.note ? t("EDIT_SESSION_NOTE" /* 编辑训练备注 */) : t("ADD_SESSION_NOTE" /* 添加训练备注 */), onClick: sessionNoteSheet },
+        noProgSwitchable && { icon: 'chartLineSlash', label: t("DON_T_COUNT_FOR_PROGRESSION" /* 不计入进阶 */), sub: t("EVERY_EXERCISE_IN_THIS_WORKOUT" /* 本次训练的所有动作 */), on: sessionNoProg(A), onClick: toggleSessionNoProg },
       ] },
       { items: [
-        !editing && { icon: 'trash', label: t('Discard workout'), danger: true, onClick: discardWorkout },
+        !editing && { icon: 'trash', label: t("DISCARD_WORKOUT_A" /* 放弃训练 */), danger: true, onClick: discardWorkout },
       ] },
     ],
   })
@@ -1458,10 +1458,10 @@ function ActiveWorkout() {
     const activeId = state.active.id
     const entryId = entry.id
     durationSheet({
-      title: t('Rest for this exercise'),
+      title: t("REST_FOR_THIS_EXERCISE" /* 本动作的休息 */),
       value: entry.target?.restSec > 0 ? entry.target.restSec : 0, max: REST_MAX,
-      off: t('Default ({0})', fmtRest(state.restSec)),
-      footer: t('Rest after each set of this exercise. 0:00 means your default rest.'),
+      off: t("DEFAULT_COUNT" /* 默认（{0}） */, fmtRest(state.restSec)),
+      footer: t("REST_AFTER_EACH_SET_OF_THIS_EXERCISE_ZERO_ZEROZERO_MEANS_YOUR_DEFAULT" /* 这个动作每组之后的休息时间。设为 0:00 就用默认休息。 */),
       onDone: v => update(s => {
         const e = s.active?.id === activeId ? s.active.entries?.[idx] : null
         if (!e || e.id !== entryId) return
@@ -1535,19 +1535,19 @@ function ActiveWorkout() {
     if (!e) return
     const hasDone = (e.sets || []).some(s => s.done)
     confirmSheet({
-      title: t('Remove {0}?', exerciseNameText(exOr(e.id))),
+      title: t("REMOVE_COUNT" /* 移除 {0}？ */, exerciseNameText(exOr(e.id))),
       message: hasDone
-        ? t('The sets you logged for this exercise in this session will be lost.')
-        : t('This removes the exercise from your current session.'),
-      confirmText: t('Remove'), danger: true, onConfirm: () => removeExercise(idx)
+        ? t("THE_SETS_YOU_LOGGED_FOR_THIS_EXERCISE_IN_THIS_SESSION_WILL_BE" /* 本次训练中为该动作记录的组数将丢失。 */)
+        : t("THIS_REMOVES_THE_EXERCISE_FROM_YOUR_CURRENT_SESSION" /* 这会从当前训练中移除该动作。 */),
+      confirmText: t("REMOVE" /* 移除 */), danger: true, onConfirm: () => removeExercise(idx)
     })
   }
   const removeExerciseSheet = () => {
     if (unit.length > 1) {
       useUI.getState().openSheet(close => (
         <div>
-          <h3>{t('Remove exercise')}</h3>
-          <div className="muted small" style={{ marginBottom: 12 }}>{t('Which exercise in this superset do you want to remove?')}</div>
+          <h3>{t("REMOVE_EXERCISE" /* 移除动作 */)}</h3>
+          <div className="muted small" style={{ marginBottom: 12 }}>{t("WHICH_EXERCISE_IN_THIS_SUPERSET_DO_YOU_WANT_TO_REMOVE" /* 你想移除这个超级组中的哪个动作？ */)}</div>
           <div className="list">
             {unit.map(idx => <div key={idx} className="item" onClick={() => { close(); confirmRemoveExercise(idx) }}>
               <div className="grow"><div className={`tt ${exerciseNameClass(exOr(A.entries[idx]?.id))}`}>{exerciseNameFor(exOr(A.entries[idx]?.id))}</div></div>
@@ -1659,8 +1659,8 @@ function ActiveWorkout() {
     }, true)
     if (editing) return
     if (workoutDone) workoutCompleteSheet()
-    else if (exJustDone && cardioEntry) useUI.getState().toast(t('Cardio logged'))
-    else if (exJustDone && m === 'time') useUI.getState().toast(t('Hold logged'))
+    else if (exJustDone && cardioEntry) useUI.getState().toast(t("CARDIO_LOGGED" /* 有氧已记录 */))
+    else if (exJustDone && m === 'time') useUI.getState().toast(t("HOLD_LOGGED" /* 已记录静力时间 */))
 
     // Only progress beyond this exercise's high-water mark may navigate or change rest. This
     // prevents an uncheck/re-check of finished work from replaying the flow side effects.
@@ -1913,20 +1913,20 @@ function ActiveWorkout() {
         opens the Finish sheet (Finish and save, Discard), the editor's Save saves at once. */}
     <div className="hdr whdr-bar">
       {editing
-        ? <button className="iconbtn" aria-label={t('Close editor')} title={t('Close editor')} onClick={() => exitWorkoutEdit()}><Icon name="xmark" /></button>
-        : <button className="iconbtn" aria-label={t('Minimize')} title={t('Minimize')} onClick={() => nav('/home')}><Icon name="chevronDown" /></button>}
-      <div className="whdr-mid"><div className="whdr-name">{A.name}</div><div className="sub">{(A.backfill || editing) ? fmtDate(A.d, true) : <Elapsed start={A.start} />} · {t('{0} sets', done + '/' + total)}</div></div>
-      <button className="iconbtn" aria-label={t('Workout options')} title={t('Workout options')} onClick={openViewMenu}><Icon name="more" /></button>
-      <button className="btn primary pill whdr-finish" aria-label={editing ? t('Save changes') : undefined}
-        onClick={() => (editing ? finishWorkout() : finishWorkoutSheet({ onDiscard: discardWorkout }))}>{editing ? t('Save') : t('Finish')}</button>
+        ? <button className="iconbtn" aria-label={t("CLOSE_EDITOR" /* 关闭编辑器 */)} title={t("CLOSE_EDITOR" /* 关闭编辑器 */)} onClick={() => exitWorkoutEdit()}><Icon name="xmark" /></button>
+        : <button className="iconbtn" aria-label={t("MINIMIZE" /* 缩小 */)} title={t("MINIMIZE" /* 缩小 */)} onClick={() => nav('/home')}><Icon name="chevronDown" /></button>}
+      <div className="whdr-mid"><div className="whdr-name">{A.name}</div><div className="sub">{(A.backfill || editing) ? fmtDate(A.d, true) : <Elapsed start={A.start} />} · {t("COUNT_SETS" /* {0} 组 */, done + '/' + total)}</div></div>
+      <button className="iconbtn" aria-label={t("WORKOUT_OPTIONS" /* 训练选项 */)} title={t("WORKOUT_OPTIONS" /* 训练选项 */)} onClick={openViewMenu}><Icon name="more" /></button>
+      <button className="btn primary pill whdr-finish" aria-label={editing ? t("SAVE_CHANGES" /* 保存更改 */) : undefined}
+        onClick={() => (editing ? finishWorkout() : finishWorkoutSheet({ onDiscard: discardWorkout }))}>{editing ? t("SAVE" /* 保存 */) : t("FINISH" /* 结束 */)}</button>
     </div>
     <div className="wprog"><i style={{ width: (total ? done / total * 100 : 0) + '%' }} /></div>
     {/* In the list the chips ride in the pinned header, so any exercise is one tap away from
         anywhere in a long stack. */}
     {listMode && chipRow}
     </div>
-    {editing && <p className="muted small">{t('Editing a saved workout. Date and duration stay unchanged.')}</p>}
-    {A.backfill && <div className="muted small" style={{ marginBottom: 8 }}>{t('Logging a past workout, so no rest timers.')}</div>}
+    {editing && <p className="muted small">{t("EDITING_A_SAVED_WORKOUT_DATE_AND_DURATION_STAY_UNCHANGED" /* 正在编辑已保存的训练。日期和时长保持不变。 */)}</p>}
+    {A.backfill && <div className="muted small" style={{ marginBottom: 8 }}>{t("LOGGING_A_PAST_WORKOUT_SO_NO_REST_TIMERS" /* 正在补记过去的训练，所以没有休息计时器。 */)}</div>}
 
     {A.entries.length ? (listMode ? (
       <div className="workout-list" data-testid="workout-list" ref={listRef}>
@@ -1938,29 +1938,29 @@ function ActiveWorkout() {
           const reopened = collapseOn && !isCur && !isCollapsed && opened.has(u.join('-')) && finished(u)
           return <section key={u.join('-')} className={'wl-unit' + (isCur ? ' cur' : '')} data-exidx={u[0]} data-unit-key={u.join('-')}>
             <div className="wl-hd">
-              <span className="muted small">{multi ? t('Superset {0} / {1}', ui + 1, units.length) : t('Exercise {0} / {1}', ui + 1, units.length)}</span>
+              <span className="muted small">{multi ? t("SUPERSET_COUNT_COUNT" /* 超级组 {0} / {1} */, ui + 1, units.length) : t("EXERCISE_COUNT_COUNT" /* 动作 {0} / {1} */, ui + 1, units.length)}</span>
               <span className="row" style={{ gap: 6 }}>
                 {reopened && <button className="chip" aria-expanded="true" aria-controls={'workout-unit-' + u.join('-')}
-                  onClick={() => setUnitOpen(u.join('-'), false)}>{t('Fold away')}</button>}
+                  onClick={() => setUnitOpen(u.join('-'), false)}>{t("FOLD_AWAY" /* 收起 */)}</button>}
                 {isCur
-                  ? <span className="tag acc">{t('Current')}</span>
-                  : <button className="chip" onClick={() => focusUnit(u[0])}>{t('Set current')}</button>}
+                  ? <span className="tag acc">{t("CURRENT" /* 当前 */)}</span>
+                  : <button className="chip" onClick={() => focusUnit(u[0])}>{t("SET_CURRENT" /* 设为当前 */)}</button>}
               </span>
             </div>
             <div id={'workout-unit-' + u.join('-')}>
             {/* One line per exercise, and the line is the way back in: a tap opens the sets again
                 to fix a number, without making it the current exercise. */}
-            {isCollapsed ? <button type="button" className="wl-summary" aria-expanded="false" title={t('Show the sets')}
+            {isCollapsed ? <button type="button" className="wl-summary" aria-expanded="false" title={t("SHOW_THE_SETS" /* 显示各组 */)}
               onClick={() => setUnitOpen(u.join('-'), true)}>
               {u.map(idx => <span key={idx} className="row between" style={{ gap: 8 }}>
                 <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>{exerciseNameFor(exOr(A.entries[idx].id))}</span>
-                <span className="tag acc nocap"><Icon name="check" />{t('{0} sets', A.entries[idx].sets.length)}</span>
+                <span className="tag acc nocap"><Icon name="check" />{t("COUNT_SETS" /* {0} 组 */, A.entries[idx].sets.length)}</span>
               </span>)}
             </button> : multi ? (
               <div className="ss-card">
                 <div className="ss-hd" style={{ justifyContent: 'space-between' }}>
                   <span className="row" style={{ gap: 5 }}><Icon name="link" />{ssTitle(u)}</span>
-                  <Button size="xs" variant="ghost" icon="link" title={t('Unpair')} onClick={() => unpairAt(u[0])}>{t('Unpair')}</Button>
+                  <Button size="xs" variant="ghost" icon="link" title={t("UNPAIR" /* 取消组合 */)} onClick={() => unpairAt(u[0])}>{t("UNPAIR" /* 取消组合 */)}</Button>
                 </div>
                 {u.map((idx, k) => {
                   const entry = A.entries[idx]
@@ -1984,7 +1984,7 @@ function ActiveWorkout() {
     ) : <>
       {/* The chips stand in for "Exercise 2 / 5": the number is on the current chip, and the
           others say what is done and what is waiting (#323). */}
-      {chipRow || <div className="muted small" style={{ marginBottom: 6 }}>{isSuperset ? t('Superset {0} / {1}', unitIdx + 1, units.length) : t('Exercise {0} / {1}', unitIdx + 1, units.length)}</div>}
+      {chipRow || <div className="muted small" style={{ marginBottom: 6 }}>{isSuperset ? t("SUPERSET_COUNT_COUNT" /* 超级组 {0} / {1} */, unitIdx + 1, units.length) : t("EXERCISE_COUNT_COUNT" /* 动作 {0} / {1} */, unitIdx + 1, units.length)}</div>}
       <SwipeCards index={unitIdx} count={units.length} revision={A}
         timerKey={timer && `${timer.endsAt}:${timer.forIdx ?? ''}`} workKey={work?.endsAt}
         onNavigate={navigateUnit} renderPreview={direction => {
@@ -2000,7 +2000,7 @@ function ActiveWorkout() {
             <div className="ss-card">
               <div className="ss-hd" style={{ justifyContent: 'space-between' }}>
                 <span className="row" style={{ gap: 5 }}><Icon name="link" />{ssTitle(adjacent)}</span>
-                <Button size="xs" variant="ghost" icon="link" title={t('Unpair')} onClick={() => unpairAt(adjacent[0])}>{t('Unpair')}</Button>
+                <Button size="xs" variant="ghost" icon="link" title={t("UNPAIR" /* 取消组合 */)} onClick={() => unpairAt(adjacent[0])}>{t("UNPAIR" /* 取消组合 */)}</Button>
               </div>
               {adjacent.map((idx, k) => <div key={idx} className="ss-ex" data-exidx={idx}>
                 {k > 0 && <div className="ss-amp">+</div>}
@@ -2021,7 +2021,7 @@ function ActiveWorkout() {
         <div className="ss-card">
           <div className="ss-hd" style={{ justifyContent: 'space-between' }}>
             <span className="row" style={{ gap: 5 }}><Icon name="link" />{ssTitle(unit)}</span>
-            <Button size="xs" variant="ghost" icon="link" title={t('Unpair')} onClick={() => unpairAt(cur)}>{t('Unpair')}</Button>
+            <Button size="xs" variant="ghost" icon="link" title={t("UNPAIR" /* 取消组合 */)} onClick={() => unpairAt(cur)}>{t("UNPAIR" /* 取消组合 */)}</Button>
           </div>
           {unit.map((idx, k) => {
             const entry = A.entries[idx]
@@ -2036,32 +2036,32 @@ function ActiveWorkout() {
         <ExerciseBlock entryIdx={cur} onPairPrev={onPairPrev} onPairNext={onPairNext} {...blockProps(cur)} />
       )}
       </SwipeCards>
-    </>) : <div className="empty"><div className="ico"><Icon name="shuffle" /></div>{t('Freestyle workout. Add your first exercise and off you go.')}</div>}
+    </>) : <div className="empty"><div className="ico"><Icon name="shuffle" /></div>{t("FREESTYLE_WORKOUT_ADD_YOUR_FIRST_EXERCISE_AND_OFF_YOU_GO" /* 自由训练。添加第一个动作，开练吧。 */)}</div>}
 
     <div style={{ height: 12 }} />
     {!listMode && <div className="row">
-      <Button icon="chevronLeft" disabled={unitIdx <= 0} onClick={() => navigateUnit(-1)}>{t('Prev')}</Button>
-      <Button trailingIcon="chevronRight" disabled={unitIdx < 0 || unitIdx >= units.length - 1} onClick={() => navigateUnit(1)}>{t('Next')}</Button>
+      <Button icon="chevronLeft" disabled={unitIdx <= 0} onClick={() => navigateUnit(-1)}>{t("PREV" /* 上一个 */)}</Button>
+      <Button trailingIcon="chevronRight" disabled={unitIdx < 0 || unitIdx >= units.length - 1} onClick={() => navigateUnit(1)}>{t("NEXT" /* 下一个 */)}</Button>
     </div>}
     {!listMode && <div style={{ height: 10 }} />}
-    {wc.exerciseButtons && listMode && A.entries.length > 0 && <div className="muted small" style={{ marginBottom: 6 }}>{t('Move, swap and remove below act on the exercise marked {0}.', t('Current'))}</div>}
-    <Button onClick={addExercise} icon="plus">{t('Add exercise')}</Button>
+    {wc.exerciseButtons && listMode && A.entries.length > 0 && <div className="muted small" style={{ marginBottom: 6 }}>{t("MOVE_SWAP_AND_REMOVE_BELOW_ACT_ON_THE_EXERCISE_MARKED_COUNT" /* 下方的移动、替换和删除将作用于标记为{0}的动作。 */, t("CURRENT" /* 当前 */))}</div>}
+    <Button onClick={addExercise} icon="plus">{t("ADD_EXERCISE" /* 添加动作 */)}</Button>
     {wc.exerciseButtons && A.entries.length > 0 && <>
       <div style={{ height: 6 }} />
       <div className="row">
-        <Button size="sm" icon="chevronUp" aria-label={t('Move up')}
-          disabled={!!work || !canMoveActiveWorkoutUnit(A, cur, -1)} onClick={() => moveCurrentUnit(-1)}>{t('Move up')}</Button>
-        <Button size="sm" trailingIcon="chevronDown" aria-label={t('Move down')}
-          disabled={!!work || !canMoveActiveWorkoutUnit(A, cur, 1)} onClick={() => moveCurrentUnit(1)}>{t('Move down')}</Button>
+        <Button size="sm" icon="chevronUp" aria-label={t("MOVE_UP" /* 上移 */)}
+          disabled={!!work || !canMoveActiveWorkoutUnit(A, cur, -1)} onClick={() => moveCurrentUnit(-1)}>{t("MOVE_UP" /* 上移 */)}</Button>
+        <Button size="sm" trailingIcon="chevronDown" aria-label={t("MOVE_DOWN" /* 下移 */)}
+          disabled={!!work || !canMoveActiveWorkoutUnit(A, cur, 1)} onClick={() => moveCurrentUnit(1)}>{t("MOVE_DOWN" /* 下移 */)}</Button>
       </div>
       <div style={{ height: 6 }} />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Button size="sm" icon="swap" aria-label={t('Swap exercise')} disabled={!!work}
-          onClick={() => swapExercise(cur)}>{t('Swap exercise')}</Button>
+        <Button size="sm" icon="swap" aria-label={t("SWAP_EXERCISE" /* 更换动作 */)} disabled={!!work}
+          onClick={() => swapExercise(cur)}>{t("SWAP_EXERCISE" /* 更换动作 */)}</Button>
       </div>
       <div style={{ height: 6 }} />
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <Button size="sm" icon="minus" style={{ color: 'var(--red)' }} disabled={!!work} onClick={removeExerciseSheet}>{t('Remove exercise')}</Button>
+        <Button size="sm" icon="minus" style={{ color: 'var(--red)' }} disabled={!!work} onClick={removeExerciseSheet}>{t("REMOVE_EXERCISE" /* 移除动作 */)}</Button>
       </div>
     </>}
     <div style={{ height: 10 }} />
@@ -2069,14 +2069,14 @@ function ActiveWorkout() {
         button rather than somewhere in the header. */}
     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
       <Button size="sm" icon="note" variant={A.note ? 'tinted' : undefined} onClick={sessionNoteSheet}>
-        {A.note ? t('Edit session note') : t('Add session note')}
+        {A.note ? t("EDIT_SESSION_NOTE" /* 编辑训练备注 */) : t("ADD_SESSION_NOTE" /* 添加训练备注 */)}
       </Button>
     </div>
     {(() => {
       const exDone = A.entries.filter(e => e.sets.length && e.sets.every(s => s.done)).length
       const allDone = A.entries.length > 0 && exDone === A.entries.length
       return <button className={allDone ? 'btn primary' : 'btn ghost dim'} onClick={finishWorkout}>
-        {editing ? t('Save changes') : allDone ? t('Finish workout') : t('Finish workout early · {0} exercises', exDone + '/' + A.entries.length)}
+        {editing ? t("SAVE_CHANGES" /* 保存更改 */) : allDone ? t("FINISH_WORKOUT" /* 结束训练 */) : t("FINISH_WORKOUT_EARLY_COUNT_EXERCISES" /* 提前结束 · {0} 个动作 */, exDone + '/' + A.entries.length)}
       </button>
     })()}
     <div className="workout-end-spacer" />

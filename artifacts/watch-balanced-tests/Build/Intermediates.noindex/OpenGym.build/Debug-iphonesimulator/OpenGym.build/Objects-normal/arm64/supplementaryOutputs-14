@@ -1,0 +1,30 @@
+{
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGym/Services/ExerciseVideoCache.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseVideoCache.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseVideoCache.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseVideoCache.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseVideoCache.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseVideoCache.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/LiveActivity/WorkoutActivityContent.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutActivityContent.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutActivityContent.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutActivityContent.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutActivityContent.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/WorkoutActivityContent.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/Localization.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Localization.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Localization.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Localization.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Localization.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/Localization.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/TrainingActionComponents.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingActionComponents.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingActionComponents.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingActionComponents.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingActionComponents.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/TrainingActionComponents.swiftdeps"
+  }
+}

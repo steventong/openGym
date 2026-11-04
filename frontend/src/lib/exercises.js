@@ -1,7 +1,7 @@
 import { EXDB, EXALIAS } from './exercises-data.js'
 import MUSCLE_MAP from './exercise-muscle-map.json' with { type: 'json' }
 import V13_IDS from './catalogue-v13-ids.json' with { type: 'json' }
-import { t, getVersion, exerciseNameSearchText } from './i18n-core.js'
+import { t, getVersion, exerciseNameSearchText , translateValue } from './i18n-core.js'
 
 export { EXDB }
 
@@ -279,7 +279,7 @@ export const beatsWeight = (idOrEx, w, prev) =>
 // render. A placeholder keeps it visible (and removable) instead of taking the whole view
 // down on the first `ex.n`.
 export const exOr = id => EXIDX[id] ||
-  { id, n: t('Unknown exercise'), bp: '', tg: '', eq: '', sm: [], st: [], missing: true }
+  { id, n: t("UNKNOWN_EXERCISE" /* 未知动作 */), bp: '', tg: '', eq: '', sm: [], st: [], missing: true }
 
 // Normalizes text by lowercasing and stripping diacritics/accents (e.g. "elevação" -> "elevacao")
 export const normalizeStr = s => (s || '')
@@ -312,10 +312,10 @@ function corpusOf(e) {
   const name = normalizeStr(exerciseNameSearchText(e))
   const s = normalizeStr([
     name,
-    e?.tg || '', t(e?.tg || ''),
-    e?.eq || '', t(e?.eq || ''),
-    e?.bp || '', t(e?.bp || ''),
-    ...sm, ...sm.map(m => t(m)),
+    e?.tg || '', translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(e?.tg || ''),
+    e?.eq || '', translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(e?.eq || ''),
+    e?.bp || '', translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(e?.bp || ''),
+    ...sm, ...sm.map(m => translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(m)),
     e?.desc || ''
   ].join(' '))
   // The name run together, so "benchpress" or "bench-press" finds "bench press" the way "pullup"

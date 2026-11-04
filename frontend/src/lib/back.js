@@ -35,7 +35,7 @@ export function makeBackHandler({ getSheets, closeSheet, toast, goBack, exit, no
     if (action !== 'arm-exit') armedAt = -Infinity
     if (action === 'sheet') closeSheet(sheets[sheets.length - 1].id)
     else if (action === 'history') goBack()
-    else if (action === 'arm-exit') { armedAt = now(); toast(t('Press back again to exit')) }
+    else if (action === 'arm-exit') { armedAt = now(); toast(t("PRESS_BACK_AGAIN_TO_EXIT" /* 再按一次返回退出 */)) }
     else if (action === 'exit') exit()
     return action
   }

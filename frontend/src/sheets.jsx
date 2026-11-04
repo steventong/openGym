@@ -9,7 +9,7 @@ import { usesBar, defaultBarWeight, hasBarOverride, isNoBar } from './lib/bar.js
 import { PLATE_SIZES, pairsOf, ownsPlates, withPlatePairs, withStandardPlates, withLoadKind, loadKindFor, baseWeightFor, dropGrid } from './lib/plates.js'
 import { toScale, rirOf, EFFORT_PRESETS, effortColor } from './lib/effort.js'
 import { beep, vibrate } from './lib/sound.js'
-import { t, tn, dateLocale, instrFor, instrTranslated, descFor, exerciseNameFor, exerciseNameClass, getLang, useLang } from './lib/i18n.js'
+import { t, tn, dateLocale, instrFor, instrTranslated, descFor, exerciseNameFor, exerciseNameClass, getLang, useLang , translateValue } from './lib/i18n.js'
 import { nav, closeThenNav, navToWorkout } from './lib/nav.js'
 import { buildStarterPlan, starterPlanDays, starterPlanOptions } from './lib/starter.js'
 import Media, { Thumb } from './components/Media.jsx'
@@ -78,9 +78,9 @@ function ConfirmDialog({ title, message, confirmText, cancelText, danger, onConf
   return <div style={{ textAlign: 'center', padding: '4px 0' }}>
     {title && <h3 style={{ marginBottom: 8 }}>{title}</h3>}
     <div className="muted" style={{ marginBottom: 18, lineHeight: 1.5 }}>{message}</div>
-    <button className={'btn ' + (danger ? 'danger' : 'primary')} onClick={() => { close(); onConfirm && onConfirm() }}>{confirmText || t('Confirm')}</button>
+    <button className={'btn ' + (danger ? 'danger' : 'primary')} onClick={() => { close(); onConfirm && onConfirm() }}>{confirmText || t("CONFIRM" /* 确认 */)}</button>
     <div style={{ height: 8 }} />
-    <Button variant="ghost" className="dim" onClick={() => { close(); onCancel && onCancel() }}>{cancelText || t('Cancel')}</Button>
+    <Button variant="ghost" className="dim" onClick={() => { close(); onCancel && onCancel() }}>{cancelText || t("CANCEL" /* 取消 */)}</Button>
   </div>
 }
 // "1 workouts and 1 weigh-ins" read wrong: a count of one takes the singular, per noun. Four
@@ -89,11 +89,11 @@ export function addDeviceDataMessage(workouts, weighIns) {
   const one = n => Number(n) === 1
   return one(workouts)
     ? one(weighIns)
-      ? t('{0} workout and {1} weigh-in were logged on this device while signed out. Add them to your profile, or keep the profile exactly as it is on the server.', workouts, weighIns)
-      : t('{0} workout and {1} weigh-ins were logged on this device while signed out. Add them to your profile, or keep the profile exactly as it is on the server.', workouts, weighIns)
+      ? t("COUNT_WORKOUT_AND_COUNT_WEIGH_IN_WERE_LOGGED_ON_THIS_DEVICE_WHILE" /* 此设备在未登录时记录了 {0} 次训练和 {1} 次体重。把它们加入你的个人资料，或保持个人资料与服务器上的完全一致。 */, workouts, weighIns)
+      : t("COUNT_WORKOUT_AND_COUNT_WEIGH_INS_WERE_LOGGED_ON_THIS_DEVICE_WHILE" /* 此设备在未登录时记录了 {0} 次训练和 {1} 次体重。把它们加入你的个人资料，或保持个人资料与服务器上的完全一致。 */, workouts, weighIns)
     : one(weighIns)
-      ? t('{0} workouts and {1} weigh-in were logged on this device while signed out. Add them to your profile, or keep the profile exactly as it is on the server.', workouts, weighIns)
-      : t('{0} workouts and {1} weigh-ins were logged on this device while signed out. Add them to your profile, or keep the profile exactly as it is on the server.', workouts, weighIns)
+      ? t("COUNT_WORKOUTS_AND_COUNT_WEIGH_IN_WERE_LOGGED_ON_THIS_DEVICE_WHILE" /* 此设备在未登录时记录了 {0} 次训练和 {1} 次体重。把它们加入你的个人资料，或保持个人资料与服务器上的完全一致。 */, workouts, weighIns)
+      : t("COUNT_WORKOUTS_AND_COUNT_WEIGH_INS_WERE_LOGGED_ON_THIS_DEVICE_WHILE" /* 此设备在未登录时记录了 {0} 次训练和 {1} 次体重。把它们加入你的个人资料，或保持个人资料与服务器上的完全一致。 */, workouts, weighIns)
 }
 // Sign-in found workouts on this device that the profile does not have (logged while signed
 // out). The profile is the truth — settings and plan come from the server either way — the
@@ -103,17 +103,17 @@ export function addDeviceDataMessage(workouts, weighIns) {
 export function addDeviceSetupMessage(routines) {
   const n = Number(routines) || 0
   return n === 0
-    ? t('Your plan, notes or gym cards on this device were set up while signed out. Add them to your profile, or keep the profile exactly as it is on the server.')
+    ? t("YOUR_PLAN_NOTES_OR_GYM_CARDS_ON_THIS_DEVICE_WERE_SET_UP" /* 此设备在未登录时设置了计划、备注或健身房卡。把它们加入你的个人资料，或保持个人资料与服务器上的完全一致。 */)
     : n === 1
-      ? t('{0} routine was made on this device while signed out. Add it to your profile, or keep the profile exactly as it is on the server.', n)
-      : t('{0} routines were made on this device while signed out. Add them to your profile, or keep the profile exactly as it is on the server.', n)
+      ? t("COUNT_ROUTINE_WAS_MADE_ON_THIS_DEVICE_WHILE_SIGNED_OUT_ADD_IT" /* 此设备在未登录时创建了 {0} 个训练计划。把它加入你的个人资料，或保持个人资料与服务器上的完全一致。 */, n)
+      : t("COUNT_ROUTINES_WERE_MADE_ON_THIS_DEVICE_WHILE_SIGNED_OUT_ADD_THEM" /* 此设备在未登录时创建了 {0} 个训练计划。把它们加入你的个人资料，或保持个人资料与服务器上的完全一致。 */, n)
 }
 export function askAddDeviceData(extras) {
   const logged = extras.workouts || extras.bodyweight || extras.customEx
   return new Promise(resolve => confirmSheet({
-    title: logged ? t('Add this device\'s workouts to your profile?') : t('Add this device\'s plan to your profile?'),
+    title: logged ? t("ADD_THIS_DEVICE_S_WORKOUTS_TO_YOUR_PROFILE" /* 把此设备上的训练加入你的个人资料？ */) : t("ADD_THIS_DEVICE_S_PLAN_TO_YOUR_PROFILE" /* 把此设备上的计划加入你的个人资料？ */),
     message: logged ? addDeviceDataMessage(extras.workouts, extras.bodyweight) : addDeviceSetupMessage(extras.routines),
-    confirmText: t('Add them'), cancelText: t('Keep profile as is'),
+    confirmText: t("ADD_THEM" /* 加入 */), cancelText: t("KEEP_PROFILE_AS_IS" /* 保持不变 */),
     onConfirm: () => resolve(true), onCancel: () => resolve(false), locked: true
   }))
 }
@@ -165,10 +165,10 @@ export function confirmSheet(opts) {
 // string literals written inside a t() call, so copy parked in the catalog and passed in as a
 // variable is invisible to it — it would quietly stay English in every language.
 const PLAN_COPY = {
-  ppl: () => ({ name: t('Push / Pull / Legs'), about: t('Push, pull and legs each get their own day.') }),
-  'upper-lower': () => ({ name: t('Upper / Lower'), about: t('Upper body twice, lower body twice.') }),
-  'full-body': () => ({ name: t('Full Body'), about: t('Three sessions, the whole body each time.') }),
-  '5x5': () => ({ name: t('5×5'), about: t('Five sets of five on the main barbell lifts.') })
+  ppl: () => ({ name: t("PUSH_PULL_LEGS" /* 推 / 拉 / 腿 */), about: t("PUSH_PULL_AND_LEGS_EACH_GET_THEIR_OWN_DAY" /* 推、拉、腿各占一天。 */) }),
+  'upper-lower': () => ({ name: t("UPPER_LOWER" /* 上肢 / 下肢 */), about: t("UPPER_BODY_TWICE_LOWER_BODY_TWICE" /* 上肢两次，下肢两次。 */) }),
+  'full-body': () => ({ name: t("FULL_BODY" /* 全身 */), about: t("THREE_SESSIONS_THE_WHOLE_BODY_EACH_TIME" /* 三次训练，每次练全身。 */) }),
+  '5x5': () => ({ name: t("FIVE_FIVE" /* 术语：5×5 */), about: t("FIVE_SETS_OF_FIVE_ON_THE_MAIN_BARBELL_LIFTS" /* 主要杠铃动作五组五次。 */) })
 }
 
 // Adds the plan's routines (reusing one you already have under the same name) and puts them on
@@ -192,13 +192,13 @@ export function loadStarterPlan(planId, profile) {
     })
     plan.schedule.forEach(({ day, routineId }) => { st.week[day] = [idOf[routineId]] })
   })
-  if (plan.fit) toast(t('{0} loaded, fitted to "{1}": {2} swapped, {3} dropped', PLAN_COPY[planId]().name, profile.name, plan.fit.swapped, plan.fit.dropped))
-  else toast(t('{0} loaded', PLAN_COPY[planId]().name))
+  if (plan.fit) toast(t("COUNT_LOADED_FITTED_TO_COUNT_COUNT_SWAPPED_COUNT_DROPPED" /* 已加载{0}，并按“{1}”调整：替换 {2} 项，移除 {3} 项 */, PLAN_COPY[planId]().name, profile.name, plan.fit.swapped, plan.fit.dropped))
+  else toast(t("COUNT_LOADED" /* 已加载{0} */, PLAN_COPY[planId]().name))
   return true
 }
 
 // Intl joins the days the way each language does it — "and" vs "und", "、" in Chinese.
-const dayList = days => new Intl.ListFormat(dateLocale()).format(days.map(d => t(DAYN[d])))
+const dayList = days => new Intl.ListFormat(dateLocale()).format(days.map(d => translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAYN[d])))
 
 function StarterPlanChooser({ close }) {
   const week = useStore(s => s.S.week)
@@ -215,27 +215,27 @@ function StarterPlanChooser({ close }) {
     const taken = day => [].concat(week[day] || []).some(id => routines.some(r => r.id === id))
     if (!days.some(taken)) { loadStarterPlan(id, fit); return }
     confirmSheet({
-      title: t('Load {0}?', name),
-      message: t('The new plan goes on {0}. Your existing routines stay; only those days of the weekly plan change.', dayList(days)),
-      confirmText: t('Load plan'),
+      title: t("LOAD_COUNT" /* 加载{0}？ */, name),
+      message: t("THE_NEW_PLAN_GOES_ON_COUNT_YOUR_EXISTING_ROUTINES_STAY_ONLY_THOSE" /* 新计划会排在{0}。你现有的训练计划都会保留，每周计划里只有这几天会变。 */, dayList(days)),
+      confirmText: t("LOAD_PLAN" /* 加载计划 */),
       onConfirm: () => loadStarterPlan(id, fit)
     })
   }
   return <>
-    <h3>{t('Choose starter plan')}</h3>
+    <h3>{t("CHOOSE_STARTER_PLAN" /* 选择入门计划 */)}</h3>
     {profiles.length > 0
       ? <div className="chips" style={{ margin: '0 0 10px' }}>
-          <div className="small dim" style={{ width: '100%' }}>{t('Fit to my equipment')}</div>
-          <button className={'chip nocap' + (!fit ? ' on' : '')} onClick={() => setFitId('')}>{t('As written')}</button>
+          <div className="small dim" style={{ width: '100%' }}>{t("FIT_TO_MY_EQUIPMENT" /* 按我的器械调整 */)}</div>
+          <button className={'chip nocap' + (!fit ? ' on' : '')} onClick={() => setFitId('')}>{t("AS_WRITTEN" /* 保持原样 */)}</button>
           {profiles.map(p => <button key={p.id} className={'chip nocap' + (fit?.id === p.id ? ' on' : '')} onClick={() => setFitId(p.id)}>{p.name}</button>)}
         </div>
-      : <div className="small dim" style={{ margin: '0 0 10px' }}>{t('Add an equipment profile in Settings to fit a plan to what you own.')}</div>}
+      : <div className="small dim" style={{ margin: '0 0 10px' }}>{t("ADD_AN_EQUIPMENT_PROFILE_IN_SETTINGS_TO_FIT_A_PLAN_TO_WHAT" /* 在设置中添加器械配置，即可让计划适配你拥有的器械。 */)}</div>}
     <div className="list">
       {starterPlanOptions().map(({ id, days }) => {
         const { name, about } = PLAN_COPY[id]()
         return <div key={id} className="item" {...tappable(() => choose(id, name))}>
           <span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="clipboard" /></span>
-          <div className="grow"><div className="tt">{name}</div><div className="ss">{t('{0} days per week', days)} · {about}</div></div>
+          <div className="grow"><div className="tt">{name}</div><div className="ss">{t("COUNT_DAYS_PER_WEEK" /* 每周 {0} 天 */, days)} · {about}</div></div>
           <Icon name="chevronRight" className="chev" />
         </div>
       })}
@@ -261,7 +261,7 @@ const wHi = unit => (unit === 'lb' ? 660 : 300)
 const bwMax = unit => (unit === 'lb' ? 1500 : 700)
 const bwTooHeavy = (n, unit) => {
   if (n <= bwMax(unit)) return false
-  toast(t('That looks too heavy. Keep it at {0} or less.', fmtNum(bwMax(unit)) + ' ' + unit))
+  toast(t("THAT_LOOKS_TOO_HEAVY_KEEP_IT_AT_COUNT_OR_LESS" /* 这好像太重了。最多 {0}。 */, fmtNum(bwMax(unit)) + ' ' + unit))
   return true
 }
 function WeightInput({ value, setValue, unit }) {
@@ -273,13 +273,13 @@ function WeightInput({ value, setValue, unit }) {
 
   return <>
     <div className="bwstep">
-      <button className="bw-pm" onClick={() => onSlide(value - 0.1)} aria-label={t('Decrease by {0}', fmtNum(0.1))}><Icon name="minus" /></button>
+      <button className="bw-pm" onClick={() => onSlide(value - 0.1)} aria-label={t("DECREASE_BY_COUNT" /* 减少 {0} */, fmtNum(0.1))}><Icon name="minus" /></button>
       <label className="bw-read">
-        <NumberField fit value={value} onChange={onType} aria-label={t('Weight ({0})', unit)} enterKeyHint="done"
+        <NumberField fit value={value} onChange={onType} aria-label={t("WEIGHT_COUNT" /* 重量（{0}） */, unit)} enterKeyHint="done"
           onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }} />
         <span className="u"> {unit}</span>
       </label>
-      <button className="bw-pm" onClick={() => onSlide(value + 0.1)} aria-label={t('Increase by {0}', fmtNum(0.1))}><Icon name="plus" /></button>
+      <button className="bw-pm" onClick={() => onSlide(value + 0.1)} aria-label={t("INCREASE_BY_COUNT" /* 增加 {0} */, fmtNum(0.1))}><Icon name="plus" /></button>
     </div>
     <div className="chips" style={{ justifyContent: 'center', margin: '8px 0' }}>
       <button className="chip" onClick={() => onSlide(value - 1)}>−1</button>
@@ -299,7 +299,7 @@ function BwSheet({ required, onDone, close }) {
   const [v, setV] = useState(bw ? bw.w : 70)
   const save = () => {
     const n = Math.round((v || 0) * 10) / 10
-    if (!n || n <= 0) { toast(t('Enter a valid weight')); return }
+    if (!n || n <= 0) { toast(t("ENTER_A_VALID_WEIGHT" /* 请输入有效的重量 */)); return }
     if (bwTooHeavy(n, unit)) return
     update(s => {
       const iso = todayISO()
@@ -308,7 +308,7 @@ function BwSheet({ required, onDone, close }) {
       s.bodyweight.sort((a, b) => (a.d < b.d ? -1 : 1))
     })
     close()
-    if (onDone) onDone(n); else toast(t('Weight saved'))
+    if (onDone) onDone(n); else toast(t("WEIGHT_SAVED" /* 体重已保存 */))
   }
   const recent = [...st.bodyweight].reverse().slice(0, 3)
   return <>
@@ -320,25 +320,25 @@ function BwSheet({ required, onDone, close }) {
         nav — so it's a true no-op: the screen underneath is exactly where you left it. */}
     {required
       ? <div className="row between" style={{ marginBottom: 14 }}>
-          <h3 style={{ marginBottom: 0 }}>{t('Quick check-in')}</h3>
-          <button className="iconbtn" aria-label={t('Cancel')} onClick={() => close()}><Icon name="xmark" /></button>
+          <h3 style={{ marginBottom: 0 }}>{t("QUICK_CHECK_IN" /* 快速称重 */)}</h3>
+          <button className="iconbtn" aria-label={t("CANCEL" /* 取消 */)} onClick={() => close()}><Icon name="xmark" /></button>
         </div>
-      : <h3>{t('Log body weight')}</h3>}
-    <div className="muted small">{required ? t('Slide or tap to set your weight. We ask before every workout so your curve stays honest.') : t('Today') + ', ' + fmtDate(todayISO(), true)}</div>
+      : <h3>{t("LOG_BODY_WEIGHT" /* 记录体重 */)}</h3>}
+    <div className="muted small">{required ? t("SLIDE_OR_TAP_TO_SET_YOUR_WEIGHT_WE_ASK_BEFORE_EVERY_WORKOUT" /* 滑动或点按记录体重。每次训练前称重，方便持续跟踪体重变化。 */) : t("TODAY" /* 今天 */) + ', ' + fmtDate(todayISO(), true)}</div>
     <WeightInput value={v} setValue={setV} unit={unit} />
     <div style={{ height: 14 }} />
-    <Button variant="primary" onClick={save}>{required ? t('Save & start workout') : t('Save')}</Button>
+    <Button variant="primary" onClick={save}>{required ? t("SAVE_START_WORKOUT" /* 保存并开始训练 */) : t("SAVE" /* 保存 */)}</Button>
     {required && <>
-      <div style={{ height: 8 }} /><Button variant="ghost" className="dim" onClick={() => { close(); onDone && onDone(null) }}>{t('Start without weighing in')}</Button>
-      <div style={{ height: 2 }} /><Button variant="ghost" className="dim" icon="swap" onClick={() => closeThenNav(close, '/workout')}>{t('Choose a different workout')}</Button>
+      <div style={{ height: 8 }} /><Button variant="ghost" className="dim" onClick={() => { close(); onDone && onDone(null) }}>{t("START_WITHOUT_WEIGHING_IN" /* 不称重直接开始 */)}</Button>
+      <div style={{ height: 2 }} /><Button variant="ghost" className="dim" icon="swap" onClick={() => closeThenNav(close, '/workout')}>{t("CHOOSE_A_DIFFERENT_WORKOUT" /* 选择其他训练 */)}</Button>
     </>}
     {!required && recent.length > 0 && <>
-      <h4 className="sec">{t('Recent weigh-ins')}</h4>
+      <h4 className="sec">{t("RECENT_WEIGH_INS" /* 最近称重 */)}</h4>
       <div className="list" style={{ gap: 0 }}>
         {recent.map(b => <WeighInRow key={b.d} b={b} unit={unit} />)}
       </div>
       {st.bodyweight.length > recent.length && <div className="row" style={{ justifyContent: 'flex-end', marginTop: 6 }}>
-        <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={weighInsSheet}>{t('All weigh-ins')}</Button>
+        <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={weighInsSheet}>{t("ALL_WEIGH_INS" /* 全部称重记录 */)}</Button>
       </div>}
     </>}
   </>
@@ -355,13 +355,13 @@ export function bwSheet(opts = {}) {
 function WeighInRow({ b, unit, confirm = false }) {
   const delEntry = () => update(s => { s.bodyweight = s.bodyweight.filter(x => x.d !== b.d) })
   const ask = () => confirmSheet({
-    title: t('Delete weigh-in?'), message: `${fmtDate(b.d, true)} · ${fmtNum(b.w)} ${unit}`,
-    confirmText: t('Delete'), danger: true, onConfirm: delEntry,
+    title: t("DELETE_WEIGH_IN" /* 删除称重记录？ */), message: `${fmtDate(b.d, true)} · ${fmtNum(b.w)} ${unit}`,
+    confirmText: t("DELETE" /* 删除 */), danger: true, onConfirm: delEntry,
   })
   return <div className="row between" style={{ padding: '9px 2px', borderBottom: '1px solid var(--sep)' }}>
     <span className="small muted">{fmtDate(b.d, true)}</span>
     <span className="row" style={{ gap: 12 }}><b>{fmtNum(b.w)} {unit}</b>
-      <button className="iconbtn" style={{ width: 32, height: 30, borderRadius: 8, fontSize: 15, color: 'var(--red)' }} onClick={confirm ? ask : delEntry} aria-label={t('Delete weigh-in')}><Icon name="trash" /></button></span>
+      <button className="iconbtn" style={{ width: 32, height: 30, borderRadius: 8, fontSize: 15, color: 'var(--red)' }} onClick={confirm ? ask : delEntry} aria-label={t("DELETE_WEIGH_IN_A" /* 删除称重记录 */)}><Icon name="trash" /></button></span>
   </div>
 }
 
@@ -378,26 +378,26 @@ function WeighIns() {
     .map(w => ({ t: new Date(w.key + 'T12:00:00').getTime(), y: Math.round(w.avg * 100) / 100, d: w.key })), [weeks])
   const n = weeks.reduce((sum, w) => sum + w.n, 0)
   if (!n) return <>
-    <h3>{t('Weigh-ins')}</h3>
-    <div className="empty"><div className="ico"><Icon name="scale" /></div>{t('No weigh-ins yet. Log your weight to start the curve.')}</div>
+    <h3>{t("WEIGH_INS" /* 称重记录 */)}</h3>
+    <div className="empty"><div className="ico"><Icon name="scale" /></div>{t("NO_WEIGH_INS_YET_LOG_YOUR_WEIGHT_TO_START_THE_CURVE" /* 还没有称重记录。记一下体重，曲线就开始了。 */)}</div>
   </>
   return <>
-    <h3 style={{ marginBottom: 2 }}>{t('Weigh-ins')}</h3>
-    <div className="muted small" style={{ marginBottom: 10 }}>{tn('{0} weigh-in', '{0} weigh-ins', n)}</div>
+    <h3 style={{ marginBottom: 2 }}>{t("WEIGH_INS" /* 称重记录 */)}</h3>
+    <div className="muted small" style={{ marginBottom: 10 }}>{tn("COUNT_WEIGH_IN" /* {0} 次称重 */, "COUNT_WEIGH_INS" /* {0} 次称重 */, n)}</div>
     <div className="chart"><LineChart points={points} h={140} unit={st.unit} goal={st.targetW} /></div>
-    <div className="small dim" style={{ marginTop: 6 }}>{t('Weekly average')}</div>
+    <div className="small dim" style={{ marginTop: 6 }}>{t("WEEKLY_AVERAGE" /* 每周平均 */)}</div>
     {weeks.map(w => {
       // Only a change the display can show: at one decimal, 0.02 kg is "0", and an arrow over a
       // zero says something moved when, as far as the screen goes, nothing did.
       const moved = w.delta != null && fmtNum(Math.abs(w.delta)) !== fmtNum(0)
       return <div key={w.key} data-week={w.key}>
         <div className="row between" style={{ margin: '16px 2px 4px', gap: 8 }}>
-          <span className="small" style={{ fontWeight: 600 }}>{t('Week of {0}', fmtDate(w.key))}</span>
+          <span className="small" style={{ fontWeight: 600 }}>{t("WEEK_OF_COUNT" /* {0} 起的一周 */, fmtDate(w.key))}</span>
           <span className="small row" style={{ gap: 8 }}>
             {moved && <span className="row" style={{ gap: 2, fontWeight: 500, color: bwDeltaColor(w.delta, w.avg) }}>
               <Icon name={w.delta > 0 ? 'arrowUp' : 'arrowDown'} style={{ fontSize: 12 }} />{fmtNum(Math.abs(w.delta))}
             </span>}
-            <span className="muted" style={{ whiteSpace: 'nowrap' }}>{t('Average {0}', fmtNum(w.avg) + ' ' + st.unit)}</span>
+            <span className="muted" style={{ whiteSpace: 'nowrap' }}>{t("AVERAGE_COUNT" /* 平均 {0} */, fmtNum(w.avg) + ' ' + st.unit)}</span>
           </span>
         </div>
         <div className="list" style={{ gap: 0 }}>{w.entries.map(b => <WeighInRow key={b.d} b={b} unit={st.unit} confirm />)}</div>
@@ -411,8 +411,8 @@ export const weighInsSheet = () => ui().openSheet(close => <WeighIns close={clos
 // "12 sets bring an RPE with them": the file rated its sets. The column is off by default, so
 // with it off the line says where to switch it on.
 const effortLine = (effort, n, scale) => effort === 'none'
-  ? tn('{0} set brings an {1} with it. Switch on Effort per set in Settings to see it.', '{0} sets bring an {1} with them. Switch on Effort per set in Settings to see it.', n, scale)
-  : tn('{0} set brings an {1} with it.', '{0} sets bring an {1} with them.', n, scale)
+  ? tn("COUNT_SET_BRINGS_AN_COUNT_WITH_IT_SWITCH_ON_EFFORT_PER_SET" /* {0} 组自带 {1}。在设置中打开“每组强度”就能看到。 */, "COUNT_SETS_BRING_AN_COUNT_WITH_THEM_SWITCH_ON_EFFORT_PER_SET" /* {0} 组自带 {1}。在设置中打开“每组强度”就能看到。 */, n, scale)
+  : tn("COUNT_SET_BRINGS_AN_COUNT_WITH_IT" /* {0} 组自带 {1}。 */, "COUNT_SETS_BRING_AN_COUNT_WITH_THEM" /* {0} 组自带 {1}。 */, n, scale)
 // Shows what a parsed export would actually do before anything is written. An import is
 // the one action where "just try it" is expensive — it's someone's entire training
 // history — so the numbers, the unit conversion and the exercises we couldn't recognise
@@ -430,38 +430,38 @@ function ImportSummary({ parsed, close }) {
     update(s => { res = mergeImport(s, parsed) })
     close()
     toast(isBW
-      ? tn('{0} weigh-in imported', '{0} weigh-ins imported', res.added)
-      : tn('{0} workout imported', '{0} workouts imported', res.added))
+      ? tn("COUNT_WEIGH_IN_IMPORTED" /* 已导入 {0} 条称重记录 */, "COUNT_WEIGH_INS_IMPORTED" /* 已导入 {0} 条称重记录 */, res.added)
+      : tn("COUNT_WORKOUT_IMPORTED" /* 已导入 {0} 次训练 */, "COUNT_WORKOUTS_IMPORTED" /* 已导入 {0} 次训练 */, res.added))
   }
 
   return <>
-    <h3>{parsed.source ? t('Import from {0}', parsed.source) : t('Import history')}</h3>
+    <h3>{parsed.source ? t("IMPORT_FROM_COUNT" /* 从 {0} 导入 */, parsed.source) : t("IMPORT_HISTORY" /* 导入历史记录 */)}</h3>
     <div className="muted small" style={{ marginBottom: 12 }}>
       {fmtDateRange(parsed.from, parsed.to, true)}
     </div>
 
     <div className="tiles" style={{ textAlign: 'start' }}>
       {isBW ? <>
-        <div className="tile"><div className="l">{t('Weigh-ins')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.bodyweight.length}</div></div>
-        <div className="tile"><div className="l">{t('New')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{fresh}</div></div>
+        <div className="tile"><div className="l">{t("WEIGH_INS" /* 称重记录 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.bodyweight.length}</div></div>
+        <div className="tile"><div className="l">{t("NEW" /* 新建 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{fresh}</div></div>
       </> : <>
-        <div className="tile"><div className="l">{t('Workouts')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.workouts.length}</div></div>
-        <div className="tile"><div className="l">{t('Sets')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.sets}</div></div>
-        <div className="tile"><div className="l">{t('Exercises matched')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.matched}</div></div>
-        <div className="tile"><div className="l">{t('Added as your own')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.created}</div></div>
+        <div className="tile"><div className="l">{t("WORKOUTS" /* 训练次数 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.workouts.length}</div></div>
+        <div className="tile"><div className="l">{t("SETS" /* 组数 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.sets}</div></div>
+        <div className="tile"><div className="l">{t("EXERCISES_MATCHED" /* 已匹配动作 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.matched}</div></div>
+        <div className="tile"><div className="l">{t("ADDED_AS_YOUR_OWN" /* 添加为自定义 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{parsed.created}</div></div>
       </>}
     </div>
 
     {parsed.mixedUnits ? <div className="small" style={{ color: 'var(--yellow)', marginBottom: 10 }}>
-      {t('The file mixes kg and lb, so each set is converted to {0}.', st.unit)}
+      {t("THE_FILE_MIXES_KG_AND_LB_SO_EACH_SET_IS_CONVERTED_TO" /* 文件中混用了 kg 和 lb，所以每组都会换算成 {0}。 */, st.unit)}
     </div> : parsed.converted ? <div className="small" style={{ color: 'var(--yellow)', marginBottom: 10 }}>
-      {t('The file is in {0} and your profile is in {1}, so weights get converted.', parsed.fileUnit, st.unit)}
+      {t("THE_FILE_IS_IN_COUNT_AND_YOUR_PROFILE_IS_IN_COUNT_SO" /* 文件使用 {0}，你的档案使用 {1}，所以重量会被换算。 */, parsed.fileUnit, st.unit)}
     </div> : null}
     {!isBW && !parsed.fileUnit && !parsed.mixedUnits && <div className="small dim" style={{ marginBottom: 10 }}>
-      {t('The file doesn’t say which unit it uses, so numbers are imported as they are.')}
+      {t("THE_FILE_DOESN_T_SAY_WHICH_UNIT_IT_USES_SO_NUMBERS_ARE" /* 文件没有标明单位，所以数字按原样导入。 */)}
     </div>}
     {have > 0 && <div className="small dim" style={{ marginBottom: 10 }}>
-      {t('{0} days already have data here and will be left alone.', have)}
+      {t("COUNT_DAYS_ALREADY_HAVE_DATA_HERE_AND_WILL_BE_LEFT_ALONE" /* 有 {0} 天已存在数据，将保持不变。 */, have)}
     </div>}
     {/* The file rated its sets. Say so: the column is off by default, so the ratings would
         otherwise arrive invisibly and look like they had been dropped. */}
@@ -471,10 +471,10 @@ function ImportSummary({ parsed, close }) {
     {/* Rows the parser could not use (no date or name, nothing measured, impossible numbers)
         are left out; say how many, so a short history does not look like a lost one. */}
     {!isBW && parsed.skipped > 0 && <div className="small dim" style={{ marginBottom: 10 }}>
-      {tn('{0} row skipped (couldn’t read it)', '{0} rows skipped (couldn’t read them)', parsed.skipped)}
+      {tn("COUNT_ROW_SKIPPED_COULDN_T_READ_IT" /* 已跳过 {0} 行（无法读取） */, "COUNT_ROWS_SKIPPED_COULDN_T_READ_THEM" /* 已跳过 {0} 行（无法读取） */, parsed.skipped)}
     </div>}
     {!isBW && parsed.unmatchedNames.length > 0 && <>
-      <h4 className="sec">{t('Not in the library, so they’re added as your own exercises')}</h4>
+      <h4 className="sec">{t("NOT_IN_THE_LIBRARY_SO_THEY_RE_ADDED_AS_YOUR_OWN_EXERCISES" /* 不在动作库中，所以已添加为你的自定义动作 */)}</h4>
       <div className="mchips" style={{ marginBottom: 12 }}>
         {parsed.unmatchedNames.slice(0, 12).map(n => <span key={n} className="mchip capitalize">{n}</span>)}
         {parsed.unmatchedNames.length > 12 && <span className="mchip">+{parsed.unmatchedNames.length - 12}</span>}
@@ -482,10 +482,10 @@ function ImportSummary({ parsed, close }) {
     </>}
 
     <Button variant="primary" onClick={doImport} disabled={!fresh}>
-      {fresh ? t('Import') : t('Nothing new to import')}
+      {fresh ? t("IMPORT" /* 导入 */) : t("NOTHING_NEW_TO_IMPORT" /* 没有新内容可导入 */)}
     </Button>
     <div style={{ height: 8 }} />
-    <Button variant="ghost" className="dim" onClick={close}>{t('Cancel')}</Button>
+    <Button variant="ghost" className="dim" onClick={close}>{t("CANCEL" /* 取消 */)}</Button>
   </>
 }
 
@@ -495,16 +495,16 @@ export function importFromApp(file, onDone) {
   rd.onload = () => {
     let parsed
     try { parsed = parseImport(String(rd.result), { unit: S().unit, customEx: S().customEx }) }
-    catch (e) { toast(t('Could not read that file')); return }
-    if (parsed.error === 'empty') { toast(t('That file is empty')); return }
-    if (parsed.error) { toast(t("We don't recognise that file's columns. Check the docs for supported apps.")); return }
+    catch (e) { toast(t("COULD_NOT_READ_THAT_FILE" /* 无法读取该文件 */)); return }
+    if (parsed.error === 'empty') { toast(t("THAT_FILE_IS_EMPTY" /* 该文件是空的 */)); return }
+    if (parsed.error) { toast(t("WE_DON_T_RECOGNISE_THAT_FILE_S_COLUMNS_CHECK_THE_DOCS_FOR" /* 我们认不出这个文件的列。支持的应用请查看文档。 */)); return }
     if (parsed.kind === 'bodyweight' ? !parsed.bodyweight.length : !parsed.workouts.length) {
-      toast(t('Nothing to import from that file')); return
+      toast(t("NOTHING_TO_IMPORT_FROM_THAT_FILE" /* 该文件中没有可导入的内容 */)); return
     }
     ui().openSheet(close => <ImportSummary parsed={parsed} close={close} />)
     onDone && onDone()
   }
-  rd.onerror = () => toast(t('Could not read that file'))
+  rd.onerror = () => toast(t("COULD_NOT_READ_THAT_FILE" /* 无法读取该文件 */))
   rd.readAsText(file)
 }
 
@@ -518,13 +518,13 @@ export function importFromHevy() {
 }
 
 function hevyProgressLabel(p) {
-  if (!p) return t('Fetching from Hevy…')
-  if (p.stage === 'templates') return t('Fetching exercises… ({0}/{1})', p.page, p.pageCount)
-  if (p.stage === 'workouts') return t('Fetching workouts… ({0}/{1})', p.page, p.pageCount)
-  if (p.stage === 'routines') return t('Fetching routines… ({0}/{1})', p.page, p.pageCount)
-  if (p.stage === 'body') return t('Fetching weigh-ins… ({0}/{1})', p.page, p.pageCount)
-  if (p.stage === 'parse') return t('Matching exercises…')
-  return t('Fetching from Hevy…')
+  if (!p) return t("FETCHING_FROM_HEVY" /* 正在从 Hevy 获取… */)
+  if (p.stage === 'templates') return t("FETCHING_EXERCISES_COUNT_COUNT" /* 正在获取动作… ({0}/{1}) */, p.page, p.pageCount)
+  if (p.stage === 'workouts') return t("FETCHING_WORKOUTS_COUNT_COUNT" /* 正在获取训练… ({0}/{1}) */, p.page, p.pageCount)
+  if (p.stage === 'routines') return t("FETCHING_ROUTINES_COUNT_COUNT" /* 正在获取计划… ({0}/{1}) */, p.page, p.pageCount)
+  if (p.stage === 'body') return t("FETCHING_WEIGH_INS_COUNT_COUNT" /* 正在获取体重… ({0}/{1}) */, p.page, p.pageCount)
+  if (p.stage === 'parse') return t("MATCHING_EXERCISES" /* 正在匹配动作… */)
+  return t("FETCHING_FROM_HEVY" /* 正在从 Hevy 获取… */)
 }
 
 function HevyImportSheet({ close }) {
@@ -545,7 +545,7 @@ function HevyImportSheet({ close }) {
 
   const fetchAccount = async () => {
     const key = apiKey.trim()
-    if (!key) { toast(t('Paste your Hevy API key first')); return }
+    if (!key) { toast(t("PASTE_YOUR_HEVY_API_KEY_FIRST" /* 请先粘贴 Hevy API 密钥 */)); return }
     setBusy(true)
     setProgress({ stage: 'templates', page: 1, pageCount: 1 })
     setPayload(null)
@@ -554,7 +554,7 @@ function HevyImportSheet({ close }) {
       wipeKey()
       const empty = !data.workouts.workouts.length && !data.routines.routines.length && !data.bodyweight.bodyweight.length
       if (empty) {
-        toast(t('Nothing to import from Hevy'))
+        toast(t("NOTHING_TO_IMPORT_FROM_HEVY" /* Hevy 没有可导入的内容 */))
         return
       }
       setWantWorkouts(!!data.workouts.workouts.length)
@@ -562,10 +562,10 @@ function HevyImportSheet({ close }) {
       setWantBody(!!data.bodyweight.bodyweight.length)
       setPayload(data)
     } catch (e) {
-      if (e instanceof HevyApiError && e.message === 'auth') toast(t('That Hevy API key was refused'))
-      else if (e instanceof HevyApiError && e.message === 'rate-limit') toast(t('Hevy is rate-limiting requests. Wait a minute and try again'))
-      else if (e instanceof HevyApiError && e.message === 'empty') toast(t('Paste your Hevy API key first'))
-      else toast(t('Couldn’t reach Hevy. Check the key and try again'))
+      if (e instanceof HevyApiError && e.message === 'auth') toast(t("THAT_HEVY_API_KEY_WAS_REFUSED" /* 该 Hevy API 密钥被拒绝 */))
+      else if (e instanceof HevyApiError && e.message === 'rate-limit') toast(t("HEVY_IS_RATE_LIMITING_REQUESTS_WAIT_A_MINUTE_AND_TRY_AGAIN" /* Hevy 正在限制请求频率。请等一分钟后重试 */))
+      else if (e instanceof HevyApiError && e.message === 'empty') toast(t("PASTE_YOUR_HEVY_API_KEY_FIRST" /* 请先粘贴 Hevy API 密钥 */))
+      else toast(t("COULDN_T_REACH_HEVY_CHECK_THE_KEY_AND_TRY_AGAIN" /* 无法连接 Hevy。请检查密钥后重试 */))
     } finally {
       setBusy(false)
       setProgress(null)
@@ -580,31 +580,31 @@ function HevyImportSheet({ close }) {
       if (wantWorkouts && payload.workouts.workouts.length) {
         const res = mergeImport(s, payload.workouts)
         addedW = res.added
-        parts.push(tn('{0} workout imported', '{0} workouts imported', res.added))
+        parts.push(tn("COUNT_WORKOUT_IMPORTED" /* 已导入 {0} 次训练 */, "COUNT_WORKOUTS_IMPORTED" /* 已导入 {0} 次训练 */, res.added))
       }
       if (wantRoutines && payload.routines.routines.length) {
         const res = mergeHevyRoutines(s, payload.routines)
         addedR = res.added
-        parts.push(tn('{0} routine imported', '{0} routines imported', res.added))
+        parts.push(tn("COUNT_ROUTINE_IMPORTED" /* 已导入 {0} 个训练计划 */, "COUNT_ROUTINES_IMPORTED" /* 已导入 {0} 个训练计划 */, res.added))
       }
       if (wantBody && payload.bodyweight.bodyweight.length) {
         const res = mergeImport(s, payload.bodyweight)
         addedB = res.added
-        parts.push(tn('{0} weigh-in imported', '{0} weigh-ins imported', res.added))
+        parts.push(tn("COUNT_WEIGH_IN_IMPORTED" /* 已导入 {0} 条称重记录 */, "COUNT_WEIGH_INS_IMPORTED" /* 已导入 {0} 条称重记录 */, res.added))
       }
     })
     close()
-    if (!addedW && !addedR && !addedB) toast(t('Nothing new to import'))
+    if (!addedW && !addedR && !addedB) toast(t("NOTHING_NEW_TO_IMPORT" /* 没有新内容可导入 */))
     else toast(parts.join(' · '))
   }
 
   if (!payload) {
     return <>
-      <h3>{t('Import from Hevy')}</h3>
+      <h3>{t("IMPORT_FROM_HEVY" /* 从 Hevy 导入 */)}</h3>
       <div className="muted small" style={{ marginBottom: 14, lineHeight: 1.5 }}>
-        {t('Pull your history with a Hevy Pro API key. The key is only used for this import and is not saved.')}
+        {t("PULL_YOUR_HISTORY_WITH_A_HEVY_PRO_API_KEY_THE_KEY_IS" /* 使用 Hevy Pro API 密钥拉取训练记录。密钥仅用于本次导入，不会保存。 */)}
       </div>
-      <label className="small dim" style={{ display: 'block', marginBottom: 6 }}>{t('Hevy API key')}</label>
+      <label className="small dim" style={{ display: 'block', marginBottom: 6 }}>{t("HEVY_API_KEY" /* Hevy API 密钥 */)}</label>
       <TextField
         ref={keyRef}
         type="password"
@@ -617,15 +617,15 @@ function HevyImportSheet({ close }) {
         onKeyDown={e => { if (e.key === 'Enter' && !busy) fetchAccount() }}
       />
       <div className="small" style={{ margin: '10px 0 16px', lineHeight: 1.45 }}>
-        <a href={HEVY_DEV_SETTINGS} target="_blank" rel="noopener noreferrer">{t('Get your API key')}</a>
-        <span className="dim"> · {t('Hevy → Settings → Developer')}</span>
+        <a href={HEVY_DEV_SETTINGS} target="_blank" rel="noopener noreferrer">{t("GET_YOUR_API_KEY" /* 获取 API 密钥 */)}</a>
+        <span className="dim"> · {t("HEVY_SETTINGS_DEVELOPER" /* Hevy → 设置 → Developer */)}</span>
       </div>
       {busy && <div className="small dim" style={{ marginBottom: 12 }}>{hevyProgressLabel(progress)}</div>}
       <Button variant="primary" onClick={fetchAccount} disabled={busy || !apiKey.trim()}>
-        {busy ? t('Fetching from Hevy…') : t('Fetch from Hevy')}
+        {busy ? t("FETCHING_FROM_HEVY" /* 正在从 Hevy 获取… */) : t("FETCH_FROM_HEVY" /* 从 Hevy 获取 */)}
       </Button>
       <div style={{ height: 8 }} />
-      <Button variant="ghost" className="dim" onClick={close} disabled={busy}>{t('Cancel')}</Button>
+      <Button variant="ghost" className="dim" onClick={close} disabled={busy}>{t("CANCEL" /* 取消 */)}</Button>
     </>
   }
 
@@ -645,50 +645,50 @@ function HevyImportSheet({ close }) {
   ])].sort()
 
   return <>
-    <h3>{t('Import from Hevy')}</h3>
+    <h3>{t("IMPORT_FROM_HEVY" /* 从 Hevy 导入 */)}</h3>
     <div className="muted small" style={{ marginBottom: 12 }}>
       {w.from && (w.from === w.to ? fmtDate(w.from, true) : fmtDate(w.from, true) + ' – ' + fmtDate(w.to, true))}
       {!w.from && b.from && (b.from === b.to ? fmtDate(b.from, true) : fmtDate(b.from, true) + ' – ' + fmtDate(b.to, true))}
     </div>
 
     <div className="tiles" style={{ textAlign: 'start' }}>
-      <div className="tile"><div className="l">{t('Workouts')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{w.workouts.length}</div></div>
-      <div className="tile"><div className="l">{t('Routines')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{r.routines.length}</div></div>
-      <div className="tile"><div className="l">{t('Exercises matched')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{w.matched + r.matched}</div></div>
-      <div className="tile"><div className="l">{t('Added as your own')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{w.created + r.created}</div></div>
+      <div className="tile"><div className="l">{t("WORKOUTS" /* 训练次数 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{w.workouts.length}</div></div>
+      <div className="tile"><div className="l">{t("ROUTINES" /* 训练计划 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{r.routines.length}</div></div>
+      <div className="tile"><div className="l">{t("EXERCISES_MATCHED" /* 已匹配动作 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{w.matched + r.matched}</div></div>
+      <div className="tile"><div className="l">{t("ADDED_AS_YOUR_OWN" /* 添加为自定义 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{w.created + r.created}</div></div>
     </div>
 
     {w.workouts.length > 0 && <div className="row between" style={{ padding: '10px 2px', borderTop: '1px solid var(--sep)', gap: 12 }}>
       <div>
-        <div className="tt" style={{ fontSize: 15 }}>{t('Import workouts')}</div>
-        <div className="small dim">{t('{0} new · {1} days already here', freshW, haveW)}</div>
+        <div className="tt" style={{ fontSize: 15 }}>{t("IMPORT_WORKOUTS" /* 导入训练 */)}</div>
+        <div className="small dim">{t("COUNT_NEW_COUNT_DAYS_ALREADY_HERE" /* {0} 条新记录 · {1} 天已有数据 */, freshW, haveW)}</div>
       </div>
       <Switch checked={wantWorkouts} onChange={setWantWorkouts} />
     </div>}
     {r.routines.length > 0 && <div className="row between" style={{ padding: '10px 2px', borderTop: '1px solid var(--sep)', gap: 12 }}>
       <div>
-        <div className="tt" style={{ fontSize: 15 }}>{t('Import routines')}</div>
-        <div className="small dim">{t('{0} routines · {1} exercises, added as new plans', freshR, r.exerciseCount)}</div>
+        <div className="tt" style={{ fontSize: 15 }}>{t("IMPORT_ROUTINES" /* 导入训练计划 */)}</div>
+        <div className="small dim">{t("COUNT_ROUTINES_COUNT_EXERCISES_ADDED_AS_NEW_PLANS" /* {0} 个计划 · {1} 个动作，作为新计划添加 */, freshR, r.exerciseCount)}</div>
       </div>
       <Switch checked={wantRoutines} onChange={setWantRoutines} />
     </div>}
     {b.bodyweight.length > 0 && <div className="row between" style={{ padding: '10px 2px', borderTop: '1px solid var(--sep)', borderBottom: '1px solid var(--sep)', gap: 12, marginBottom: 8 }}>
       <div>
-        <div className="tt" style={{ fontSize: 15 }}>{t('Import weigh-ins')}</div>
-        <div className="small dim">{t('{0} new · {1} days already here', freshB, haveB)}</div>
+        <div className="tt" style={{ fontSize: 15 }}>{t("IMPORT_WEIGH_INS" /* 导入体重 */)}</div>
+        <div className="small dim">{t("COUNT_NEW_COUNT_DAYS_ALREADY_HERE" /* {0} 条新记录 · {1} 天已有数据 */, freshB, haveB)}</div>
       </div>
       <Switch checked={wantBody} onChange={setWantBody} />
     </div>}
     {!b.bodyweight.length && <div style={{ borderBottom: '1px solid var(--sep)', marginBottom: 8 }} />}
 
     {(w.converted || r.converted) && <div className="small" style={{ color: 'var(--yellow)', marginBottom: 10 }}>
-      {t('Hevy stores weights in kg, so they’ll be converted to {0}.', st.unit)}
+      {t("HEVY_STORES_WEIGHTS_IN_KG_SO_THEY_LL_BE_CONVERTED_TO_COUNT" /* Hevy 以公斤存储重量，所以会换算为 {0}。 */, st.unit)}
     </div>}
     {wantWorkouts && (w.rirSets + w.rpeSets) > 0 && <div className="small dim" style={{ marginBottom: 10 }}>
       {effortLine(effortOf(st), w.rirSets || w.rpeSets, w.rirSets ? 'RIR' : 'RPE')}
     </div>}
     {unmatched.length > 0 && <>
-      <h4 className="sec">{t('Not in the library, so they’re added as your own exercises')}</h4>
+      <h4 className="sec">{t("NOT_IN_THE_LIBRARY_SO_THEY_RE_ADDED_AS_YOUR_OWN_EXERCISES" /* 不在动作库中，所以已添加为你的自定义动作 */)}</h4>
       <div className="mchips" style={{ marginBottom: 12 }}>
         {unmatched.slice(0, 12).map(n => <span key={n} className="mchip capitalize">{n}</span>)}
         {unmatched.length > 12 && <span className="mchip">+{unmatched.length - 12}</span>}
@@ -696,10 +696,10 @@ function HevyImportSheet({ close }) {
     </>}
 
     <Button variant="primary" onClick={doImport} disabled={!canImport}>
-      {canImport ? t('Import') : t('Nothing new to import')}
+      {canImport ? t("IMPORT" /* 导入 */) : t("NOTHING_NEW_TO_IMPORT" /* 没有新内容可导入 */)}
     </Button>
     <div style={{ height: 8 }} />
-    <Button variant="ghost" className="dim" onClick={() => { setPayload(null); wipeKey() }}>{t('Back')}</Button>
+    <Button variant="ghost" className="dim" onClick={() => { setPayload(null); wipeKey() }}>{t("BACK_A" /* 返回 */)}</Button>
   </>
 }
 
@@ -715,18 +715,18 @@ function GoalSheet({ close }) {
   const bw = lastBW(st)
   const [v, setV] = useState(st.targetW || (bw ? bw.w : 70))
   return <>
-    <h3>{t('Target weight')}</h3>
-    <div className="muted small">{t('Your goal is drawn as a line through the weight charts, and gains/losses are colored by whether they move toward it.')}</div>
+    <h3>{t("TARGET_WEIGHT" /* 目标体重 */)}</h3>
+    <div className="muted small">{t("YOUR_GOAL_IS_DRAWN_AS_A_LINE_THROUGH_THE_WEIGHT_CHARTS_AND" /* 目标会以一条线显示在体重图表中，增减会根据是否朝目标靠近来着色。 */)}</div>
     <WeightInput value={v} setValue={setV} unit={st.unit} />
     <div style={{ height: 14 }} />
     <Button variant="primary" onClick={() => {
       const n = Math.round((v || 0) * 10) / 10
-      if (!n || n <= 0) { toast(t('Enter a valid weight')); return }
+      if (!n || n <= 0) { toast(t("ENTER_A_VALID_WEIGHT" /* 请输入有效的重量 */)); return }
       if (bwTooHeavy(n, st.unit)) return
       update(s => { s.targetW = n }); close()
-      const b = lastBW(S()); toast(t('Goal set: {0}', fmtNum(n) + ' ' + st.unit) + (b ? ' (' + t('{0} to go', fmtNum(Math.abs(n - b.w))) + ')' : ''))
-    }}>{t('Save goal')}</Button>
-    {st.targetW && <><div style={{ height: 8 }} /><Button variant="danger" onClick={() => { update(s => { s.targetW = null }); close(); toast(t('Goal removed')) }}>{t('Remove goal')}</Button></>}
+      const b = lastBW(S()); toast(t("GOAL_SET_COUNT" /* 目标已设置：{0} */, fmtNum(n) + ' ' + st.unit) + (b ? ' (' + t("COUNT_TO_GO" /* 还差 {0} */, fmtNum(Math.abs(n - b.w))) + ')' : ''))
+    }}>{t("SAVE_GOAL" /* 保存目标 */)}</Button>
+    {st.targetW && <><div style={{ height: 8 }} /><Button variant="danger" onClick={() => { update(s => { s.targetW = null }); close(); toast(t("GOAL_REMOVED" /* 目标已移除 */)) }}>{t("REMOVE_GOAL" /* 移除目标 */)}</Button></>}
   </>
 }
 export const goalSheet = () => ui().openSheet(close => <GoalSheet close={close} />)
@@ -785,25 +785,25 @@ function BarWeightEditor({ ex, cfg, extra }) {
   })
   return <>
     <Segmented className="seg-inline" value={kind} onChange={setKind}
-      options={[{ value: 'pairs', label: t('Per side') }, { value: 'single', label: t('Single stack') }, { value: 'none', label: t('Off') }]} />
+      options={[{ value: 'pairs', label: t("PER_SIDE" /* 每侧 */) }, { value: 'single', label: t("SINGLE_STACK" /* 单堆 */) }, { value: 'none', label: t("OFF" /* 关 */) }]} />
     <div className="small dim" style={{ margin: '8px 0 12px' }}>
-      {kind === 'pairs' ? t('Plates split over both sides of a bar.')
-        : kind === 'single' ? t('One stack: a belt, a landmine, a plate-loaded machine, a sled.')
-          : t('No plate line under the sets.')}
+      {kind === 'pairs' ? t("PLATES_SPLIT_OVER_BOTH_SIDES_OF_A_BAR" /* 杠铃片分装在杆的两侧。 */)
+        : kind === 'single' ? t("ONE_STACK_A_BELT_A_LANDMINE_A_PLATE_LOADED_MACHINE_A_SLED" /* 单堆：腰带、地雷杆、挂片式器械、雪橇。 */)
+          : t("NO_PLATE_LINE_UNDER_THE_SETS" /* 组数下方不显示杠铃片提示行。 */)}
     </div>
     {kind !== 'none' && <>
       {bar && <div className="list menu-list" style={{ marginBottom: 6 }}>
-        <Row icon="barbell" title={t('No bar')} subtitle={t('The weight you log is all plates.')}>
+        <Row icon="barbell" title={t("NO_BAR" /* 无杠铃杆 */)} subtitle={t("THE_WEIGHT_YOU_LOG_IS_ALL_PLATES" /* 你记录的重量全部是杠铃片。 */)}>
           <Switch checked={noBar} onChange={setNoBar} />
         </Row>
       </div>}
       {!noBar && <div className="row cfgrow" style={{ marginBottom: 6 }}>
-        <Stepper label={bar ? t('Bar ({0})', st.unit) : t('Base weight ({0})', st.unit)} value={base} step={2.5} onChange={setBar} />
+        <Stepper label={bar ? t("BAR_COUNT" /* 杆 ({0}) */, st.unit) : t("BASE_WEIGHT_COUNT" /* 基础重量 ({0}) */, st.unit)} value={base} step={2.5} onChange={setBar} />
       </div>}
       <div className="small dim" style={{ marginBottom: 18 }}>
-        {noBar ? t('Plates are counted from 0. Turn this off for the default ({0}).', fmtNum(def) + ' ' + st.unit)
-          : bar ? (explicit ? t('Set to 0 to go back to the default ({0}).', fmtNum(def) + ' ' + st.unit) : t('Default for this bar type.'))
-            : t('The machine or sled itself, before any plate goes on. 0 if it is all plates.')}
+        {noBar ? t("PLATES_ARE_COUNTED_FROM_ZERO_TURN_THIS_OFF_FOR_THE_DEFAULT_COUNT" /* 杠铃片从 0 开始计算。关闭则使用默认值（{0}）。 */, fmtNum(def) + ' ' + st.unit)
+          : bar ? (explicit ? t("SET_TO_ZERO_TO_GO_BACK_TO_THE_DEFAULT_COUNT" /* 设为 0 即恢复默认值（{0}）。 */, fmtNum(def) + ' ' + st.unit) : t("DEFAULT_FOR_THIS_BAR_TYPE" /* 此类杠铃杆的默认值。 */))
+            : t("THE_MACHINE_OR_SLED_ITSELF_BEFORE_ANY_PLATE_GOES_ON_ZERO_IF" /* 机器或雪橇本身的重量，装上任何杠铃片之前。如果全是杠铃片，就填 0。 */)}
         {extra ? ' ' + extra : ''}
       </div>
     </>}
@@ -818,11 +818,11 @@ function DbLoadPicker({ ex, cfg, value, onChange }) {
   const one = isOneArm({ ...(cfg || {}), id: ex.id })
   return <>
     <Segmented className="seg-inline" value={value} onChange={onChange}
-      options={[{ value: 'as', label: t('As entered') }, { value: 'each', label: t('Each') }, { value: 'total', label: t('Both') }]} />
+      options={[{ value: 'as', label: t("AS_ENTERED" /* 按输入 */) }, { value: 'each', label: t("EACH" /* 每只 */) }, { value: 'total', label: t("BOTH" /* 合计 */) }]} />
     <div className="small dim" style={{ margin: '8px 0 18px' }}>
-      {value === 'each' ? (one ? t('The weight of the one you hold. One arm, so it counts once.') : t('The weight of one, so 20 means 20 in each hand. Volume counts both.'))
-        : value === 'total' ? t('Both together, so 40 means two 20s.')
-          : t('Counted as you type it, the way it always was.')}
+      {value === 'each' ? (one ? t("THE_WEIGHT_OF_THE_ONE_YOU_HOLD_ONE_ARM_SO_IT_COUNTS" /* 你手里那一只的重量。单臂，所以只算一次。 */) : t("THE_WEIGHT_OF_ONE_SO_TWOZERO_MEANS_TWOZERO_IN_EACH_HAND_VOLUME" /* 一只的重量，20 就是每只手 20。容量会算两只。 */))
+        : value === 'total' ? t("BOTH_TOGETHER_SO_FOURZERO_MEANS_TWO_TWOZEROS" /* 两只加起来，40 就是两只 20。 */)
+          : t("COUNTED_AS_YOU_TYPE_IT_THE_WAY_IT_ALWAYS_WAS" /* 按你输入的算，一直都是这样。 */)}
     </div>
   </>
 }
@@ -831,10 +831,10 @@ function DbLoadPicker({ ex, cfg, value, onChange }) {
 function BarWeightSheet({ exId, cfg, close }) {
   const ex = exOr(exId)
   return <>
-    <h3>{t('Plate loading')}</h3>
+    <h3>{t("PLATE_LOADING" /* 配重 */)}</h3>
     <div className={`muted small ${exerciseNameClass(ex)}`} style={{ marginBottom: 12 }}>{exerciseNameFor(ex)}</div>
-    <BarWeightEditor ex={ex} cfg={cfg} extra={t('Applies to this exercise everywhere, not just this plan.')} />
-    <Button variant="primary" onClick={close}>{t('Done')}</Button>
+    <BarWeightEditor ex={ex} cfg={cfg} extra={t("APPLIES_TO_THIS_EXERCISE_EVERYWHERE_NOT_JUST_THIS_PLAN" /* 对这个动作处处生效，不只在此计划中。 */)} />
+    <Button variant="primary" onClick={close}>{t("DONE" /* 完成 */)}</Button>
   </>
 }
 export const barWeightSheet = (exId, cfg) => ui().openSheet(close => <BarWeightSheet exId={exId} cfg={cfg} close={close} />)
@@ -850,20 +850,20 @@ function PlateInventorySheet({ close }) {
   const setPairs = (w, n) => update(s => { s.plates = withPlatePairs(s, w, n) })
   const reset = () => update(s => { s.plates = withStandardPlates(s) })
   return <>
-    <h3>{t('Plates')}</h3>
+    <h3>{t("PLATES" /* 杠铃片 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
-      {t('Pairs of each size you own. Every set row loads from this list, so a home gym with one pair of 45s is never told to use two.')}
+      {t("PAIRS_OF_EACH_SIZE_YOU_OWN_EVERY_SET_ROW_LOADS_FROM_THIS" /* 你拥有的每种重量的对数。每一行组数都从这份清单里取用，所以只有一对 45 的家庭健身房永远不会被要求用两片。 */)}
     </div>
     {PLATE_SIZES[unit].map(w => (
       <div className="row cfgrow" key={w} style={{ marginBottom: 6 }}>
-        <Stepper label={fmtPlate(w) + ' ' + unit} value={pairsOf(st, w)} step={1} decimal={false} unit={t('pairs')} onChange={n => setPairs(w, n)} />
+        <Stepper label={fmtPlate(w) + ' ' + unit} value={pairsOf(st, w)} step={1} decimal={false} unit={t("PAIRS" /* 对 */)} onChange={n => setPairs(w, n)} />
       </div>
     ))}
     <div className="small dim" style={{ margin: '4px 0 14px' }}>
-      {own ? t('Your own list for {0}.', unit) : t('The standard set, plenty of each. Change any count to make it yours.')}
+      {own ? t("YOUR_OWN_LIST_FOR_COUNT" /* 你自己的 {0} 清单。 */, unit) : t("THE_STANDARD_SET_PLENTY_OF_EACH_CHANGE_ANY_COUNT_TO_MAKE_IT" /* 标准配置，每种都很充足。改改数量，让它变成你自己的。 */)}
     </div>
-    {own && <Button onClick={reset} style={{ marginBottom: 8 }}>{t('Back to the standard set')}</Button>}
-    <Button variant="primary" onClick={close}>{t('Done')}</Button>
+    {own && <Button onClick={reset} style={{ marginBottom: 8 }}>{t("BACK_TO_THE_STANDARD_SET" /* 恢复为标准配置 */)}</Button>}
+    <Button variant="primary" onClick={close}>{t("DONE" /* 完成 */)}</Button>
   </>
 }
 export const plateInventorySheet = () => ui().openSheet(close => <PlateInventorySheet close={close} />)
@@ -882,31 +882,31 @@ function DumbbellInventorySheet({ close }) {
   const preset = presetWeights(unit)
   const add = () => {
     const w = cleanWeights([draft])[0]
-    if (!w) { toast(t('Enter a valid weight')); return }
+    if (!w) { toast(t("ENTER_A_VALID_WEIGHT" /* 请输入有效的重量 */)); return }
     save([...list, w])
     setDraft(null)
   }
   return <>
-    <h3>{t('Dumbbells')}</h3>
+    <h3>{t("DUMBBELLS" /* 哑铃 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
-      {t('The weights you own, one bell each. Progression, deloads, warm-ups and the + and − buttons of dumbbell lifts land only on these.')}
+      {t("THE_WEIGHTS_YOU_OWN_ONE_BELL_EACH_PROGRESSION_DELOADS_WARM_UPS_AND" /* 你拥有的重量，每个一只。哑铃动作的加重、减载、热身以及 + 和 − 按钮都只会落在这些重量上。 */)}
     </div>
     {list.length > 0
       ? <div className="chips" style={{ flexWrap: 'wrap', overflow: 'visible', touchAction: 'auto', marginBottom: 12 }}>
-        {list.map(w => <button key={w} className="chip on nocap" aria-label={t('Remove {0}', fmtPlate(w) + ' ' + unit)}
+        {list.map(w => <button key={w} className="chip on nocap" aria-label={t("REMOVE_COUNT_A" /* 移除 {0} */, fmtPlate(w) + ' ' + unit)}
           onClick={() => save(list.filter(x => x !== w))}>{fmtPlate(w)} <Icon name="xmark" /></button>)}
       </div>
-      : <div className="small dim" style={{ marginBottom: 12 }}>{t('No list yet, so dumbbell lifts step by their increment as usual.')}</div>}
+      : <div className="small dim" style={{ marginBottom: 12 }}>{t("NO_LIST_YET_SO_DUMBBELL_LIFTS_STEP_BY_THEIR_INCREMENT_AS_USUAL" /* 还没有列表，所以哑铃动作照常按增量递增。 */)}</div>}
     <div className="row" style={{ gap: 8, marginBottom: 12 }}>
       <NumberField className="input" decimal value={draft ?? ''} onChange={v => setDraft(v)}
-        aria-label={t('Weight ({0})', unit)} placeholder={t('Weight ({0})', unit)} onKeyDown={e => { if (e.key === 'Enter') add() }} />
-      <Button icon="plus" onClick={add} style={{ flex: '0 0 auto', width: 'auto' }}>{t('Add')}</Button>
+        aria-label={t("WEIGHT_COUNT" /* 重量（{0}） */, unit)} placeholder={t("WEIGHT_COUNT" /* 重量（{0}） */, unit)} onKeyDown={e => { if (e.key === 'Enter') add() }} />
+      <Button icon="plus" onClick={add} style={{ flex: '0 0 auto', width: 'auto' }}>{t("ADD" /* 添加 */)}</Button>
     </div>
     <Button onClick={() => save(preset)} style={{ marginBottom: 8 }}>
-      {t('Fill in {0} to {1} {2}, every {3}', fmtPlate(preset[0]), fmtPlate(preset.at(-1)), unit, fmtPlate(preset[1] - preset[0]))}
+      {t("FILL_IN_COUNT_TO_COUNT_COUNT_EVERY_COUNT" /* 填入 {0} 到 {1} {2}，每隔 {3} */, fmtPlate(preset[0]), fmtPlate(preset.at(-1)), unit, fmtPlate(preset[1] - preset[0]))}
     </Button>
-    {list.length > 0 && <Button variant="danger" onClick={() => save([])} style={{ marginBottom: 8 }}>{t('Clear the list')}</Button>}
-    <Button variant="primary" onClick={close}>{t('Done')}</Button>
+    {list.length > 0 && <Button variant="danger" onClick={() => save([])} style={{ marginBottom: 8 }}>{t("CLEAR_THE_LIST" /* 清空列表 */)}</Button>}
+    <Button variant="primary" onClick={close}>{t("DONE" /* 完成 */)}</Button>
   </>
 }
 export const dumbbellInventorySheet = () => ui().openSheet(close => <DumbbellInventorySheet close={close} />)
@@ -921,24 +921,24 @@ function OneRM({ ex }) {
   const [r, setR] = useState(best ? best.r : 5)
   const est = estimate1RM(w, r, formulaOf(st))
   return <>
-    <h4 className="sec">{t('Estimated 1RM')}</h4>
+    <h4 className="sec">{t("ESTIMATED_ONE_REP_MAX" /* 估算 1RM */)}</h4>
     {best && <div className="small" style={{ marginBottom: 8 }}>
-      {t('From your log:')} <b className="accent">{fmtNum(best.est)} {st.unit}</b>
-      <span className="dim"> · {t('{0} × {1} on {2}', fmtNum(best.w) + ' ' + st.unit, best.r, fmtDate(best.d, true))}</span>
+      {t("FROM_YOUR_LOG" /* 来自你的记录： */)} <b className="accent">{fmtNum(best.est)} {st.unit}</b>
+      <span className="dim"> · {t("COUNT_COUNT_ON_COUNT" /* 术语：{2}：{0} × {1} */, fmtNum(best.w) + ' ' + st.unit, best.r, fmtDate(best.d, true))}</span>
     </div>}
     <div className="row cfgrow" style={{ marginBottom: 10 }}>
-      <Stepper label={t('Weight ({0})', st.unit)} value={w} step={2.5} onChange={setW} />
-      <Stepper label={t('Reps')} value={r} step={1} decimal={false} onChange={setR} />
+      <Stepper label={t("WEIGHT_COUNT" /* 重量（{0}） */, st.unit)} value={w} step={2.5} onChange={setW} />
+      <Stepper label={t("REPS" /* 次数 */)} value={r} step={1} decimal={false} onChange={setR} />
     </div>
     <div className="row between" style={{ marginBottom: 4 }}>
-      <span className="muted small">{t('Estimate')}</span>
+      <span className="muted small">{t("ESTIMATE" /* 预估 */)}</span>
       <b className="accent" style={{ fontSize: 20 }}>{est === null ? '–' : fmtNum(est) + ' ' + st.unit}</b>
     </div>
     <div className="small dim">{est === null
-      ? t('Enter a weight and 1–{0} reps. Beyond that it’s basically guesswork.', REP_CAP)
+      ? t("ENTER_A_WEIGHT_AND_ONE_COUNT_REPS_BEYOND_THAT_IT_S_BASICALLY" /* 请输入重量和 1–{0} 次。再多就基本是瞎猜了。 */, REP_CAP)
       : formulaOf(st) === 'weighted'
-        ? t('A blend of seven formulas: calculated from one set, not a tested max.')
-        : t('{0} formula: calculated from one set, not a tested max.', FORMULA_NAMES[formulaOf(st)])}</div>
+        ? t("A_BLEND_OF_SEVEN_FORMULAS_CALCULATED_FROM_ONE_SET_NOT_A_TESTED" /* 七种公式的综合：由单组计算得出，并非实测最大值。 */)
+        : t("COUNT_FORMULA_CALCULATED_FROM_ONE_SET_NOT_A_TESTED_MAX" /* {0} 公式：由单组计算得出，并非实测最大值。 */, FORMULA_NAMES[formulaOf(st)])}</div>
   </>
 }
 
@@ -958,14 +958,14 @@ export function detailTags(ex) {
     out.push({ key: out.length, label, ...extra })
     return true
   }
-  add(t(ex.bp), { acc: true })
-  if (ex.bp === 'cardio') add(t(MUSCLE_NAME['cardiovascular system']), { icon: 'figureStrength' })
-  else for (const s of (ex.primaries?.length ? ex.primaries : (ex.tg ? [ex.tg] : [])).filter(trainedBy(ex))) add(t(MUSCLE_NAME[s] || s), { icon: 'figureStrength' })
-  add(t(ex.eq), { icon: 'kettlebell' })
+  add(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(ex.bp), { acc: true })
+  if (ex.bp === 'cardio') add(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME['cardiovascular system']), { icon: 'figureStrength' })
+  else for (const s of (ex.primaries?.length ? ex.primaries : (ex.tg ? [ex.tg] : [])).filter(trainedBy(ex))) add(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[s] || s), { icon: 'figureStrength' })
+  add(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(ex.eq), { icon: 'kettlebell' })
   let helpers = 0
   for (const s of (ex.secondaries?.length ? ex.secondaries : smOf(ex)).filter(trainedBy(ex))) {
     if (helpers >= 3) break
-    if (add(t(MUSCLE_NAME[s] || s))) helpers++
+    if (add(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[s] || s))) helpers++
   }
   return out
 }
@@ -979,13 +979,13 @@ function ExerciseDetail({ ex, close }) {
   const flipFav = () => {
     let on = false
     update(s => { on = toggleFav(s, ex.id) })
-    toast(on ? t('Added to favourites') : t('Removed from favourites'))
+    toast(on ? t("ADDED_TO_FAVOURITES" /* 已加入收藏 */) : t("REMOVED_FROM_FAVOURITES" /* 已取消收藏 */))
   }
   return <>
     <div className="row between" style={{ gap: 8, alignItems: 'flex-start' }}>
       <h3 className={'exdetail-name ' + exerciseNameClass(ex)}>{exerciseNameFor(ex)}</h3>
       <button className={'iconbtn fav-btn' + (fav ? ' on' : '')} aria-pressed={fav}
-        aria-label={fav ? t('Remove from favourites') : t('Add to favourites')} onClick={flipFav}>
+        aria-label={fav ? t("REMOVE_FROM_FAVOURITES" /* 取消收藏 */) : t("ADD_TO_FAVOURITES" /* 加入收藏 */)} onClick={flipFav}>
         <Icon name={fav ? 'starFill' : 'star'} />
       </button>
     </div>
@@ -994,21 +994,21 @@ function ExerciseDetail({ ex, close }) {
       {detailTags(ex).map(tg => <span key={tg.key} className={'tag' + (tg.acc ? ' acc' : '')}>{tg.icon && <Icon name={tg.icon} />}{tg.label}</span>)}
     </div>
     {descFor(ex) && <div className="exnote">{descFor(ex)}</div>}
-    {best > 0 && <div className="small row" style={{ marginBottom: 6, gap: 5 }}><Icon name="trophy" style={{ fontSize: 14, color: 'var(--yellow)' }} />{t('Best:')} <b className="accent" style={{ whiteSpace: 'nowrap' }}>{fmtNum(best)} {st.unit}</b>{last ? ` · ${t('last')} ${fmtDate(last.d)}: ${last.sets.map(s => setLabel(ex.id, s, last.target, speedUnitOf(st))).join(', ')}` : ''}</div>}
-    <Button variant="primary" icon="plus" style={{ margin: '10px 0 4px' }} onClick={() => addToRoutineSheet(ex)}>{t('Add to my plan')}</Button>
-    {last && <Button icon="history" style={{ marginTop: 4 }} onClick={() => exerciseHistorySheet(ex.id)}>{t('History')}</Button>}
+    {best > 0 && <div className="small row" style={{ marginBottom: 6, gap: 5 }}><Icon name="trophy" style={{ fontSize: 14, color: 'var(--yellow)' }} />{t("BEST" /* 最佳： */)} <b className="accent" style={{ whiteSpace: 'nowrap' }}>{fmtNum(best)} {st.unit}</b>{last ? ` · ${t("LAST" /* 上次 */)} ${fmtDate(last.d)}: ${last.sets.map(s => setLabel(ex.id, s, last.target, speedUnitOf(st))).join(', ')}` : ''}</div>}
+    <Button variant="primary" icon="plus" style={{ margin: '10px 0 4px' }} onClick={() => addToRoutineSheet(ex)}>{t("ADD_TO_MY_PLAN" /* 加入我的计划 */)}</Button>
+    {last && <Button icon="history" style={{ marginTop: 4 }} onClick={() => exerciseHistorySheet(ex.id)}>{t("HISTORY" /* 历史 */)}</Button>}
     {isCustomEx(ex) && <div className="row" style={{ gap: 8, marginTop: 8 }}>
-      <Button icon="pencil" style={{ flex: 1 }} onClick={() => { close(); customExSheet(ex) }}>{t('Edit')}</Button>
-      <Button variant="danger" icon="trash" style={{ flex: 1 }} onClick={() => deleteCustomEx(ex, close)}>{t('Delete')}</Button>
+      <Button icon="pencil" style={{ flex: 1 }} onClick={() => { close(); customExSheet(ex) }}>{t("EDIT" /* 编辑 */)}</Button>
+      <Button variant="danger" icon="trash" style={{ flex: 1 }} onClick={() => deleteCustomEx(ex, close)}>{t("DELETE" /* 删除 */)}</Button>
     </div>}
     {modeOf({ id: ex.id }) === 'reps' && <>
-      <h4 className="sec">{t('Plate loading')}</h4>
-      <BarWeightEditor ex={ex} extra={t('You still log the total weight. This only feeds the plate line under each set.')} />
+      <h4 className="sec">{t("PLATE_LOADING" /* 配重 */)}</h4>
+      <BarWeightEditor ex={ex} extra={t("YOU_STILL_LOG_THE_TOTAL_WEIGHT_THIS_ONLY_FEEDS_THE_PLATE_LINE" /* 你记录的仍是总重量。这只用于每组下方的杠铃片提示行。 */)} />
     </>}
     {/* The exercise's own default meaning of its weight (S.dbLoad), stamped like the loading
         above. A routine can still pick its own on the exercise's settings. */}
     {isBellEx(ex) && <>
-      <h4 className="sec">{t('Weight means')}</h4>
+      <h4 className="sec">{t("WEIGHT_MEANS" /* 重量表示 */)}</h4>
       <DbLoadPicker ex={ex} value={dbLoadFor(st, ex.id)}
         onChange={v => update(s => { s.dbLoad = withDbLoad(s.dbLoad, ex.id, v) })} />
     </>}
@@ -1016,12 +1016,12 @@ function ExerciseDetail({ ex, close }) {
         calculator would answer "your 1RM is 23 kg" about a number that gets smaller as you get
         stronger (issue #232). Cardio has none for the same kind of reason. */}
     {!isCardio(ex) && !isAssisted(ex) && <OneRM ex={ex} />}
-    {instrFor(ex).length > 0 &&<><h4 className="sec">{t('How to')}{getLang() !== 'en' && !instrTranslated(ex) && <span className="dim" style={{ textTransform: 'none', letterSpacing: 0 }}> · {t('instructions in English')}</span>}</h4><ol className="steps-list">{instrFor(ex).map((s, i) => <li key={i}>{s}</li>)}</ol></>}
+    {instrFor(ex).length > 0 &&<><h4 className="sec">{t("HOW_TO" /* 动作要领 */)}{getLang() !== 'en' && !instrTranslated(ex) && <span className="dim" style={{ textTransform: 'none', letterSpacing: 0 }}> · {t("INSTRUCTIONS_IN_ENGLISH" /* 说明为英文 */)}</span>}</h4><ol className="steps-list">{instrFor(ex).map((s, i) => <li key={i}>{s}</li>)}</ol></>}
     {/* The catalogue is community-edited (catalogue/README.md): a wrong muscle, a clumsy step or a
         missing translation is one tap from an issue that already names the exercise. */}
     {!isCustomEx(ex) && !ex.missing && <a className="small dim exfix-link" target="_blank" rel="noopener"
       href={'https://github.com/DuarteSantos8/openGym/issues/new?template=exercise.yml&exercise=' + encodeURIComponent(ex.id + ', ' + ex.n)}>
-      <Icon name="pencil" /> {t('Suggest a fix for this exercise')}</a>}
+      <Icon name="pencil" /> {t("SUGGEST_A_FIX_FOR_THIS_EXERCISE" /* 为此动作提出修改建议 */)}</a>}
   </>
 }
 export const exerciseDetailSheet = ex => ui().openSheet(close => <ExerciseDetail ex={ex} close={close} />)
@@ -1038,30 +1038,30 @@ function ExerciseHistory({ exId }) {
   const h = useMemo(() => exerciseHistory(st, exId), [st.workouts, exId])
   const [curve, setCurve] = useState('top')
   const onE1 = curve === 'e1rm' && h.e1rmPoints.length > 0
-  const unit = h.metric === 'weight' ? st.unit : h.metric === 'reps' ? t('reps') : h.metric === 'sec' ? 's' : t('min')
+  const unit = h.metric === 'weight' ? st.unit : h.metric === 'reps' ? t("REPS_A" /* 次 */) : h.metric === 'sec' ? 's' : t("MIN" /* 分钟 */)
   const e1Best = useMemo(() => Math.max(0, ...h.e1rmPoints.map(p => p.y)), [h])
   if (!h.total) return <>
     <h3 className={exerciseNameClass(ex)}>{exerciseNameFor(ex)}</h3>
-    <div className="empty"><div className="ico"><Icon name="history" /></div>{t('No sessions logged yet')}</div>
+    <div className="empty"><div className="ico"><Icon name="history" /></div>{t("NO_SESSIONS_LOGGED_YET" /* 尚未记录任何训练 */)}</div>
   </>
   const tail = s => [
-    s.volume > 0 && t('Volume') + ' ' + fmtVol(s.volume, st.unit),
-    s.e1rm != null && t('Est. 1RM') + ' ' + fmtNum(s.e1rm) + ' ' + st.unit,
+    s.volume > 0 && t("VOLUME" /* 训练量 */) + ' ' + fmtVol(s.volume, st.unit),
+    s.e1rm != null && t("EST_ONE_REP_MAX" /* 估算 1RM */) + ' ' + fmtNum(s.e1rm) + ' ' + st.unit,
   ].filter(Boolean).join(' · ')
   return <>
     <h3 className={exerciseNameClass(ex)} style={{ marginBottom: 2 }}>{exerciseNameFor(ex)}</h3>
-    <div className="muted small" style={{ marginBottom: 10 }}>{t('Exercise history')} · {tn('{0} session', '{0} sessions', h.total)}</div>
+    <div className="muted small" style={{ marginBottom: 10 }}>{t("EXERCISE_HISTORY" /* 动作历史 */)} · {tn("COUNT_SESSION" /* {0} 次训练 */, "COUNT_SESSIONS" /* {0} 次训练 */, h.total)}</div>
     {/* Only reps work with a load produces an estimate, so the toggle is absent for the rest. */}
     {h.e1rmPoints.length > 0 && h.metric === 'weight' && <Segmented className="seg-range" value={curve} onChange={setCurve}
-      options={[{ value: 'top', label: t('Top set') }, { value: 'e1rm', label: t('Est. 1RM') }]} />}
+      options={[{ value: 'top', label: t("TOP_SET" /* 最佳组 */) }, { value: 'e1rm', label: t("EST_ONE_REP_MAX" /* 估算 1RM */) }]} />}
     <div className="chart" style={{ marginTop: 8 }}>
       <LineChart points={onE1 ? h.e1rmPoints : h.points} h={140} unit={onE1 ? st.unit : unit} color="var(--blue)" />
     </div>
     <div className="small row" style={{ margin: '6px 0 4px', gap: 5 }}>
       <Icon name="trophy" style={{ fontSize: 14, color: 'var(--yellow)' }} />
-      {t('Best:')} <b className="accent">{fmtNum(onE1 ? e1Best : h.best)} {onE1 ? st.unit : unit}</b>
+      {t("BEST" /* 最佳： */)} <b className="accent">{fmtNum(onE1 ? e1Best : h.best)} {onE1 ? st.unit : unit}</b>
     </div>
-    <h4 className="sec">{h.sessions.length < h.total ? t('Last {0} sessions', h.sessions.length) : t('Sessions')}</h4>
+    <h4 className="sec">{h.sessions.length < h.total ? t("LAST_COUNT_SESSIONS" /* 最近 {0} 次训练 */, h.sessions.length) : t("SESSIONS" /* 训练次数 */)}</h4>
     <div className="list">
       {h.sessions.map(s => <div key={s.id} className="item" style={{ alignItems: 'flex-start' }}>
         <div className="grow">
@@ -1084,26 +1084,26 @@ function AddToRoutine({ ex, close }) {
     const isNew = rid === '_new'
     exConfigSheet(ex, null, cfg => {
       update(s => {
-        let r = isNew ? { id: uid(), name: t('New routine'), emoji: DEFAULT_GLYPH, ex: [] } : s.routines.find(x => x.id === rid)
+        let r = isNew ? { id: uid(), name: t("NEW_ROUTINE" /* 新建训练计划 */), emoji: DEFAULT_GLYPH, ex: [] } : s.routines.find(x => x.id === rid)
         if (isNew) s.routines.push(r)
         if (r) r.ex.push({ id: ex.id, ...cfg })
       })
       const r = isNew ? S().routines[S().routines.length - 1] : st.routines.find(x => x.id === rid)
-      toast(t('“{0}” added to {1}', exerciseNameText(ex), r ? r.name : t('routine')))
+      toast(t("COUNT_ADDED_TO_COUNT" /* “{0}”已加入 {1} */, exerciseNameText(ex), r ? r.name : t("ROUTINE_A" /* 训练计划 */)))
       if (isNew && r) nav('/plan/r/' + r.id)
     }, null, isNew ? null : st.routines.find(x => x.id === rid))
   }
   return <>
-    <h3 className={exerciseNameClass(ex)}>{t('Add “{0}”', exerciseNameFor(ex))}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t('Pick a routine. Sets, reps and weight come next.')}</div>
+    <h3 className={exerciseNameClass(ex)}>{t("ADD_COUNT" /* 添加“{0}” */, exerciseNameFor(ex))}</h3>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t("PICK_A_ROUTINE_SETS_REPS_AND_WEIGHT_COME_NEXT" /* 选一个训练计划。组数、次数和重量接下来再设。 */)}</div>
     <div className="list">
       {st.routines.map(r => <div key={r.id} className="item" {...tappable(() => pick(r.id))}>
         <span className="lrow-i"><Icon name={glyphOf(r.emoji)} /></span>
         <div className="grow"><div className="tt">{r.name}</div><div className="ss">{exCount(r.ex.length)}</div></div>
-        {r.ex.some(e => e.id === ex.id) && <span className="tag">{t('already in')}</span>}<Icon name="plus" className="chev" />
+        {r.ex.some(e => e.id === ex.id) && <span className="tag">{t("ALREADY_IN" /* 已包含 */)}</span>}<Icon name="plus" className="chev" />
       </div>)}
       <div className="item" {...tappable(() => pick('_new'))}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="plusCircle" /></span>
-        <div className="grow"><div className="tt">{t('New routine')}</div><div className="ss">{t('Create one and start with this exercise')}</div></div><Icon name="plus" className="chev" /></div>
+        <div className="grow"><div className="tt">{t("NEW_ROUTINE" /* 新建训练计划 */)}</div><div className="ss">{t("CREATE_ONE_AND_START_WITH_THIS_EXERCISE" /* 新建一个并从这个动作开始 */)}</div></div><Icon name="plus" className="chev" /></div>
     </div>
   </>
 }
@@ -1156,18 +1156,18 @@ function CustomExForm({ existing, prefill, onDone, close }) {
   const toggleSecondary = value => setSecondaries(current => current.includes(value) ? current.filter(m => m !== value) : [...current, value])
   const save = () => {
     const name = n.trim()
-    if (!name) { toast(t('Give it a name')); return }
-    if (!bp) { toast(t('Pick a body part')); return }
-    if (!eq) { toast(t('Pick equipment')); return }
+    if (!name) { toast(t("GIVE_IT_A_NAME" /* 请输入名称 */)); return }
+    if (!bp) { toast(t("PICK_A_BODY_PART" /* 请选择身体部位 */)); return }
+    if (!eq) { toast(t("PICK_EQUIPMENT" /* 选择器械 */)); return }
     // An exercise kept under its own name is not a duplicate, even when the catalogue has one
     // spelled the same (an imported "trap bar deadlift"): only a new or changed name is checked.
     const renamed = !existing || name.toLowerCase() !== String(existing.n || '').trim().toLowerCase()
     const dup = renamed && allExercises(S()).find(e => e.n.toLowerCase() === name.toLowerCase() && e.id !== (existing || {}).id)
-    if (dup) { toast(t('“{0}” already exists', dup.n)); return }
+    if (dup) { toast(t("COUNT_ALREADY_EXISTS" /* 「{0}」已存在 */, dup.n)); return }
     const d = desc.trim().slice(0, 1000)
     // An empty field removes the link; anything else has to be a web address.
     const link = url.trim() ? cleanUrl(url) : null
-    if (url.trim() && !link) { toast(t('That link is not a web address')); return }
+    if (url.trim() && !link) { toast(t("THAT_LINK_IS_NOT_A_WEB_ADDRESS" /* 这不是一个网址 */)); return }
     const keepMedia = !!existing && !mediaTouched
     const ref = keepMedia ? null : normalizeMediaRef(media)
     // Stored in the map's order, not the order the chips were tapped in — the tags on the exercise
@@ -1199,50 +1199,50 @@ function CustomExForm({ existing, prefill, onDone, close }) {
     // that sees the reference first shows a tile until it arrives.
     if (ref) syncMedia({ force: true })
     close()
-    toast(existing ? t('Saved') : t('“{0}” created', name))
+    toast(existing ? t("SAVED" /* 已保存 */) : t("COUNT_CREATED" /* 「{0}」已创建 */, name))
     onDone && onDone(EXIDX[id])
   }
   return <>
-    <h3>{existing ? t('Edit custom exercise') : t('Create your own exercise')}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t('Name it and pick a body part. It works just like any other exercise.')}</div>
-    <input ref={nameRef} className="input" placeholder={t('Exercise name')} maxLength={80} value={n} onFocus={onNameFocus} onChange={e => setN(e.target.value)} />
+    <h3>{existing ? t("EDIT_CUSTOM_EXERCISE" /* 编辑自定义动作 */) : t("CREATE_YOUR_OWN_EXERCISE" /* 创建自己的动作 */)}</h3>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t("NAME_IT_AND_PICK_A_BODY_PART_IT_WORKS_JUST_LIKE_ANY" /* 起个名字，选个身体部位。用起来和其他动作一模一样。 */)}</div>
+    <input ref={nameRef} className="input" placeholder={t("EXERCISE_NAME" /* 动作名称 */)} maxLength={80} value={n} onFocus={onNameFocus} onChange={e => setN(e.target.value)} />
     <div className="chips" style={{ margin: '12px 0' }}>
-      {BODYPARTS.map(b => <button key={b} className={'chip' + (bp === b ? ' on' : '')} onClick={() => setBp(b)}>{t(b)}</button>)}
+      {BODYPARTS.map(b => <button key={b} className={'chip' + (bp === b ? ' on' : '')} onClick={() => setBp(b)}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(b)}</button>)}
     </div>
     <div className="chips" style={{ margin: '12px 0' }}>
-      {ALL_EQUIPMENT.map(k => (<button key={k} className={'chip' + (eq === k ? ' on' : '')} onClick={() => setEq(k)}>{t(k)}</button>))}
+      {ALL_EQUIPMENT.map(k => (<button key={k} className={'chip' + (eq === k ? ' on' : '')} onClick={() => setEq(k)}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(k)}</button>))}
       {/* An imported exercise can carry equipment the list does not have (`custom` from a CSV or
           Hevy import). It stays a chip of its own, picked, so Save does not stop on "Pick equipment". */}
-      {storedEq && <button key={storedEq} className={'chip' + (eq === storedEq ? ' on' : '')} onClick={() => setEq(storedEq)}>{t(storedEq)}</button>}
+      {storedEq && <button key={storedEq} className={'chip' + (eq === storedEq ? ' on' : '')} onClick={() => setEq(storedEq)}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(storedEq)}</button>}
     </div>
     {bp && <>
-      {bp !== 'cardio' && <MultiSelectRow title={t('Primary muscle groups')} sheetTitle={t('Primary muscle groups')}
+      {bp !== 'cardio' && <MultiSelectRow title={t("PRIMARY_MUSCLE_GROUPS" /* 主要肌群 */)} sheetTitle={t("PRIMARY_MUSCLE_GROUPS" /* 主要肌群 */)}
         values={primaries}
-        options={MUSCLES.map(m => ({ value: m, label: t(MUSCLE_NAME[m]) }))}
-        onToggle={togglePrimary} noneLabel={t('No explicit muscle group')} doneLabel={t('Done')} />
+        options={MUSCLES.map(m => ({ value: m, label: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[m]) }))}
+        onToggle={togglePrimary} noneLabel={t("NO_EXPLICIT_MUSCLE_GROUP" /* 无明确肌群 */)} doneLabel={t("DONE" /* 完成 */)} />
       }
-      <MultiSelectRow title={t('Additional muscle groups')} sheetTitle={t('Additional muscle groups')}
+      <MultiSelectRow title={t("ADDITIONAL_MUSCLE_GROUPS" /* 其他肌群 */)} sheetTitle={t("ADDITIONAL_MUSCLE_GROUPS" /* 其他肌群 */)}
         values={secondaries}
-        options={MUSCLES.filter(m => !primaries.includes(m)).map(m => ({ value: m, label: t(MUSCLE_NAME[m]) }))}
-        onToggle={toggleSecondary} noneLabel={t('No explicit muscle group')} doneLabel={t('Done')} />
+        options={MUSCLES.filter(m => !primaries.includes(m)).map(m => ({ value: m, label: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[m]) }))}
+        onToggle={toggleSecondary} noneLabel={t("NO_EXPLICIT_MUSCLE_GROUP" /* 无明确肌群 */)} doneLabel={t("DONE" /* 完成 */)} />
     </>}
-    {bp === 'cardio' && <div className="small dim row" style={{ marginBottom: 10, gap: 5 }}><Icon name="figureRun" style={{ fontSize: 13 }} />{t('Cardio exercises log time + speed instead of weight × reps.')}</div>}
-    <textarea className="input" rows={4} maxLength={1000} placeholder={t('Description (optional): setup, cues, anything you want to remember')}
+    {bp === 'cardio' && <div className="small dim row" style={{ marginBottom: 10, gap: 5 }}><Icon name="figureRun" style={{ fontSize: 13 }} />{t("CARDIO_EXERCISES_LOG_TIME_SPEED_INSTEAD_OF_WEIGHT_REPS" /* 有氧动作记录时间 + 速度，而不是重量 × 次数。 */)}</div>}
+    <textarea className="input" rows={4} maxLength={1000} placeholder={t("DESCRIPTION_OPTIONAL_SETUP_CUES_ANYTHING_YOU_WANT_TO_REMEMBER" /* 描述（可选）：设置、要点，任何你想记住的内容 */)}
       value={desc} onChange={e => setDesc(e.target.value)} />
     <CustomMediaField media={media} url={url} onChange={onMedia} />
     <div style={{ height: 14 }} />
-    <Button variant="primary" onClick={save}>{existing ? t('Save') : t('Create exercise')}</Button>
-    {existing && <><div style={{ height: 8 }} /><Button variant="danger" icon="trash" onClick={() => { close(); deleteCustomEx(existing) }}>{t('Delete exercise')}</Button></>}
+    <Button variant="primary" onClick={save}>{existing ? t("SAVE" /* 保存 */) : t("CREATE_EXERCISE" /* 创建动作 */)}</Button>
+    {existing && <><div style={{ height: 8 }} /><Button variant="danger" icon="trash" onClick={() => { close(); deleteCustomEx(existing) }}>{t("DELETE_EXERCISE" /* 删除动作 */)}</Button></>}
   </>
 }
 export const customExSheet = (existing, onDone, prefill) => ui().openSheet(close => <CustomExForm existing={existing} prefill={prefill} onDone={onDone} close={close} />)
 
 export function deleteCustomEx(ex, afterDelete) {
-  if (S().active?.entries.some(e => e.id === ex.id)) { toast(t('Finish your current workout first')); return }
+  if (S().active?.entries.some(e => e.id === ex.id)) { toast(t("FINISH_YOUR_CURRENT_WORKOUT_FIRST" /* 请先完成当前训练 */)); return }
   confirmSheet({
-    title: t('Delete “{0}”?', ex.n),
-    message: t('It will be removed from your routines. Already-logged workouts keep their sets.'),
-    confirmText: t('Delete'), danger: true,
+    title: t("DELETE_COUNT" /* 删除「{0}」？ */, ex.n),
+    message: t("IT_WILL_BE_REMOVED_FROM_YOUR_ROUTINES_ALREADY_LOGGED_WORKOUTS_KEEP_THEIR" /* 将从你的计划中移除。已记录的训练会保留其组数。 */),
+    confirmText: t("DELETE" /* 删除 */), danger: true,
     onConfirm: () => {
       update(s => {
         // Keep display and muscle metadata in history before the custom catalogue row disappears.
@@ -1257,7 +1257,7 @@ export function deleteCustomEx(ex, afterDelete) {
         delete s.exWeights[ex.id]
         s.favEx = (s.favEx || []).filter(id => id !== ex.id)
       })
-      toast(t('Exercise deleted'))
+      toast(t("EXERCISE_DELETED" /* 动作已删除 */))
       afterDelete && afterDelete()
     }
   })
@@ -1331,7 +1331,7 @@ function ExercisePicker({ onPick, title, close, like }) {
     ? similarExercises((profile && !showAll ? all.filter(e => exAvailable(st, e)) : all).filter(e => bp === SAME || !bp || e.bp === bp), q, f, f.length ? 12 : 30)
     : []
   const pickRow = e => <div key={e.id} className="item" {...tappable(() => onPick(e))}>
-        <Thumb ex={e} /><div className="grow"><div className={`tt ${exerciseNameClass(e)}`}>{isFav(st, e.id) && <Icon name="starFill" className="fav-star" />}{exerciseNameFor(e)}</div><div className="ss capitalize">{t(MUSCLE_NAME[e.tg] || e.tg || e.bp)} · {t(e.eq)}</div></div>
+        <Thumb ex={e} /><div className="grow"><div className={`tt ${exerciseNameClass(e)}`}>{isFav(st, e.id) && <Icon name="starFill" className="fav-star" />}{exerciseNameFor(e)}</div><div className="ss capitalize">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[e.tg] || e.tg || e.bp)} · {translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(e.eq)}</div></div>
         {/* Accent tag = already in a routine/log ("Chosen"); the yellow star by the name = favourite. */}
         {usage[e.id] && <span className="tag acc"><Icon name="starFill" /></span>}
         {/* A "+" glyph reads as "add this now" — it used to just open the same detail sheet as
@@ -1339,32 +1339,32 @@ function ExercisePicker({ onPick, title, close, like }) {
             and found the real button. Now it does what it looks like: adds with the default
             config right away. Tapping the row itself still opens the detail/config sheet, for
             when you want to set sets/reps before adding. */}
-        <button className="iconbtn chev" aria-label={t('Add “{0}”', exerciseNameFor(e))} style={{ padding: 8, margin: -8 }}
+        <button className="iconbtn chev" aria-label={t("ADD_COUNT" /* 添加“{0}” */, exerciseNameFor(e))} style={{ padding: 8, margin: -8 }}
           onClick={ev => { ev.stopPropagation(); onPick(e, true) }}><Icon name="plus" /></button>
       </div>
   if (byMuscle) return <>
-    <div className="row between" style={{ marginBottom: 10 }}><h3>{title || t('Add exercise')}</h3>
-      <Button size="sm" variant="ghost" onClick={() => setByMuscle(false)}>{t('All')}</Button>
+    <div className="row between" style={{ marginBottom: 10 }}><h3>{title || t("ADD_EXERCISE" /* 添加动作 */)}</h3>
+      <Button size="sm" variant="ghost" onClick={() => setByMuscle(false)}>{t("ALL" /* 全部 */)}</Button>
     </div>
     <MuscleExplorer onPick={onPick} />
   </>
 
   return <>
-    <div className="row between" style={{ marginBottom: 10 }}><h3>{title || t('Add exercise')}</h3>
-      <Button size="sm" variant="tinted" icon="figureStrength" onClick={() => setByMuscle(true)}>{t('By muscle')}</Button>
+    <div className="row between" style={{ marginBottom: 10 }}><h3>{title || t("ADD_EXERCISE" /* 添加动作 */)}</h3>
+      <Button size="sm" variant="tinted" icon="figureStrength" onClick={() => setByMuscle(true)}>{t("BY_MUSCLE" /* 按肌肉 */)}</Button>
     </div>
     {/* .picker-search is what index.css keys the keyboard-aware sheet layout on: the sheet
         lifts above the keys and the search stays put while the list scrolls under it. */}
     <div className="picker-search"><div className="search-row"><div className={'search' + (narrowed ? ' has-count' : '') + (q ? ' has-clear' : '')}><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
-      <input ref={searchRef} className="input" placeholder={t('Search {0} exercises…', all.length)} value={q} onFocus={onSearchFocus} onChange={e => { setQ(e.target.value); setShown(50) }} />
+      <input ref={searchRef} className="input" placeholder={t("SEARCH_COUNT_EXERCISES" /* 搜索 {0} 个动作… */, all.length)} value={q} onFocus={onSearchFocus} onChange={e => { setQ(e.target.value); setShown(50) }} />
       {narrowed && <span className="search-count" role="status" aria-label={exCount(f.length)}>{fmtNum(f.length)}</span>}
-      {q && <button className="clear" onClick={() => { setQ(''); setShown(50) }} aria-label={t('Clear')}><Icon name="xmark" /></button>}</div>
+      {q && <button className="clear" onClick={() => { setQ(''); setShown(50) }} aria-label={t("CLEAR" /* 清除 */)}><Icon name="xmark" /></button>}</div>
       <ExerciseViewToggle /></div></div>
     {profile && <div className="small dim row" style={{ margin: '8px 0 2px', gap: 6, alignItems: 'center' }}>
       <Icon name="kettlebell" style={{ fontSize: 13 }} />
-      {showAll ? t('Showing all equipment') : t('Showing what you have in "{0}"', profile.name)}
+      {showAll ? t("SHOWING_ALL_EQUIPMENT" /* 正在显示全部器械 */) : t("SHOWING_WHAT_YOU_HAVE_IN_COUNT" /* 正在显示你在“{0}”拥有的器械 */, profile.name)}
       <button className="chip nocap" style={{ marginInlineStart: 'auto', padding: '3px 10px', fontSize: 12 }} onClick={() => setShowAll(v => !v)}>
-        {showAll ? t('Filter by "{0}"', profile.name) : t('Show all equipment')}
+        {showAll ? t("FILTER_BY_COUNT" /* 按“{0}”筛选 */, profile.name) : t("SHOW_ALL_EQUIPMENT" /* 显示全部器械 */)}
       </button>
     </div>}
     {/* Changing muscle group keeps the equipment filter: if it still has exercises under the new
@@ -1372,32 +1372,32 @@ function ExercisePicker({ onPick, title, close, like }) {
         without forgetting the choice (issue #71). The favourites/chosen chips still clear it —
         those are cross-body-part views where a stale equipment filter would be confusing. */}
     <div className="chips" ref={bpStrip} style={{ margin: eqOpts.length > 1 || catOpts.length > 1 ? '10px 0 6px' : '10px 0' }}>
-      {likeTg && <button className={'chip nocap' + (bp === SAME ? ' on' : '')} onClick={() => { setBp(SAME); setShown(50) }}><Icon name="figureStrength" style={{ fontSize: 12, display: 'inline-block', marginInlineEnd: 4, verticalAlign: '-1px' }} />{t('Same muscle: {0}', t(MUSCLE_NAME[likeTg] || likeTg))}</button>}
-      {favCount > 0 && <button className={'chip' + (bp === '☆' ? ' on' : '')} onClick={() => { setBp('☆'); setEq(''); setShown(50) }}><Icon name="starFill" className="fav-star" />{t('Favourites')} ({favCount})</button>}
-      {chosenCount > 0 && <button className={'chip' + (bp === '★' ? ' on' : '')} onClick={() => { setBp('★'); setEq(''); setShown(50) }}><Icon name="starFill" style={{ fontSize: 12, display: 'inline-block', marginInlineEnd: 4, verticalAlign: '-1px' }} />{t('Chosen')} ({chosenCount})</button>}
-      <button className={'chip nocap' + (!bp ? ' on' : '')} onClick={() => { setBp(''); setShown(50) }}>{t('All')}</button>
-      {BODYPARTS.map(b => <button key={b} className={'chip' + (bp === b ? ' on' : '')} onClick={() => { setBp(b); setShown(50) }}>{t(b)}</button>)}
+      {likeTg && <button className={'chip nocap' + (bp === SAME ? ' on' : '')} onClick={() => { setBp(SAME); setShown(50) }}><Icon name="figureStrength" style={{ fontSize: 12, display: 'inline-block', marginInlineEnd: 4, verticalAlign: '-1px' }} />{t("SAME_MUSCLE_COUNT" /* 同一肌群：{0} */, translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[likeTg] || likeTg))}</button>}
+      {favCount > 0 && <button className={'chip' + (bp === '☆' ? ' on' : '')} onClick={() => { setBp('☆'); setEq(''); setShown(50) }}><Icon name="starFill" className="fav-star" />{t("FAVOURITES" /* 收藏 */)} ({favCount})</button>}
+      {chosenCount > 0 && <button className={'chip' + (bp === '★' ? ' on' : '')} onClick={() => { setBp('★'); setEq(''); setShown(50) }}><Icon name="starFill" style={{ fontSize: 12, display: 'inline-block', marginInlineEnd: 4, verticalAlign: '-1px' }} />{t("CHOSEN" /* 常用 */)} ({chosenCount})</button>}
+      <button className={'chip nocap' + (!bp ? ' on' : '')} onClick={() => { setBp(''); setShown(50) }}>{t("ALL" /* 全部 */)}</button>
+      {BODYPARTS.map(b => <button key={b} className={'chip' + (bp === b ? ' on' : '')} onClick={() => { setBp(b); setShown(50) }}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(b)}</button>)}
     </div>
     {catOpts.length > 1 && <div className="chips" ref={catStrip} style={{ marginBottom: eqOpts.length > 1 ? 6 : 10 }}>
-      <button className={'chip nocap' + (!catOn ? ' on' : '')} onClick={() => { setCat(''); setShown(50) }}>{t('Any type')}</button>
-      {catOpts.map(x => <button key={x} className={'chip' + (catOn === x ? ' on' : '')} onClick={() => { setCat(x); setShown(50) }}>{t(x)}</button>)}
+      <button className={'chip nocap' + (!catOn ? ' on' : '')} onClick={() => { setCat(''); setShown(50) }}>{t("ANY_TYPE" /* 所有类型 */)}</button>
+      {catOpts.map(x => <button key={x} className={'chip' + (catOn === x ? ' on' : '')} onClick={() => { setCat(x); setShown(50) }}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(x)}</button>)}
     </div>}
     {eqOpts.length > 1 && <div className="chips" ref={eqStrip} style={{ marginBottom: 10 }}>
-      <button className={'chip nocap' + (!eqOn ? ' on' : '')} onClick={() => { setEq(''); setShown(50) }}>{t('Any equipment')}</button>
-      {eqOpts.map(x => <button key={x} className={'chip' + (eqOn === x ? ' on' : '')} onClick={() => { setEq(x); setShown(50) }}>{t(x)}</button>)}
+      <button className={'chip nocap' + (!eqOn ? ' on' : '')} onClick={() => { setEq(''); setShown(50) }}>{t("ANY_EQUIPMENT" /* 所有器械 */)}</button>
+      {eqOpts.map(x => <button key={x} className={'chip' + (eqOn === x ? ' on' : '')} onClick={() => { setEq(x); setShown(50) }}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(x)}</button>)}
     </div>}
     <div className={'list' + (st.exerciseView === 'cards' ? ' ex-grid' : '')}>
       {!special && <div className="item ex-new" {...tappable(() => customExSheet(null, ex => onPick(ex), q.trim()))}>
         <div className="thumb thumb-x"><Icon name="plusCircle" /></div>
-        <div className="grow"><div className="tt">{t('Create your own exercise')}</div><div className="ss">{t('name + body part, and a photo or video if you like')}</div></div><Icon name="plus" className="chev" />
+        <div className="grow"><div className="tt">{t("CREATE_YOUR_OWN_EXERCISE" /* 创建自己的动作 */)}</div><div className="ss">{t("NAME_BODY_PART_AND_A_PHOTO_OR_VIDEO_IF_YOU_LIKE" /* 名称 + 身体部位，可附照片或视频 */)}</div></div><Icon name="plus" className="chev" />
       </div>}
       {f.slice(0, shown).map(pickRow)}
-      {f.length === 0 && bp === '★' && <div className="empty">{t('Nothing picked yet. Add some exercises and they’ll show up here.')}</div>}
-      {f.length === 0 && bp === '☆' && <div className="empty">{t('No favourites yet. Tap the star on an exercise to add one.')}</div>}
-      {similar.length > 0 && <h4 className="sec similar-label">{f.length ? t('Similar exercises') : t('No exact match. These come close:')}</h4>}
+      {f.length === 0 && bp === '★' && <div className="empty">{t("NOTHING_PICKED_YET_ADD_SOME_EXERCISES_AND_THEY_LL_SHOW_UP_HERE" /* 还没选任何动作。添加一些动作，它们就会出现在这里。 */)}</div>}
+      {f.length === 0 && bp === '☆' && <div className="empty">{t("NO_FAVOURITES_YET_TAP_THE_STAR_ON_AN_EXERCISE_TO_ADD_ONE" /* 还没有收藏。点动作旁的星标就能加进来。 */)}</div>}
+      {similar.length > 0 && <h4 className="sec similar-label">{f.length ? t("SIMILAR_EXERCISES" /* 相似动作 */) : t("NO_EXACT_MATCH_THESE_COME_CLOSE" /* 没有完全匹配，这些比较接近： */)}</h4>}
       {similar.map(pickRow)}
     </div>
-    {f.length > shown && <><div style={{ height: 8 }} /><Button ref={moreRef} onClick={() => setShown(s => s + 50)}>{t('Show more')}</Button></>}
+    {f.length > shown && <><div style={{ height: 8 }} /><Button ref={moreRef} onClick={() => setShown(s => s + 50)}>{t("SHOW_MORE" /* 显示更多 */)}</Button></>}
   </>
 }
 // `title` names what the pick is for when it is not an add — the routine editor's Replace (#110).
@@ -1413,7 +1413,7 @@ export function swapActiveWorkoutExercise(index) {
   // The "+" on a picker row commits with the default config, exactly as it does in the add
   // flows; tapping the row still opens the config sheet first.
   // Worded for the session, not the routine: a swap changes today's workout only.
-  const picker = exercisePicker((ex, quick) => quick ? swapTo(ex, defaultConfig(ex.id)) : exConfigSheet(ex, null, cfg => swapTo(ex, cfg), null, null, null, null, t('Use in this workout')), { title: t('Swap exercise'), like: active.entries[index].id })
+  const picker = exercisePicker((ex, quick) => quick ? swapTo(ex, defaultConfig(ex.id)) : exConfigSheet(ex, null, cfg => swapTo(ex, cfg), null, null, null, null, t("USE_IN_THIS_WORKOUT" /* 用于本次训练 */)), { title: t("SWAP_EXERCISE" /* 更换动作 */), like: active.entries[index].id })
   function swapTo(ex, cfg) {
     // The picker is a chooser here, not a stack you keep adding from: one swap, then back to
     // the workout. (The add flow deliberately leaves it open.)
@@ -1461,25 +1461,25 @@ export function swapActiveWorkoutExercise(index) {
 
     if (current.sg) {
       ui().openSheet(close => <>
-        <h3>{t('Swap exercise?')}</h3>
+        <h3>{t("SWAP_EXERCISE_A" /* 要更换动作吗？ */)}</h3>
         <div className="muted small" style={{ marginBottom: 12 }}>
-          {t('Logged sets stay with the original exercise. Choose where the replacement belongs.')}
+          {t("LOGGED_SETS_STAY_WITH_THE_ORIGINAL_EXERCISE_CHOOSE_WHERE_THE_REPLACEMENT_BELONGS" /* 已记录的组数会保留在原动作上。请选择替换动作的位置。 */)}
         </div>
         <Button variant="primary" onClick={() => { close(); apply({ loggedConfirmed: true, groupDisposition: 'keep' }) }}>
-          {t('Keep replacement in this group')}
+          {t("KEEP_REPLACEMENT_IN_THIS_GROUP" /* 将替换动作保留在此组 */)}
         </Button>
         <div style={{ height: 8 }} />
         <Button variant="ghost" onClick={() => { close(); apply({ loggedConfirmed: true, groupDisposition: 'detach' }) }}>
-          {t('Insert after this group')}
+          {t("INSERT_AFTER_THIS_GROUP" /* 插入到此组之后 */)}
         </Button>
       </>)
       return
     }
 
     confirmSheet({
-      title: t('Swap exercise?'),
-      message: t('Logged sets stay with the original exercise. The replacement will be inserted afterward.'),
-      confirmText: t('Continue'),
+      title: t("SWAP_EXERCISE_A" /* 要更换动作吗？ */),
+      message: t("LOGGED_SETS_STAY_WITH_THE_ORIGINAL_EXERCISE_THE_REPLACEMENT_WILL_BE_INSERTED" /* 已记录的组数会保留在原动作上。替换动作将插入其后。 */),
+      confirmText: t("CONTINUE" /* 继续 */),
       onConfirm: () => apply({ loggedConfirmed: true })
     })
   }
@@ -1510,21 +1510,21 @@ function EquipmentProfileSheet({ profile, close }) {
     close()
   }
   return <>
-    <h3>{profile ? t('Edit profile') : t('New equipment profile')}</h3>
+    <h3>{profile ? t("EDIT_PROFILE" /* 编辑配置 */) : t("NEW_EQUIPMENT_PROFILE" /* 新建器械配置 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
-      {t('Name it after where you train (like "Home" or "Gym"), then tick what you’ve got there.')}
+      {t("NAME_IT_AFTER_WHERE_YOU_TRAIN_LIKE_HOME_OR_GYM_THEN_TICK" /* 用你训练的地点命名（比如“家里”或“健身房”），然后勾选你在那里有的器械。 */)}
     </div>
-    <TextField ref={nameRef} defaultValue={profile?.name || ''} placeholder={t('Profile name')} maxLength={40} />
+    <TextField ref={nameRef} defaultValue={profile?.name || ''} placeholder={t("PROFILE_NAME" /* 配置名称 */)} maxLength={40} />
     <div style={{ height: 12 }} />
     <div className="chips">
       {ALL_EQUIPMENT.map(k => (
-        <button key={k} className={'chip' + (checked.has(k) ? ' on' : '')} onClick={() => toggle(k)}>{t(k)}</button>
+        <button key={k} className={'chip' + (checked.has(k) ? ' on' : '')} onClick={() => toggle(k)}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(k)}</button>
       ))}
     </div>
     <div className="dim small" style={{ marginTop: 10 }}>
-      {t('Body-weight exercises are always available, unless they need a pull-up bar or a bench.')}
+      {t("BODY_WEIGHT_EXERCISES_ARE_ALWAYS_AVAILABLE_UNLESS_THEY_NEED_A_PULL_UP" /* 自重动作始终可用，除非需要引体向上杆或卧推凳。 */)}
     </div>
-    <div style={{ height: 14 }} /><Button variant="primary" onClick={save}>{t('Save')}</Button>
+    <div style={{ height: 14 }} /><Button variant="primary" onClick={save}>{t("SAVE" /* 保存 */)}</Button>
   </>
 }
 export const equipmentProfileSheet = profile => ui().openSheet(close => <EquipmentProfileSheet profile={profile} close={close} />)
@@ -1586,49 +1586,49 @@ function ProgressionFields({ ex, mode, c, setC, routine, unit, perSide, bw }) {
       : next
   })
   return <>
-    <h4 className="sec">{t('Progression')}</h4>
+    <h4 className="sec">{t("PROGRESSION" /* 进阶方式 */)}</h4>
     <div className="sect-b" style={{ marginBottom: 8 }}>
-      <SelectRow title={t('Rule')} sheetTitle={t('Progression')} value={c.prog || ''} onChange={setRule}
-        options={[{ value: '', label: t('Follow the routine ({0})', t(POLICY_NAME[inherited])) },
-          ...options.map(p => ({ value: p, label: t(POLICY_NAME[p]) }))]} />
+      <SelectRow title={t("RULE" /* 规则 */)} sheetTitle={t("PROGRESSION" /* 进阶方式 */)} value={c.prog || ''} onChange={setRule}
+        options={[{ value: '', label: t("FOLLOW_THE_ROUTINE_COUNT" /* 跟随该计划（{0}） */, translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(POLICY_NAME[inherited])) },
+          ...options.map(p => ({ value: p, label: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(POLICY_NAME[p]) }))]} />
     </div>
-    <div className="small dim" style={{ marginBottom: active === 'off' ? 18 : 10 }}>{t(POLICY_DESC[active])}</div>
+    <div className="small dim" style={{ marginBottom: active === 'off' ? 18 : 10 }}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(POLICY_DESC[active])}</div>
     {/* Double progression on a weighted exercise fills this row with four steppers; `cfgrow-4`
         lets it wrap into two pairs on phones, where four abreast left the inputs a few px wide. */}
     {(active !== 'off' || backoff) && <div className={'row cfgrow' + ((active === 'double' && epleyEligible) || active === 'triple' ? ' cfgrow-4' : '')} style={{ marginBottom: 18 }}>
-      <Stepper label={mode === 'time' ? t('Step (seconds)') : t('Step ({0})', unit)} value={inc}
+      <Stepper label={mode === 'time' ? t("STEP_SECONDS" /* 加量（秒） */) : t("STEP_COUNT" /* 加量（{0}） */, unit)} value={inc}
         step={mode === 'time' ? 5 : 1.25} decimal={mode !== 'time'} invalid={invalid} className={invalid ? 'invalid' : ''}
         onChange={v => setC(x => ({ ...x, inc: v }))} />
       {climbsRange(active) && <>
         {/* The draft stays as typed: normalising on every keystroke turned "12" into 92 (the
             "1" was pulled above the lower bound first). Save and the engine normalise anyway. */}
-        <Stepper label={t('Reps from')} value={c.repsMin ?? range.repsMin} step={stride} decimal={false}
+        <Stepper label={t("REPS_FROM" /* 次数下限 */)} value={c.repsMin ?? range.repsMin} step={stride} decimal={false}
           onChange={v => setC(x => ({ ...x, repsMin: v }))} />
-        <Stepper label={t('Reps up to')} value={c.reps ?? range.reps} step={stride} decimal={false}
+        <Stepper label={t("REPS_UP_TO" /* 次数上限 */)} value={c.reps ?? range.reps} step={stride} decimal={false}
           onChange={v => setC(x => ({ ...x, reps: v }))} />
       </>}
       {/* Where triple progression stops adding sets; the Sets above are where it starts. */}
-      {active === 'triple' && <Stepper label={t('Sets up to')} value={c.setsMax ?? setsMaxOf(c)} step={1} decimal={false}
+      {active === 'triple' && <Stepper label={t("SETS_UP_TO" /* 组数上限 */)} value={c.setsMax ?? setsMaxOf(c)} step={1} decimal={false}
         onChange={v => setC(x => ({ ...x, setsMax: v }))} />}
-      {epleyEligible && <Stepper label={t('Deload 1RM (%)')} value={deloadPercent} step={5} min={50} max={95} decimal={false}
+      {epleyEligible && <Stepper label={t("DELOAD_ONE_REP_MAX" /* 减量 1RM (%) */)} value={deloadPercent} step={5} min={50} max={95} decimal={false}
         onChange={v => setC(x => ({ ...x, deloadFactor: Number(v) / 100 }))} />}
     </div>}
     {invalid && <div className="small" role="alert" style={{ color: 'var(--red)', marginTop: -10, marginBottom: 18 }}>
-      {t('Enter a positive step to use this progression rule.')}
+      {t("ENTER_A_POSITIVE_STEP_TO_USE_THIS_PROGRESSION_RULE" /* 请输入一个正数步长以使用此进阶规则。 */)}
     </div>}
     {/* Off by default and only written when on, so every plan saved before it stays the shape
         it was. The step is the one above: the gear's own increment, set once per exercise. */}
     {canBackoff && <>
       <div className="sect-b" style={{ marginBottom: 8 }}>
-        <Row icon="steps" iconTint="var(--acc)" title={t('Back-off sets')}
-          subtitle={t('Each set one step lighter than the one before. The weight above is the first set.')}>
+        <Row icon="steps" iconTint="var(--acc)" title={t("BACK_OFF_SETS" /* 减重组（Back-off） */)}
+          subtitle={t("EACH_SET_ONE_STEP_LIGHTER_THAN_THE_ONE_BEFORE_THE_WEIGHT_ABOVE" /* 每组比上一组轻一个步长。上面的重量是第一组。 */)}>
           <Switch checked={backoff} onChange={v => setC(x => ({ ...x, backoff: v || undefined }))} />
         </Row>
       </div>
       <div className="small dim" style={{ marginBottom: 18 }}>
         {backoff
-          ? (preview ? t('Sets open at {0}. The first set goes up when every set reaches its reps, and the rest follow it.', preview) : t('The first set goes up when every set reaches its reps, and the rest follow it.'))
-          : t('All sets at the same weight.')}
+          ? (preview ? t("SETS_OPEN_AT_COUNT_THE_FIRST_SET_GOES_UP_WHEN_EVERY_SET" /* 各组从 {0} 开始。每组都达到目标次数时，第一组加重，其余各组随之调整。 */, preview) : t("THE_FIRST_SET_GOES_UP_WHEN_EVERY_SET_REACHES_ITS_REPS_AND" /* 每组都达到目标次数时，第一组加重，其余各组随之调整。 */))
+          : t("ALL_SETS_AT_THE_SAME_WEIGHT" /* 所有组使用相同重量。 */)}
       </div>
     </>}
   </>
@@ -1769,38 +1769,38 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
         metadata name muscles by the map's ids ("forearm", "gluteal"), which only MUSCLE_NAME
         turns into a translatable label. */}
     <div className="row" style={{ gap: 6, flexWrap: 'wrap', margin: '10px 0 14px' }}>
-      {cardio && <span className="tag acc"><Icon name="figureRun" />{t('Cardio')}</span>}
-      <span className="tag">{t(MUSCLE_NAME[ex.tg] || ex.tg || ex.bp)}</span><span className="tag">{t(ex.eq)}</span>
+      {cardio && <span className="tag acc"><Icon name="figureRun" />{t("CARDIO" /* 有氧 */)}</span>}
+      <span className="tag">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[ex.tg] || ex.tg || ex.bp)}</span><span className="tag">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(ex.eq)}</span>
       {!cardio && (ex.secondaries?.length ? ex.secondaries : smOf(ex)).filter(trainedBy(ex)).slice(0, 3)
-        .map((s, i) => <span key={i} className="tag dim">{t(MUSCLE_NAME[s] || s)}</span>)}
+        .map((s, i) => <span key={i} className="tag dim">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[s] || s)}</span>)}
     </div>
     {descFor(ex) && <div className="exnote">{descFor(ex)}</div>}
     {!cardio && <div style={{ marginBottom: 14 }}>
       <Segmented className="seg-range" value={mode} onChange={setMode}
-        options={[{ value: 'reps', label: t('Reps') }, { value: 'time', label: t('Time') }]} />
+        options={[{ value: 'reps', label: t("REPS" /* 次数 */) }, { value: 'time', label: t("TIME" /* 时间 */) }]} />
     </div>}
     <div className="row cfgrow" style={{ marginBottom: mode === 'time' ? 8 : 18 }}>
       {cardio ? <>
-        <Stepper label={t('Intervals')} value={c.sets} step={1} decimal={false} onChange={v => setC(x => ({ ...x, sets: v }))} />
-        <Stepper label={t('Minutes')} value={c.min} step={1} decimal={false} onChange={v => setC(x => ({ ...x, min: v }))} />
+        <Stepper label={t("INTERVALS" /* 间歇数 */)} value={c.sets} step={1} decimal={false} onChange={v => setC(x => ({ ...x, sets: v }))} />
+        <Stepper label={t("MINUTES" /* 分钟 */)} value={c.min} step={1} decimal={false} onChange={v => setC(x => ({ ...x, min: v }))} />
         {/* Typed and stepped in the profile's unit, kept in km/h (lib/speed.js). */}
-        <Stepper label={speedUnit === 'mph' ? t('Speed (mph)') : t('Speed (km/h)')} value={toSpeed(c.speed, speedUnit)} step={0.5}
+        <Stepper label={speedUnit === 'mph' ? t("SPEED_MPH" /* 速度（mph） */) : t("SPEED_KM_H" /* 速度（km/h） */)} value={toSpeed(c.speed, speedUnit)} step={0.5}
           onChange={v => setC(x => ({ ...x, speed: fromSpeed(v, speedUnit) }))} />
       </> : mode === 'time' ? <>
-        <Stepper label={t('Sets')} value={c.sets} step={1} decimal={false} onChange={v => setC(x => ({ ...x, sets: v }))} />
-        <Stepper label={t('Seconds')} value={c.sec} step={5} decimal={false} onChange={v => setC(x => ({ ...x, sec: v }))} />
+        <Stepper label={t("SETS" /* 组数 */)} value={c.sets} step={1} decimal={false} onChange={v => setC(x => ({ ...x, sets: v }))} />
+        <Stepper label={t("SECONDS" /* 秒数 */)} value={c.sec} step={5} decimal={false} onChange={v => setC(x => ({ ...x, sec: v }))} />
         {/* A bodyweight hold's load is the "Added" row below — showing both put two fields on
             one value. */}
-        {!bw && <Stepper label={t('Weight ({0})', st.unit)} value={c.weight} step={2.5} onChange={v => setC(x => ({ ...x, weight: v }))} />}
+        {!bw && <Stepper label={t("WEIGHT_COUNT" /* 重量（{0}） */, st.unit)} value={c.weight} step={2.5} onChange={v => setC(x => ({ ...x, weight: v }))} />}
       </> : <>
         {/* Rest-pause always trains as exactly two rows — a warm-up at this rep count, then one
             rest-pause work set — so "Sets" has nothing left to mean and only invites a mismatch. */}
         {c.intensifier?.type !== 'restpause' && !pyramid &&
-          <Stepper label={triple ? t('Sets from') : t('Sets')} value={c.sets} step={1} decimal={false} onChange={v => setC(x => ({ ...x, sets: v }))} />}
-        {!ranged && !pyramid && <Stepper label={t('Reps')} value={c.reps} step={perSide ? 2 : 1} decimal={false} onChange={v => setC(x => ({ ...x, reps: v }))} />}
+          <Stepper label={triple ? t("SETS_FROM" /* 组数下限 */) : t("SETS" /* 组数 */)} value={c.sets} step={1} decimal={false} onChange={v => setC(x => ({ ...x, sets: v }))} />}
+        {!ranged && !pyramid && <Stepper label={t("REPS" /* 次数 */)} value={c.reps} step={perSide ? 2 : 1} decimal={false} onChange={v => setC(x => ({ ...x, reps: v }))} />}
         {/* On bodyweight work the weight stepper is the click #32 is about, so it is not here
             until there is a belt to describe — see the added-weight row below. */}
-        {!bw && !pyramid && <Stepper label={t('Weight ({0})', st.unit)} value={c.weight} step={2.5} onChange={v => setC(x => ({ ...x, weight: v }))} />}
+        {!bw && !pyramid && <Stepper label={t("WEIGHT_COUNT" /* 重量（{0}） */, st.unit)} value={c.weight} step={2.5} onChange={v => setC(x => ({ ...x, weight: v }))} />}
       </>}
     </div>
     {/* Pyramid sets: a row per set, each with its own reps or Max, rest and weight. A set left
@@ -1815,9 +1815,9 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
       {c.pyramid.map((p, i) => <div key={i} style={{ marginBottom: 10 }}>
         <div className="row cfgrow" style={{ marginBottom: 4 }}>
           {p === PYRAMID_MAX
-            ? <div className="small"><strong>{t('Set {0}', i + 1)}</strong> · {t('Max: as many reps as you can')}</div>
-            : <Stepper label={t('Set {0}', i + 1)} value={p} step={perSide ? 2 : 1} min={1} decimal={false} onChange={v => setPyramidAt(i, v)} />}
-          <Stepper label={t('Rest (s)')} value={(c.pyramidRest || [])[i] || 0} step={15} decimal={false}
+            ? <div className="small"><strong>{t("SET_COUNT" /* 第 {0} 组 */, i + 1)}</strong> · {t("MAX_AS_MANY_REPS_AS_YOU_CAN" /* 力竭：能做多少做多少 */)}</div>
+            : <Stepper label={t("SET_COUNT" /* 第 {0} 组 */, i + 1)} value={p} step={perSide ? 2 : 1} min={1} decimal={false} onChange={v => setPyramidAt(i, v)} />}
+          <Stepper label={t("REST_S" /* 休息（秒） */)} value={(c.pyramidRest || [])[i] || 0} step={15} decimal={false}
             onChange={v => setC(x => {
               const rest = Array.from({ length: x.pyramid.length }, (_, j) => (x.pyramidRest || [])[j] || 0)
               rest[i] = v
@@ -1826,7 +1826,7 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
         </div>
         {/* Bodyweight work has its one "Added" load below instead. */}
         {!bw && <div className="row cfgrow" style={{ marginBottom: 4 }}>
-          <Stepper label={t('Weight ({0})', st.unit)} value={(c.pyramidWeight || [])[i] || 0} step={2.5}
+          <Stepper label={t("WEIGHT_COUNT" /* 重量（{0}） */, st.unit)} value={(c.pyramidWeight || [])[i] || 0} step={2.5}
             onChange={v => setC(x => {
               const weight = Array.from({ length: x.pyramid.length }, (_, j) => (x.pyramidWeight || [])[j] || 0)
               weight[i] = v
@@ -1835,8 +1835,8 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
         </div>}
         <div className="row" style={{ justifyContent: 'flex-end', gap: 8 }}>
           <Button size="sm" variant={p === PYRAMID_MAX ? 'primary' : 'plain'} aria-pressed={p === PYRAMID_MAX}
-            onClick={() => setPyramidAt(i, p === PYRAMID_MAX ? (c.reps || 10) : PYRAMID_MAX)}>{t('Max')}</Button>
-          {c.pyramid.length > 1 && <Button size="sm" icon="trash" aria-label={t('Remove set')} title={t('Remove set')}
+            onClick={() => setPyramidAt(i, p === PYRAMID_MAX ? (c.reps || 10) : PYRAMID_MAX)}>{t("MAX" /* 力竭次数 */)}</Button>
+          {c.pyramid.length > 1 && <Button size="sm" icon="trash" aria-label={t("REMOVE_SET" /* 减一组 */)} title={t("REMOVE_SET" /* 减一组 */)}
             onClick={() => setC(x => ({ ...x, pyramid: x.pyramid.filter((_, j) => j !== i), pyramidRest: x.pyramidRest?.filter((_, j) => j !== i), pyramidWeight: x.pyramidWeight?.filter((_, j) => j !== i) }))} />}
         </div>
       </div>)}
@@ -1847,29 +1847,29 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
           // The new set copies the last one's rest too, like its target.
           pyramidRest: x.pyramidRest?.length ? [...x.pyramid.map((_, j) => x.pyramidRest[j] || 0), x.pyramidRest[x.pyramid.length - 1] || 0] : x.pyramidRest,
           pyramidWeight: x.pyramidWeight?.length ? [...x.pyramid.map((_, j) => x.pyramidWeight[j] || 0), x.pyramidWeight[x.pyramid.length - 1] || 0] : x.pyramidWeight,
-        }))}>{t('Add set')}</Button>
-      <div className="small dim" style={{ marginTop: 8 }}>{t('A set left at 0 rest uses the exercise’s rest.')}</div>
-      {!bw && <div className="small dim" style={{ marginTop: 4 }}>{t('A set left at 0 weight starts from that set’s weight last time.')}</div>}
+        }))}>{t("ADD_SET" /* 添加一组 */)}</Button>
+      <div className="small dim" style={{ marginTop: 8 }}>{t("A_SET_LEFT_AT_ZERO_REST_USES_THE_EXERCISE_S_REST" /* 休息为 0 的组使用该动作的休息时间。 */)}</div>
+      {!bw && <div className="small dim" style={{ marginTop: 4 }}>{t("A_SET_LEFT_AT_ZERO_WEIGHT_STARTS_FROM_THAT_SET_S_WEIGHT" /* 重量为 0 的组从上次同一组的重量开始。 */)}</div>}
     </div>}
     {c.intensifier?.type === 'restpause' && <div className="small dim" style={{ marginTop: -10, marginBottom: 18 }}>
-      {t('Rest-pause always trains as one warm-up set at this rep count, then one rest-pause work set. "Sets" isn’t used here.')}
+      {t("REST_PAUSE_ALWAYS_TRAINS_AS_ONE_WARM_UP_SET_AT_THIS_REP" /* 休息暂停组 始终按这个次数练一个热身组，再加一个 rest-pause 工作组。这里不使用“组数”。 */)}
     </div>}
     {/* Planned warm-ups: the session used to start at the work weight and you added every
         warm-up by hand, every time. Rest-pause is excluded because it builds its own warm-up
         row, and cardio because an interval plan has no load to ramp. */}
     {!cardio && c.intensifier?.type !== 'restpause' && <>
       <div className="row cfgrow" style={{ marginBottom: 6 }}>
-        <Stepper label={t('Warm-up sets')} value={c.warmupSets || 0} step={1} decimal={false}
+        <Stepper label={t("WARM_UP_SETS" /* 热身组 */)} value={c.warmupSets || 0} step={1} decimal={false}
           onChange={v => setC(x => ({ ...x, warmupSets: Math.max(0, Math.min(MAX_PLANNED_WARMUPS, Math.round(v) || 0)) }))} />
       </div>
       <div className="small dim" style={{ marginBottom: 18 }}>
         {(c.warmupSets || 0) > 0
-          ? t('Added before your work sets and left out of volume, records and progression. Each one closes half the gap to the work weight, never below the bar on a barbell lift, and you can still change any of them mid-session.')
-          : t('Ramp-up sets added before the work sets, so you do not have to add them by hand each session.')}
+          ? t("ADDED_BEFORE_YOUR_WORK_SETS_AND_LEFT_OUT_OF_VOLUME_RECORDS_AND" /* 加在工作组之前，不计入容量、纪录和进阶。每一组都把与正式重量的差距缩小一半，杠铃动作不会低于空杠，训练中仍可随时调整任意一组。 */)
+          : t("RAMP_UP_SETS_ADDED_BEFORE_THE_WORK_SETS_SO_YOU_DO_NOT" /* 在工作组之前加入的爬升组，这样就不用每次手动添加。 */)}
       </div>
     </>}
     {mode === 'time' && !bw && <div className="small dim" style={{ marginBottom: 18 }}>
-      {t('A timer runs while you hold the set. Leave the weight at 0 for bodyweight holds.')}
+      {t("A_TIMER_RUNS_WHILE_YOU_HOLD_THE_SET_LEAVE_THE_WEIGHT_AT" /* 保持这一组时会有计时器运行。徒手静力动作把重量留在 0。 */)}
     </div>}
     {/* Per-exercise rest (issue #10). Its own full-width row, like the other steppers with an
         explanation under them, and outside every mode branch because a heavy triple, a plank
@@ -1877,30 +1877,30 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
     {/* On the same wheel as the default rest timer (v1.3.11): 0:00 is "no rest of its own", so
         the default applies, and the row says which default that is. */}
     <div className="sect-b cfg-rest" style={{ marginBottom: 6 }}>
-      <Row icon="timer" iconTint="var(--orange)" title={t('Rest for this exercise')} accessory="chevron"
-        value={c.restSec > 0 ? fmtRest(c.restSec) : t('Default ({0})', fmtRest(st.restSec))}
+      <Row icon="timer" iconTint="var(--orange)" title={t("REST_FOR_THIS_EXERCISE" /* 本动作的休息 */)} accessory="chevron"
+        value={c.restSec > 0 ? fmtRest(c.restSec) : t("DEFAULT_COUNT" /* 默认（{0}） */, fmtRest(st.restSec))}
         onClick={() => durationSheet({
-          title: t('Rest for this exercise'), value: c.restSec > 0 ? c.restSec : 0, max: REST_MAX,
-          off: t('Default ({0})', fmtRest(st.restSec)),
-          footer: t('Rest after each set of this exercise. 0:00 means your default rest.'),
+          title: t("REST_FOR_THIS_EXERCISE" /* 本动作的休息 */), value: c.restSec > 0 ? c.restSec : 0, max: REST_MAX,
+          off: t("DEFAULT_COUNT" /* 默认（{0}） */, fmtRest(st.restSec)),
+          footer: t("REST_AFTER_EACH_SET_OF_THIS_EXERCISE_ZERO_ZEROZERO_MEANS_YOUR_DEFAULT" /* 这个动作每组之后的休息时间。设为 0:00 就用默认休息。 */),
           onDone: v => setC(x => ({ ...x, restSec: v })),
         })} />
     </div>
     <div className="small dim" style={{ marginBottom: 18 }}>
-      {t('Rest after each set of this exercise. 0:00 means your default rest.')}
+      {t("REST_AFTER_EACH_SET_OF_THIS_EXERCISE_ZERO_ZEROZERO_MEANS_YOUR_DEFAULT" /* 这个动作每组之后的休息时间。设为 0:00 就用默认休息。 */)}
     </div>
     {/* ---------- bodyweight + per side (issues #31/#32/#33) ---------- */}
     {!cardio && <div className="sect-b" style={{ marginBottom: 8 }}>
-      <Row icon="figureStrength" iconTint="var(--acc)" title={t('Bodyweight')}
-        subtitle={bw ? (mode === 'time' ? t('No weight to enter. Just time the hold.') : t('No weight to enter. Just log the reps.')) : t('Ask for a weight on every set.')}>
+      <Row icon="figureStrength" iconTint="var(--acc)" title={t("BODYWEIGHT" /* 自重动作 */)}
+        subtitle={bw ? (mode === 'time' ? t("NO_WEIGHT_TO_ENTER_JUST_TIME_THE_HOLD" /* 无需填写重量。只需为保持计时。 */) : t("NO_WEIGHT_TO_ENTER_JUST_LOG_THE_REPS" /* 无需输入重量。只记次数就好。 */)) : t("ASK_FOR_A_WEIGHT_ON_EVERY_SET" /* 每组都询问重量。 */)}>
         <Switch checked={bw} onChange={v => setC(x => ({ ...x, bodyweight: v, weight: v ? 0 : x.weight }))} />
       </Row>
-      {mode !== 'cardio' && <Row icon="sides" iconTint="var(--blue)" title={t('Per side')}
+      {mode !== 'cardio' && <Row icon="sides" iconTint="var(--blue)" title={t("PER_SIDE" /* 每侧 */)}
         subtitle={mode === 'time'
           ? (perSide
-            ? tn('{0} set becomes {1}: one on each side, {2}s held every time.', '{0} sets become {1}: one on each side, {2}s held every time.', c.sets || 0, (c.sets || 0) * 2, c.sec || 0)
-            : t('For side planks, single-arm holds and the like. Trains each side on its own.'))
-          : (perSide ? t('You still log the total: {0} is {1} per side.', c.reps || 0, fmtNum(sideReps(c.reps))) : t('For lunges, single-arm rows and the like.'))}>
+            ? tn("COUNT_SET_BECOMES_COUNT_ONE_ON_EACH_SIDE_COUNT_S_HELD_EVERY" /* {0} 组变为 {1} 组：每侧各一组，每次保持 {2} 秒。 */, "COUNT_SETS_BECOME_COUNT_ONE_ON_EACH_SIDE_COUNT_S_HELD_EVERY" /* {0} 组变为 {1} 组：每侧各一组，每次保持 {2} 秒。 */, c.sets || 0, (c.sets || 0) * 2, c.sec || 0)
+            : t("FOR_SIDE_PLANKS_SINGLE_ARM_HOLDS_AND_THE_LIKE_TRAINS_EACH_SIDE" /* 适用于侧平板支撑、单臂悬挂之类的动作。每侧单独训练。 */))
+          : (perSide ? t("YOU_STILL_LOG_THE_TOTAL_COUNT_IS_COUNT_PER_SIDE" /* 你记录的仍然是总数：{0} 表示每侧 {1} 次。 */, c.reps || 0, fmtNum(sideReps(c.reps))) : t("FOR_LUNGES_SINGLE_ARM_ROWS_AND_THE_LIKE" /* 用于弓步蹲、单臂划船之类的动作。 */))}>
         {/* Reps: turning it on rounds the target up to an even number, since half of an odd total
             is a rep one side does not get. Time: nothing to round — a hold's whole duration
             happens twice, so only the flag changes (buildWorkSets doubles the planned sets). */}
@@ -1917,12 +1917,12 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
       {/* The last work set of every session is marked as taken to failure, like Greyskull's
           final AMRAP set (workout-model isFailureSet, history.js applyFailurePlan). A pyramid
           already has its Max set for that. */}
-      {!pyramid && <Row icon="gauge" iconTint="var(--purple)" title={t('Last set to failure')}
-        subtitle={c.lastToFailure ? t('The last set goes until nothing is left, and counts as all-out effort unless you rate it.') : t('Plan the final set as an all-out one.')}>
+      {!pyramid && <Row icon="gauge" iconTint="var(--purple)" title={t("LAST_SET_TO_FAILURE" /* 最后一组做到力竭 */)}
+        subtitle={c.lastToFailure ? t("THE_LAST_SET_GOES_UNTIL_NOTHING_IS_LEFT_AND_COUNTS_AS_ALL" /* 最后一组做到一点不剩，除非你自己打分，否则按全力计算。 */) : t("PLAN_THE_FINAL_SET_AS_AN_ALL_OUT_ONE" /* 把最后一组安排成全力组。 */)}>
         <Switch checked={c.lastToFailure === true} onChange={v => setC(x => ({ ...x, lastToFailure: v || undefined }))} />
       </Row>}
-      {mode === 'reps' && <Row icon="steps" iconTint="var(--acc)" title={t('Pyramid sets')}
-        subtitle={t('A different rep target for each set, e.g. 12 · 8 · 6 · Max · 12.')}>
+      {mode === 'reps' && <Row icon="steps" iconTint="var(--acc)" title={t("PYRAMID_SETS" /* 金字塔组 */)}
+        subtitle={t("A_DIFFERENT_REP_TARGET_FOR_EACH_SET_E_G_ONETWO_EIGHT_SIX" /* 每组设定不同的目标次数，例如 12 · 8 · 6 · 力竭 · 12。 */)}>
         <Switch checked={pyramid} onChange={v => setC(x => (v
           ? { ...x, pyramid: x.pyramidDraft || pyramidFromFlat(x), intensifier: undefined }
           : { ...x, ...flatFromPyramid(x.pyramid), pyramidDraft: x.pyramid, pyramid: undefined }))} />
@@ -1933,28 +1933,28 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
         reps, with its explanation underneath. */}
     {bw && <>
       <div className="row cfgrow" style={{ marginBottom: 8 }}>
-        <Stepper label={t('Added ({0})', st.unit)} value={c.weight || 0} step={2.5}
+        <Stepper label={t("ADDED_COUNT_A" /* 负重（{0}） */, st.unit)} value={c.weight || 0} step={2.5}
           onChange={v => setC(x => ({ ...x, weight: v }))} />
       </div>
       <div className="small dim" style={{ marginBottom: 18 }}>
-        {t('For dips or pull-ups with a belt. Progression then follows the weight.')}
+        {t("FOR_DIPS_OR_PULL_UPS_WITH_A_BELT_PROGRESSION_THEN_FOLLOWS_THE" /* 用于系负重腰带做双杠臂屈伸或引体向上。此时进阶方式跟随重量。 */)}
       </div>
     </>}
     {/* The rep ceiling only means something when there is no load to add instead. */}
     {mode === 'reps' && bw && !(c.weight > 0) && <div className="row cfgrow" style={{ marginBottom: 18 }}>
-      <Stepper label={t('Top of the range')} value={c.repsMax || 0} step={1} decimal={false}
+      <Stepper label={t("TOP_OF_THE_RANGE" /* 次数上限 */)} value={c.repsMax || 0} step={1} decimal={false}
         onChange={v => setC(x => ({ ...x, repsMax: v }))} />
     </div>}
     {mode === 'reps' && bw && !(c.weight > 0) && <div className="small dim" style={{ marginTop: -10, marginBottom: 18 }}>
       {c.repsMax > 0
-        ? t('Reps climb to {0}, then a set is added and the reps start over. At {1} sets it asks you to add weight instead.', c.repsMax, MAX_BW_SETS)
-        : t('Reps climb by one whenever every set was clean. Set a ceiling to add sets instead of reps forever.')}
+        ? t("REPS_CLIMB_TO_COUNT_THEN_A_SET_IS_ADDED_AND_THE_REPS" /* 次数升到 {0} 后加一组，次数重新开始。到 {1} 组时会改为提示你加重量。 */, c.repsMax, MAX_BW_SETS)
+        : t("REPS_CLIMB_BY_ONE_WHENEVER_EVERY_SET_WAS_CLEAN_SET_A_CEILING" /* 每组都做干净，次数就加一。设置上限后，达到上限会加一组，而不是一直加次数。 */)}
     </div>}
     {/* A pyramid already shapes every set; a drop-set or rest-pause would reshape them again. */}
     {mode === 'reps' && !pyramid && <>
-      <h4 className="sec">{t('Drop-set / rest-pause')}</h4>
+      <h4 className="sec">{t("DROP_SET_REST_PAUSE" /* 递减组 / 休息暂停组 */)}</h4>
       <div className="sect-b" style={{ marginBottom: 8 }}>
-        <SelectRow title={t('Intensifier')} sheetTitle={t('Intensifier')} value={c.intensifier?.type || ''}
+        <SelectRow title={t("INTENSIFIER" /* 强化技巧 */)} sheetTitle={t("INTENSIFIER" /* 强化技巧 */)} value={c.intensifier?.type || ''}
           onChange={v => setC(x => ({
             ...x,
             intensifier: !v ? undefined : v === 'dropset'
@@ -1965,58 +1965,58 @@ function ExConfig({ ex, existing, onSave, onDelete, onReplace, close, routine, i
               : { type: 'restpause', totalReps: x.intensifier?.totalReps || x.reps || 8, restSec: x.intensifier?.restSec || st.restPauseSec || 15 },
           }))}
           options={[
-            { value: '', label: t('None') },
-            { value: 'dropset', label: t('Drop-set') },
-            { value: 'restpause', label: t('Rest-pause') },
+            { value: '', label: t("NONE" /* 无 */) },
+            { value: 'dropset', label: t("DROP_SET" /* 递减组 */) },
+            { value: 'restpause', label: t("REST_PAUSE" /* 休息暂停组 */) },
           ]} />
       </div>
       {c.intensifier?.type === 'dropset' && <div className="row cfgrow" style={{ marginBottom: 8 }}>
-        <Stepper label={t('Drops')} value={c.intensifier.count} step={1} min={1} decimal={false}
+        <Stepper label={t("DROPS" /* 递减次数 */)} value={c.intensifier.count} step={1} min={1} decimal={false}
           onChange={v => setC(x => ({ ...x, intensifier: { ...x.intensifier, count: v } }))} />
-        <Stepper label={t('Weight drop (%)')} value={c.intensifier.pct} step={5} min={5} decimal={false}
+        <Stepper label={t("WEIGHT_DROP" /* 减重幅度（%） */)} value={c.intensifier.pct} step={5} min={5} decimal={false}
           onChange={v => setC(x => ({ ...x, intensifier: { ...x.intensifier, pct: v } }))} />
       </div>}
       {c.intensifier?.type === 'restpause' && <div className="row cfgrow" style={{ marginBottom: 8 }}>
-        <Stepper label={t('Rest-pause reps')} value={c.intensifier.totalReps} step={1} min={1} decimal={false}
+        <Stepper label={t("REST_PAUSE_REPS" /* 休息暂停组总次数 */)} value={c.intensifier.totalReps} step={1} min={1} decimal={false}
           onChange={v => setC(x => ({ ...x, intensifier: { ...x.intensifier, totalReps: v } }))} />
-        <Stepper label={t('Rest (s)')} value={c.intensifier.restSec} step={5} min={5} decimal={false}
+        <Stepper label={t("REST_S" /* 休息（秒） */)} value={c.intensifier.restSec} step={5} min={5} decimal={false}
           onChange={v => setC(x => ({ ...x, intensifier: { ...x.intensifier, restSec: v } }))} />
       </div>}
       {c.intensifier?.type && <div className="small dim" style={{ marginTop: -2, marginBottom: 18 }}>
         {c.intensifier.type === 'dropset'
-          ? t('Every set becomes a drop-set: after the main set, {0} drop(s) with no rest, each about {1}% lighter.', c.intensifier.count, c.intensifier.pct)
-          : t('Every set becomes rest-pause: {0} reps to start, then {1} more split into short bursts, {2}s rest before each, roughly halving each time.', c.reps || 0, c.intensifier.totalReps, c.intensifier.restSec)}
+          ? t("EVERY_SET_BECOMES_A_DROP_SET_AFTER_THE_MAIN_SET_COUNT_DROP" /* 每组都变成递减组：主组之后，无休息完成 {0} 次递减，每次约减轻 {1}%。 */, c.intensifier.count, c.intensifier.pct)
+          : t("EVERY_SET_BECOMES_REST_PAUSE_COUNT_REPS_TO_START_THEN_COUNT_MORE" /* 每组都变成休息暂停组：先做 {0} 次，再分成几个短爆发共 {1} 次，每次前休息 {2} 秒，每次数量大约减半。 */, c.reps || 0, c.intensifier.totalReps, c.intensifier.restSec)}
       </div>}
     </>}
     {/* What a dumbbell weight means, for this routine's slot (cfg.dbLoad). Picking what the
         exercise already means drops the key, so the slot follows the exercise's default again. */}
     {isBellEx(ex) && !bw && mode !== 'cardio' && <>
-      <h4 className="sec">{t('Weight means')}</h4>
+      <h4 className="sec">{t("WEIGHT_MEANS" /* 重量表示 */)}</h4>
       <DbLoadPicker ex={ex} cfg={c} value={dbLoadFor(st, { ...c, id: ex.id })}
         onChange={v => setC(x => ({ ...x, dbLoad: v === dbLoadFor(st, ex.id) ? undefined : v }))} />
     </>}
     {/* How the weight is plate-loaded and what the bar weighs — per exercise, not per plan, so
         it sits apart from the config fields above and writes straight to S.barWeights/S.loadKind. */}
     {mode === 'reps' && <>
-      <h4 className="sec">{t('Plate loading')}</h4>
-      <BarWeightEditor ex={ex} cfg={c} extra={t('Applies to this exercise everywhere, not just this plan.')} />
+      <h4 className="sec">{t("PLATE_LOADING" /* 配重 */)}</h4>
+      <BarWeightEditor ex={ex} cfg={c} extra={t("APPLIES_TO_THIS_EXERCISE_EVERYWHERE_NOT_JUST_THIS_PLAN" /* 对这个动作处处生效，不只在此计划中。 */)} />
     </>}
     {pyramid
-      ? <div className="small dim" style={{ marginBottom: 18 }}>{t('Weight is up to you: pyramid sets are not progressed automatically.')}</div>
+      ? <div className="small dim" style={{ marginBottom: 18 }}>{t("WEIGHT_IS_UP_TO_YOU_PYRAMID_SETS_ARE_NOT_PROGRESSED_AUTOMATICALLY" /* 重量由你决定：金字塔组不会自动递增。 */)}</div>
       : <ProgressionFields ex={ex} mode={mode} c={c} setC={setC} routine={routine} unit={st.unit} perSide={perSide} bw={bw} />}
     <textarea className="input" rows={3} maxLength={500} style={{ marginBottom: 18 }}
-      placeholder={t('Note (optional): loading cues, "bar only, then +1 plate/side each set", anything worth remembering')}
+      placeholder={t("NOTE_OPTIONAL_LOADING_CUES_BAR_ONLY_THEN_ONE_PLATE_SIDE_EACH_SET" /* 备注（可选）：加重提示，比如“空杠开始，之后每组每侧 +1 片”，任何值得记住的事 */)}
       value={c.note || ''} onChange={e => setC(x => ({ ...x, note: e.target.value }))} />
     {/* What saving does, when it is neither of the two usual things: the routine editor's
         Replace (#110) seeds this sheet with the slot it replaces, and saving puts the exercise
         into that slot. */}
-    <Button variant="primary" disabled={progressionStepInvalid} onClick={save}>{saveLabel || (existing ? t('Save') : t('Add to routine'))}</Button>
-    {isCustomEx(ex) && <><div style={{ height: 8 }} /><Button icon="pencil" onClick={() => { close(); customExSheet(ex) }}>{t('Edit or delete this exercise')}</Button></>}
+    <Button variant="primary" disabled={progressionStepInvalid} onClick={save}>{saveLabel || (existing ? t("SAVE" /* 保存 */) : t("ADD_TO_ROUTINE" /* 加入训练计划 */))}</Button>
+    {isCustomEx(ex) && <><div style={{ height: 8 }} /><Button icon="pencil" onClick={() => { close(); customExSheet(ex) }}>{t("EDIT_OR_DELETE_THIS_EXERCISE" /* 编辑或删除此动作 */)}</Button></>}
     {/* The routine editor's counterpart to a workout's Swap (#110): another exercise in this
         slot, with the slot's sets, reps, weight, rule and note kept (lib/routines.js). What was
         changed on this sheet and not saved is left behind, as closing it would. */}
-    {onReplace && <><div style={{ height: 8 }} /><Button icon="swap" onClick={() => { close(); onReplace() }}>{t('Replace exercise')}</Button></>}
-    {onDelete && <><div style={{ height: 8 }} /><Button variant="danger" onClick={() => { close(); onDelete() }}>{t('Remove from routine')}</Button></>}
+    {onReplace && <><div style={{ height: 8 }} /><Button icon="swap" onClick={() => { close(); onReplace() }}>{t("REPLACE_EXERCISE" /* 替换动作 */)}</Button></>}
+    {onDelete && <><div style={{ height: 8 }} /><Button variant="danger" onClick={() => { close(); onDelete() }}>{t("REMOVE_FROM_ROUTINE" /* 从计划中移除 */)}</Button></>}
   </>
 }
 export const exConfigSheet = (ex, existing, onSave, onDelete, routine, initial, onReplace, saveLabel) => ui().openSheet(close => <ExConfig ex={ex} existing={existing} initial={initial} onSave={onSave} onDelete={onDelete} onReplace={onReplace} routine={routine} saveLabel={saveLabel} close={close} />)
@@ -2027,10 +2027,10 @@ export const exConfigSheet = (ex, existing, onSave, onDelete, routine, initial, 
 export const glyphPicker = (current, onPick) => {
   const cur = glyphOf(current)
   return ui().openSheet(close => <>
-    <h3>{t('Pick an icon')}</h3>
+    <h3>{t("PICK_AN_ICON" /* 选择图标 */)}</h3>
     {GLYPH_GROUPS.map(g => (
       <div key={g.key} style={{ marginBottom: 14 }}>
-        <div className="sect-t" style={{ padding: '0 2px 7px' }}>{t(g.key)}</div>
+        <div className="sect-t" style={{ padding: '0 2px 7px' }}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(g.key)}</div>
         <div className="glyph-grid">
           {g.items.map(n => (
             <button key={n} className={'glyph-cell' + (n === cur ? ' on' : '')}
@@ -2080,8 +2080,8 @@ function EffortPicker({ kind, value, onPick, close }) {
   // as the row title, a tick on the current one. The exact field is the app's own stepper,
   // tinted like the logged cell in the set row, so the sheet and the row read as one thing.
   return <>
-    <h3 style={{ marginBottom: 2 }}>{t('How hard was that set?')}</h3>
-    <div className="muted small" style={{ marginBottom: 10 }}>{t('Tap how many reps you had left, or type an exact {0}.', hd)}</div>
+    <h3 style={{ marginBottom: 2 }}>{t("HOW_HARD_WAS_THAT_SET" /* 这组有多吃力？ */)}</h3>
+    <div className="muted small" style={{ marginBottom: 10 }}>{t("TAP_HOW_MANY_REPS_YOU_HAD_LEFT_OR_TYPE_AN_EXACT_COUNT" /* 点选你还能再做几次，或直接输入准确的 {0}。 */, hd)}</div>
     <div className="list menu-list effpick">
       {EFFORT_PRESETS.map(p => {
         const label = fmtNum(toScale(kind, p.rir)) + (p.tail ? '+' : '')
@@ -2089,18 +2089,18 @@ function EffortPicker({ kind, value, onPick, close }) {
         return <div key={p.rir} className={'item menu-item' + (on ? ' on' : '')} style={{ '--bc': p.color }}
           {...tappable(() => pick(p.rir))}>
           <span className="lrow-i effpick-n">{label}</span>
-          <div className="grow"><div className="tt">{t(p.feel)}</div></div>
+          <div className="grow"><div className="tt">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(p.feel)}</div></div>
           <span className={'menu-on' + (on ? ' is-on' : '')}><Icon name="check" /></span>
         </div>
       })}
       <div className="item menu-item effpick-free">
-        <div className="grow"><div className="tt">{t('Exact {0}', hd)}</div></div>
+        <div className="grow"><div className="tt">{t("EXACT_COUNT" /* 准确的 {0} */, hd)}</div></div>
         <div className="stp effcell-stp"
           style={curColor ? { color: curColor, background: `color-mix(in srgb, ${curColor} 20%, var(--surface-2))` } : undefined}>
-          <button aria-label={t('Decrease')} onClick={() => set(stepEffort(kind, v, -1))}><Icon name="minus" /></button>
+          <button aria-label={t("DECREASE" /* 减少 */)} onClick={() => set(stepEffort(kind, v, -1))}><Icon name="minus" /></button>
           <span className="val"><NumberField decimal nullable value={v ?? ''} placeholder="–"
             onChange={nv => set(capEffort(kind, nv))} /></span>
-          <button aria-label={t('Increase')} onClick={() => set(stepEffort(kind, v, 1))}><Icon name="plus" /></button>
+          <button aria-label={t("INCREASE" /* 增加 */)} onClick={() => set(stepEffort(kind, v, 1))}><Icon name="plus" /></button>
         </div>
       </div>
     </div>
@@ -2108,8 +2108,8 @@ function EffortPicker({ kind, value, onPick, close }) {
       <div style={{ height: 10 }} />
       {/* Only after the exact field has moved the value off what is stored: the preset rows
           close themselves, so this row exists for the one path that does not. */}
-      {v !== (value ?? null) && <Button icon="check" onClick={() => commit(v)}>{t('Done')}</Button>}
-      <Button variant="ghost" className="dim" icon="xmark" onClick={() => commit(null)}>{t('Clear rating')}</Button>
+      {v !== (value ?? null) && <Button icon="check" onClick={() => commit(v)}>{t("DONE" /* 完成 */)}</Button>}
+      <Button variant="ghost" className="dim" icon="xmark" onClick={() => commit(null)}>{t("CLEAR_RATING" /* 清除评分 */)}</Button>
     </>}
     <div style={{ height: 4 }} />
   </>
@@ -2127,19 +2127,19 @@ export const planToolsSheet = () => ui().openSheet(close => <PlanTools close={cl
 export const planHasRoutines = st => (st.routines || []).some(r => r.ex && r.ex.length)
 export async function exportPlanFile() {
   const st = S(), user = useStore.getState().user
-  const bundle = buildPlanBundle(st, user?.name ? t('{0}’s plan', user.name) : '')
+  const bundle = buildPlanBundle(st, user?.name ? t("COUNT_S_PLAN" /* {0} 的计划 */, user.name) : '')
   const json = JSON.stringify(bundle, null, 2)
   const name = 'opengym-plan-' + todayISO() + '.json'
   if (MOBILE) { try { await shareExport(json, name) } catch (e) { /* dismissed */ } return }
   const blob = new Blob([json], { type: 'application/json' })
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); URL.revokeObjectURL(a.href)
-  toast(t('Plan file saved. Send it to a friend!'))
+  toast(t("PLAN_FILE_SAVED_SEND_IT_TO_A_FRIEND" /* 计划文件已保存。发给朋友吧！ */))
 }
 // Web: the browser's print dialog (→ Save as PDF). Mobile: the OS print flow via the native
 // Print plugin — Android WebView has no window.print(). Same printable HTML both ways.
 export function printWholePlan() {
   const st = S(), owner = useStore.getState().user?.name || ''
-  if (MOBILE) printHtml(planPrintHTML(st, owner), t('Weekly Training Plan')).catch(() => { /* dismissed */ })
+  if (MOBILE) printHtml(planPrintHTML(st, owner), t("WEEKLY_TRAINING_PLAN" /* 每周训练计划 */)).catch(() => { /* dismissed */ })
   else printPlan(st, owner)
 }
 // A picked plan file → the import sheet, or a toast saying why not.
@@ -2149,7 +2149,7 @@ export function importPlanFile(f, onRead) {
   rd.onload = () => {
     try { const bundle = parsePlan(rd.result, S().unit || 'kg'); onRead?.(); planImportSheet(bundle) }
     // parsePlan's own refusal is written for people; anything else is not shown raw.
-    catch (e) { toast(e?.code === 'not-plan' ? t('Import failed: {0}', e.message) : t('Couldn’t read that file.')) }
+    catch (e) { toast(e?.code === 'not-plan' ? t("IMPORT_FAILED_COUNT" /* 导入失败：{0} */, e.message) : t("COULDN_T_READ_THAT_FILE" /* 无法读取这个文件。 */)) }
   }
   rd.readAsText(f)
 }
@@ -2166,16 +2166,16 @@ function PlanTools({ close }) {
   }
 
   return <>
-    <h3>{t('Share your plan')}</h3>
-    <div className="muted small" style={{ marginBottom: 16 }}>{t('Send your routines to a friend, or put your week on paper.')}</div>
-    <Button variant="primary" icon="share" onClick={exportFile} disabled={!hasRoutines}>{t('Export plan file')}</Button>
-    <div className="dim small" style={{ margin: '7px 2px 0', lineHeight: 1.4 }}>{t('A small file a friend can import into their own openGym. Routines only, none of your workouts or weigh-ins.')}</div>
+    <h3>{t("SHARE_YOUR_PLAN" /* 分享你的计划 */)}</h3>
+    <div className="muted small" style={{ marginBottom: 16 }}>{t("SEND_YOUR_ROUTINES_TO_A_FRIEND_OR_PUT_YOUR_WEEK_ON_PAPER" /* 把你的训练计划发给朋友，或把这一周打印到纸上。 */)}</div>
+    <Button variant="primary" icon="share" onClick={exportFile} disabled={!hasRoutines}>{t("EXPORT_PLAN_FILE" /* 导出计划文件 */)}</Button>
+    <div className="dim small" style={{ margin: '7px 2px 0', lineHeight: 1.4 }}>{t("A_SMALL_FILE_A_FRIEND_CAN_IMPORT_INTO_THEIR_OWN_OPENGYM_ROUTINES" /* 一个小文件，朋友可以导入到自己的 openGym。只有训练计划，不含你的训练记录和体重。 */)}</div>
     <div style={{ height: 12 }} />
-    <Button variant="tinted" icon="note" onClick={() => { close(); printWholePlan() }} disabled={!hasRoutines}>{t('Print / Save as PDF')}</Button>
-    <div className="dim small" style={{ margin: '7px 2px 0', lineHeight: 1.4 }}>{t('A clean printout, one page per plan. No exercise ever gets split across pages.')}</div>
-    {!hasRoutines && <div className="dim small" style={{ margin: '12px 2px 0' }}>{t('Add an exercise to a routine first. An empty plan has nothing to share.')}</div>}
-    <h4 className="sec">{t('Got a plan from a friend?')}</h4>
-    <Button variant="ghost" icon="download" onClick={() => fileRef.current?.click()}>{t('Import a plan file')}</Button>
+    <Button variant="tinted" icon="note" onClick={() => { close(); printWholePlan() }} disabled={!hasRoutines}>{t("PRINT_SAVE_AS_PDF" /* 打印 / 保存为 PDF */)}</Button>
+    <div className="dim small" style={{ margin: '7px 2px 0', lineHeight: 1.4 }}>{t("A_CLEAN_PRINTOUT_ONE_PAGE_PER_PLAN_NO_EXERCISE_EVER_GETS_SPLIT" /* 干净的打印版，每个计划一页。动作绝不会被拆到两页。 */)}</div>
+    {!hasRoutines && <div className="dim small" style={{ margin: '12px 2px 0' }}>{t("ADD_AN_EXERCISE_TO_A_ROUTINE_FIRST_AN_EMPTY_PLAN_HAS_NOTHING" /* 请先给训练计划添加动作。空计划没什么可分享的。 */)}</div>}
+    <h4 className="sec">{t("GOT_A_PLAN_FROM_A_FRIEND" /* 收到朋友的计划了吗？ */)}</h4>
+    <Button variant="ghost" icon="download" onClick={() => fileRef.current?.click()}>{t("IMPORT_A_PLAN_FILE" /* 导入计划文件 */)}</Button>
     <input ref={fileRef} type="file" accept="application/json,.json" onChange={pickFile} hidden />
   </>
 }
@@ -2187,31 +2187,31 @@ function PlanImport({ bundle, close }) {
   const apply = () => {
     update(s => mergePlan(s, bundle, { schedule }))
     close()
-    toast(tn('Added {0} routine to your plan', 'Added {0} routines to your plan', bundle.routineCount))
+    toast(tn("ADDED_COUNT_ROUTINE_TO_YOUR_PLAN" /* 已向你的计划添加 {0} 个训练计划 */, "ADDED_COUNT_ROUTINES_TO_YOUR_PLAN" /* 已向你的计划添加 {0} 个训练计划 */, bundle.routineCount))
     nav('/plan')
   }
   return <>
-    <h3>{bundle.name ? t('Import “{0}”', bundle.name) : t('Import this plan')}</h3>
+    <h3>{bundle.name ? t("IMPORT_COUNT" /* 导入“{0}” */, bundle.name) : t("IMPORT_THIS_PLAN" /* 导入此计划 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
       {routineCount(bundle.routineCount)}
       {' · ' + exCount(bundle.exerciseCount)}
       {bundle.scheduledDays > 0
-        ? ' · ' + tn('scheduled on {0} day', 'scheduled on {0} days', bundle.scheduledDays)
+        ? ' · ' + tn("SCHEDULED_ON_COUNT_DAY" /* 已安排在 {0} 天 */, "SCHEDULED_ON_COUNT_DAYS" /* 已安排在 {0} 天 */, bundle.scheduledDays)
         : ''}
     </div>
-    <div className="dim small" style={{ marginBottom: 14, lineHeight: 1.4 }}>{t('These are added as new routines. Nothing you already have is touched.')}</div>
+    <div className="dim small" style={{ marginBottom: 14, lineHeight: 1.4 }}>{t("THESE_ARE_ADDED_AS_NEW_ROUTINES_NOTHING_YOU_ALREADY_HAVE_IS_TOUCHED" /* 它们会作为新的训练计划添加。你已有的内容一点都不会动。 */)}</div>
     {bundle.dropped > 0 && <div className="small" style={{ color: 'var(--yellow)', marginBottom: 14, lineHeight: 1.4 }}>
       {t(bundle.dropped === 1
-        ? '{0} exercise in the file isn’t in your library and was left out.'
-        : '{0} exercises in the file aren’t in your library and were left out.', bundle.dropped)}
+        ? "COUNT_EXERCISE_IN_THE_FILE_ISN_T_IN_YOUR_LIBRARY_AND_WAS" /* 文件中有 {0} 个动作不在你的动作库中，已略过。 */
+        : "COUNT_EXERCISES_IN_THE_FILE_AREN_T_IN_YOUR_LIBRARY_AND_WERE" /* 文件中有 {0} 个动作不在你的动作库中，已略过。 */, bundle.dropped)}
     </div>}
     {bundle.scheduledDays > 0 && <div className="row between" style={{ padding: '10px 2px', borderTop: '1px solid var(--sep)', borderBottom: '1px solid var(--sep)', marginBottom: 16, gap: 12 }}>
-      <div><div className="tt" style={{ fontSize: 15 }}>{t('Use this weekly schedule')}</div><div className="small dim">{t('Replaces your current Mon–Sun assignments.')}</div></div>
+      <div><div className="tt" style={{ fontSize: 15 }}>{t("USE_THIS_WEEKLY_SCHEDULE" /* 使用此每周日程 */)}</div><div className="small dim">{t("REPLACES_YOUR_CURRENT_MON_SUN_ASSIGNMENTS" /* 替换你当前的周一至周日安排。 */)}</div></div>
       <Switch checked={schedule} onChange={setSchedule} />
     </div>}
-    <Button variant="primary" onClick={apply}>{t('Add to my plan')}</Button>
+    <Button variant="primary" onClick={apply}>{t("ADD_TO_MY_PLAN" /* 加入我的计划 */)}</Button>
     <div style={{ height: 8 }} />
-    <Button variant="ghost" className="dim" onClick={close}>{t('Cancel')}</Button>
+    <Button variant="ghost" className="dim" onClick={close}>{t("CANCEL" /* 取消 */)}</Button>
   </>
 }
 
@@ -2254,7 +2254,7 @@ function DayOverride({ iso, close }) {
   const set = v => {
     update(s => { if (!v) delete s.dayPlan[iso]; else s.dayPlan[iso] = v })
     close()
-    toast(v === '' ? t('Back to weekly plan') : v === 'rest' ? t('{0} set to rest', fmtDate(iso)) : t('{0} planned for {1}', (st.routines.find(r => r.id === v) || {}).name, fmtDate(iso)))
+    toast(v === '' ? t("BACK_TO_WEEKLY_PLAN" /* 恢复每周计划 */) : v === 'rest' ? t("COUNT_SET_TO_REST" /* {0} 已设为休息 */, fmtDate(iso)) : t("COUNT_PLANNED_FOR_COUNT" /* {0} 已安排在 {1} */, (st.routines.find(r => r.id === v) || {}).name, fmtDate(iso)))
   }
   const row = r => <div key={r.id} className="item" {...tappable(() => set(r.id))}>
     <span className="lrow-i"><Icon name={glyphOf(r.emoji)} /></span>
@@ -2262,25 +2262,25 @@ function DayOverride({ iso, close }) {
     {effIds.includes(r.id) && <Icon name="check" className="accent" />}</div>
   return <>
     <h3>{fmtDate(iso, true)}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t('Weekly plan:')} {weeklyNames.length ? deriveSessionName(weeklyNames) : t('Rest')}{changed && <span style={{ color: 'var(--orange)' }}> · {t('changed for this day')}</span>}<br />{t('Sick, missed a day or want a different session? Pick what to train instead.')}</div>
-    {missed && <div style={{ marginBottom: 14 }}><Button variant="primary" icon="checkCircle" onClick={logIt}>{t('Log this workout')}</Button></div>}
+    <div className="muted small" style={{ marginBottom: 12 }}>{t("WEEKLY_PLAN" /* 每周计划： */)} {weeklyNames.length ? deriveSessionName(weeklyNames) : t("REST" /* 休息 */)}{changed && <span style={{ color: 'var(--orange)' }}> · {t("CHANGED_FOR_THIS_DAY" /* 此日已更改 */)}</span>}<br />{t("SICK_MISSED_A_DAY_OR_WANT_A_DIFFERENT_SESSION_PICK_WHAT_TO" /* 生病、错过一天或想换个训练？选择改练什么。 */)}</div>
+    {missed && <div style={{ marginBottom: 14 }}><Button variant="primary" icon="checkCircle" onClick={logIt}>{t("LOG_THIS_WORKOUT" /* 补记这次训练 */)}</Button></div>}
     {canNote && <div className="day-note" style={{ marginBottom: 14 }}>
       <div className="item day-note-row" {...tappable(() => dayNoteSheet(iso))}>
         <span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name={note?.tag ? DAY_NOTE_ICON[note.tag] : 'note'} /></span>
         <div className="grow">{note
-          ? <><div className="tt">{note.tag ? t(DAY_NOTE_LABEL[note.tag]) : t('Day note')}</div>{note.text && <div className="ss" style={{ whiteSpace: 'pre-wrap' }}>{note.text}</div>}</>
-          : <div className="tt">{t('Add a note for this day')}</div>}</div>
+          ? <><div className="tt">{note.tag ? translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAY_NOTE_LABEL[note.tag]) : t("DAY_NOTE" /* 当日备注 */)}</div>{note.text && <div className="ss" style={{ whiteSpace: 'pre-wrap' }}>{note.text}</div>}</>
+          : <div className="tt">{t("ADD_A_NOTE_FOR_THIS_DAY" /* 为这一天添加备注 */)}</div>}</div>
         <Icon name={note ? 'pencil' : 'plus'} className="chev" />
       </div>
     </div>}
     {coach.length > 0 && <>
-      <h4 className="sec" style={{ marginTop: 0 }}>{ownLoop ? t('Your loop') : t('Coach week')}</h4>
+      <h4 className="sec" style={{ marginTop: 0 }}>{ownLoop ? t("YOUR_LOOP" /* 你的循环 */) : t("COACH_WEEK" /* 教练周 */)}</h4>
       <div className="list" style={{ marginBottom: 8 }}>{coach.map(row)}</div>
     </>}
     <div className="list">
       {st.routines.filter(r => !remaining.includes(r.id)).map(row)}
-      <div className="item" {...tappable(() => set('rest'))}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="moon" /></span><div className="grow"><div className="tt">{t('Rest / skip this day')}</div></div>{effIds.length === 0 && <Icon name="check" className="accent" />}</div>
-      {hasOvr && <div className="item" {...tappable(() => set(''))}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="reset" /></span><div className="grow"><div className="tt">{t('Back to weekly plan')}</div></div></div>}
+      <div className="item" {...tappable(() => set('rest'))}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="moon" /></span><div className="grow"><div className="tt">{t("REST_SKIP_THIS_DAY" /* 休息 / 跳过这天 */)}</div></div>{effIds.length === 0 && <Icon name="check" className="accent" />}</div>
+      {hasOvr && <div className="item" {...tappable(() => set(''))}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="reset" /></span><div className="grow"><div className="tt">{t("BACK_TO_WEEKLY_PLAN" /* 恢复每周计划 */)}</div></div></div>}
     </div>
   </>
 }
@@ -2303,22 +2303,22 @@ function DayNote({ iso, close }) {
     const clean = text.trim().slice(0, NOTE_MAX)
     if (!tag && !clean && !had) { close(); return }
     write({ tag, text: clean })
-    toast(tag || clean ? t('Noted. See you next session!') : t('Note removed'))
+    toast(tag || clean ? t("NOTED_SEE_YOU_NEXT_SESSION" /* 记下了，下次训练见！ */) : t("NOTE_REMOVED" /* 备注已删除 */))
   }
-  const remove = () => { write(null); toast(t('Note removed')) }
+  const remove = () => { write(null); toast(t("NOTE_REMOVED" /* 备注已删除 */)) }
   return <>
     <h3>{fmtDate(iso, true)}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t('Life happens. Leave yourself a note, and the missed-day nudge lets this one go.')}</div>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t("LIFE_HAPPENS_LEAVE_YOURSELF_A_NOTE_AND_THE_MISSED_DAY_NUDGE_LETS" /* 生活总有意外。给自己留个备注，错过训练的提醒就会放过这一天。 */)}</div>
     <div className="chips" style={{ margin: '0 0 12px' }}>
       {DAY_NOTE_TAGS.map(k => <button key={k} className={'chip nocap' + (tag === k ? ' on' : '')} aria-pressed={tag === k}
-        onClick={() => setTag(tag === k ? null : k)}><Icon name={DAY_NOTE_ICON[k]} /> {t(DAY_NOTE_LABEL[k])}</button>)}
+        onClick={() => setTag(tag === k ? null : k)}><Icon name={DAY_NOTE_ICON[k]} /> {translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAY_NOTE_LABEL[k])}</button>)}
     </div>
     <textarea ref={noteRef} className="input" rows={3} maxLength={NOTE_MAX} value={text}
-      placeholder={t('Anything else? (optional)')}
+      placeholder={t("ANYTHING_ELSE_OPTIONAL" /* 还有别的吗？（可选） */)}
       onFocus={onNoteFocus} onChange={e => setText(e.target.value)} />
     <div style={{ height: 18 }} />
-    <Button variant="primary" onClick={save}>{t('Save')}</Button>
-    {had && <><div style={{ height: 10 }} /><Button variant="ghost" icon="trash" onClick={remove}>{t('Remove note')}</Button></>}
+    <Button variant="primary" onClick={save}>{t("SAVE" /* 保存 */)}</Button>
+    {had && <><div style={{ height: 10 }} /><Button variant="ghost" icon="trash" onClick={remove}>{t("REMOVE_NOTE" /* 删除备注 */)}</Button></>}
   </>
 }
 export const dayNoteSheet = iso => ui().openSheet(close => <DayNote iso={iso} close={close} />)
@@ -2337,10 +2337,10 @@ function DayAssign({ day, close }) {
   })
   const rest = () => { update(s => { delete s.week[day] }); close() }
   return <>
-    <h3 style={{ marginBottom: 2 }}>{t(DAYN[day])}</h3>
-    <div className="muted small" style={{ marginBottom: 10 }}>{t('Pick one routine, or more to train them together.')}</div>
+    <h3 style={{ marginBottom: 2 }}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAYN[day])}</h3>
+    <div className="muted small" style={{ marginBottom: 10 }}>{t("PICK_ONE_ROUTINE_OR_MORE_TO_TRAIN_THEM_TOGETHER" /* 选一个训练计划，或选多个一起练。 */)}</div>
     <div className="list menu-list">
-      <div className="item menu-item" {...tappable(rest)}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="moon" /></span><div className="grow"><div className="tt">{t('Rest day')}</div></div><span className={'menu-on' + (!cur.length ? ' is-on' : '')}><Icon name="check" /></span></div>
+      <div className="item menu-item" {...tappable(rest)}><span className="lrow-i" style={{ background: 'var(--surface-3)' }}><Icon name="moon" /></span><div className="grow"><div className="tt">{t("REST_DAY" /* 休息日 */)}</div></div><span className={'menu-on' + (!cur.length ? ' is-on' : '')}><Icon name="check" /></span></div>
       {st.routines.map(r => {
         const on = cur.includes(r.id)
         return <div key={r.id} className="item menu-item" aria-pressed={on} {...tappable(() => toggle(r.id))}>
@@ -2351,7 +2351,7 @@ function DayAssign({ day, close }) {
       })}
     </div>
     <div style={{ height: 12 }} />
-    <Button variant="primary" onClick={close}>{t('Done')}</Button>
+    <Button variant="primary" onClick={close}>{t("DONE" /* 完成 */)}</Button>
   </>
 }
 export const dayAssignSheet = day => ui().openSheet(close => <DayAssign day={day} close={close} />)
@@ -2366,30 +2366,30 @@ function WorkoutDateEdit({ w, onDone, close }) {
   const [time, setTime] = useState(startTimeOf(w))
   const today = todayISO()
   const save = () => {
-    if (!date || date > today) { toast(t('Pick a day up to today')); return }
+    if (!date || date > today) { toast(t("PICK_A_DAY_UP_TO_TODAY" /* 请选择今天或之前的日期 */)); return }
     // Nothing to do, and nothing to push: a no-op save and a workout deleted from another
     // sheet both just close.
     if (date === w.d && time === startTimeOf(w)) { close(); return }
     if (!(S().workouts || []).some(x => sameWorkout(x, w))) { close(); return }
     // It keeps its length, so the end it would have is what has to be in the past.
-    if (endsInFuture(date, time, durationMinOf(w))) { toast(t('That’s still in the future. Try an earlier start.')); return }
+    if (endsInFuture(date, time, durationMinOf(w))) { toast(t("THAT_S_STILL_IN_THE_FUTURE_TRY_AN_EARLIER_START" /* 这还在未来。试试更早的开始时间。 */)); return }
     update(s => {
       const next = moveWorkout(s.workouts, w, date, time)
       if (next) s.workouts = next
     })
     close()
     onDone && onDone()
-    toast(t('Workout moved'))
+    toast(t("WORKOUT_MOVED" /* 训练已移动 */))
   }
   return <>
-    <h3>{t('Change date & time')}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t('The session keeps its length. Personal records are worked out again from the new order.')}</div>
-    <Row icon="calendar" title={t('Date')}>
+    <h3>{t("CHANGE_DATE_TIME" /* 修改日期和时间 */)}</h3>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t("THE_SESSION_KEEPS_ITS_LENGTH_PERSONAL_RECORDS_ARE_WORKED_OUT_AGAIN_FROM" /* 训练时长保持不变。个人记录会按新的顺序重新计算。 */)}</div>
+    <Row icon="calendar" title={t("DATE" /* 日期 */)}>
       <input type="date" className="timef" value={date} max={today} onChange={e => setDate(e.target.value)} /></Row>
-    <Row icon="clock" title={t('Start time')}>
+    <Row icon="clock" title={t("START_TIME" /* 开始时间 */)}>
       <input type="time" className="timef" value={time} onChange={e => setTime(e.target.value)} /></Row>
     <div style={{ height: 18 }} />
-    <Button variant="primary" onClick={save}>{t('Save')}</Button>
+    <Button variant="primary" onClick={save}>{t("SAVE" /* 保存 */)}</Button>
   </>
 }
 export const workoutDateSheet = (w, onDone) => ui().openSheet(close => <WorkoutDateEdit w={w} onDone={onDone} close={close} />)
@@ -2404,8 +2404,8 @@ function WorkoutDurationEdit({ w, onDone, close }) {
   const durInvalid = !(dur >= 1)
   const durTooLong = dur > MAX_DURATION_MIN
   const save = () => {
-    if (durInvalid) { toast(t('Enter how long it took (at least 1 minute).')); return }
-    if (durTooLong) { toast(t('That’s more than a day. Keep it to 24 hours or less.')); return }
+    if (durInvalid) { toast(t("ENTER_HOW_LONG_IT_TOOK_AT_LEAST_ONE_MINUTE" /* 请输入用时（至少 1 分钟）。 */)); return }
+    if (durTooLong) { toast(t("THAT_S_MORE_THAN_A_DAY_KEEP_IT_TO_TWOFOUR_HOURS_OR" /* 超过一天了。最多 24 小时。 */)); return }
     let changed = false
     update(s => {
       const next = setWorkoutDuration(s.workouts, w, dur)   // at least a minute, however the field was left
@@ -2414,18 +2414,18 @@ function WorkoutDurationEdit({ w, onDone, close }) {
     close()
     if (!changed) return
     onDone && onDone()
-    toast(t('Duration changed'))
+    toast(t("DURATION_CHANGED" /* 时长已修改 */))
   }
   return <>
-    <h3>{t('Change duration')}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t('Forgot to finish on time? Set how long the session really took. It keeps its start time and its sets.')}</div>
+    <h3>{t("CHANGE_DURATION" /* 修改时长 */)}</h3>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t("FORGOT_TO_FINISH_ON_TIME_SET_HOW_LONG_THE_SESSION_REALLY_TOOK" /* 忘了及时结束？设置本次训练的实际时长。开始时间和组数保持不变。 */)}</div>
     {/* min 0, not 1: the stepper would put a cleared field back to 1 as it lost focus to Save. */}
     {/* No max either: one would cut a typo down to a day on blur and save that without a word. */}
-    <Stepper label={t('Duration')} unit={t('min')} value={dur} step={5} min={0} decimal={false} invalid={durInvalid || durTooLong} onChange={v => setDur(Math.round(v))} />
-    {durInvalid && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t('Enter how long it took (at least 1 minute).')}</div>}
-    {durTooLong && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t('That’s more than a day. Keep it to 24 hours or less.')}</div>}
+    <Stepper label={t("DURATION" /* 时长 */)} unit={t("MIN" /* 分钟 */)} value={dur} step={5} min={0} decimal={false} invalid={durInvalid || durTooLong} onChange={v => setDur(Math.round(v))} />
+    {durInvalid && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t("ENTER_HOW_LONG_IT_TOOK_AT_LEAST_ONE_MINUTE" /* 请输入用时（至少 1 分钟）。 */)}</div>}
+    {durTooLong && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t("THAT_S_MORE_THAN_A_DAY_KEEP_IT_TO_TWOFOUR_HOURS_OR" /* 超过一天了。最多 24 小时。 */)}</div>}
     <div style={{ height: 18 }} />
-    <Button variant="primary" onClick={save}>{t('Save')}</Button>
+    <Button variant="primary" onClick={save}>{t("SAVE" /* 保存 */)}</Button>
   </>
 }
 export const workoutDurationSheet = (w, onDone) => ui().openSheet(close => <WorkoutDurationEdit w={w} onDone={onDone} close={close} />)
@@ -2474,7 +2474,7 @@ function WorkoutDetail({ w, close }) {
     return <div key={i} className="row wd-ex" style={{ alignItems: 'flex-start' }} {...tappable(() => exerciseHistorySheet(e.id))}>
       {ex && <Thumb ex={ex} />}
       <div className="grow"><div className={`tt ${exerciseNameClass(ex)}`} style={{ fontWeight: 600 }}>{nameOf(e)} {w.prs && w.prs.includes(e.id) && <span className="pr"><Icon name="trophy" />PR</span>}</div>
-        <div className="ss">{e.sets.filter(hasCompletedWork).map(s => setLabel(e.id, s, e.target, speedUnitOf(st))).join('  ·  ') || t('no sets')}</div>
+        <div className="ss">{e.sets.filter(hasCompletedWork).map(s => setLabel(e.id, s, e.target, speedUnitOf(st))).join('  ·  ') || t("NO_SETS" /* 无组数 */)}</div>
         {e.note && <div className="small dim" style={{ marginTop: 3, whiteSpace: 'pre-wrap' }}>
           {e.notePin && <Icon name="pin" style={{ fontSize: 12, marginInlineEnd: 4, verticalAlign: '-1px', color: 'var(--yellow)' }} />}{e.note}
         </div>}</div>
@@ -2487,21 +2487,21 @@ function WorkoutDetail({ w, close }) {
   const entryRows = units => units.map(unit => {
     if (unit.length < 2) return entryRow(w.entries[unit[0]], unit[0])
     return <div key={'ss' + unit[0]} className="wd-ss">
-      <div className="ss-label"><Icon name="link" />{t('Superset')}</div>
+      <div className="ss-label"><Icon name="link" />{t("SUPERSET" /* 超级组 */)}</div>
       {unit.map(i => entryRow(w.entries[i], i))}
     </div>
   })
   // Copied with the note as it stands in the box, which may not be saved yet.
   const copyAsText = async () => {
     const rec = { ...(st.workouts.find(x => sameWorkout(x, w)) || w), note: note.trim() }
-    toast(await copyText(workoutText(rec, { unit: st.unit, nameOf, speedUnit: speedUnitOf(st) })) ? t('Copied') : t('Could not copy'))
+    toast(await copyText(workoutText(rec, { unit: st.unit, nameOf, speedUnit: speedUnitOf(st) })) ? t("COPIED" /* 已复制 */) : t("COULD_NOT_COPY" /* 无法复制 */))
   }
   // A Garmin .fit activity (#447) of the saved record, for Garmin Connect's Import Data.
   const exportFit = () => {
     const rec = st.workouts.find(x => sameWorkout(x, w)) || w
     let bytes
     try { bytes = workoutFit(rec, { unit: st.unit, version: __APP_VERSION__ }) }
-    catch (e) { toast(t('Could not create the file')); return }
+    catch (e) { toast(t("COULD_NOT_CREATE_THE_FILE" /* 无法创建文件 */)); return }
     saveFitFile(new Blob([bytes], { type: 'application/vnd.ant.fit' }), fitFileName(rec))
   }
   const shareAsImage = () => {
@@ -2525,29 +2525,29 @@ function WorkoutDetail({ w, close }) {
       return <div key={g.rid || '__none'}>
         <div className="row between" style={{ margin: '2px 0 8px', paddingBottom: 6, borderBottom: '1px solid var(--sep)' }}>
           <div className="row" style={{ gap: 7, fontWeight: 600 }}>
-            {r && <Icon name={glyphOf(r.emoji)} />}{r ? r.name : t('Freestyle')}
+            {r && <Icon name={glyphOf(r.emoji)} />}{r ? r.name : t("FREESTYLE" /* 自由训练 */)}
           </div>
-          <div className="small dim">{t('{0} sets', setN)} · {fmtVol(vol, st.unit)}</div>
+          <div className="small dim">{t("COUNT_SETS" /* {0} 组 */, setN)} · {fmtVol(vol, st.unit)}</div>
         </div>
         {entryRows(g.units)}
       </div>
     }) : entryRows(groups[0]?.units || [])}
     {/* Progress photos and form-check videos: added and removed right here, on the saved record. */}
     <WorkoutMediaSection w={w} />
-    <div className="small muted" style={{ margin: '4px 0 6px' }}>{t('Session note')}</div>
+    <div className="small muted" style={{ margin: '4px 0 6px' }}>{t("SESSION_NOTE" /* 训练备注 */)}</div>
     <textarea ref={noteRef} className="input" rows={Math.min(16, Math.max(2, note.split('\n').length))} maxLength={SESSION_NOTE_MAX} value={note}
-      placeholder={t('How the session went as a whole.')}
+      placeholder={t("HOW_THE_SESSION_WENT_AS_A_WHOLE" /* 这次训练整体感觉如何。 */)}
       onFocus={onNoteFocus} onChange={e => setNote(e.target.value)} onBlur={saveNote} />
     <div style={{ height: 14 }} />
-    {st.active && <p className="small muted">{t('Finish the current workout first.')}</p>}
+    {st.active && <p className="small muted">{t("FINISH_YOUR_CURRENT_WORKOUT_FIRST" /* 请先完成当前训练 */)}</p>}
     {/* The editor starts from the record as it is, so a note typed here goes in first — the same
         flush the date row does, and the unmount hook then has nothing left to write over it. */}
     <Button icon="pencil" disabled={!!st.active} onClick={() => {
       saveNote()
       initial.current = latest.current.trim().slice(0, SESSION_NOTE_MAX)
       try { update(state => { editCompletedSession(state, w) }); closeThenNav(close, '/workout') }
-      catch (error) { toast(t(error.message)) }
-    }}>{t('Edit workout')}</Button>
+      catch (error) { toast(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(error.message)) }
+    }}>{t("EDIT_WORKOUT" /* 编辑训练 */)}</Button>
     <div style={{ height: 8 }} />
     {/* The same exercises again, today, as a new session (#58): the rows read what was logged
         in this workout. The record itself stays as it is. */}
@@ -2555,41 +2555,41 @@ function WorkoutDetail({ w, close }) {
       saveNote()
       initial.current = latest.current.trim().slice(0, SESSION_NOTE_MAX)
       repeatWorkout(w, close)
-    }}>{t('Repeat today')}</Button>
+    }}>{t("REPEAT_TODAY" /* 今天再练一次 */)}</Button>
     {/* The note lives in a textarea that only writes on blur, and moving the workout re-keys a
         legacy record — so flush it first and stop the unmount hook writing it a second time. */}
     <Button icon="calendar" style={{ marginBottom: 8 }} onClick={() => {
       saveNote()
       initial.current = latest.current.trim().slice(0, SESSION_NOTE_MAX)
       workoutDateSheet(w, close)
-    }}>{t('Change date & time')}</Button>
+    }}>{t("CHANGE_DATE_TIME" /* 修改日期和时间 */)}</Button>
     <Button icon="stopwatch" style={{ marginBottom: 8 }} onClick={() => {
       saveNote()
       initial.current = latest.current.trim().slice(0, SESSION_NOTE_MAX)
       workoutDurationSheet(w, close)
-    }}>{t('Change duration')}</Button>
+    }}>{t("CHANGE_DURATION" /* 修改时长 */)}</Button>
     <Button icon="plus" onClick={() => confirmSheet({
-      title: t('Save as routine?'),
-      message: t('Create an independent routine from these exercise targets. Your workout history is kept.'),
-      confirmText: t('Save'),
+      title: t("SAVE_AS_ROUTINE" /* 要保存为训练计划吗？ */),
+      message: t("CREATE_AN_INDEPENDENT_ROUTINE_FROM_THESE_EXERCISE_TARGETS_YOUR_WORKOUT_HISTORY_IS" /* 根据这些训练目标创建独立训练计划。你的训练记录会保留。 */),
+      confirmText: t("SAVE" /* 保存 */),
       onConfirm: () => {
         let id
         try { update(s => { id = saveSessionAsRoutine(s, w, w.name) }) }
-        catch (e) { toast(t(e.message)); return }
+        catch (e) { toast(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(e.message)); return }
         close()
         nav('/plan/r/' + id)
       }
-    })}>{t('Save as routine')}</Button>
+    })}>{t("SAVE_AS_ROUTINE_A" /* 保存为训练计划 */)}</Button>
     <div style={{ height: 8 }} />
-    <Button icon="copy" onClick={copyAsText}>{t('Copy as text')}</Button>
+    <Button icon="copy" onClick={copyAsText}>{t("COPY_AS_TEXT" /* 复制为文本 */)}</Button>
     <div style={{ height: 8 }} />
-    <Button icon="share" onClick={shareAsImage}>{t('Share as image')}</Button>
+    <Button icon="share" onClick={shareAsImage}>{t("SHARE_AS_IMAGE" /* 分享为图片 */)}</Button>
     <div style={{ height: 8 }} />
-    <Button icon="download" onClick={exportFit}>{t('Export as .fit file')}</Button>
+    <Button icon="download" onClick={exportFit}>{t("EXPORT_AS_FIT_FILE" /* 导出为 .fit 文件 */)}</Button>
     <div style={{ height: 10 }} />
     {/* Matched the way the edits above are, not by id: a workout from before ids has none, and
         filtering on `x.id !== undefined` took every other one of them with it. */}
-    <Button variant="danger" onClick={() => confirmSheet({ title: t('Delete workout?'), message: t('This removes it from your history for good.') + mediaGoesToo(S().workouts.find(x => sameWorkout(x, w))), confirmText: t('Delete'), danger: true, onConfirm: () => { update(s => { s.workouts = s.workouts.filter(x => !sameWorkout(x, w)) }); close(); toast(t('Workout deleted')) } })}>{t('Delete workout')}</Button>
+    <Button variant="danger" onClick={() => confirmSheet({ title: t("DELETE_WORKOUT" /* 删除训练？ */), message: t("THIS_REMOVES_IT_FROM_YOUR_HISTORY_FOR_GOOD" /* 它将从历史中永久删除。 */) + mediaGoesToo(S().workouts.find(x => sameWorkout(x, w))), confirmText: t("DELETE" /* 删除 */), danger: true, onConfirm: () => { update(s => { s.workouts = s.workouts.filter(x => !sameWorkout(x, w)) }); close(); toast(t("WORKOUT_DELETED" /* 训练已删除 */)) } })}>{t("DELETE_WORKOUT_A" /* 删除训练 */)}</Button>
   </>
 }
 // "Share as image" (#453): the card lib/workout-card.js lays out, painted in the theme and accent
@@ -2626,19 +2626,19 @@ function ShareWorkoutImage({ w, nameOf, close }) {
     close()
   }
   return <>
-    <h3>{t('Share workout')}</h3>
+    <h3>{t("SHARE_WORKOUT" /* 分享训练 */)}</h3>
     <div className="share-card">
       {img?.url
-        ? <img src={img.url} alt={t('Preview of the image to share')} />
-        : img?.failed ? <div className="share-card-ph small muted">{t('Could not create the image')}</div>
+        ? <img src={img.url} alt={t("PREVIEW_OF_THE_IMAGE_TO_SHARE" /* 待分享图片的预览 */)} />
+        : img?.failed ? <div className="share-card-ph small muted">{t("COULD_NOT_CREATE_THE_IMAGE" /* 无法生成图片 */)}</div>
           : <div className="share-card-ph" aria-hidden="true" />}
     </div>
     {model.levels && <div className="sect-b" style={{ marginBottom: 12 }}>
-      <Row icon="figureStrength" iconTint="var(--acc)" title={t('Muscle map')} subtitle={t('Show which muscles this workout trained.')}>
-        <Switch checked={withMap} aria-label={t('Muscle map')} onChange={v => update(s => { s.shareMap = v })} />
+      <Row icon="figureStrength" iconTint="var(--acc)" title={t("MUSCLE_MAP" /* 肌肉图 */)} subtitle={t("SHOW_WHICH_MUSCLES_THIS_WORKOUT_TRAINED" /* 显示本次训练锻炼了哪些肌肉。 */)}>
+        <Switch checked={withMap} aria-label={t("MUSCLE_MAP" /* 肌肉图 */)} onChange={v => update(s => { s.shareMap = v })} />
       </Row>
     </div>}
-    <Button variant="primary" icon="share" disabled={!img?.blob || busy} onClick={share}>{t('Share')}</Button>
+    <Button variant="primary" icon="share" disabled={!img?.blob || busy} onClick={share}>{t("SHARE" /* 分享 */)}</Button>
   </>
 }
 async function workoutCardImage(model, { map, body }) {
@@ -2663,7 +2663,7 @@ async function workoutCardImage(model, { map, body }) {
 async function saveFitFile(blob, name) {
   if (MOBILE) { try { await shareExportBlob(blob, name) } catch (e) { /* share sheet dismissed */ } return }
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); URL.revokeObjectURL(a.href)
-  toast(t('Saved. Garmin Connect can take it from here.'))
+  toast(t("SAVED_GARMIN_CONNECT_CAN_TAKE_IT_FROM_HERE" /* 已保存。接下来交给 Garmin Connect 吧。 */))
 }
 // The phone app goes through the OS share sheet the way a backup does; a browser that can share
 // files (most phones) opens its own; anything else saves the picture as a download.
@@ -2675,13 +2675,13 @@ async function shareImage(blob, name, title) {
     return
   }
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); URL.revokeObjectURL(a.href)
-  toast(t('Image saved'))
+  toast(t("IMAGE_SAVED" /* 图片已保存 */))
 }
 // The sentence a workout's Delete adds when its photos and videos go with it — every file the
 // record lists, shown or not. Empty when it has none.
 function mediaGoesToo(rec) {
   const n = workoutMediaOf(rec, Infinity).length
-  return n ? ' ' + tn('Its photo or video is deleted with it.', 'Its {0} photos or videos are deleted with it.', n) : ''
+  return n ? ' ' + tn("ITS_PHOTO_OR_VIDEO_IS_DELETED_WITH_IT" /* 其中的照片或视频也会一并删除。 */, "ITS_COUNT_PHOTOS_OR_VIDEOS_ARE_DELETED_WITH_IT" /* 其中的 {0} 个照片或视频也会一并删除。 */, n) : ''
 }
 export const workoutDetailSheet = w => ui().openSheet(close => <WorkoutDetail w={w} close={close} />)
 
@@ -2721,20 +2721,20 @@ function Calendar({ start, close }) {
   }
   return <>
     <div className="row between" style={{ marginBottom: 2 }}>
-      <button className="iconbtn" onClick={() => setCur(new Date(y, mo - 1, 1))} aria-label={t('Previous month')}><Icon name="chevronLeft" /></button>
-      <h3 style={{ margin: 0 }}>{t(MONTHS_LONG[mo])} {y}</h3>
-      <button className="iconbtn" onClick={() => setCur(new Date(y, mo + 1, 1))} aria-label={t('Next month')}><Icon name="chevronRight" /></button>
+      <button className="iconbtn" onClick={() => setCur(new Date(y, mo - 1, 1))} aria-label={t("PREVIOUS_MONTH" /* 上个月 */)}><Icon name="chevronLeft" /></button>
+      <h3 style={{ margin: 0 }}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MONTHS_LONG[mo])} {y}</h3>
+      <button className="iconbtn" onClick={() => setCur(new Date(y, mo + 1, 1))} aria-label={t("NEXT_MONTH" /* 下个月 */)}><Icon name="chevronRight" /></button>
     </div>
-    <div className="small muted" style={{ textAlign: 'center' }}>{monthWs.length ? `${tn('{0} workout', '{0} workouts', monthWs.length)} · ${fmtDur(monthMs)} · ${fmtVol(monthVol, st.unit)}` : t('No workouts this month')}</div>
-    <div className="cal-grid">{weekOrder(ws).map(d => <div key={d} className="cal-h">{t(DAYS[d])}</div>)}{cells}</div>
+    <div className="small muted" style={{ textAlign: 'center' }}>{monthWs.length ? `${tn("COUNT_WORKOUT" /* {0} 次训练 */, "COUNT_WORKOUTS" /* {0} 次训练 */, monthWs.length)} · ${fmtDur(monthMs)} · ${fmtVol(monthVol, st.unit)}` : t("NO_WORKOUTS_THIS_MONTH" /* 本月没有训练 */)}</div>
+    <div className="cal-grid">{weekOrder(ws).map(d => <div key={d} className="cal-h">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAYS[d])}</div>)}{cells}</div>
     <div className="cal-legend">
-      <span><i style={{ background: 'var(--acc)' }} />{t('Trained')}</span>
-      <span><i style={{ background: 'var(--label-3)' }} />{t('Planned')}</span>
-      <span><i style={{ background: 'var(--orange)' }} />{t('Rescheduled')}</span>
+      <span><i style={{ background: 'var(--acc)' }} />{t("TRAINED" /* 已训练 */)}</span>
+      <span><i style={{ background: 'var(--label-3)' }} />{t("PLANNED" /* 已计划 */)}</span>
+      <span><i style={{ background: 'var(--orange)' }} />{t("RESCHEDULED_A" /* 已改期 */)}</span>
       {Object.keys(st.dayNotes || {}).some(k => k.startsWith(y + '-' + String(mo + 1).padStart(2, '0')) && dayNoteOf(st, k)) &&
-        <span><i style={{ background: 'var(--indigo)' }} />{t('Day note')}</span>}
+        <span><i style={{ background: 'var(--indigo)' }} />{t("DAY_NOTE" /* 当日备注 */)}</span>}
     </div>
-    <div className="small dim" style={{ textAlign: 'center', marginTop: 10 }}>{t('Tap a trained day for details · tap any other day to plan a session')}</div>
+    <div className="small dim" style={{ textAlign: 'center', marginTop: 10 }}>{t("TAP_A_TRAINED_DAY_FOR_DETAILS_TAP_ANY_OTHER_DAY_TO_PLAN" /* 点按已训练的日期查看详情 · 点按其他日期安排训练 */)}</div>
   </>
 }
 export const calendarSheet = start => ui().openSheet(close => <Calendar start={start} close={close} />)
@@ -2747,8 +2747,8 @@ export function WorkoutRow({ w, onClick }) {
   return <div className="item" {...tappable(onClick)}>
     <span className="lrow-i" style={{ width: 34, height: 34, borderRadius: 8, fontSize: 19 }}><Icon name={glyph} /></span>
     <div className="grow"><div className="tt">{w.name}</div>
-      <div className="ss">{[fmtDate(w.d, true), ...durPart(w.end - w.start), tn('{0} set', '{0} sets', setsDone(w)), fmtVol(w.vol, st.unit)].join(' · ')}</div></div>
-    {mediaN > 0 && <span className="wrow-media" title={tn('{0} photo or video', '{0} photos or videos', mediaN)} aria-label={tn('{0} photo or video', '{0} photos or videos', mediaN)}><Icon name="image" />{mediaN}</span>}
+      <div className="ss">{[fmtDate(w.d, true), ...durPart(w.end - w.start), tn("COUNT_SET" /* {0} 组 */, "COUNT_SETS" /* {0} 组 */, setsDone(w)), fmtVol(w.vol, st.unit)].join(' · ')}</div></div>
+    {mediaN > 0 && <span className="wrow-media" title={tn("COUNT_PHOTO_OR_VIDEO" /* {0} 个照片或视频 */, "COUNT_PHOTOS_OR_VIDEOS" /* {0} 个照片或视频 */, mediaN)} aria-label={tn("COUNT_PHOTO_OR_VIDEO" /* {0} 个照片或视频 */, "COUNT_PHOTOS_OR_VIDEOS" /* {0} 个照片或视频 */, mediaN)}><Icon name="image" />{mediaN}</span>}
     {w.prs && w.prs.length > 0 && <span className="pr"><Icon name="trophy" />{w.prs.length} PR</span>}
     <Icon name="chevronRight" className="chev" />
   </div>
@@ -2758,7 +2758,7 @@ export function WorkoutRow({ w, onClick }) {
 export function DayNoteRow({ iso, note }) {
   return <div className="item day-note-row" {...tappable(() => dayNoteSheet(iso))}>
     <span className="lrow-i" style={{ width: 34, height: 34, borderRadius: 8, fontSize: 19, background: 'var(--surface-3)' }}><Icon name={note.tag ? DAY_NOTE_ICON[note.tag] : 'note'} /></span>
-    <div className="grow"><div className="tt">{note.tag ? t(DAY_NOTE_LABEL[note.tag]) : t('Day note')}</div>
+    <div className="grow"><div className="tt">{note.tag ? translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAY_NOTE_LABEL[note.tag]) : t("DAY_NOTE" /* 当日备注 */)}</div>
       <div className="ss">{[fmtDate(iso, true), note.text].filter(Boolean).join(' · ')}</div></div>
     <Icon name="chevronRight" className="chev" />
   </div>
@@ -2782,7 +2782,7 @@ export function beginWorkout(routineIds, bw) {
       // A session tracks its routines as a list; per-entry `rid` carries which one each
       // exercise came from. No top-level `excludeFromProgression` — per-entry `noProg` does it.
       routineIds: rids,
-      name: routines.length ? deriveSessionName(routines.map(r => r.name)) : t('Freestyle'),
+      name: routines.length ? deriveSessionName(routines.map(r => r.name)) : t("FREESTYLE" /* 自由训练 */),
       bw: bw || null, cur: 0, entries,
       // Snapshot the layout at start so the header ⋮ can change it for this session only —
       // changing the saved default (Settings → Workout view) mid-session leaves it alone.
@@ -2798,21 +2798,21 @@ export function beginWorkout(routineIds, bw) {
 // way starting any workout does.
 export function repeatWorkout(w, close) {
   const st = S()
-  if (st.active) { toast(t('Finish the current workout first.')); return }
+  if (st.active) { toast(t("FINISH_YOUR_CURRENT_WORKOUT_FIRST" /* 请先完成当前训练 */)); return }
   const { entries, skipped } = repeatSessionEntries(st, w)
-  if (!entries.length) { toast(t('Nothing to repeat. Its exercises no longer exist.')); return }
+  if (!entries.length) { toast(t("NOTHING_TO_REPEAT_ITS_EXERCISES_NO_LONGER_EXIST" /* 没有可重复的内容。其中的动作已不存在。 */)); return }
   const go = bw => {
-    if (S().active) { toast(t('Finish the current workout first.')); return }
+    if (S().active) { toast(t("FINISH_YOUR_CURRENT_WORKOUT_FIRST" /* 请先完成当前训练 */)); return }
     update(s => {
       s.active = {
         id: uid(), d: todayISO(), start: Date.now(), routineIds: [],
-        name: w.name || t('Freestyle'), bw: bw || null, cur: 0, entries,
+        name: w.name || t("FREESTYLE" /* 自由训练 */), bw: bw || null, cur: 0, entries,
         workoutView: s.workoutView || 'cards',
       }
     })
     useUI.getState().stopRest()
     if (close) closeThenNav(close, '/workout'); else navToWorkout()
-    if (skipped) toast(tn('{0} exercise no longer exists and was left out.', '{0} exercises no longer exist and were left out.', skipped))
+    if (skipped) toast(tn("COUNT_EXERCISE_NO_LONGER_EXISTS_AND_WAS_LEFT_OUT" /* 有 {0} 个动作已不存在，已略过。 */, "COUNT_EXERCISES_NO_LONGER_EXIST_AND_WERE_LEFT_OUT" /* 有 {0} 个动作已不存在，已略过。 */, skipped))
   }
   if (st.weighIn === false) { go(null); return }
   if (close) close()
@@ -2836,7 +2836,7 @@ function LogPastWorkout({ initial, close }) {
   const [routineId, setRoutineId] = useState(planned.length > 1 ? PLANNED_DAY : planned[0]?.id || '')
   const today = todayISO()
   const options = [
-    { value: '', label: t('Freestyle') },
+    { value: '', label: t("FREESTYLE" /* 自由训练 */) },
     ...(planned.length > 1 ? [{ value: PLANNED_DAY, label: deriveSessionName(planned.map(r => r.name)) }] : []),
     ...st.routines.map(r => ({ value: r.id, label: r.name })),
   ]
@@ -2847,10 +2847,10 @@ function LogPastWorkout({ initial, close }) {
     beginBackfill({ iso: date, time, durationMin: Math.max(1, dur), routineIds, replaceId })
   }
   const submit = () => {
-    if (!date || date > today) { toast(t('Pick a day up to today')); return }
-    if (!(dur >= 1)) { toast(t('Enter how long it took (at least 1 minute).')); return }
-    if (dur > MAX_DURATION_MIN) { toast(t('That’s more than a day. Keep it to 24 hours or less.')); return }
-    if (endsInFuture(date, time, dur)) { toast(t('That’s still in the future. Try an earlier start.')); return }
+    if (!date || date > today) { toast(t("PICK_A_DAY_UP_TO_TODAY" /* 请选择今天或之前的日期 */)); return }
+    if (!(dur >= 1)) { toast(t("ENTER_HOW_LONG_IT_TOOK_AT_LEAST_ONE_MINUTE" /* 请输入用时（至少 1 分钟）。 */)); return }
+    if (dur > MAX_DURATION_MIN) { toast(t("THAT_S_MORE_THAN_A_DAY_KEEP_IT_TO_TWOFOUR_HOURS_OR" /* 超过一天了。最多 24 小时。 */)); return }
+    if (endsInFuture(date, time, dur)) { toast(t("THAT_S_STILL_IN_THE_FUTURE_TRY_AN_EARLIER_START" /* 这还在未来。试试更早的开始时间。 */)); return }
     const existing = workoutsOn(st, date)
     if (!existing.length) { go(null); return }
     ui().openSheet(c => <SameDayChoice iso={date} existing={existing} close={c}
@@ -2858,19 +2858,19 @@ function LogPastWorkout({ initial, close }) {
   }
 
   return <>
-    <h3>{t('Log a past workout')}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t('Logged on the usual workout screen, without timers.')}</div>
-    <Row icon="calendar" title={t('Date')}>
+    <h3>{t("LOG_A_PAST_WORKOUT" /* 补记过去的训练 */)}</h3>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t("LOGGED_ON_THE_USUAL_WORKOUT_SCREEN_WITHOUT_TIMERS" /* 在平时的训练界面记录，只是没有计时器。 */)}</div>
+    <Row icon="calendar" title={t("DATE" /* 日期 */)}>
       <input type="date" className="timef" value={date} max={today} onChange={e => setDate(e.target.value)} /></Row>
-    <Row icon="clock" title={t('Start time')}>
+    <Row icon="clock" title={t("START_TIME" /* 开始时间 */)}>
       <input type="time" className="timef" value={time} onChange={e => setTime(e.target.value)} /></Row>
-    <Stepper label={t('Duration')} unit={t('min')} value={dur} step={5} min={0} decimal={false} invalid={!(dur >= 1) || dur > MAX_DURATION_MIN} onChange={v => setDur(Math.round(v))} />
-    {!(dur >= 1) && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t('Enter how long it took (at least 1 minute).')}</div>}
-    {dur > MAX_DURATION_MIN && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t('That’s more than a day. Keep it to 24 hours or less.')}</div>}
+    <Stepper label={t("DURATION" /* 时长 */)} unit={t("MIN" /* 分钟 */)} value={dur} step={5} min={0} decimal={false} invalid={!(dur >= 1) || dur > MAX_DURATION_MIN} onChange={v => setDur(Math.round(v))} />
+    {!(dur >= 1) && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t("ENTER_HOW_LONG_IT_TOOK_AT_LEAST_ONE_MINUTE" /* 请输入用时（至少 1 分钟）。 */)}</div>}
+    {dur > MAX_DURATION_MIN && <div className="small" style={{ color: 'var(--red)', marginTop: 6 }}>{t("THAT_S_MORE_THAN_A_DAY_KEEP_IT_TO_TWOFOUR_HOURS_OR" /* 超过一天了。最多 24 小时。 */)}</div>}
     <div style={{ height: 8 }} />
-    <SelectRow icon="dumbbell" title={t('Routine')} value={routineId} options={options} onChange={setRoutineId} />
+    <SelectRow icon="dumbbell" title={t("ROUTINE" /* 训练计划 */)} value={routineId} options={options} onChange={setRoutineId} />
     <div style={{ height: 18 }} />
-    <Button variant="primary" onClick={submit}>{t('Continue')}</Button>
+    <Button variant="primary" onClick={submit}>{t("CONTINUE" /* 继续 */)}</Button>
   </>
 }
 // Three ways out when the day already has a workout. Replacing with several on that day means
@@ -2879,23 +2879,23 @@ function LogPastWorkout({ initial, close }) {
 function SameDayChoice({ iso, existing, onReplace, onAdd, close }) {
   return <div style={{ textAlign: 'center', padding: '4px 0' }}>
     <h3 style={{ marginBottom: 8 }}>{fmtDate(iso, true)}</h3>
-    <div className="muted" style={{ marginBottom: 18, lineHeight: 1.5 }}>{t('There is already a workout on that day.')}</div>
+    <div className="muted" style={{ marginBottom: 18, lineHeight: 1.5 }}>{t("THERE_IS_ALREADY_A_WORKOUT_ON_THAT_DAY" /* 那天已经有一次训练了。 */)}</div>
     {existing.map(w => {
       // Replacing re-logs the sets; the photos and videos move to the new record (completeBackfill).
       const n = workoutMediaOf(w, Infinity).length
       return <div key={w.id} style={{ marginBottom: 8 }}>
-        <button className="btn danger" onClick={() => onReplace(w.id)}>{existing.length > 1 ? t('Replace') + ' · ' + w.name : t('Replace')}</button>
-        {n > 0 && <div className="small dim samed-media" style={{ marginTop: 4 }}>{tn('Its photo or video moves to the new workout.', 'Its {0} photos or videos move to the new workout.', n)}</div>}
+        <button className="btn danger" onClick={() => onReplace(w.id)}>{existing.length > 1 ? t("REPLACE" /* 替换 */) + ' · ' + w.name : t("REPLACE" /* 替换 */)}</button>
+        {n > 0 && <div className="small dim samed-media" style={{ marginTop: 4 }}>{tn("ITS_PHOTO_OR_VIDEO_MOVES_TO_THE_NEW_WORKOUT" /* 其中的照片或视频会移到新的训练中。 */, "ITS_COUNT_PHOTOS_OR_VIDEOS_MOVE_TO_THE_NEW_WORKOUT" /* 其中的 {0} 个照片或视频会移到新的训练中。 */, n)}</div>}
       </div>
     })}
-    <button className="btn primary" onClick={onAdd}>{t('Add as second workout')}</button>
+    <button className="btn primary" onClick={onAdd}>{t("ADD_AS_SECOND_WORKOUT" /* 添加为第二次训练 */)}</button>
     <div style={{ height: 8 }} />
-    <Button variant="ghost" className="dim" onClick={close}>{t('Cancel')}</Button>
+    <Button variant="ghost" className="dim" onClick={close}>{t("CANCEL" /* 取消 */)}</Button>
   </div>
 }
 // History's button hands this its click event; only a day from the plan counts as `initial`.
 export function logPastWorkoutSheet(initial) {
-  if (S().active) { toast(t('Finish the current workout first.')); return }
+  if (S().active) { toast(t("FINISH_YOUR_CURRENT_WORKOUT_FIRST" /* 请先完成当前训练 */)); return }
   const from = typeof initial?.iso === 'string' ? initial : null
   ui().openSheet(close => <LogPastWorkout initial={from} close={close} />)
 }
@@ -2913,7 +2913,7 @@ function beginBackfill({ iso, time, durationMin, routineIds, replaceId }) {
     s.active = {
       id: uid(), d: iso, start,
       routineIds: rids,
-      name: routines.length ? deriveSessionName(routines.map(r => r.name)) : t('Freestyle'),
+      name: routines.length ? deriveSessionName(routines.map(r => r.name)) : t("FREESTYLE" /* 自由训练 */),
       bw: null, cur: 0, entries,
       backfill: { durationMin, replaceId: replaceId || null },
       // Same layout snapshot as a live session (see beginWorkout).
@@ -2947,10 +2947,10 @@ function AddRoutineToSession({ close }) {
       }
     })
     close()
-    toast(t('{0} added ({1})', r.name, exCount(r.ex.length)))
+    toast(t("COUNT_ADDED_COUNT" /* 已添加 {0}（{1}） */, r.name, exCount(r.ex.length)))
   }
   return <>
-    <h3>{t('Add routine')}</h3>
+    <h3>{t("ADD_ROUTINE" /* 添加训练计划 */)}</h3>
     <div className="list">
       {st.routines.map(r => {
         const already = inSession.has(r.id)
@@ -2960,7 +2960,7 @@ function AddRoutineToSession({ close }) {
           {...tappable(disabled ? null : () => add(r))}>
           <span className="lrow-i"><Icon name={glyphOf(r.emoji)} /></span>
           <div className="grow"><div className="tt">{r.name}</div><div className="ss">{exCount(r.ex.length)}</div></div>
-          {already ? <span className="tag">{t('already added')}</span> : empty ? <span className="tag">{t('no exercises')}</span> : <Icon name="chevronRight" className="chev" />}
+          {already ? <span className="tag">{t("ALREADY_ADDED" /* 已添加 */)}</span> : empty ? <span className="tag">{t("NO_EXERCISES" /* 没有动作 */)}</span> : <Icon name="chevronRight" className="chev" />}
         </div>
       })}
     </div>
@@ -3018,26 +3018,26 @@ function ExerciseNote({ entryIdx, close }) {
 
   return <>
     <h3 className={exerciseNameClass(ex)}>{exerciseNameFor(ex)}</h3>
-    <div className="small muted" style={{ marginBottom: 6 }}>{t('This session')}</div>
+    <div className="small muted" style={{ marginBottom: 6 }}>{t("THIS_SESSION" /* 本次训练 */)}</div>
     <textarea ref={noteRef} className="input" rows={3} maxLength={NOTE_MAX} value={note}
-      placeholder={t('How it went, what to change. Saved with today’s workout.')}
+      placeholder={t("HOW_IT_WENT_WHAT_TO_CHANGE_SAVED_WITH_TODAY_S_WORKOUT" /* 感觉如何，下次要改什么。随今天的训练一起保存。 */)}
       onFocus={onNoteFocus} onChange={e => setNote(e.target.value)} />
     <div style={{ height: 10 }} />
     <div className="sect-b">
-      <Row icon="pin" iconTint="var(--yellow)" title={t('Show this next time')}
-        subtitle={t('Brings it up again the next time you train this exercise.')}>
+      <Row icon="pin" iconTint="var(--yellow)" title={t("SHOW_THIS_NEXT_TIME" /* 下次显示 */)}
+        subtitle={t("BRINGS_IT_UP_AGAIN_THE_NEXT_TIME_YOU_TRAIN_THIS_EXERCISE" /* 下次练这个动作时会再次出现。 */)}>
         <Switch checked={pin} onChange={setPin} disabled={!note.trim()} />
       </Row>
     </div>
     {!editing && <>
       <div style={{ height: 18 }} />
-      <div className="small muted" style={{ marginBottom: 6 }}>{t('Always for this exercise')}</div>
+      <div className="small muted" style={{ marginBottom: 6 }}>{t("ALWAYS_FOR_THIS_EXERCISE" /* 这个动作始终显示 */)}</div>
       <textarea className="input" rows={2} maxLength={NOTE_MAX} value={standing}
-        placeholder={t('Seat height, pin position, a form cue. Shown every session.')}
+        placeholder={t("SEAT_HEIGHT_PIN_POSITION_A_FORM_CUE_SHOWN_EVERY_SESSION" /* 座椅高度、插销位置、动作要点。每次训练都会显示。 */)}
         onChange={e => setStanding(e.target.value)} />
     </>}
     <div style={{ height: 18 }} />
-    <Button variant="primary" onClick={save}>{t('Save')}</Button>
+    <Button variant="primary" onClick={save}>{t("SAVE" /* 保存 */)}</Button>
   </>
 }
 export const exerciseNoteSheet = entryIdx => ui().openSheet(close => <ExerciseNote entryIdx={entryIdx} close={close} />)
@@ -3064,12 +3064,12 @@ function SetNote({ entryIdx, setIdx, close }) {
   }
 
   return <>
-    <h3>{t('Set note')}</h3>
+    <h3>{t("SET_NOTE" /* 组备注 */)}</h3>
     <textarea ref={noteRef} className="input" rows={4} maxLength={NOTE_MAX} value={note}
-      placeholder={t('Anything specific to remember about this set.')}
+      placeholder={t("ANYTHING_SPECIFIC_TO_REMEMBER_ABOUT_THIS_SET" /* 记录这组需要特别注意的事项。 */)}
       onFocus={onNoteFocus} onChange={event => setNote(event.target.value)} />
     <div style={{ height: 18 }} />
-    <Button variant="primary" onClick={save}>{t('Save')}</Button>
+    <Button variant="primary" onClick={save}>{t("SAVE" /* 保存 */)}</Button>
   </>
 }
 
@@ -3098,12 +3098,12 @@ function SessionNote({ close }) {
   }
 
   return <>
-    <h3>{t('Session note')}</h3>
+    <h3>{t("SESSION_NOTE" /* 训练备注 */)}</h3>
     <textarea ref={noteRef} className="input" rows={4} maxLength={SESSION_NOTE_MAX} value={note}
-      placeholder={t('How the session went as a whole.')}
+      placeholder={t("HOW_THE_SESSION_WENT_AS_A_WHOLE" /* 这次训练整体感觉如何。 */)}
       onFocus={onNoteFocus} onChange={e => setNote(e.target.value)} />
     <div style={{ height: 18 }} />
-    <Button variant="primary" onClick={save}>{t('Save')}</Button>
+    <Button variant="primary" onClick={save}>{t("SAVE" /* 保存 */)}</Button>
   </>
 }
 export const sessionNoteSheet = () => ui().openSheet(close => <SessionNote close={close} />)
@@ -3132,13 +3132,13 @@ function RenameWorkout({ close }) {
   }
 
   return <>
-    <h3>{t('Rename workout')}</h3>
+    <h3>{t("RENAME_WORKOUT" /* 重命名训练 */)}</h3>
     <input ref={inputRef} className="input" type="text" autoFocus maxLength={60} value={name}
-      placeholder={t('Workout title')}
+      placeholder={t("WORKOUT_TITLE" /* 训练标题 */)}
       onFocus={onFocus} onChange={e => setName(e.target.value)}
       onKeyDown={e => { if (e.key === 'Enter' && canSave) save() }} />
     <div style={{ height: 18 }} />
-    <Button variant="primary" disabled={!canSave} onClick={save}>{t('Save')}</Button>
+    <Button variant="primary" disabled={!canSave} onClick={save}>{t("SAVE" /* 保存 */)}</Button>
   </>
 }
 export const renameWorkoutSheet = () => ui().openSheet(close => <RenameWorkout close={close} />)
@@ -3151,19 +3151,19 @@ function SupersetSettings({ meta, onSave, close }) {
   const [rest, setRest] = useState(meta.rest || 0)
   const save = () => { onSave({ name: name.trim().slice(0, SG_NAME_MAX), rest }); close() }
   return <>
-    <h3>{t('Superset')}</h3>
+    <h3>{t("SUPERSET" /* 超级组 */)}</h3>
     <input ref={inputRef} className="input" type="text" maxLength={SG_NAME_MAX} value={name}
-      placeholder={t('Name, e.g. Arm finisher')} onFocus={onFocus} onChange={e => setName(e.target.value)}
+      placeholder={t("NAME_E_G_ARM_FINISHER" /* 名称，例如手臂收尾 */)} onFocus={onFocus} onChange={e => setName(e.target.value)}
       onKeyDown={e => { if (e.key === 'Enter') save() }} />
     <div style={{ height: 12 }} />
     <div className="list">
-      <Row icon="timer" iconTint="var(--orange)" title={t('Rest after each round')}
-        value={rest > 0 ? fmtRest(rest) : t('Longest exercise rest')} accessory="chevron"
-        onClick={() => durationSheet({ title: t('Rest after each round'), value: rest, max: REST_MAX, off: t('Longest exercise rest'),
-          footer: t('Without one, the superset rests as long as its longest exercise rest.'), onDone: setRest })} />
+      <Row icon="timer" iconTint="var(--orange)" title={t("REST_AFTER_EACH_ROUND" /* 每轮后的休息 */)}
+        value={rest > 0 ? fmtRest(rest) : t("LONGEST_EXERCISE_REST" /* 最长的动作休息 */)} accessory="chevron"
+        onClick={() => durationSheet({ title: t("REST_AFTER_EACH_ROUND" /* 每轮后的休息 */), value: rest, max: REST_MAX, off: t("LONGEST_EXERCISE_REST" /* 最长的动作休息 */),
+          footer: t("WITHOUT_ONE_THE_SUPERSET_RESTS_AS_LONG_AS_ITS_LONGEST_EXERCISE_REST" /* 不设置的话，超级组的休息时间等于其中最长的动作休息。 */), onDone: setRest })} />
     </div>
     <div style={{ height: 18 }} />
-    <Button variant="primary" onClick={save}>{t('Save')}</Button>
+    <Button variant="primary" onClick={save}>{t("SAVE" /* 保存 */)}</Button>
   </>
 }
 export const supersetSheet = (meta, onSave) => ui().openSheet(close => <SupersetSettings meta={meta} onSave={onSave} close={close} />)
@@ -3177,11 +3177,11 @@ export const supersetSheet = (meta, onSave) => ui().openSheet(close => <Superset
 function WorkoutComplete({ close }) {
   return <div style={{ textAlign: 'center', padding: '8px 0' }}>
     <div style={{ fontSize: 44, display: 'flex', justifyContent: 'center', color: 'var(--acc)' }}><Icon name="checkCircle" /></div>
-    <h3 style={{ margin: '8px 0' }}>{t("That's the whole workout!")}</h3>
-    <div className="muted small" style={{ marginBottom: 16 }}>{t('All exercises done. Nice work! Finish up, or add another one if you’ve got more in you.')}</div>
-    <Button variant="primary" icon="flag" onClick={() => { close(); finishWorkout() }}>{t('Finish workout')}</Button>
+    <h3 style={{ margin: '8px 0' }}>{t("THAT_S_THE_WHOLE_WORKOUT" /* 训练全部完成！ */)}</h3>
+    <div className="muted small" style={{ marginBottom: 16 }}>{t("ALL_EXERCISES_DONE_NICE_WORK_FINISH_UP_OR_ADD_ANOTHER_ONE_IF" /* 所有动作都完成了，干得漂亮！可以结束训练，如果还有余力就再加一个。 */)}</div>
+    <Button variant="primary" icon="flag" onClick={() => { close(); finishWorkout() }}>{t("FINISH_WORKOUT" /* 结束训练 */)}</Button>
     <div style={{ height: 8 }} />
-    <Button onClick={() => { close(); useUI.getState().toast(t('Keep going: tap “+ Add exercise” below')) }}>{t('Continue workout')}</Button>
+    <Button onClick={() => { close(); useUI.getState().toast(t("KEEP_GOING_TAP_ADD_EXERCISE_BELOW" /* 继续加油：点按下方“+ 添加动作” */)) }}>{t("CONTINUE_WORKOUT" /* 继续训练 */)}</Button>
   </div>
 }
 export const workoutCompleteSheet = () => ui().openSheet(close => <WorkoutComplete close={close} />, { kind: 'center' })
@@ -3195,15 +3195,15 @@ export function saveWorkoutEdits(onExit = () => nav('/history')) {
   // means; Keep editing goes back to the sets.
   if (editLeftEmpty(S().active)) {
     confirmSheet({
-      title: t('Delete workout?'),
-      message: t('No sets are left in this workout, so there is nothing to save. Delete it from your history?') + mediaGoesToo(editedRecord(S())),
-      confirmText: t('Delete workout'), cancelText: t('Keep editing'), danger: true,
+      title: t("DELETE_WORKOUT" /* 删除训练？ */),
+      message: t("NO_SETS_ARE_LEFT_IN_THIS_WORKOUT_SO_THERE_IS_NOTHING_TO" /* 这次训练已经没有任何一组了，没有可保存的内容。要从历史中删除它吗？ */) + mediaGoesToo(editedRecord(S())),
+      confirmText: t("DELETE_WORKOUT_A" /* 删除训练 */), cancelText: t("KEEP_EDITING" /* 继续编辑 */), danger: true,
       onConfirm: () => {
         useStore.getState().deleteHistoryEdit()
         useUI.getState().stopRest()
         useUI.getState().stopWork()
         useStore.getState().autoBackupNow()
-        toast(t('Workout deleted'))
+        toast(t("WORKOUT_DELETED" /* 训练已删除 */))
         onExit()
       },
     })
@@ -3214,9 +3214,9 @@ export function saveWorkoutEdits(onExit = () => nav('/history')) {
     useUI.getState().stopRest()
     useUI.getState().stopWork()
     useStore.getState().autoBackupNow()
-    toast(t('Workout updated'))
+    toast(t("WORKOUT_UPDATED" /* 训练已更新 */))
     onExit()
-  } catch (error) { toast(t(error.message)) }
+  } catch (error) { toast(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(error.message)) }
 }
 
 // The one save prompt that may be open: { id, onExit }. Closing the editor and a route exit
@@ -3242,13 +3242,13 @@ export function exitWorkoutEdit(onExit = () => nav('/history')) {
   // Nothing to save: closing just closes, as it does for a workout only looked at.
   if (editChangesNothing(S())) { leave(); return }
   prompt.id = ui().openSheet(close => <>
-    <h3>{t('Save workout changes?')}</h3>
-    <p className="muted">{t('Save your edits to this workout, or keep the original record.')}</p>
-    <Button variant="primary" onClick={() => { close(); saveWorkoutEdits(done) }}>{t('Save changes')}</Button>
+    <h3>{t("SAVE_WORKOUT_CHANGES" /* 保存训练更改？ */)}</h3>
+    <p className="muted">{t("SAVE_YOUR_EDITS_TO_THIS_WORKOUT_OR_KEEP_THE_ORIGINAL_RECORD" /* 保存对此训练的编辑，或保留原始记录。 */)}</p>
+    <Button variant="primary" onClick={() => { close(); saveWorkoutEdits(done) }}>{t("SAVE_CHANGES" /* 保存更改 */)}</Button>
     <div style={{ height: 8 }} />
-    <Button onClick={() => { close(); leave() }}>{t("Don't save")}</Button>
+    <Button onClick={() => { close(); leave() }}>{t("DON_T_SAVE" /* 不保存 */)}</Button>
     <div style={{ height: 8 }} />
-    <Button variant="ghost" className="dim" onClick={close}>{t('Keep editing')}</Button>
+    <Button variant="ghost" className="dim" onClick={close}>{t("KEEP_EDITING" /* 继续编辑 */)}</Button>
   </>, { kind: 'center' })?.id
   savePrompt = prompt
 }
@@ -3257,7 +3257,7 @@ export function exitWorkoutEdit(onExit = () => nav('/history')) {
 // without load is just its reps. A set taken to failure keeps its "F", as it does in the history.
 export function setsLine(sets, unit) {
   const ws = new Set(sets.map(s => s.w))
-  const reps = s => s.r + (s.f ? ' ' + t('F') : '')
+  const reps = s => s.r + (s.f ? ' ' + t("LABEL_F" /* 术语：F */) : '')
   if (ws.size === 1) {
     const w0 = sets[0].w
     return (w0 > 0 ? fmtNum(w0) + ' ' + unit + ' × ' : '') + sets.map(reps).join(', ')
@@ -3268,21 +3268,21 @@ const TREND = { 1: ['arrowUp', 'var(--green)'], 0: ['minus', 'var(--text-2)'], [
 function LastAndNext({ st, w }) {
   const rows = finishCompare(st, w)
   if (!rows.length) return null
-  const nextWord = { up: t('step up'), hold: t('same again'), down: t('lighter'), deload: t('deload') }
+  const nextWord = { up: t("STEP_UP" /* 加一档 */), hold: t("SAME_AGAIN" /* 原样再来 */), down: t("LIGHTER" /* 减轻一点 */), deload: t("DELOAD" /* 减载 */) }
   return <div style={{ textAlign: 'start', marginBottom: 14 }}>
-    <h4 className="sec">{t('Last time and next time')}</h4>
+    <h4 className="sec">{t("LAST_TIME_AND_NEXT_TIME" /* 上次与下次 */)}</h4>
     <div className="list">{rows.map(row => {
       const ex = EXIDX[row.id]
       const tr = row.trend == null ? null : TREND[row.trend]
       return <div key={row.id} className="item" style={{ display: 'block' }}>
         <div className="row between" style={{ gap: 8 }}>
           <span className={'tt ' + exerciseNameClass(ex)} style={{ fontWeight: 600 }}>{ex ? exerciseNameFor(ex) : row.id}</span>
-          {tr ? <span style={{ color: tr[1], display: 'inline-flex' }} aria-label={row.trend > 0 ? t('Up on last time') : row.trend < 0 ? t('Down on last time') : t('Same as last time')}><Icon name={tr[0]} /></span>
-            : <span className="tag nocap">{t('First time')}</span>}
+          {tr ? <span style={{ color: tr[1], display: 'inline-flex' }} aria-label={row.trend > 0 ? t("UP_ON_LAST_TIME" /* 比上次多 */) : row.trend < 0 ? t("DOWN_ON_LAST_TIME" /* 比上次少 */) : t("SAME_AS_LAST_TIME" /* 和上次一样 */)}><Icon name={tr[0]} /></span>
+            : <span className="tag nocap">{t("FIRST_TIME" /* 第一次 */)}</span>}
         </div>
-        <div className="small">{t('Today')}: {setsLine(row.today, st.unit)}</div>
-        {row.last && <div className="small dim">{t('Last time')}: {setsLine(row.last, st.unit)}</div>}
-        {row.next && <div className="small accent">{t('Next time')}: {row.next.w != null ? fmtNum(row.next.w) + ' ' + st.unit : ''}{row.next.w != null && row.next.r != null ? ' × ' : ''}{row.next.r != null ? row.next.r : ''} · {nextWord[row.next.kind]}</div>}
+        <div className="small">{t("TODAY" /* 今天 */)}: {setsLine(row.today, st.unit)}</div>
+        {row.last && <div className="small dim">{t("LAST_TIME" /* 上次 */)}: {setsLine(row.last, st.unit)}</div>}
+        {row.next && <div className="small accent">{t("NEXT_TIME" /* 下次 */)}: {row.next.w != null ? fmtNum(row.next.w) + ' ' + st.unit : ''}{row.next.w != null && row.next.r != null ? ' × ' : ''}{row.next.r != null ? row.next.r : ''} · {nextWord[row.next.kind]}</div>}
       </div>
     })}</div>
   </div>
@@ -3294,7 +3294,7 @@ function CardioDone({ st, w }) {
   const rows = finishCardio(w)
   if (!rows.length) return null
   return <div style={{ textAlign: 'start', marginBottom: 14 }}>
-    <h4 className="sec">{t('Cardio')}</h4>
+    <h4 className="sec">{t("CARDIO" /* 有氧 */)}</h4>
     <div className="list">{rows.map((row, i) => {
       const ex = EXIDX[row.id]
       return <div key={i} className="item" style={{ display: 'block' }}>
@@ -3309,18 +3309,18 @@ function FinishSummary({ w, prs, e1prs = [], close }) {
   const st = useStore(s => s.S)
   return <div style={{ textAlign: 'center', padding: '8px 0' }}>
     <div style={{ fontSize: 44, display: 'flex', justifyContent: 'center', color: 'var(--acc)' }}><Icon name="trophy" /></div>
-    <h3 style={{ margin: '8px 0' }}>{t('Workout complete!')}</h3>
+    <h3 style={{ margin: '8px 0' }}>{t("WORKOUT_COMPLETE" /* 训练完成！ */)}</h3>
     <div className="tiles" style={{ textAlign: 'start' }}>
-      <div className="tile"><div className="l">{t('Duration')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{fmtDur(w.end - w.start)}</div></div>
-      <div className="tile"><div className="l">{t('Volume')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{fmtVol(w.vol, st.unit)}</div></div>
-      <div className="tile"><div className="l">{t('Sets')}</div><div className="v" style={{ fontSize: '1.1rem' }}>{setsWorkCount(setsDone(w), workSetsDone(w))}</div></div>
-      <div className="tile"><div className="l">{t('PRs')}</div><div className="v" style={{ fontSize: 20 }}>{prs.length || '–'}</div></div>
+      <div className="tile"><div className="l">{t("DURATION" /* 时长 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{fmtDur(w.end - w.start)}</div></div>
+      <div className="tile"><div className="l">{t("VOLUME" /* 训练量 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{fmtVol(w.vol, st.unit)}</div></div>
+      <div className="tile"><div className="l">{t("SETS" /* 组数 */)}</div><div className="v" style={{ fontSize: '1.1rem' }}>{setsWorkCount(setsDone(w), workSetsDone(w))}</div></div>
+      <div className="tile"><div className="l">{t("PRS" /* 纪录 */)}</div><div className="v" style={{ fontSize: 20 }}>{prs.length || '–'}</div></div>
     </div>
     {(prs.length > 0 || e1prs.length > 0) && <div style={{ textAlign: 'start', marginBottom: 12 }}>
-      {prs.map(id => <div key={id} className="small accent row" style={{ gap: 5 }}><Icon name="trophy" style={{ fontSize: 13 }} />{t('New PR:')} <span className={exerciseNameClass(EXIDX[id])}>{EXIDX[id] ? exerciseNameFor(EXIDX[id]) : id}</span></div>)}
-      {e1prs.map(p => <div key={p.id} className="small accent row" style={{ gap: 5 }}><Icon name="chartLine" style={{ fontSize: 13 }} />{t('Best estimated 1RM:')} <span className={exerciseNameClass(EXIDX[p.id])}>{EXIDX[p.id] ? exerciseNameFor(EXIDX[p.id]) : p.id}</span> · {fmtNum(p.est)} {st.unit}</div>)}
+      {prs.map(id => <div key={id} className="small accent row" style={{ gap: 5 }}><Icon name="trophy" style={{ fontSize: 13 }} />{t("NEW_PR" /* 新纪录： */)} <span className={exerciseNameClass(EXIDX[id])}>{EXIDX[id] ? exerciseNameFor(EXIDX[id]) : id}</span></div>)}
+      {e1prs.map(p => <div key={p.id} className="small accent row" style={{ gap: 5 }}><Icon name="chartLine" style={{ fontSize: 13 }} />{t("BEST_ESTIMATED_ONE_REP_MAX" /* 最佳估算 1RM： */)} <span className={exerciseNameClass(EXIDX[p.id])}>{EXIDX[p.id] ? exerciseNameFor(EXIDX[p.id]) : p.id}</span> · {fmtNum(p.est)} {st.unit}</div>)}
     </div>}
-    <h4 className="sec" style={{ textAlign: 'start' }}>{t('What you just trained')}</h4>
+    <h4 className="sec" style={{ textAlign: 'start' }}>{t("WHAT_YOU_JUST_TRAINED" /* 你刚刚练了什么 */)}</h4>
     <BodyMap load={loadOfWorkouts([w])} body={st.body} />
     <div style={{ height: 14 }} />
     <LastAndNext st={st} w={w} />
@@ -3328,7 +3328,7 @@ function FinishSummary({ w, prs, e1prs = [], close }) {
     {/* The moment for a progress photo or the clip of a set: the workout is already saved, so
         what is added here goes straight onto its record. */}
     <div style={{ textAlign: 'start' }}><WorkoutMediaSection w={w} hint /></div>
-    <Button variant="primary" onClick={() => closeThenNav(close, '/home')}>{t('Nice!')}</Button>
+    <Button variant="primary" onClick={() => closeThenNav(close, '/home')}>{t("NICE" /* 太棒了！ */)}</Button>
   </div>
 }
 export function finishWorkout() {
@@ -3337,8 +3337,8 @@ export function finishWorkout() {
   if (!A) return
   const done = setsDoneActive(A)
   const total = setUnitsTotal(A.entries)
-  if (!done) { confirmSheet({ title: t('Nothing logged yet'), message: t('You haven’t checked off any sets. Finish the workout anyway?'), confirmText: t('Finish anyway'), onConfirm: doFinishWorkout }); return }
-  if (done < total) { confirmSheet({ title: t('Finish early?'), message: tn('{0} set still unchecked. Finish the workout now?', '{0} sets still unchecked. Finish the workout now?', total - done), confirmText: t('Finish workout'), onConfirm: doFinishWorkout }); return }
+  if (!done) { confirmSheet({ title: t("NOTHING_LOGGED_YET" /* 还没有记录 */), message: t("YOU_HAVEN_T_CHECKED_OFF_ANY_SETS_FINISH_THE_WORKOUT_ANYWAY" /* 你还没有勾选任何组。仍要结束训练吗？ */), confirmText: t("FINISH_ANYWAY" /* 仍然结束 */), onConfirm: doFinishWorkout }); return }
+  if (done < total) { confirmSheet({ title: t("FINISH_EARLY" /* 提前结束？ */), message: tn("COUNT_SET_STILL_UNCHECKED_FINISH_THE_WORKOUT_NOW" /* 还有 {0} 组未勾选。现在结束训练吗？ */, "COUNT_SETS_STILL_UNCHECKED_FINISH_THE_WORKOUT_NOW" /* 还有 {0} 组未勾选。现在结束训练吗？ */, total - done), confirmText: t("FINISH_WORKOUT" /* 结束训练 */), onConfirm: doFinishWorkout }); return }
   doFinishWorkout()
 }
 // The workout screen's Finish pill (v1.3.11): one sheet with both ways out, Finish and save or
@@ -3352,12 +3352,12 @@ export function finishWorkoutSheet({ onDiscard } = {}) {
   const done = setsDoneActive(A)
   const total = setUnitsTotal(A.entries)
   menuSheet({
-    title: !done ? t('Nothing logged yet') : done < total ? t('Finish early?') : t('Finish workout?'),
-    subtitle: !done ? t('You haven’t checked off any sets. Finish the workout anyway?')
-      : done < total ? tn('{0} set still unchecked. Finish the workout now?', '{0} sets still unchecked. Finish the workout now?', total - done) : null,
+    title: !done ? t("NOTHING_LOGGED_YET" /* 还没有记录 */) : done < total ? t("FINISH_EARLY" /* 提前结束？ */) : t("FINISH_WORKOUT_A" /* 结束训练？ */),
+    subtitle: !done ? t("YOU_HAVEN_T_CHECKED_OFF_ANY_SETS_FINISH_THE_WORKOUT_ANYWAY" /* 你还没有勾选任何组。仍要结束训练吗？ */)
+      : done < total ? tn("COUNT_SET_STILL_UNCHECKED_FINISH_THE_WORKOUT_NOW" /* 还有 {0} 组未勾选。现在结束训练吗？ */, "COUNT_SETS_STILL_UNCHECKED_FINISH_THE_WORKOUT_NOW" /* 还有 {0} 组未勾选。现在结束训练吗？ */, total - done) : null,
     sections: [
-      { items: [{ icon: 'flag', accent: true, label: t('Finish and save'), onClick: doFinishWorkout }] },
-      { items: [onDiscard && { icon: 'trash', danger: true, label: t('Discard workout'), onClick: onDiscard }] },
+      { items: [{ icon: 'flag', accent: true, label: t("FINISH_AND_SAVE" /* 结束并保存 */), onClick: doFinishWorkout }] },
+      { items: [onDiscard && { icon: 'trash', danger: true, label: t("DISCARD_WORKOUT_A" /* 放弃训练 */), onClick: onDiscard }] },
     ],
   })
 }

@@ -36,7 +36,7 @@ export function mp4Size(b) {
 
 const problems = []
 let n = 0
-for (const [dir, ext, size] of [['still', '.webp', webpSize], ['clip', '.mp4', mp4Size]]) {
+for (const [dir, ext, size] of [['thumbnails', '.webp', webpSize], ['clip', '.mp4', mp4Size]]) {
   const d = path.join(MEDIA, dir)
   if (!fs.existsSync(d)) continue
   for (const f of fs.readdirSync(d)) {
@@ -49,7 +49,7 @@ for (const [dir, ext, size] of [['still', '.webp', webpSize], ['clip', '.mp4', m
   }
 }
 for (const f of fs.existsSync(MEDIA) ? fs.readdirSync(MEDIA) : []) {
-  if (!['still', 'clip', 'NOTICE.md'].includes(f)) problems.push(`catalogue/media/${f}: only still/, clip/ and NOTICE.md belong here`)
+  if (!['thumbnails', 'clip', 'NOTICE.md'].includes(f)) problems.push(`catalogue/media/${f}: only thumbnails/, clip/ and NOTICE.md belong here`)
 }
 if (!fs.existsSync(path.join(MEDIA, 'NOTICE.md'))) problems.push('catalogue/media/NOTICE.md is missing (the licence requires it)')
 if (problems.length) { console.error(problems.slice(0, 40).join('\n') + (problems.length > 40 ? `\n...and ${problems.length - 40} more` : '')); process.exit(1) }

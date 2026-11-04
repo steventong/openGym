@@ -12,7 +12,7 @@ export const hasWorkoutMedia = ex => !!ex && (isCustomEx(ex) ? !!(mediaOf(ex) ||
 // sets get the screen, and a tap brings the full animation back (the same gifSize switch as the
 // animation's own Minimize, so it sticks like that one does).
 export default function WorkoutThumb({ ex, onExpand }) {
-  return <button type="button" className="wthumb" aria-label={t('Expand')} title={t('Expand')} onClick={onExpand}>
+  return <button type="button" className="wthumb" aria-label={t("EXPAND" /* 放大 */)} title={t("EXPAND" /* 放大 */)} onClick={onExpand}>
     <Thumb ex={ex} />
     <span className="wthumb-x" aria-hidden="true"><Icon name="expand" /></span>
   </button>

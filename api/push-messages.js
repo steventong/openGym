@@ -1,43 +1,26 @@
 import { NUDGE_COPY } from './nudge-copy.js';
 import { lineIndex } from './nudge.js';
 
-const COPY = {
-  en: {
-    restTitle: 'Rest over 💪',
-    restBody: 'Time for your next set.',
-    testBody: 'Test notification ✅ This is what alerts look like.',
-    dayFallbackTitle: 'Workout planned today',
-    dayRoutineSuffix: 'today',
-    dayBody: "It's on your plan. Let's go 💪",
-  },
-  'pt-BR': {
-    restTitle: 'Descanso terminado 💪',
-    restBody: 'Hora da próxima série.',
-    testBody: 'Notificação de teste ✅ É assim que os alertas aparecem.',
-    dayFallbackTitle: 'Treino planejado para hoje',
-    dayRoutineSuffix: 'hoje',
-    dayBody: 'Está no seu plano. Bora treinar 💪',
-  },
-};
+import COPY from './push-copy.json' with { type: 'json' };
 
 const copyFor = lang => COPY[lang] || COPY.en;
 
 export function restTimerPush(lang) {
   const copy = copyFor(lang);
-  return { title: copy.restTitle, body: copy.restBody, tag: 'rest-timer' };
+  return { title: copy.REST_COMPLETE, body: copy.NOTIFICATION_NEXT_SET, tag: 'rest-timer' };
 }
 
 export function testPush(lang) {
-  return { title: 'openGym', body: copyFor(lang).testBody, tag: 'test' };
+  return { title: 'openGym', body: copyFor(lang).NOTIFICATION_TEST_BODY, tag: 'test' };
 }
 
 export function dayReminderPush(lang, routine) {
   const copy = copyFor(lang);
   return {
     title: routine
-      ? `${routine.emoji || '🏋️'} ${routine.name} ${copy.dayRoutineSuffix}`
-      : copy.dayFallbackTitle,
-    body: copy.dayBody,
+      ? copy.NOTIFICATION_ROUTINE_TODAY.replace(/\{(\d+)\}/g, (_, index) => [routine.emoji || '🏋️', routine.name][index])
+      : copy.NOTIFICATION_WORKOUT_TODAY,
+    body: copy.NOTIFICATION_WORKOUT_BODY,
     tag: 'day-reminder',
   };
 }

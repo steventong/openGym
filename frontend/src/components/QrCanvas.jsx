@@ -28,7 +28,7 @@ export default function QrCanvas({ value, size = 240, className = '' }) {
       ref={ref}
       className={'qr-canvas ' + className}
       style={{ width: size, height: size, opacity: ok ? 1 : 0 }}
-      aria-label={t('QR code')}
+      aria-label={t("QR_CODE" /* 二维码 */)}
     />
   )
 }

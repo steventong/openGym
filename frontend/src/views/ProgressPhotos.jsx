@@ -70,9 +70,9 @@ export function daysBetween(a, b) {
 
 function openPhotoView(p) {
   useUI.getState().openSheet(close => (
-    <div className="mviewer" role="dialog" aria-modal="true" aria-label={t('Photo')}>
+    <div className="mviewer" role="dialog" aria-modal="true" aria-label={t("PHOTO" /* 照片 */)}>
       <div className="mviewer-bar">
-        <button type="button" className="iconbtn" aria-label={t('Close')} onClick={close}><Icon name="xmark" /></button>
+        <button type="button" className="iconbtn" aria-label={t("CLOSE" /* 关闭 */)} onClick={close}><Icon name="xmark" /></button>
         <span className="mviewer-count">{fmtDate(p.d, true, true)}</span>
         <span style={{ width: 36 }} />
       </div>
@@ -102,10 +102,10 @@ function ProgressCompare({ a, b, close }) {
 
   const days = daysBetween(a.d, b.d)
 
-  return <div className="mviewer" role="dialog" aria-modal="true" aria-label={t('Compare photos')}>
+  return <div className="mviewer" role="dialog" aria-modal="true" aria-label={t("COMPARE_PHOTOS" /* 对比照片 */)}>
     <div className="mviewer-bar">
-      <button type="button" className="iconbtn" aria-label={t('Close')} onClick={close}><Icon name="xmark" /></button>
-      <span className="mviewer-count">{days > 0 ? tn('{0} day apart', '{0} days apart', days) : t('Same day')}</span>
+      <button type="button" className="iconbtn" aria-label={t("CLOSE" /* 关闭 */)} onClick={close}><Icon name="xmark" /></button>
+      <span className="mviewer-count">{days > 0 ? tn("COUNT_DAY_APART" /* 相隔 {0} 天 */, "COUNT_DAYS_APART" /* 相隔 {0} 天 */, days) : t("SAME_DAY" /* 同一天 */)}</span>
       <span style={{ width: 36 }} />
     </div>
     {/* A photo has no reading direction: before stays on the left and the finger drives the
@@ -159,41 +159,41 @@ export default function ProgressPhotos() {
     const file = ev.target.files && ev.target.files[0]
     ev.target.value = ''
     if (!file || !today) return
-    if (workoutMediaOf(today).length >= WORKOUT_MEDIA_MAX) { toast(t('Up to {0} photos or videos per workout.', WORKOUT_MEDIA_MAX)); return }
+    if (workoutMediaOf(today).length >= WORKOUT_MEDIA_MAX) { toast(t("UP_TO_COUNT_PHOTOS_OR_VIDEOS_PER_WORKOUT" /* 每次训练最多 {0} 个照片或视频。 */, WORKOUT_MEDIA_MAX)); return }
     const got = await pick(file)
     if (!got) return
     let res
     update(s => { res = addWorkoutMedia(s, today, got) })
-    if (res === 'added') { toast(t('Photo added')); syncMedia({ force: true }) }
-    else if (res === 'full') toast(t('Up to {0} photos or videos per workout.', WORKOUT_MEDIA_MAX))
-    else if (res === 'gone') toast(t('Workout deleted'))
+    if (res === 'added') { toast(t("PHOTO_ADDED" /* 照片已添加 */)); syncMedia({ force: true }) }
+    else if (res === 'full') toast(t("UP_TO_COUNT_PHOTOS_OR_VIDEOS_PER_WORKOUT" /* 每次训练最多 {0} 个照片或视频。 */, WORKOUT_MEDIA_MAX))
+    else if (res === 'gone') toast(t("WORKOUT_DELETED" /* 训练已删除 */))
   }
 
   return <>
-    <div className="hdr"><button className="iconbtn" onClick={() => nav('/stats')} aria-label={t('Stats')}><Icon name="chevronLeft" /></button>
-      <div style={{ flex: 1, marginInlineStart: 12 }}><h1>{t('Progress photos')}</h1>
-        <div className="sub">{tn('{0} photo', '{0} photos', photos.length)}</div></div>
+    <div className="hdr"><button className="iconbtn" onClick={() => nav('/stats')} aria-label={t("STATS" /* 统计 */)}><Icon name="chevronLeft" /></button>
+      <div style={{ flex: 1, marginInlineStart: 12 }}><h1>{t("PROGRESS_PHOTOS" /* 进度照片 */)}</h1>
+        <div className="sub">{tn("COUNT_PHOTO" /* {0} 张照片 */, "COUNT_PHOTOS" /* {0} 张照片 */, photos.length)}</div></div>
       {photos.length >= 2 && (comparing
-        ? <Button size="sm" variant="ghost" onClick={cancelCompare}>{t('Cancel')}</Button>
-        : <Button size="sm" variant="tinted" onClick={() => setComparing(true)}>{t('Compare')}</Button>)}
+        ? <Button size="sm" variant="ghost" onClick={cancelCompare}>{t("CANCEL" /* 取消 */)}</Button>
+        : <Button size="sm" variant="tinted" onClick={() => setComparing(true)}>{t("COMPARE" /* 比较 */)}</Button>)}
     </div>
 
     {!comparing && showAdd && <div className="row" style={{ marginBottom: 16 }}>
       {today
         ? <Button icon={busy ? 'image' : 'camera'} disabled={!canAdd} onClick={() => fileRef.current?.click()}>
-            {busy ? t('Loading…') : t('Add a photo to today')}
+            {busy ? t("LOADING" /* 加载中… */) : t("ADD_A_PHOTO_TO_TODAY" /* 为今天添加照片 */)}
           </Button>
-        : <Button icon="dumbbell" onClick={() => nav('/workout')}>{t('Log today’s workout to add a photo')}</Button>}
+        : <Button icon="dumbbell" onClick={() => nav('/workout')}>{t("LOG_TODAY_S_WORKOUT_TO_ADD_A_PHOTO" /* 记录今天的训练后即可添加照片 */)}</Button>}
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile} />
     </div>}
 
     {comparing && <div className="small dim" style={{ margin: '0 0 12px' }}>
-      {picked.length < 2 ? t('Pick two photos to compare.') : t('Ready! Open the comparison.')}
+      {picked.length < 2 ? t("PICK_TWO_PHOTOS_TO_COMPARE" /* 选择两张照片进行对比。 */) : t("READY_OPEN_THE_COMPARISON" /* 准备好了！打开对比。 */)}
     </div>}
 
     {!photos.length
       ? <div className="empty"><div className="ico"><Icon name="image" /></div>
-          {t('No progress photos yet. The button above adds one to today, once today has a logged workout.')}
+          {t("NO_PROGRESS_PHOTOS_YET_THE_BUTTON_ABOVE_ADDS_ONE_TO_TODAY_ONCE" /* 还没有进度照片。今天记录训练后，可用上方按钮为今天添加一张。 */)}
         </div>
       : groups.map(g => (
         <div key={g.d} style={{ marginBottom: 18 }}>
@@ -216,7 +216,7 @@ export default function ProgressPhotos() {
       ))}
 
     {comparing && picked.length === 2 && <div className="pp-cta">
-      <Button variant="primary" onClick={runCompare}>{t('Compare')}</Button>
+      <Button variant="primary" onClick={runCompare}>{t("COMPARE" /* 比较 */)}</Button>
     </div>}
   </>
 }

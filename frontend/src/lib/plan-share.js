@@ -17,7 +17,7 @@ import { isBackoff } from './backoff.js'
 import { dbLoadOf } from './dumbbells.js'
 import { MAX_TRIPLE_SETS } from './progression.js'
 import { uid, todayISO, DAYN, weekOrder, weekStartOf, exCount } from './format.js'
-import { t, exerciseNameFor, exerciseNameClass, getLang, RTL_LANGS } from './i18n-core.js'
+import { t, exerciseNameFor, exerciseNameClass, getLang, RTL_LANGS , translateValue } from './i18n-core.js'
 import { convertWeight } from './units.js'
 import { fmtSpeed, speedUnitOf } from './speed.js'
 import { MUSCLES, inMuscleOrder } from './muscles.js'
@@ -30,7 +30,7 @@ const PLAN_UNITS = new Set(['kg', 'lb'])
 // A plan's numbers are in the unit that wrote it. Missing unit is deliberately legacy-compatible:
 // old files were read as already being in the recipient's unit, so keep their values unchanged.
 const planUnit = value => value === 'lbs' ? 'lb' : PLAN_UNITS.has(value) ? value : null
-const unitError = () => { throw new Error(t('this isn’t an openGym plan file')) }
+const unitError = () => { throw new Error(t("THIS_ISN_T_AN_OPENGYM_PLAN_FILE" /* 这不是 openGym 计划文件 */)) }
 
 function declaredPlanUnit(data) {
   let declared = null
@@ -221,7 +221,7 @@ export function buildPlanBundle(S, name) {
  * is trained.
  */
 export function parsePlan(raw, destinationUnit = 'kg') {
-  const notPlan = () => Object.assign(new Error(t('this isn’t an openGym plan file')), { code: 'not-plan' })
+  const notPlan = () => Object.assign(new Error(t("THIS_ISN_T_AN_OPENGYM_PLAN_FILE" /* 这不是 openGym 计划文件 */)), { code: 'not-plan' })
   let data = raw
   if (typeof raw === 'string') { try { data = JSON.parse(raw) } catch { throw notPlan() } }
   const destination = planUnit(destinationUnit)
@@ -300,7 +300,7 @@ export function mergePlan(s, bundle, { schedule } = {}) {
     ridMap[r.id] = nid
     s.routines.push({
       id: nid,
-      name: r.name || t('Shared routine'),
+      name: r.name || t("SHARED_ROUTINE" /* 共享的训练计划 */),
       emoji: r.emoji,
       ...(r.prog ? { prog: r.prog } : {}),
       ...(r.excludeFromProgression === true ? { excludeFromProgression: true } : {}),
@@ -337,7 +337,7 @@ function scheme(e, unit, speedUnit) {
     return sets > 1 ? `${sets} × ${body}` : body
   }
   const line = exLine({ ...e, reps: e.reps ?? 10 }, unit, speedUnit)
-  const extras = [intensifierLine(e.intensifier), e.lastToFailure === true ? t('Last set to failure') : ''].filter(Boolean)
+  const extras = [intensifierLine(e.intensifier), e.lastToFailure === true ? t("LAST_SET_TO_FAILURE" /* 最后一组做到力竭 */) : ''].filter(Boolean)
   return [line, ...extras].join(' · ')
 }
 
@@ -347,8 +347,8 @@ function intensifierLine(x) {
   const intens = cleanIntensifier(x)
   if (!intens) return ''
   return intens.type === 'dropset'
-    ? `${t('Drop-set')} ${intens.count}× −${intens.pct}%`
-    : `${t('Rest-pause')} ${intens.totalReps} ${t('reps')}`
+    ? `${t("DROP_SET" /* 递减组 */)} ${intens.count}× −${intens.pct}%`
+    : `${t("REST_PAUSE" /* 休息暂停组 */)} ${intens.totalReps} ${t("REPS_A" /* 次 */)}`
 }
 
 // Group consecutive exercises sharing a superset id into rendered units.
@@ -368,21 +368,21 @@ function routineHTML(r, unit, { bare = false, speedUnit } = {}) {
   const rows = units(r.ex).map(u => {
     const items = u.map(e => {
       const ex = EXIDX[e.id]
-      const name = ex ? exerciseNameFor(ex) : t('Unknown exercise')
+      const name = ex ? exerciseNameFor(ex) : t("UNKNOWN_EXERCISE" /* 未知动作 */)
       // Translated, and set apart by a real space: glued to the name, "capitalize" read the two as
       // one word and printed "Curlupper Legs".
-      const part = ex && ex.bp && ex.bp !== 'cardio' ? ` <span class="part">${esc(t(ex.bp))}</span>` : ''
+      const part = ex && ex.bp && ex.bp !== 'cardio' ? ` <span class="part">${esc(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(ex.bp))}</span>` : ''
       const note = e.note ? `<div class="ex-note">${esc(e.note)}</div>` : ''
       return `<div class="ex"><div class="ex-row"><div class="ex-n ${ex ? exerciseNameClass(ex) : ''}">${esc(name)}${part}</div><div class="ex-s">${esc(scheme(e, unit, speedUnit))}</div></div>${note}</div>`
     }).join('')
     return u.length > 1
-      ? `<div class="ss"><div class="ss-tag">${esc(t('Superset'))}</div><div class="ss-items">${items}</div></div>`
+      ? `<div class="ss"><div class="ss-tag">${esc(t("SUPERSET" /* 超级组 */))}</div><div class="ss-items">${items}</div></div>`
       : items
   }).join('')
   const count = exCount(r.ex.length)
   return `<section class="routine">
     ${bare ? '' : `<div class="r-head"><h2>${esc(r.name)}</h2><span class="r-count">${esc(count)}</span></div>`}
-    <div class="ex-list">${rows || `<div class="ex empty">${esc(t('No exercises yet.'))}</div>`}</div>
+    <div class="ex-list">${rows || `<div class="ex empty">${esc(t("NO_EXERCISES_YET" /* 还没有动作。 */))}</div>`}</div>
   </section>`
 }
 
@@ -392,8 +392,8 @@ function weekHTML(S) {
     const names = [].concat(S.week?.[d] || [])
       .map(id => S.routines.find(x => x.id === id)?.name)
       .filter(Boolean)
-    const val = names.length ? esc(deriveSessionName(names)) : `<span class="rest">${esc(t('Rest'))}</span>`
-    return `<div class="w-row"><div class="w-day">${esc(t(DAYN[d]))}</div><div class="w-r">${val}</div></div>`
+    const val = names.length ? esc(deriveSessionName(names)) : `<span class="rest">${esc(t("REST" /* 休息 */))}</span>`
+    return `<div class="w-row"><div class="w-day">${esc(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAYN[d]))}</div><div class="w-r">${val}</div></div>`
   }).join('')
   return `<div class="week">${rows}</div>`
 }
@@ -409,12 +409,12 @@ export function planPrintHTML(S, owner, { routineId } = {}) {
   const routines = routineId ? [single].filter(Boolean) : (S.routines || []).filter(r => r.ex && r.ex.length)
   const body = routines.length
     ? routines.map(r => routineHTML(r, unit, { bare: !!single, speedUnit: speedUnitOf(S) })).join('')
-    : `<p class="none">${esc(t('No routines yet.'))}</p>`
-  const title = single ? single.name : t('Weekly Training Plan')
+    : `<p class="none">${esc(t("NO_ROUTINES_YET" /* 还没有训练计划。 */))}</p>`
+  const title = single ? single.name : t("WEEKLY_TRAINING_PLAN" /* 每周训练计划 */)
   const sub = [single ? exCount(single.ex.length) : null, owner, todayISO()].filter(Boolean).map(esc).join(' · ')
-  const week = routineId ? '' : `<h3 class="block">${esc(t('Week schedule'))}</h3>
+  const week = routineId ? '' : `<h3 class="block">${esc(t("WEEK_SCHEDULE" /* 每周日程 */))}</h3>
   ${weekHTML(S)}
-  <h3 class="block">${esc(t('Routines'))}</h3>`
+  <h3 class="block">${esc(t("ROUTINES" /* 训练计划 */))}</h3>`
   return `<!doctype html><html lang="${getLang()}" dir="${RTL_LANGS.has(getLang()) ? 'rtl' : 'ltr'}"><head><meta charset="utf-8">
 <title>${esc(title)}</title>
 <style>
@@ -472,7 +472,7 @@ export function planPrintHTML(S, owner, { routineId } = {}) {
   </header>
   ${week}
   ${body}
-  <footer>${esc(t('Made with openGym'))} · opengym.ch</footer>
+  <footer>${esc(t("MADE_WITH_OPENGYM" /* 使用 openGym 制作 */))} · opengym.ch</footer>
 </div></body></html>`
 }
 

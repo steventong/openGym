@@ -144,7 +144,7 @@ describe('logging a missed planned day', () => {
     install({ active: { id: 'live', entries: [] } })
     dayOverrideSheet('2026-09-14')
     tapInTopSheet('Log this workout')
-    expect(toast).toHaveBeenCalledWith('Finish the current workout first.')
+    expect(toast).toHaveBeenCalledWith('Finish your current workout first')
     expect(useUI.getState().sheets).toHaveLength(0)
   })
 

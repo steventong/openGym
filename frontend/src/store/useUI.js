@@ -27,7 +27,7 @@ const bookRestEnd = (endsAt, totalSec, kind) => {
   const switching = kind === 'switch'
   if (!MOBILE) { if (!switching) pushRestTimer(Math.max(1, Math.round((endsAt - Date.now()) / 1000))); return }
   const { S } = useStore.getState()
-  armRestAlert(endsAt, { title: switching ? t('Switch sides') : t('Rest’s over. Next set!'), countdownTitle: switching ? t('Switch sides') : t('Rest'), totalSec, accent: accentValue(S), sound: !!S.sound, classic: restSoundOf(S) === 'classic', tone: restSoundOf(S), vibrate: S.vibrate !== false, alarmBuzz: S.vibrate !== false && !!S.vibrateOnSilent })
+  armRestAlert(endsAt, { title: switching ? t("SWITCH_SIDES" /* 换边 */) : t("REST_COMPLETE" /* 休息结束 */), countdownTitle: switching ? t("SWITCH_SIDES" /* 换边 */) : t("REST_BETWEEN_SETS" /* 组间休息 */), skipTitle: switching ? t("SKIP" /* 跳过 */) : t("END_REST" /* 结束休息 */), totalSec, accent: accentValue(S), sound: !!S.sound, classic: restSoundOf(S) === 'classic', tone: restSoundOf(S), vibrate: S.vibrate !== false, alarmBuzz: S.vibrate !== false && !!S.vibrateOnSilent })
     .then(ok => {
       // Only for the rest that asked: one skipped or moved since then has booked its own end.
       const tm = useUI.getState().timer
@@ -69,8 +69,8 @@ const maybeRestNotification = async () => {
     // Android Chrome forbids the Notification constructor (Illegal constructor) - the
     // service-worker registration path is the one that actually pops there.
     const opts = { tag: 'rest-timer', icon: 'icon-512.png' }
-    if (reg?.showNotification) { reg.showNotification(t('Rest’s over. Next set!'), opts); return }
-    new Notification(t('Rest’s over. Next set!'), opts)
+    if (reg?.showNotification) { reg.showNotification(t("REST_COMPLETE" /* 休息结束 */), opts); return }
+    new Notification(t("REST_COMPLETE" /* 休息结束 */), opts)
   } catch {
     // Intentionally ignore: notification APIs vary by browser and policy in edge cases.
   }
@@ -191,7 +191,7 @@ const runRest = (set, get) => {
       // on reopen reads like a bug. Only the loud parts (beep, vibration, flash) are gated.
       // The native alarm is left armed: this tick can come a little early, and with the screen
       // locked it never runs at all.
-      get().toast(t('Rest’s over. Next set!'))
+      get().toast(t("REST_COMPLETE" /* 休息结束 */))
       if (!MOBILE) maybeRestNotification()
       cancelPushRestTimer()
       stopRestTicking()

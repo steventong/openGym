@@ -6,18 +6,18 @@
 import { useSyncExternalStore } from 'react'
 import {
   LANGS, INSTR_LANGS, EXERCISE_NAME_LANGS, DATE_LOCALES, DERIVED_LOCALES, RTL_LANGS,
-  getLang, dateLocale, t, tn, instrFor, exerciseNameFor, exerciseNameSearchText, getVersion,
+  getLang, dateLocale, t, tn, translateValue, instrFor, exerciseNameFor, exerciseNameSearchText, getVersion,
   baseLang, derivePack, _setLangState, exerciseNameClass, descFor, instrTranslated, _setDetailsLoader, _setDetails, _detailsFailed
 } from './i18n-core.js'
 
 export {
   LANGS, INSTR_LANGS, EXERCISE_NAME_LANGS, DATE_LOCALES, DERIVED_LOCALES, RTL_LANGS,
-  getLang, dateLocale, t, tn, instrFor, instrTranslated, descFor, exerciseNameFor, exerciseNameSearchText, exerciseNameClass, baseLang
+  getLang, dateLocale, t, tn, translateValue, instrFor, instrTranslated, descFor, exerciseNameFor, exerciseNameSearchText, exerciseNameClass, baseLang
 }
 
 // Vite code-splits locale, instruction and exercise-name packs via import.meta.glob. They are
 // lazy, so the production bundle ships English only until another language is selected.
-const localePacks = import.meta.glob('../locales/*.js')
+const localePacks = import.meta.glob('../../../localization/*.json')
 const instrPacks = import.meta.glob('../instr/*.js')
 const exerciseNamePacks = import.meta.glob('../exercise-names/*.js')
 const descPacks = import.meta.glob('../exercise-desc/*.js')
@@ -66,7 +66,7 @@ export async function setLang(l, showEn, enOnly) {
   lastEnOnly = only
   const base = baseLang(l)
   let dict = {}, instr = null, exerciseNames = null
-  try { dict = base === 'en' ? {} : (await localePacks['../locales/' + base + '.js']()).default } catch (e) { dict = {} }
+  try { dict = base === 'en' ? {} : (await localePacks['../../../localization/' + base + '.json']()).default } catch (e) { dict = {} }
   try { instr = base === 'en' || !INSTR_LANGS.includes(base) ? null : (await instrPacks['../instr/' + base + '.js']()).default } catch (e) { instr = null }
   try {
     exerciseNames = base === 'en' || !EXERCISE_NAME_LANGS.includes(base)

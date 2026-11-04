@@ -1,0 +1,14 @@
+{
+  "cause": "WidgetRenderer_Activities Errors.noType for app-defined TrainingCountdownSecondsStyle",
+  "fix": "System Date.ComponentsFormatStyle and clamped TimeDataSource.dateRange; retain 62pt button",
+  "copyCanonicalGroups": 28,
+  "frontendTests": {
+    "passed": 5069,
+    "timezone": "Europe/Zurich",
+    "restFollowupPassed": 30
+  },
+  "nativeRegression": "60 tests executed, opt-in renderer probe skipped in routine run; inspect native test log for counts",
+  "rendererProbe": "Passed separately on iOS 26.5 and iOS 27.0; iOS 26.5 post-fix renderer log contains no decode failures",
+  "deviceVisualVerification": "Device Hub could not attach reliably; physical-device verification pending",
+  "released": false
+}

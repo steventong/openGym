@@ -121,7 +121,7 @@ export function LinkCard({ url, compact, mini }) {
       onClick={e => { e.stopPropagation(); openExternal(u) }}>
       <span className="exlink-icon"><Icon name={video ? 'play' : 'link'} /></span>
       <span className="exlink-meta">
-        <span className="exlink-title">{video ? t('Watch video') : t('Open link')}</span>
+        <span className="exlink-title">{video ? t("WATCH_VIDEO" /* 观看视频 */) : t("OPEN_LINK" /* 打开链接 */)}</span>
         {!mini && host && <span className="exlink-sub" dir="ltr">{host}</span>}
       </span>
       <Icon name="chevronRight" className="exlink-arr" />
@@ -143,7 +143,7 @@ export default function CustomMedia({ ex, id, compact, minimizable }) {
   const mini = !!minimizable && gifSize === 'mini'
   const toggleSize = e => { e.stopPropagation(); update(s => { s.gifSize = mini ? 'full' : 'mini' }) }
   const toggle = minimizable
-    ? <button className="giftoggle" onClick={toggleSize}><Icon name={mini ? 'expand' : 'minimize'} />{mini ? t('Expand') : t('Minimize')}</button>
+    ? <button className="giftoggle" onClick={toggleSize}><Icon name={mini ? 'expand' : 'minimize'} />{mini ? t("EXPAND" /* 放大 */) : t("MINIMIZE" /* 缩小 */)}</button>
     : null
   const cls = 'exmedia' + (compact ? ' compact' : '') + (mini ? ' mini' : '')
   const name = exerciseNameFor(ex)
@@ -210,7 +210,7 @@ function CustomGif({ m, id, cls, name, toggle, mini }) {
       {broken ? <Tile /> : <img decoding="async" draggable={false} src={src} alt={name} onError={() => setFailed(showGif ? 'gif' : 'all')} />}
       {toggle}
       {!mini && !broken && !failed && (
-        <span className="gifhint"><Icon name={playing ? 'pause' : 'play'} />{playing ? t('tap to pause') : t('tap to play')}</span>
+        <span className="gifhint"><Icon name={playing ? 'pause' : 'play'} />{playing ? t("TAP_TO_PAUSE" /* 点按暂停 */) : t("TAP_TO_PLAY" /* 点按播放 */)}</span>
       )}
     </div>
   )
@@ -307,7 +307,7 @@ function CustomVideo({ m, id, cls, name, toggle, mini, still }) {
       {toggle}
       {hint && (
         <span className="gifhint">
-          <Icon name={playing ? 'pause' : 'play'} />{loading ? t('Loading…') : playing ? t('tap to pause') : t('tap to play')}
+          <Icon name={playing ? 'pause' : 'play'} />{loading ? t("LOADING" /* 加载中… */) : playing ? t("TAP_TO_PAUSE" /* 点按暂停 */) : t("TAP_TO_PLAY" /* 点按播放 */)}
         </span>
       )}
     </div>

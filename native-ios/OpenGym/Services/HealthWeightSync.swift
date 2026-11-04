@@ -41,7 +41,7 @@ enum HealthWeightMerge {
 @MainActor @Observable final class HealthWeightSync {
     private(set) var enabled = false
     private(set) var busy = false
-    private(set) var status = "未开启"
+    private(set) var status = L10n.text("NOT_ENABLED" /* 未开启 */)
     private(set) var lastRead: Date?
     private(set) var pending = false
     private(set) var backgroundIssue: String?
@@ -76,20 +76,20 @@ enum HealthWeightMerge {
                     deleted = Set(saved["deleted"] as? [String] ?? []); anchorData = saved["anchor"] as? String; pending = saved["pending"] as? Bool == true
                     if let t = saved["lastRead"] as? Double { lastRead = Date(timeIntervalSince1970: t) }
                 }
-            } catch { status = "本机健康数据读取失败：\(error.localizedDescription)"; return }
+            } catch { status = L10n.text("COULD_NOT_READ_LOCAL_HEALTH_DATA_COUNT" /* 本机健康数据读取失败：{0} */, error.localizedDescription); return }
         }
-        guard enabled, available else { status = available ? "未开启" : "此设备不支持健康数据"; return }
+        guard enabled, available else { status = available ? L10n.text("NOT_ENABLED" /* 未开启 */) : L10n.text("HEALTH_DATA_IS_UNAVAILABLE_ON_THIS_DEVICE" /* 此设备不支持健康数据 */); return }
         observe()
     }
     func resume() async { prepare(); if enabled { await sync() } }
     func setEnabled(_ on: Bool) async {
         if !on {
             enabled = false; stop()
-            do { try save(); try await health.disableBackgroundDelivery(for: type); status = "已停止同步，已有体重记录保留" }
-            catch { status = "同步已停止：\(error.localizedDescription)" }
+            do { try save(); try await health.disableBackgroundDelivery(for: type); status = L10n.text("SYNC_STOPPED_EXISTING_WEIGHT_RECORDS_ARE_KEPT" /* 已停止同步，已有体重记录保留 */) }
+            catch { status = L10n.text("SYNC_STOPPED_COUNT" /* 同步已停止：{0} */, error.localizedDescription) }
             return
         }
-        guard available, !busy, let identity else { status = available ? "请先连接 openGym 账号" : "此设备不支持健康数据"; return }
+        guard available, !busy, let identity else { status = available ? L10n.text("CONNECT_YOUR_OPENGYM_ACCOUNT_FIRST" /* 请先连接 openGym 账号 */) : L10n.text("HEALTH_DATA_IS_UNAVAILABLE_ON_THIS_DEVICE" /* 此设备不支持健康数据 */); return }
         if account != identity { prepare() }
         busy = true; let token = epoch, target = identity
         do {
@@ -100,8 +100,8 @@ enum HealthWeightMerge {
             do { try save() } catch { enabled = false; throw error }
             observe()
             do { try await health.enableBackgroundDelivery(for: type, frequency: .immediate); backgroundIssue = nil }
-            catch { backgroundIssue = "后台更新暂不可用，打开 App 时仍会同步：\(error.localizedDescription)" }
-            status = "已开启；读取权限由 Apple 健康管理"
+            catch { backgroundIssue = L10n.text("BACKGROUND_UPDATES_ARE_UNAVAILABLE_DATA_WILL_STILL_SYNC_WHEN_YOU_OPEN_THE" /* 后台更新暂不可用，打开 App 时仍会同步：{0} */, error.localizedDescription) }
+            status = L10n.text("ENABLED_MANAGE_READ_ACCESS_IN_APPLE_HEALTH" /* 已开启；读取权限由 Apple 健康管理 */)
         } catch { status = error.localizedDescription }
         busy = false
         if enabled { await sync() }
@@ -162,16 +162,16 @@ enum HealthWeightMerge {
             try store.localStorage.write(checkpoint, to: file)
             samples = next; deleted = tombstones; anchorData = newAnchor; pending = true; lastRead = Date()
             guard token == epoch, enabled, target == identity else { return }
-            if samples.isEmpty && deleted.isEmpty { pending = false; try save(); status = "暂无可读取体重；可能没有记录或未允许读取"; return }
+            if samples.isEmpty && deleted.isEmpty { pending = false; try save(); status = L10n.text("NO_WEIGHT_DATA_AVAILABLE_THERE_MAY_BE_NO_RECORDS_OR_READ_ACCESS" /* 暂无可读取体重；可能没有记录或未允许读取 */); return }
             var expected: Any?
             let saved = await store.mutate(reportError: false, background: true, verify: { RecordPatch.equal($0["bodyweight"], expected) }) { source in
-                guard self.enabled, self.epoch == token, self.identity == target else { throw APIError.response(0, "同步已停止") }
+                guard self.enabled, self.epoch == token, self.identity == target else { throw APIError.response(0, L10n.text("SYNC_STOPPED" /* 同步已停止 */)) }
                 let result = HealthWeightMerge.merge(source, samples: next, deleted: tombstones); expected = result["bodyweight"]; return result
             }
             guard token == epoch, enabled, target == identity else { return }
-            if saved { pending = false; deleted = []; try save(); status = "体重已同步" }
-            else { status = "体重已存本机，等待同步：\(store.editError ?? "稍后重试")" }
-        } catch { if token == epoch { status = "同步未完成：\(error.localizedDescription)" } }
+            if saved { pending = false; deleted = []; try save(); status = L10n.text("WEIGHT_SYNCED" /* 体重已同步 */) }
+            else { status = L10n.text("WEIGHT_SAVED_ON_THIS_DEVICE_WAITING_TO_SYNC_COUNT" /* 体重已存本机，等待同步：{0} */, store.editError ?? L10n.text("TRY_AGAIN_LATER" /* 稍后重试 */)) }
+        } catch { if token == epoch { status = L10n.text("SYNC_INCOMPLETE_COUNT" /* 同步未完成：{0} */, error.localizedDescription) } }
     }
     func localBodyweights(_ state: [String: Any]) -> [[String: Any]] {
         guard account == identity else { return state["bodyweight"] as? [[String: Any]] ?? [] }

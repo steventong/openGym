@@ -43,17 +43,17 @@ public final class RestAlert {
      * good and an end that must not buzz goes out on this channel, which never vibrates.
      */
     static final String QUIET_CHANNEL_ID = "rest-over-quiet";
-    private static String lastAlertTitle = "Rest over";
+    private static String lastAlertTitle;
     private static boolean lastSound = true;
     private static String lastTone = "chime";
     private static boolean lastVibrate = true;
     private static boolean lastAlarmBuzz = false;
     private static String lastChannel = CHANNEL_ID;
-    private static String labPause = "Pause";
-    private static String labResume = "Resume";
-    private static String labMinus = "\u2212 15s";
-    private static String labPlus = "+ 15s";
-    private static String labSkip = "Skip";
+    private static String labPause;
+    private static String labResume;
+    private static String labMinus;
+    private static String labPlus;
+    private static String labSkip;
     private static int lastAccent = 0xFF30D158;
     private static int lastInk = 0xFF000000;
     static final int COUNTDOWN_ID = 41;
@@ -106,7 +106,7 @@ public final class RestAlert {
             String posted = alarmBuzz ? QUIET_CHANNEL_ID : channelId;
             ensureChannel(ctx, nm, posted, importanceOf(importance), visibilityOf(visibility), !alarmBuzz && vibrate);
         }
-        lastAlertTitle = title == null ? "Rest over" : title;
+        lastAlertTitle = title == null ? ctx.getString(R.string.localized_rest_complete) : title;
         lastSound = sound;
         lastTone = tone == null ? "chime" : tone;
         lastVibrate = vibrate;
@@ -148,7 +148,7 @@ public final class RestAlert {
         cancelAlarmOnly(ctx, NOTIFICATION_ID);
         Intent intent = alarmIntent(ctx);
         intent.putExtra("id", NOTIFICATION_ID);
-        intent.putExtra("title", lastAlertTitle);
+        intent.putExtra("title", lastAlertTitle == null ? ctx.getString(R.string.localized_rest_complete) : lastAlertTitle);
         intent.putExtra("sound", lastSound);
         intent.putExtra("tone", lastTone);
         intent.putExtra("vibrate", lastVibrate);
@@ -363,7 +363,7 @@ public final class RestAlert {
         }
         Intent intent = alarmIntent(ctx);
         intent.putExtra("id", NOTIFICATION_ID);
-        intent.putExtra("title", lastAlertTitle);
+        intent.putExtra("title", lastAlertTitle == null ? ctx.getString(R.string.localized_rest_complete) : lastAlertTitle);
         intent.putExtra("sound", lastSound);
         intent.putExtra("tone", lastTone);
         intent.putExtra("vibrate", lastVibrate);
@@ -393,12 +393,12 @@ public final class RestAlert {
         Intent i = new Intent(ctx, RestTimerService.class);
         i.putExtra("endsAt", endsAt);
         i.putExtra("totalMs", totalMs);
-        i.putExtra("title", title == null || title.isEmpty() ? "Rest" : title);
-        i.putExtra("pause", labPause);
-        i.putExtra("resume", labResume);
-        i.putExtra("minus", labMinus);
-        i.putExtra("plus", labPlus);
-        i.putExtra("skip", labSkip);
+        i.putExtra("title", title == null || title.isEmpty() ? ctx.getString(R.string.localized_rest) : title);
+        i.putExtra("pause", labPause == null ? ctx.getString(R.string.localized_pause) : labPause);
+        i.putExtra("resume", labResume == null ? ctx.getString(R.string.localized_resume) : labResume);
+        i.putExtra("minus", labMinus == null ? ctx.getString(R.string.localized_rest_minus) : labMinus);
+        i.putExtra("plus", labPlus == null ? ctx.getString(R.string.localized_rest_plus) : labPlus);
+        i.putExtra("skip", labSkip == null ? ctx.getString(R.string.localized_skip) : labSkip);
         i.putExtra("accent", lastAccent);
         i.putExtra("ink", lastInk);
         try {

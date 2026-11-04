@@ -58,12 +58,12 @@ function BuiltinMedia({ ex, id, compact, minimizable }) {
           : <img decoding="async" draggable={false} src={showGif ? gifSrc(ex, body) : imgSrc(ex, body)} alt={exerciseNameFor(ex)} onError={onError} />}
       {minimizable && (
         <button className="giftoggle" onClick={toggleSize}>
-          <Icon name={mini ? 'expand' : 'minimize'} />{mini ? t('Expand') : t('Minimize')}
+          <Icon name={mini ? 'expand' : 'minimize'} />{mini ? t("EXPAND" /* 放大 */) : t("MINIMIZE" /* 缩小 */)}
         </button>
       )}
       {!mini && !failed && (
         <span className="gifhint">
-          <Icon name={playing ? 'pause' : 'play'} />{playing ? t('tap to pause') : t('tap to play')}
+          <Icon name={playing ? 'pause' : 'play'} />{playing ? t("TAP_TO_PAUSE" /* 点按暂停 */) : t("TAP_TO_PLAY" /* 点按播放 */)}
         </span>
       )}
     </div>

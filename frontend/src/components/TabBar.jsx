@@ -13,7 +13,7 @@ import { useConnectionTrouble } from './SyncBanner.jsx'
 // state it took with it is the DOM node itself: focus, the :active tint, any in-flight transition.
 function Tab({ active, icon, label, onClick, dot }) {
   return (
-    <button className={active ? 'on' : ''} onClick={onClick} aria-label={dot ? label + ', ' + t('Connection problem') : undefined}>
+    <button className={active ? 'on' : ''} onClick={onClick} aria-label={dot ? label + ', ' + t("CONNECTION_PROBLEM" /* 连接问题 */) : undefined}>
       <span className="tab-ic"><Icon name={icon} />{dot && <span className="tab-dot" aria-hidden="true" />}</span><span>{label}</span>
     </button>
   )
@@ -44,8 +44,8 @@ export default function TabBar({ onStart }) {
 
   return (
     <nav id="tabbar">
-      <Tab active={on('home')} icon="house" label={t('Home')} dot={trouble} onClick={() => nav('/home')} />
-      <Tab active={on('plan')} icon="calendar" label={t('Plan')} onClick={() => nav('/plan')} />
+      <Tab active={on('home')} icon="house" label={t("HOME" /* 首页 */)} dot={trouble} onClick={() => nav('/home')} />
+      <Tab active={on('plan')} icon="calendar" label={t("PLAN" /* 计划 */)} onClick={() => nav('/plan')} />
       {/* On the workout screen itself there is nothing to resume, so the button reads as the
           tab it is and stays lit (#29); anywhere else it brings you back to the exercise you
           were on — the marker is kept in S.active.cur and never moves on its own (#21). The
@@ -54,13 +54,13 @@ export default function TabBar({ onStart }) {
           button still named Resume; a past workout being edited or logged after the fact has no
           clock to run. */}
       <button className={'start' + (S.active ? ' rec' : '') + (S.active && cur === 'workout' ? ' on' : '')} onClick={startWorkout}
-        aria-label={running ? t('Resume') : undefined}>
+        aria-label={running ? t("RESUME" /* 继续 */) : undefined}>
         <span className="cir"><Icon name="play" /></span>
         {running ? <span className="tab-time"><Elapsed start={S.active.start} /></span>
-          : <span>{S.active ? (cur === 'workout' ? t('Workout') : S.active.editingWorkoutId ? t('Edit workout') : t('Resume')) : t('Start')}</span>}
+          : <span>{S.active ? (cur === 'workout' ? t("WORKOUT" /* 训练 */) : S.active.editingWorkoutId ? t("EDIT_WORKOUT" /* 编辑训练 */) : t("RESUME" /* 继续 */)) : t("START" /* 开始 */)}</span>}
       </button>
-      <Tab active={on('stats')} icon="chart" label={t('Stats')} onClick={() => nav('/stats')} />
-      <Tab active={on('library')} icon="dumbbell" label={t('Exercises')} onClick={() => nav('/library')} />
+      <Tab active={on('stats')} icon="chart" label={t("STATS" /* 统计 */)} onClick={() => nav('/stats')} />
+      <Tab active={on('library')} icon="dumbbell" label={t("EXERCISES" /* 动作库 */)} onClick={() => nav('/library')} />
     </nav>
   )
 }

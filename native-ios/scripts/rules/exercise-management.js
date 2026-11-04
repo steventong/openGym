@@ -1,3 +1,4 @@
+import { t } from '../../../frontend/src/lib/i18n-core.js';
 import { defaultConfig, freestyleConfig, lastEntryFor, setsFromRows, workoutAt, buildSets, cleanupSg, pairAdjacent, unpairSuperset } from '../../../frontend/src/lib/history.js';
 import { registerCustom } from '../../../frontend/src/lib/exercises.js';
 import { hasCompletedWork } from '../../../frontend/src/lib/workout-model.js';
@@ -19,7 +20,7 @@ export function manageTrainingExercises(input) {
     if (!Array.isArray(requestedOrder) || requestedOrder.length !== entries.length ||
         new Set(requestedOrder).size !== entries.length ||
         requestedOrder.some(i => !Number.isInteger(i) || i < 0 || i >= entries.length)) {
-      throw new Error('动作列表已变化，请重新打开顺序调整。');
+      throw new Error(t("THE_EXERCISE_LIST_HAS_CHANGED_OPEN_THE_REORDER_SCREEN_AGAIN" /* 动作列表已变化，请重新打开顺序调整。 */));
     }
     order = requestedOrder;
     entries = order.map(i => entries[i]);

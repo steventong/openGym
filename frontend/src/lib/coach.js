@@ -18,7 +18,7 @@ import { uid, todayISO, DAYN } from './format.js'
 import { mergePlan } from './plan-share.js'
 import { deleteRoutine } from './routines.js'
 import { POLICIES } from './progression.js'
-import { t, tn } from './i18n.js'
+import { t, tn , translateValue } from './i18n.js'
 
 // Bumping this re-prompts everyone: it means what we share, or who we share it with, changed.
 // 2: the training line names the session notes, which the payload carries and version 1 never
@@ -68,11 +68,11 @@ export const coachAvailable = (config, user, { demo, mobile, coachMode } = {}) =
 // check-source-strings sees every key. When the screens passed these to t() as variables the
 // checker could not see them, and eight of the ten had no translation in any pack.
 export const CATEGORY_TEXT = {
-  plan: () => [t('Your plan'), t('Routines, exercises, sets and reps, your weekly schedule and progression settings.')],
-  training: () => [t('Your logged training'), t('Sets you logged in the review window: weights, reps, times, effort ratings, how long sessions took, and your session notes.')],
-  bodyweight: () => [t('Body weight'), t('Weigh-ins from the same window, and your goal weight if you set one.')],
-  profile: () => [t('What you tell the Coach'), t('Your intake answers, including any limitations or injuries you describe.')],
-  prefs: () => [t('A few preferences'), t('Your unit, your language and which effort scale you log.')]
+  plan: () => [t("YOUR_PLAN" /* 你的计划 */), t("ROUTINES_EXERCISES_SETS_AND_REPS_YOUR_WEEKLY_SCHEDULE_AND_PROGRESSION_SETTINGS" /* 训练计划、动作、组数和次数、你的每周日程以及进阶设置。 */)],
+  training: () => [t("YOUR_LOGGED_TRAINING" /* 你记录的训练 */), t("SETS_YOU_LOGGED_IN_THE_REVIEW_WINDOW_WEIGHTS_REPS_TIMES_EFFORT_RATINGS" /* 你在复盘周期内记录的各组数据：重量、次数、时间、强度评分、每次训练的时长，以及你的训练备注。 */)],
+  bodyweight: () => [t("BODY_WEIGHT" /* 体重 */), t("WEIGH_INS_FROM_THE_SAME_WINDOW_AND_YOUR_GOAL_WEIGHT_IF_YOU" /* 同一时段的称重记录，以及你设定的目标体重（如有）。 */)],
+  profile: () => [t("WHAT_YOU_TELL_THE_COACH" /* 你告诉教练的内容 */), t("YOUR_INTAKE_ANSWERS_INCLUDING_ANY_LIMITATIONS_OR_INJURIES_YOU_DESCRIBE" /* 你在初始问卷中的回答，包括你描述的任何限制或伤病。 */)],
+  prefs: () => [t("A_FEW_PREFERENCES" /* 几项偏好设置 */), t("YOUR_UNIT_YOUR_LANGUAGE_AND_WHICH_EFFORT_SCALE_YOU_LOG" /* 你的单位、语言，以及你记录强度所用的标度。 */)]
 }
 export const hasConsent = S => !!S?.coach?.consent?.agreedAt && S.coach.consent.version === CONSENT_VERSION
 
@@ -203,19 +203,19 @@ export const applicable = proposal => (proposal?.changes || []).filter(c => c.st
 
 /** Client-side mirror of the server's gate — the plan must survive a bad day at either end. */
 export function validateProposal(p) {
-  if (!p || typeof p !== 'object') throw new Error(t('That proposal can’t be read.'))
+  if (!p || typeof p !== 'object') throw new Error(t("THAT_PROPOSAL_CAN_T_BE_READ" /* 无法读取该提议。 */))
   if (p.bundle) {
-    if (!Array.isArray(p.bundle.routines) || !p.bundle.routines.length) throw new Error(t('That proposal can’t be read.'))
+    if (!Array.isArray(p.bundle.routines) || !p.bundle.routines.length) throw new Error(t("THAT_PROPOSAL_CAN_T_BE_READ" /* 无法读取该提议。 */))
     // The server rejects a routine with no exercises; so must this, or an empty one is appended,
     // gets scheduled, and "start today's session" opens a workout with nothing in it.
     for (const r of p.bundle.routines) {
-      if (!Array.isArray(r.ex) || !r.ex.length) throw new Error(t('That proposal can’t be read.'))
+      if (!Array.isArray(r.ex) || !r.ex.length) throw new Error(t("THAT_PROPOSAL_CAN_T_BE_READ" /* 无法读取该提议。 */))
     }
     return true
   }
-  if (!Array.isArray(p.changes)) throw new Error(t('That proposal can’t be read.'))
+  if (!Array.isArray(p.changes)) throw new Error(t("THAT_PROPOSAL_CAN_T_BE_READ" /* 无法读取该提议。 */))
   for (const c of p.changes) {
-    if (!CHANGE_APPLY[c.type]) throw new Error(t('That proposal can’t be read.'))
+    if (!CHANGE_APPLY[c.type]) throw new Error(t("THAT_PROPOSAL_CAN_T_BE_READ" /* 无法读取该提议。 */))
   }
   return true
 }
@@ -279,7 +279,7 @@ export function revertLast(s) {
   s.week = clone(snap.week)
   // Snapshots taken before this field existed have nothing to put back.
   if (snap.dayPlanRestore) Object.assign(s.dayPlan, snap.dayPlanRestore)
-  appendLog(s, { kind: 'revert', at: Date.now(), proposalId: snap.proposalId, summary: t('Reverted the last Coach changes.') })
+  appendLog(s, { kind: 'revert', at: Date.now(), proposalId: snap.proposalId, summary: t("REVERTED_THE_LAST_COACH_CHANGES" /* 已撤销教练上次的更改。 */) })
   return true
 }
 export const canRevert = S => !!(S?.coach?.snapshots || []).length
@@ -373,14 +373,14 @@ export function profileLines(p) {
   const goal = { strength: 'Get stronger', muscle: 'Build muscle', general: 'General fitness', fatloss: 'Lose fat', endurance: 'Endurance' }[p.goal]
   const exp = { new: 'New to lifting', returning: 'Coming back after a break', regular: 'Training regularly' }[p.experience]
   const lines = []
-  if (goal) lines.push(t(goal))
-  if (exp) lines.push(t(exp))
-  if (p.daysPerWeek) lines.push(tn('1 day a week', '{0} days a week', p.daysPerWeek))
-  if (p.sessionMin) lines.push(t('{0} min per session', p.sessionMin))
+  if (goal) lines.push(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(goal))
+  if (exp) lines.push(translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(exp))
+  if (p.daysPerWeek) lines.push(tn("ONE_DAY_A_WEEK" /* 每周 1 天 */, "COUNT_DAYS_A_WEEK" /* 每周 {0} 天 */, p.daysPerWeek))
+  if (p.sessionMin) lines.push(t("COUNT_MIN_PER_SESSION" /* 每次 {0} 分钟 */, p.sessionMin))
   if (p.equipment?.length) lines.push(p.equipment.join(', '))
-  if (p.limitations) lines.push(t('Limits: {0}', p.limitations))
-  if (p.likes) lines.push(t('Likes: {0}', p.likes))
-  if (p.dislikes) lines.push(t('Avoid: {0}', p.dislikes))
+  if (p.limitations) lines.push(t("LIMITS_COUNT" /* 限制：{0} */, p.limitations))
+  if (p.likes) lines.push(t("LIKES_COUNT" /* 喜欢：{0} */, p.likes))
+  if (p.dislikes) lines.push(t("AVOID_COUNT" /* 避免：{0} */, p.dislikes))
   if (p.notes) lines.push(p.notes)
   return lines
 }
@@ -394,7 +394,7 @@ export function profileLines(p) {
  */
 export function applyCreatedPlan(s, proposal, { schedule } = {}) {
   validateProposal(proposal)
-  pushSnapshot(s, proposal.id, t('Before the Coach’s plan'))
+  pushSnapshot(s, proposal.id, t("BEFORE_THE_COACH_S_PLAN" /* 教练计划之前 */))
   const bundle = proposal.bundle
   // The Coach's `why` texts are for the review screen; they have no place in the routine data.
   // A link is never the Coach's to write: validatePlan already drops one from the model's plan,
@@ -556,7 +556,7 @@ export function applyChangeSet(s, proposal, acceptedIds) {
   const changes = (proposal.changes || []).filter(c => accepted.has(c.id) && c.status !== 'stale')
   if (!changes.length) return { applied: 0 }
 
-  pushSnapshot(s, proposal.id, t('Before the Coach’s changes'))
+  pushSnapshot(s, proposal.id, t("BEFORE_THE_COACH_S_CHANGES" /* 教练更改之前 */))
   const applied = []
   for (const c of changes) {
     CHANGE_APPLY[c.type](s, c)
@@ -602,7 +602,7 @@ export function recordDebrief(s, proposal) {
 
 /* ============================ display helpers ============================ */
 
-export const exName = id => EXIDX[id]?.n || t('Unknown exercise')
+export const exName = id => EXIDX[id]?.n || t("UNKNOWN_EXERCISE" /* 未知动作 */)
 // Catalogue names are lower-case; a title reads better with each word capitalised, and doing it
 // here rather than with CSS keeps a German sentence around the name from being Title Cased too.
 const cap = s => String(s || '').replace(/(^|\s)(\p{L})/gu, (m, sp, ch) => sp + ch.toUpperCase())
@@ -612,24 +612,24 @@ export const exTitle = id => cap(exName(id))
 export function changeTitle(c, S) {
   const ex = c.target?.exId ? exTitle(c.target.exId) : null
   switch (c.type) {
-    case 'add-exercise': return t('Add {0}', exTitle(c.after?.id))
-    case 'remove-exercise': return t('Remove {0}', ex)
-    case 'swap-exercise': return t('Swap {0} for {1}', ex, exTitle(c.after?.id))
-    case 'sets': return t('{0}: sets', ex)
-    case 'reps': return t('{0}: reps', ex)
-    case 'repsMin': return t('{0}: rep-range floor', ex)
-    case 'repsMax': return t('{0}: rep-range ceiling', ex)
-    case 'sec': return t('{0}: hold time', ex)
-    case 'cardio': return t('{0}: duration & pace', ex)
-    case 'inc': return t('{0}: load step', ex)
-    case 'exercise-prog': return t('{0}: progression', ex)
-    case 'routine-prog': return t('Routine progression')
-    case 'reorder': return t('Reorder exercises')
-    case 'superset': return c.after?.link ? t('Superset {0} with {1}', ex, exTitle(c.after.with)) : t('Unlink superset on {0}', ex)
-    case 'add-routine': return t('Add routine “{0}”', c.after?.name)
-    case 'remove-routine': return t('Remove a routine')
-    case 'rename-routine': return t('Rename routine to “{0}”', c.after)
-    case 'week': return Number.isInteger(c.target?.weekday) ? t('{0}: what’s planned', t(DAYN[c.target.weekday])) : t('Change what’s planned on one day')
+    case 'add-exercise': return t("ADD_COUNT_A" /* 添加 {0} */, exTitle(c.after?.id))
+    case 'remove-exercise': return t("REMOVE_COUNT_A" /* 移除 {0} */, ex)
+    case 'swap-exercise': return t("SWAP_COUNT_FOR_COUNT" /* 将 {0} 换成 {1} */, ex, exTitle(c.after?.id))
+    case 'sets': return t("COUNT_SETS_A" /* {0}：组数 */, ex)
+    case 'reps': return t("COUNT_REPS" /* {0}：次数 */, ex)
+    case 'repsMin': return t("COUNT_REP_RANGE_FLOOR" /* {0}：次数区间下限 */, ex)
+    case 'repsMax': return t("COUNT_REP_RANGE_CEILING" /* {0}：次数区间上限 */, ex)
+    case 'sec': return t("COUNT_HOLD_TIME" /* {0}：保持时间 */, ex)
+    case 'cardio': return t("COUNT_DURATION_PACE" /* {0}：时长与配速 */, ex)
+    case 'inc': return t("COUNT_LOAD_STEP" /* {0}：加重幅度 */, ex)
+    case 'exercise-prog': return t("COUNT_PROGRESSION" /* {0}：进阶方式 */, ex)
+    case 'routine-prog': return t("ROUTINE_PROGRESSION" /* 训练计划进阶方式 */)
+    case 'reorder': return t("REORDER_EXERCISES" /* 调整动作顺序 */)
+    case 'superset': return c.after?.link ? t("SUPERSET_COUNT_WITH_COUNT" /* 将 {0} 与 {1} 组成超级组 */, ex, exTitle(c.after.with)) : t("UNLINK_SUPERSET_ON_COUNT" /* 解除 {0} 的超级组 */, ex)
+    case 'add-routine': return t("ADD_ROUTINE_COUNT" /* 添加训练计划「{0}」 */, c.after?.name)
+    case 'remove-routine': return t("REMOVE_A_ROUTINE" /* 删除一个训练计划 */)
+    case 'rename-routine': return t("RENAME_ROUTINE_TO_COUNT" /* 将训练计划重命名为「{0}」 */, c.after)
+    case 'week': return Number.isInteger(c.target?.weekday) ? t("COUNT_WHAT_S_PLANNED" /* {0}：计划 */, translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAYN[c.target.weekday])) : t("CHANGE_WHAT_S_PLANNED_ON_ONE_DAY" /* 更改某一天的安排 */)
     default: return c.type
   }
 }
@@ -643,7 +643,7 @@ export function changeValues(c, S) {
     // "rest" all read as Rest.
     if (c.type === 'week') {
       const ids = [].concat(v ?? []).filter(x => x && x !== 'rest')
-      return ids.length ? ids.map(routineName).join(' + ') : t('Rest')
+      return ids.length ? ids.map(routineName).join(' + ') : t("REST" /* 休息 */)
     }
     if (v == null) return '–'
     if (typeof v === 'object') return v.id ? exTitle(v.id) : v.name || JSON.stringify(v)

@@ -6,7 +6,7 @@ import HealthKitUI
     private var store: GymStore { delegate.store }
     var body: some Scene {
         WindowGroup {
-            RootView().environment(store).preferredColorScheme(.dark).tint(GymTheme.green)
+            RootView().environment(store).environment(\.locale, L10n.locale).preferredColorScheme(.dark).tint(GymTheme.green)
                 .task { await store.boot() }
         }
     }
@@ -33,8 +33,12 @@ import HealthKitUI
         return configuration
     }
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        if notification.request.content.userInfo["openGymWorkout"] as? Bool == true {
+        if notification.request.identifier == "opengym.workout.rest"
+            || notification.request.content.userInfo["openGymWorkout"] as? Bool == true {
+            center.removeDeliveredNotifications(withIdentifiers: [notification.request.identifier])
             Task { @MainActor in WorkoutActivityDiagnostics.record("reminder.foreground_delivery") }
+            completionHandler([.sound])
+            return
         }
         completionHandler([.banner, .list, .sound])
     }
@@ -55,21 +59,21 @@ struct RootView: View {
         // Stable selection values also serve notifications, Live Activities and workout actions.
         TabView(selection: $store.selectedTab) {
             Tab(value: 0) { HomeView() } label: {
-                Label("首页", systemImage: "house").accessibilityIdentifier("tab-0")
+                Label(L10n.text("HOME" /* 首页 */), systemImage: "house").accessibilityIdentifier("tab-0")
             }
             Tab(value: 1) { PlanView() } label: {
-                Label("计划", systemImage: "calendar").accessibilityIdentifier("tab-1")
+                Label(L10n.text("PLAN" /* 计划 */), systemImage: "calendar").accessibilityIdentifier("tab-1")
             }
             Tab(value: 2) { WorkoutView() } label: {
-                Label(store.draft == nil ? "开始" : "训练中",
+                Label(store.draft == nil ? L10n.text("START" /* 开始 */) : L10n.text("WORKOUT_IN_PROGRESS" /* 训练中 */),
                       systemImage: store.draft == nil ? "play.fill" : "figure.strengthtraining.traditional")
                     .accessibilityIdentifier("tab-workout")
             }.badge(store.localSaveError == nil ? nil : Text("!"))
             Tab(value: 3) { StatsView() } label: {
-                Label("统计", systemImage: "chart.bar.xaxis").accessibilityIdentifier("tab-3")
+                Label(L10n.text("STATS" /* 统计 */), systemImage: "chart.bar.xaxis").accessibilityIdentifier("tab-3")
             }
             Tab(value: 4) { LibraryView() } label: {
-                Label("动作库", systemImage: "dumbbell").accessibilityIdentifier("tab-4")
+                Label(L10n.text("EXERCISES" /* 动作库 */), systemImage: "dumbbell").accessibilityIdentifier("tab-4")
             }
         }.id(store.coachIdentity)
             .background(GymTheme.background).foregroundStyle(.white)
@@ -77,7 +81,7 @@ struct RootView: View {
             .sheet(isPresented:$store.showSettings) { SettingsView() }
             .sheet(item:$store.selectedExercise) { ExerciseDetail(exercise:$0) }
             .alert("openGym",isPresented:Binding(get:{store.error != nil},set:{if !$0 { store.error = nil }})) {
-                Button("知道了",role:.cancel) { store.error = nil }
+                Button(L10n.text("GOT_IT" /* 知道了 */),role:.cancel) { store.error = nil }
             } message: { Text(store.error ?? "") }
             .background { AppLifecycleObserver() }
             .onOpenURL { url in if url.scheme == "opengym", url.host == "workout" {
@@ -109,6 +113,7 @@ private struct AppLifecycleObserver: View {
                 WorkoutActivityDiagnostics.record("app.scene.changed", ["phase": String(describing: phase)])
                 updateWake()
                 if phase == .active {
+                    store.restNotifications?.clearDelivered()
                     store.restNotifications?.publish()
                     store.liveActivity?.publish()
                     store.workoutHealth.retry()
@@ -126,7 +131,7 @@ struct LocalSaveIssueIndicator: View {
             Button { store.error = issue } label: {
                 Image(systemName: "exclamationmark.circle.fill").foregroundStyle(.orange)
                     .frame(width: 28, height: 28).background(.black, in: Circle())
-            }.buttonStyle(.plain).accessibilityLabel("本机保存失败，查看详情")
+            }.buttonStyle(.plain).accessibilityLabel(L10n.text("COULD_NOT_SAVE_ON_THIS_DEVICE_VIEW_DETAILS" /* 本机保存失败，查看详情 */))
                 .accessibilityIdentifier("local-save-error")
         }
     }

@@ -7,10 +7,10 @@ export const todayISO = () => {
 export const isoOf = d =>
   d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
 
-export const DAYN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-export const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-export const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+export const DAYN = ["SUNDAY" /* 星期日 */, "MONDAY" /* 星期一 */, "TUESDAY" /* 星期二 */, "WEDNESDAY" /* 星期三 */, "THURSDAY" /* 星期四 */, "FRIDAY" /* 星期五 */, "SATURDAY" /* 星期六 */]
+export const DAYS = ["SU" /* 日 */, "MO" /* 一 */, "TU" /* 二 */, "WE" /* 三 */, "TH" /* 四 */, "FR" /* 五 */, "SA" /* 六 */]
+export const MONTHS = ["JAN" /* 1月 */, "FEB" /* 2月 */, "MAR" /* 3月 */, "APR" /* 4月 */, "MAY" /* 5月 */, "JUN" /* 6月 */, "JUL" /* 7月 */, "AUG" /* 8月 */, "SEP" /* 9月 */, "OCT" /* 10月 */, "NOV" /* 11月 */, "DEC" /* 12月 */]
+export const MONTHS_LONG = ["JANUARY" /* 一月 */, "FEBRUARY" /* 二月 */, "MARCH" /* 三月 */, "APRIL" /* 四月 */, "MAY" /* 5月 */, "JUNE" /* 六月 */, "JULY" /* 七月 */, "AUGUST" /* 八月 */, "SEPTEMBER" /* 九月 */, "OCTOBER" /* 十月 */, "NOVEMBER" /* 十一月 */, "DECEMBER" /* 十二月 */]
 
 export function fmtDate(iso, long, withYear = false) {
   const d = new Date(iso + 'T12:00:00')
@@ -30,7 +30,7 @@ export function fmtDateRange(from, to, long, now = new Date()) {
 // In the UI language: the Latin h, m and min stood inside Arabic and Ukrainian rows.
 export function fmtDur(ms) {
   const m = Math.floor(ms / 60000)
-  return m >= 60 ? t('{0}h {1}m', Math.floor(m / 60), m % 60) : t('{0} min', m)
+  return m >= 60 ? t("COUNT_H_COUNT_M" /* {0} 小时 {1} 分钟 */, Math.floor(m / 60), m % 60) : t("COUNT_MIN" /* {0} 分钟 */, m)
 }
 // Imported history has no clock — an unknown duration is left out rather than shown as "0 min".
 export const durPart = ms => (ms >= 60000 ? [fmtDur(ms)] : [])
@@ -66,11 +66,11 @@ export const fmtPlate = n => (Math.round(n * 100) / 100).toLocaleString(dateLoca
 // "7'535 kg" — two numbers you can't compare at a glance.
 export const fmtVol = (v, unit) => fmtNum(v) + ' ' + unit
 // Plural forms come from the pack via tn(): three forms in Russian, two in English.
-export const exCount = n => tn('{0} exercise', '{0} exercises', n)
-export const routineCount = n => tn('{0} routine', '{0} routines', n)
-export const changeCount = n => tn('{0} change', '{0} changes', n)
+export const exCount = n => tn("COUNT_EXERCISE" /* {0} 个动作 */, "COUNT_EXERCISES" /* {0} 个动作 */, n)
+export const routineCount = n => tn("COUNT_ROUTINE" /* {0} 个训练计划 */, "COUNT_ROUTINES" /* {0} 个训练计划 */, n)
+export const changeCount = n => tn("COUNT_CHANGE" /* {0} 项更改 */, "COUNT_CHANGES" /* {0} 项更改 */, n)
 // The Sets tile of the finish summary: all the sets logged, then how many of them were work sets.
-export const setsWorkCount = (n, work) => tn('{0} set · {1} work', '{0} sets · {1} work', n, work)
+export const setsWorkCount = (n, work) => tn("COUNT_SET_COUNT_WORK" /* {0} 组 · {1} 工作 */, "COUNT_SETS_COUNT_WORK" /* {0} 组 · {1} 工作 */, n, work)
 
 // "5 minutes ago", "yesterday", "now" — in the UI language, from the platform's own rules
 // (Intl.RelativeTimeFormat), so no pack has to carry a word for every unit and plural. Used for
@@ -139,7 +139,7 @@ export const localTZ = () => { try { return Intl.DateTimeFormat().resolvedOption
 
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
 // What each accent is called, for a screen reader (Settings' swatches carry no text).
-export const ACCENT_NAMES = { lime: 'Green', sky: 'Blue', orange: 'Orange', violet: 'Purple', pink: 'Pink', red: 'Red', teal: 'Teal', gold: 'Yellow' }
+export const ACCENT_NAMES = { lime: "GREEN" /* 绿色 */, sky: "BLUE" /* 蓝色 */, orange: "ORANGE" /* 橙色 */, violet: "PURPLE" /* 紫色 */, pink: "PINK" /* 粉色 */, red: "RED" /* 红色 */, teal: "TEAL" /* 青色 */, gold: "YELLOW" /* 黄色 */ }
 export const ACCENTS = { lime: '#30d158', sky: '#0a84ff', orange: '#ff9f0a', violet: '#bf5af2', pink: '#ff375f', red: '#ff453a', teal: '#40c8e0', gold: '#ffd60a' }
 // Text drawn on top of that swatch. Matches the --on-acc values in index.css.
 export const ACCENT_INK = { lime: '#000000', sky: '#ffffff', orange: '#000000', violet: '#ffffff', pink: '#ffffff', red: '#ffffff', teal: '#000000', gold: '#000000' }

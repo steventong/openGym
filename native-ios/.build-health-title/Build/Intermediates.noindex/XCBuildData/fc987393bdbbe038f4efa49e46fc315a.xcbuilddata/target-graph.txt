@@ -1,0 +1,8 @@
+Target dependency graph (4 targets)
+Target 'OpenGymTests' in project 'OpenGym'
+➜ Explicit dependency on target 'OpenGym' in project 'OpenGym'
+Target 'OpenGym' in project 'OpenGym'
+➜ Explicit dependency on target 'OpenGymWatch' in project 'OpenGym'
+➜ Explicit dependency on target 'OpenGymWidgets' in project 'OpenGym'
+Target 'OpenGymWidgets' in project 'OpenGym' (no dependencies)
+Target 'OpenGymWatch' in project 'OpenGym' (no dependencies)

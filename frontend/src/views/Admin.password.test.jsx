@@ -127,7 +127,7 @@ describe('Admin → sign-in e-mail', () => {
     await act(async () => { await mocks.confirm.mock.calls[0][0].onConfirm() })
     await settle()
     const code = render(mocks.sheets.slice(before).find(s => s.opts?.locked).render(() => {}))
-    expect(code.textContent).toContain('or their sign-in e-mail mallory@example.com')
+    expect(code.textContent).toContain('or sign-in email mallory@example.com')
   })
 
   it('shows nothing where the server sends no address', async () => {

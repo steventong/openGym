@@ -1,3 +1,4 @@
+import { t } from './i18n-core.js'
 import { describe, it, expect } from 'vitest'
 import { EXIDX, EXDB, smOf } from './exercises.js'
 import { LANGS, DERIVED_LOCALES } from './i18n-core.js'
@@ -17,7 +18,7 @@ describe('multi-muscle exercise metadata', () => {
   it('uses explicit multi-group metadata when present and supports legacy single groups', () => {
     expect(muscleGroupsOf({ muscleGroups: ['chest', 'pectorals', 'triceps'] })).toEqual(['chest', 'triceps'])
     expect(muscleGroupsOf({ tg: 'chest' })).toEqual(['chest'])
-    expect(MUSCLE_NAME.chest).toBe('Chest')
+    expect(t(MUSCLE_NAME.chest)).toBe('Chest')
   })
 
   it('falls back to the legacy body-part map when an optional multi-group field is empty', () => {
@@ -282,7 +283,7 @@ describe('muscle balance windows and ranking', () => {
 // language. The Library list showed "Cardiovascular system" untranslated for every cardio
 // exercise (QA copy): the packs only ever had the dataset's own lowercase spelling.
 describe('MUSCLE_NAME as i18n keys', () => {
-  const packs = import.meta.glob('../locales/*.js', { eager: true })
+  const packs = import.meta.glob(['../../../localization/*.json', '!../../../localization/en.json', '!../../../localization/metadata/legacy-values.json'], { eager: true })
   // One pack per non-English language, except a derived locale such as de-CH — counted from
   // LANGS rather than hardcoded, so adding a language cannot silently shrink this check.
   const packCount = Object.keys(LANGS).filter(code => code !== 'en' && !DERIVED_LOCALES[code]).length

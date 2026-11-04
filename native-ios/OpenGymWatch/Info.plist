@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-    <key>WKBackgroundModes</key><array><string>workout-processing</string></array>
-    <key>NSHealthShareUsageDescription</key><string>读取本次训练的心率、活动与静息能量，显示心率、活动热量和总热量（kcal）。</string>
-    <key>NSHealthUpdateUsageDescription</key><string>记录你在 openGym 开始和结束的训练与系统生成的活动能量，保存到 Apple 健康并显示在健身 App 中。</string>
-</dict></plist>
+<plist version="1.0">
+<dict>
+	<key>WKBackgroundModes</key>
+	<array>
+		<string>workout-processing</string>
+	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Read heart rate, active and resting energy during this workout to display heart rate, active calories and total calories (kcal).</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Save workouts you start and finish in openGym, along with activity energy recorded by the system, to Apple Health and show them in the Fitness app.</string>
+</dict>
+</plist>

@@ -28,56 +28,56 @@ export function WorkoutSettings({ close }) {
   const allSettings = () => closeThenNav(close, '/settings/workout')
   return <div className="ws-sheet">
     <div className="row between" style={{ marginBottom: 2 }}>
-      <h3 style={{ margin: 0 }}>{t('Workout settings')}</h3>
-      <Button size="sm" variant="ghost" onClick={close}>{t('Done')}</Button>
+      <h3 style={{ margin: 0 }}>{t("WORKOUT_SETTINGS" /* 训练设置 */)}</h3>
+      <Button size="sm" variant="ghost" onClick={close}>{t("DONE" /* 完成 */)}</Button>
     </div>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t('Changes stick for your next workouts too.')}</div>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t("CHANGES_STICK_FOR_YOUR_NEXT_WORKOUTS_TOO" /* 更改也会用于你之后的训练。 */)}</div>
     <Section>
-      <Row icon="timer" iconTint="var(--orange)" title={t('Rest timer')} value={fmtRest(S.restSec)} accessory="chevron"
+      <Row icon="timer" iconTint="var(--orange)" title={t("REST_TIMER" /* 休息计时 */)} value={fmtRest(S.restSec)} accessory="chevron"
         onClick={() => durationSheet({
-          title: t('Rest timer'), value: S.restSec, max: REST_MAX, off: t('Off'),
-          footer: t('Scroll to 0:00 to turn the rest timer off.'),
+          title: t("REST_TIMER" /* 休息计时 */), value: S.restSec, max: REST_MAX, off: t("OFF" /* 关 */),
+          footer: t("SCROLL_TO_ZERO_ZEROZERO_TO_TURN_THE_REST_TIMER_OFF" /* 滚动到 0:00 即可关闭休息计时。 */),
           onDone: v => update(s => { s.restSec = v }),
         })} />
-      <Row icon="speaker" iconTint="var(--pink)" title={t('Play a sound')}>
+      <Row icon="speaker" iconTint="var(--pink)" title={t("PLAY_A_SOUND" /* 播放提示音 */)}>
         {/* A tap: unlock the audio now so a rest ending before the next tick can sound (iOS, #152). */}
         <Switch checked={!!S.sound} onChange={v => { if (v) unlock(true); update(s => { s.sound = v }) }} />
       </Row>
-      <Row icon="vibrate" iconTint="var(--indigo)" title={t('Vibrate')} className={canVibrate ? '' : 'dis'}
-        subtitle={canVibrate ? null : iPhone ? t('Not on iPhone') : t('Not supported in this browser.')}>
+      <Row icon="vibrate" iconTint="var(--indigo)" title={t("VIBRATE" /* 振动 */)} className={canVibrate ? '' : 'dis'}
+        subtitle={canVibrate ? null : iPhone ? t("NOT_ON_IPHONE" /* iPhone 不支持 */) : t("NOT_SUPPORTED_IN_THIS_BROWSER" /* 此浏览器不支持。 */)}>
         <Switch checked={canVibrate && S.vibrate !== false} disabled={!canVibrate} onChange={v => update(s => { s.vibrate = v })} />
       </Row>
-      <Row icon="sun" iconTint="var(--yellow)" title={t('Flash the screen')}>
+      <Row icon="sun" iconTint="var(--yellow)" title={t("FLASH_THE_SCREEN" /* 闪烁屏幕 */)}>
         <Switch checked={!!S.timerFlash} onChange={v => update(s => { s.timerFlash = v })} />
       </Row>
-      {(wakeOK || !MOBILE) && <Row icon="phoneScreen" iconTint="var(--yellow)" title={t('Keep screen awake')}
-        subtitle={wakeOK ? t('The screen stays on while a workout is running, so you don’t have to unlock your phone between sets.') : t('Not supported in this browser.')}>
+      {(wakeOK || !MOBILE) && <Row icon="phoneScreen" iconTint="var(--yellow)" title={t("KEEP_SCREEN_AWAKE" /* 保持屏幕常亮 */)}
+        subtitle={wakeOK ? t("THE_SCREEN_STAYS_ON_WHILE_A_WORKOUT_IS_RUNNING_SO_YOU_DON" /* 训练进行时屏幕保持常亮，组间无需再解锁手机。 */) : t("NOT_SUPPORTED_IN_THIS_BROWSER" /* 此浏览器不支持。 */)}>
         <Switch checked={wakeOK && S.keepAwake !== false} disabled={!wakeOK} onChange={v => update(s => { s.keepAwake = v })} />
       </Row>}
     </Section>
     <Section>
-      <Row icon="layout" iconTint="var(--blue)" title={t('Layout')}>
+      <Row icon="layout" iconTint="var(--blue)" title={t("LAYOUT" /* 布局 */)}>
         <Segmented className="seg-inline"
-          options={[{ value: 'cards', label: t('Cards') }, { value: 'list', label: t('List') }, { value: 'compact', label: t('Compact') }]}
+          options={[{ value: 'cards', label: t("CARDS" /* 卡片 */) }, { value: 'list', label: t("LIST" /* 列表 */) }, { value: 'compact', label: t("COMPACT" /* 紧凑 */) }]}
           value={layout} onChange={v => update(s => { s.workoutView = v; if (s.active) delete s.active.workoutView })} />
       </Row>
-      <Row icon="gauge" iconTint="var(--purple)" title={t('Effort per set')}>
+      <Row icon="gauge" iconTint="var(--purple)" title={t("EFFORT_PER_SET" /* 每组强度 */)}>
         <Segmented className="seg-inline"
-          options={[{ value: 'none', label: t('Off') }, { value: 'rir', label: t('RIR') }, { value: 'rpe', label: t('RPE') }]}
+          options={[{ value: 'none', label: t("OFF" /* 关 */) }, { value: 'rir', label: t("RIR" /* 术语：RIR */) }, { value: 'rpe', label: t("RPE" /* 术语：RPE */) }]}
           value={effortOf(S)} onChange={v => update(s => { s.effort = v; delete s.showRir })} />
       </Row>
-      <Row icon="swap" iconTint="var(--indigo)" title={t('Swipe actions')} subtitle={t('Sets, routines and the loop: left removes, right copies')}>
-        <Switch aria-label={t('Swipe actions')} checked={workoutControls(S).swipeSets}
+      <Row icon="swap" iconTint="var(--indigo)" title={t("SWIPE_ACTIONS" /* 滑动操作 */)} subtitle={t("SETS_ROUTINES_AND_THE_LOOP_LEFT_REMOVES_RIGHT_COPIES" /* 组、计划和循环：左滑移除，右滑复制 */)}>
+        <Switch aria-label={t("SWIPE_ACTIONS" /* 滑动操作 */)} checked={workoutControls(S).swipeSets}
           onChange={v => update(s => { s.wc = { ...workoutControls(s), swipeSets: v } })} />
       </Row>
-      <Row icon="image" iconTint="var(--teal)" title={t('Exercise animations')}>
+      <Row icon="image" iconTint="var(--teal)" title={t("EXERCISE_ANIMATIONS" /* 动作动画 */)}>
         <Segmented className="seg-inline"
-          options={[{ value: 'full', label: t('Full') }, { value: 'mini', label: t('Small') }, { value: 'off', label: t('Hidden') }]}
+          options={[{ value: 'full', label: t("FULL" /* 完整 */) }, { value: 'mini', label: t("SMALL" /* 小 */) }, { value: 'off', label: t("HIDDEN" /* 隐藏 */) }]}
           value={gif} onChange={v => update(s => { s.gifSize = v })} />
       </Row>
     </Section>
     <Section>
-      <Row icon="gear" iconTint="var(--grey)" title={t('All settings')} accessory="chevron" onClick={allSettings} />
+      <Row icon="gear" iconTint="var(--grey)" title={t("ALL_SETTINGS" /* 所有设置 */)} accessory="chevron" onClick={allSettings} />
     </Section>
   </div>
 }

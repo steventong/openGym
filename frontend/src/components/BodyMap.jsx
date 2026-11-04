@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { MUSCLES, INERT, MUSCLE_NAME, levelsOf } from '../lib/muscles.js'
-import { t } from '../lib/i18n.js'
+import { t , translateValue } from '../lib/i18n.js'
 
 // Front and back views of a body, each muscle shaded by how hard it was worked.
 //
@@ -45,10 +45,10 @@ function View({ view, levels, onMuscle, selected }) {
           onKeyDown={onMuscle ? event => activate(event, slug) : undefined}
           role={onMuscle ? 'button' : undefined}
           tabIndex={onMuscle ? 0 : undefined}
-          aria-label={onMuscle ? t(MUSCLE_NAME[slug]) : undefined}
+          aria-label={onMuscle ? translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[slug]) : undefined}
           aria-pressed={onMuscle ? selected === slug : undefined}
         >
-          <title>{t(MUSCLE_NAME[slug])}</title>
+          <title>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[slug])}</title>
         </path>))}
     </svg>
   )
@@ -76,8 +76,8 @@ export default function BodyMap({ load = {}, thresholds, body = 'male', onMuscle
 }
 
 export function BodyMapLegend() {
-  return <div className="hm-legend" aria-label={`${t('Less')} ${t('More')}`}>
-    {t('Less')} <div className="hm-c l0" /><div className="hm-c l1" /><div className="hm-c l2" />
-    <div className="hm-c l3" /><div className="hm-c l4" /> {t('More')}
+  return <div className="hm-legend" aria-label={`${t("LESS" /* 更少 */)} ${t("MORE" /* 更多 */)}`}>
+    {t("LESS" /* 更少 */)} <div className="hm-c l0" /><div className="hm-c l1" /><div className="hm-c l2" />
+    <div className="hm-c l3" /><div className="hm-c l4" /> {t("MORE" /* 更多 */)}
   </div>
 }

@@ -559,7 +559,7 @@ export const useStore = create((set, get) => {
     takeSaved()
     clearTimeout(pushTm)
     pushTm = null
-    if (hasData(S)) keepAside(S, t('This device, before signing in'), staleUid).catch(() => {})
+    if (hasData(S)) keepAside(S, t("THIS_DEVICE_BEFORE_SIGNING_IN" /* 此设备（登录前） */), staleUid).catch(() => {})
     return true
   }
   const persist = (S, push = true, stamp = true) => {
@@ -598,7 +598,7 @@ export const useStore = create((set, get) => {
       if (!toldNoRoom) {
         toldNoRoom = true
         import('./useUI.js')
-          .then(({ useUI }) => useUI.getState().toast(t('This device is out of storage: the change is not saved on it. Signed in, it still goes to the server.')))
+          .then(({ useUI }) => useUI.getState().toast(t("THIS_DEVICE_IS_OUT_OF_STORAGE_THE_CHANGE_IS_NOT_SAVED_ON" /* 此设备存储空间已满：更改未保存在设备上。已登录时，它仍会同步到服务器。 */)))
           .catch(() => {})
       }
     }
@@ -676,7 +676,7 @@ export const useStore = create((set, get) => {
     const legacy = readLegacy()
     if (legacy && legacy.owner === get().user?.id) {
       const lifted = liftLegacy(local, remote, legacy.fp, Math.max(Date.now(), highestStamp(local) + 1, highestStamp(remote) + 1))
-      if (!lifted.resolved) keepAside(local, t('This device, before the update'))
+      if (!lifted.resolved) keepAside(local, t("THIS_DEVICE_BEFORE_THE_UPDATE" /* 此设备（更新前） */))
       local = Object.assign(clone(DEF), lifted.state)
     }
     if (legacy) clearLegacy()
@@ -734,7 +734,7 @@ export const useStore = create((set, get) => {
       // "syncs when you're back online" has just kept its word.
       if (offlineChanges) {
         offlineChanges = false
-        import('./useUI.js').then(({ useUI }) => useUI.getState().toast(t('Back online and synced with the server.'))).catch(() => {})
+        import('./useUI.js').then(({ useUI }) => useUI.getState().toast(t("BACK_ONLINE_AND_SYNCED_WITH_THE_SERVER" /* 已恢复联网，并已与服务器同步。 */))).catch(() => {})
       }
     } catch (e) {
       if (e.status === 409 && e.data && attempt < 2) {
@@ -744,7 +744,7 @@ export const useStore = create((set, get) => {
         // met another device's sync keeps that device's changes too, and says so.
         if (asReplace != null) {
           import('./useUI.js')
-            .then(({ useUI }) => useUI.getState().toast(t('Another device synced while you were importing, so its changes were kept next to the backup.')))
+            .then(({ useUI }) => useUI.getState().toast(t("ANOTHER_DEVICE_SYNCED_WHILE_YOU_WERE_IMPORTING_SO_ITS_CHANGES_WERE_KEPT" /* 导入时另一台设备同步了，所以它的更改也和备份一起保留了。 */)))
             .catch(() => {})
         }
         mergeInto(get().S, e.data.state, e.data.rev || 0)
@@ -762,7 +762,7 @@ export const useStore = create((set, get) => {
       if (e.status === 413 && !toldTooLarge) {
         toldTooLarge = true
         import('./useUI.js')
-          .then(({ useUI }) => useUI.getState().toast(t('Sync failed: the server refused the upload as too large. Your changes have not reached the server.')))
+          .then(({ useUI }) => useUI.getState().toast(t("SYNC_FAILED_THE_SERVER_REFUSED_THE_UPLOAD_AS_TOO_LARGE_YOUR_CHANGES" /* 同步失败：服务器拒绝了上传，内容过大。你的更改尚未同步到服务器。 */)))
           .catch(() => {})
       }
     }
@@ -804,7 +804,7 @@ export const useStore = create((set, get) => {
     // where the workout is on screen (a tab on Stats never showed it), and it goes on right here.
     if (!seenOwner && owner && get().S.active && /^#\/workout(?:[/?]|$)/.test(location.hash || '')) {
       import('./useUI.js')
-        .then(({ useUI }) => useUI.getState().toast(t('Signed in from another tab. Your workout came along, keep going here.')))
+        .then(({ useUI }) => useUI.getState().toast(t("SIGNED_IN_FROM_ANOTHER_TAB_YOUR_WORKOUT_CAME_ALONG_KEEP_GOING_HERE" /* 已在另一个标签页登录。你的训练也一起带过去了，在这里继续吧。 */)))
         .catch(() => {})
     }
     const S = restartedState(get().S)
@@ -1117,7 +1117,7 @@ export const useStore = create((set, get) => {
     await writeStashes(all)
     set({ keptRev: get().keptRev + 1 })
   }
-  const keepDeviceCopy = () => keepAside(get().S, t('This device, before signing in'))
+  const keepDeviceCopy = () => keepAside(get().S, t("THIS_DEVICE_BEFORE_SIGNING_IN" /* 此设备（登录前） */))
 
   // adoptProfile's work (see there). Every way out answers the question — releaseAdopt — before
   // the decision is written and pushed; only a server that could not be reached leaves it owed.

@@ -1,0 +1,2075 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ABDOMEN</key>
+	<string>Abdomen</string>
+	<key>ABOUT</key>
+	<string>About</string>
+	<key>ABOUT_COUNT</key>
+	<string>About %1$@</string>
+	<key>ABOVE_REFERENCE_RATIO</key>
+	<string>Above reference ratio</string>
+	<key>ABS</key>
+	<string>abs</string>
+	<key>ABS_A</key>
+	<string>Abs</string>
+	<key>ACCEPTED</key>
+	<string>Accepted</string>
+	<key>ACCESS_ALLOWED_WAITING_FOR_WORKOUT_SYNC_FROM_IPHONE</key>
+	<string>Access allowed. Waiting for workout sync from iPhone</string>
+	<key>ACCOUNT</key>
+	<string>Account</string>
+	<key>ACTIVE_CALORIES</key>
+	<string>Active calories</string>
+	<key>ACTIVITY_RECORDING_CANCELLED</key>
+	<string>Activity recording cancelled</string>
+	<key>ACTIVITY_SAVED_SUBMIT_YOUR_SETS_ON_IPHONE</key>
+	<string>Activity saved. Submit your sets on iPhone</string>
+	<key>ACTIVITY_SYNC_FAILED_TRY_AGAIN</key>
+	<string>Activity sync failed. Try again</string>
+	<key>ACTIVITY_TRACKING_WAS_INTERRUPTED_DURATION_WILL_SYNC_WHEN_YOU_FINISH_THE_WORKOUT</key>
+	<string>Activity tracking was interrupted. Duration will sync when you finish the workout.</string>
+	<key>ADD</key>
+	<string>Add</string>
+	<key>ADDED_TO_ROUTINE</key>
+	<string>Added to routine</string>
+	<key>ADDED_WEIGHT_COUNT</key>
+	<string>Added weight (%1$@)</string>
+	<key>ADDUCTORS_A</key>
+	<string>Adductors</string>
+	<key>ADD_AN_EXERCISE_TO_START</key>
+	<string>Add an exercise to start</string>
+	<key>ADD_AT_LEAST_ONE_EXERCISE_TO_THE_ROUTINE</key>
+	<string>Add at least one exercise to the routine.</string>
+	<key>ADD_DROP_SET</key>
+	<string>Add drop set</string>
+	<key>ADD_EXERCISE</key>
+	<string>Add exercise</string>
+	<key>ADD_EXERCISES_ON_IPHONE</key>
+	<string>Add exercises on iPhone</string>
+	<key>ADD_GYM</key>
+	<string>Add gym</string>
+	<key>ADD_MEASUREMENT</key>
+	<string>Add measurement</string>
+	<key>ADD_NOTE</key>
+	<string>Add note</string>
+	<key>ADD_PYRAMID_SET</key>
+	<string>Add pyramid set</string>
+	<key>ADD_RECORD</key>
+	<string>Add record</string>
+	<key>ADD_REST_PAUSE_MINI_SET</key>
+	<string>Add rest-pause mini-set</string>
+	<key>ADD_SET</key>
+	<string>Add set</string>
+	<key>ADD_TO_MY_PLAN</key>
+	<string>Add to my plan</string>
+	<key>ADD_TO_WHICH_ROUTINE</key>
+	<string>Add to which routine?</string>
+	<key>ADD_WORKOUT_EXERCISE</key>
+	<string>Add workout exercise</string>
+	<key>ADMIN_LOGIN_NAME_OR_EMAIL</key>
+	<string>%1$@ (or sign-in email %2$@)</string>
+	<key>ADVANCED_SETS_AND_TIMERS</key>
+	<string>Advanced sets and timers</string>
+	<key>ADVANCED_SET_TYPES</key>
+	<string>Advanced set types</string>
+	<key>AFTER_A_NUMBER_OF_WORKOUTS</key>
+	<string>After a number of workouts</string>
+	<key>AI_COACH</key>
+	<string>AI Coach</string>
+	<key>AI_LABEL</key>
+	<string>AI</string>
+	<key>AI_SERVICE_AUTHENTICATION_FAILED_ASK_YOUR_ADMINISTRATOR_TO_CHECK_THE_CONFIGURATION</key>
+	<string>AI service authentication failed. Ask your administrator to check the configuration.</string>
+	<key>ALL</key>
+	<string>All</string>
+	<key>ALLOWED</key>
+	<string>Allowed</string>
+	<key>ALLOW_NOTIFICATIONS</key>
+	<string>Allow notifications</string>
+	<key>ALLOW_NOTIFICATIONS_TO_RECEIVE_REST_END_REMINDERS</key>
+	<string>Allow notifications to receive rest-end reminders.</string>
+	<key>ALLOW_OPENGYM_TO_WRITE_WORKOUTS_IN_THE_HEALTH_APP</key>
+	<string>Allow openGym to write workouts in the Health app.</string>
+	<key>ALLOW_WEIGHT_ACCESS</key>
+	<string>Allow weight access</string>
+	<key>ALLOW_WORKOUT_AND_ACTIVITY_ACCESS</key>
+	<string>Allow workout and activity access</string>
+	<key>ALL_SETS_COMPLETE</key>
+	<string>All sets complete</string>
+	<key>ALREADY_TRAINING_CONSISTENTLY</key>
+	<string>Already training consistently</string>
+	<key>ANONYMOUS_TRAINING_COMPARISONS</key>
+	<string>Anonymous training comparisons</string>
+	<key>ANOTHER_DEVICE_IS_UPDATING_YOUR_DATA_TRY_AGAIN_SHORTLY_YOUR_WORKOUT_DRAFT</key>
+	<string>Another device is updating your data. Try again shortly. Your workout draft is safe on this device.</string>
+	<key>ANYTHING_ELSE_YOUR_COACH_SHOULD_KNOW</key>
+	<string>Anything else your coach should know?</string>
+	<key>ANY_EQUIPMENT</key>
+	<string>Any equipment</string>
+	<key>AN_EXERCISE_WITH_THIS_NAME_ALREADY_EXISTS</key>
+	<string>An exercise with this name already exists.</string>
+	<key>APPLE_FITNESS_WORKOUT_SYNC</key>
+	<string>Apple Fitness · Workout sync</string>
+	<key>APPLE_HEALTH</key>
+	<string>Apple Health</string>
+	<key>APPLE_HEALTH_HAS_NOT_CONFIRMED_THE_SAVE_RETRY_SYNCING</key>
+	<string>Apple Health has not confirmed the save. Retry syncing.</string>
+	<key>APPLE_WATCH_IS_RECORDING_YOUR_WORKOUT</key>
+	<string>Apple Watch is recording your workout</string>
+	<key>APPLIES_TO_ROUTINES_WORKOUT_HISTORY_BODY_WEIGHT_AND_TARGET_WEIGHT_EQUIPMENT_INVENTORIES</key>
+	<string>Applies to routines, workout history, body weight and target weight. Equipment inventories stay separate for kg and lb.</string>
+	<key>APPLY_CHANGES</key>
+	<string>Apply changes</string>
+	<key>APPLY_COACH_SUGGESTIONS</key>
+	<string>Apply coach suggestions?</string>
+	<key>APPLY_COUNT_CHANGES</key>
+	<string>Apply %1$@ changes</string>
+	<key>ASK_COACH_TO_BUILD_A_PLAN</key>
+	<string>Ask coach to build a plan</string>
+	<key>ASSISTANCE_EQUIPMENT</key>
+	<string>Assistance equipment</string>
+	<key>ASSISTED</key>
+	<string>assisted</string>
+	<key>AS_ENTERED</key>
+	<string>As entered</string>
+	<key>AT_REFERENCE_RATIO</key>
+	<string>At reference ratio</string>
+	<key>AUTOMATIC_PROGRESSION</key>
+	<string>Automatic progression</string>
+	<key>AUTOMATIC_REVIEW</key>
+	<string>Automatic review</string>
+	<key>AVAILABLE</key>
+	<string>Available</string>
+	<key>AVAILABLE_EQUIPMENT</key>
+	<string>Available equipment</string>
+	<key>A_RECORD_ALREADY_EXISTS_FOR_THIS_DATE_EDIT_THAT_RECORD_INSTEAD</key>
+	<string>A record already exists for this date. Edit that record instead.</string>
+	<key>A_SCHEDULED_ROUTINE_WAS_DELETED_CHOOSE_ANOTHER_ROUTINE</key>
+	<string>A scheduled routine was deleted. Choose another routine.</string>
+	<key>BACK</key>
+	<string>back</string>
+	<key>BACKGROUND_UPDATES_ARE_UNAVAILABLE_DATA_WILL_STILL_SYNC_WHEN_YOU_OPEN_THE</key>
+	<string>Background updates are unavailable. Data will still sync when you open the app: %1$@</string>
+	<key>BACK_A</key>
+	<string>Back</string>
+	<key>BACK_OFF_SETS</key>
+	<string>Back-off sets</string>
+	<key>BACK_TO_WEEKLY_PLAN</key>
+	<string>Back to weekly plan</string>
+	<key>BALANCED_SUSTAINABLE_TRAINING</key>
+	<string>Balanced, sustainable training.</string>
+	<key>BAND</key>
+	<string>band</string>
+	<key>BARBELL</key>
+	<string>barbell</string>
+	<key>BARBELL_BENCH_PRESS</key>
+	<string>Barbell bench press</string>
+	<key>BASELINE_LIFT_NEEDED</key>
+	<string>Baseline lift needed</string>
+	<key>BELOW_REFERENCE_RATIO</key>
+	<string>Below reference ratio</string>
+	<key>BENCH_A</key>
+	<string>Bench</string>
+	<key>BEST_A</key>
+	<string>Best</string>
+	<key>BICEPS</key>
+	<string>biceps</string>
+	<key>BICEPS_A</key>
+	<string>Biceps</string>
+	<key>BODYWEIGHT_EXERCISE_WEIGHT_IS_ADDED_LOAD</key>
+	<string>Bodyweight exercise (weight is added load)</string>
+	<key>BODY_FAT</key>
+	<string>Body fat</string>
+	<key>BODY_MEASUREMENTS</key>
+	<string>Body measurements</string>
+	<key>BODY_PART</key>
+	<string>Body part</string>
+	<key>BODY_WEIGHT</key>
+	<string>Body weight</string>
+	<key>BODY_WEIGHT_A</key>
+	<string>body weight</string>
+	<key>BODY_WEIGHT_AND_GOAL</key>
+	<string>Body weight and goal</string>
+	<key>BODY_WEIGHT_CHANGE</key>
+	<string>Body weight change</string>
+	<key>BODY_WEIGHT_RECORDS</key>
+	<string>Body weight records</string>
+	<key>BODY_WEIGHT_RECORD_NEEDED</key>
+	<string>Body weight record needed</string>
+	<key>BOSU_BALL</key>
+	<string>bosu ball</string>
+	<key>BPM</key>
+	<string>bpm</string>
+	<key>BUILD_A_NEW_PLAN</key>
+	<string>Build a new plan</string>
+	<key>BUILD_A_NEW_TRAINING_PLAN_BASED_ON_MY_ANSWERS</key>
+	<string>Build a new training plan based on my answers.</string>
+	<key>BUILD_ENDURANCE</key>
+	<string>Build endurance</string>
+	<key>BUILD_MUSCLE</key>
+	<string>Build muscle</string>
+	<key>BUILD_STRENGTH</key>
+	<string>Build strength</string>
+	<key>CABLE</key>
+	<string>cable</string>
+	<key>CALISTHENICS</key>
+	<string>calisthenics</string>
+	<key>CALVES</key>
+	<string>calves</string>
+	<key>CALVES_A</key>
+	<string>Calves</string>
+	<key>CANCEL</key>
+	<string>Cancel</string>
+	<key>CANCEL_IMPORT</key>
+	<string>Cancel import</string>
+	<key>CANCEL_PAIRING</key>
+	<string>Cancel pairing</string>
+	<key>CARDIOVASCULAR_SYSTEM</key>
+	<string>cardiovascular system</string>
+	<key>CARDIO_A</key>
+	<string>cardio</string>
+	<key>CARDIO_DURATION_AND_SPEED</key>
+	<string>Cardio · Duration and speed</string>
+	<key>CARD_VIEW</key>
+	<string>Card view</string>
+	<key>CHANGE</key>
+	<string>Change</string>
+	<key>CHANGES_ARE_SAVED_BUT_THE_SUGGESTION_S_STATUS_IS_NOT_CONFIRMED_TAP</key>
+	<string>Changes are saved, but the suggestion's status is not confirmed. Tap Finish syncing. Changes will not be applied twice.</string>
+	<key>CHANGE_ACCOUNT_WEIGHT_UNIT</key>
+	<string>Change account weight unit</string>
+	<key>CHANGE_DATE</key>
+	<string>Change date</string>
+	<key>CHECK_AGAIN</key>
+	<string>Check again</string>
+	<key>CHECK_THE_RANGES_FOR_SETS_REPS_WEIGHT_AND_REST_TIME</key>
+	<string>Check the ranges for sets, reps, weight and rest time.</string>
+	<key>CHECK_THE_VALUE_FOR_COUNT</key>
+	<string>Check the value for %1$@.</string>
+	<key>CHECK_THE_WEIGHT_AND_REPS_FOR_EACH_SET</key>
+	<string>Check the weight and reps for each set.</string>
+	<key>CHECK_THE_WORKOUT_ON_YOUR_PHONE</key>
+	<string>Check the workout on your phone.</string>
+	<key>CHEST</key>
+	<string>chest</string>
+	<key>CHEST_A</key>
+	<string>Chest</string>
+	<key>CHOOSE_A_ROUTINE</key>
+	<string>Choose a routine</string>
+	<key>CHOOSE_EXERCISES_COUNT_SELECTED</key>
+	<string>Choose exercises · %1$@ selected</string>
+	<key>CHOOSE_MATCHING_EXERCISE</key>
+	<string>Choose matching exercise</string>
+	<key>CHOOSE_MEASUREMENTS</key>
+	<string>Choose measurements</string>
+	<key>CHOOSE_SEVERAL_TYPES_OR_LEAVE_EMPTY_TO_INCLUDE_ALL_EXERCISES</key>
+	<string>Choose several types, or leave empty to include all exercises.</string>
+	<key>CHOOSE_SUGGESTIONS</key>
+	<string>Choose suggestions</string>
+	<key>CHOOSE_WEEKDAY</key>
+	<string>Choose weekday</string>
+	<key>CLEAR</key>
+	<string>Clear</string>
+	<key>CLEAR_AND_SAVE</key>
+	<string>Clear and save</string>
+	<key>CLEAR_FAILURE_MARK</key>
+	<string>Clear failure mark</string>
+	<key>CLEAR_INVENTORY</key>
+	<string>Clear inventory</string>
+	<key>CLEAR_SEARCH</key>
+	<string>Clear search</string>
+	<key>CLEAR_SEARCH_AND_FILTERS</key>
+	<string>Clear search and filters</string>
+	<key>CLEAR_THE_WORKOUT_ORDER_AND_STOP_THE_ROTATION_WORKOUT_HISTORY_IS_KEPT</key>
+	<string>Clear the workout order and stop the rotation. Workout history is kept.</string>
+	<key>CLIENT</key>
+	<string>Client</string>
+	<key>CLOSE_EXERCISE_DETAILS</key>
+	<string>Close exercise details</string>
+	<key>COACH_HISTORY</key>
+	<string>Coach history</string>
+	<key>COACH_IS_THINKING</key>
+	<string>Coach is thinking…</string>
+	<key>COACH_MENU</key>
+	<string>Coach menu</string>
+	<key>COACH_UNAVAILABLE</key>
+	<string>Coach unavailable</string>
+	<key>COMBINED_WEIGHT_OF_BOTH</key>
+	<string>Combined weight of both</string>
+	<key>COMPARES_YOUR_LOGGED_LIFTS_WITH_REFERENCE_RATIOS_RATIOS_ARE_UNAVAILABLE_WITHOUT_A</key>
+	<string>Compares your logged lifts with reference ratios. Ratios are unavailable without a baseline lift or body weight.</string>
+	<key>COMPLETED</key>
+	<string>Completed</string>
+	<key>COMPLETED_SETS</key>
+	<string>Completed sets</string>
+	<key>COMPLETED_SETS_OR_SIDES_STAY_IN_PLACE_WITH_THE_NEW_EXERCISE_ADDED</key>
+	<string>Completed sets or sides stay in place, with the new exercise added after them. An unstarted exercise is replaced directly. Only this workout changes.</string>
+	<key>COMPLETE_AT_LEAST_ONE_SET_BEFORE_SAVING_YOUR_WORKOUT</key>
+	<string>Complete at least one set before saving your workout.</string>
+	<key>COMPLETE_A_WORKOUT_BEFORE_REQUESTING_A_REVIEW</key>
+	<string>Complete a workout before requesting a review.</string>
+	<key>COMPLETE_SET</key>
+	<string>Complete set</string>
+	<key>COMPLETE_SET_DETAILS</key>
+	<string>Complete set details</string>
+	<key>COMPLETE_THE_DATA_CONSENT_AND_TRAINING_QUESTIONNAIRE_FIRST</key>
+	<string>Complete the data consent and training questionnaire first.</string>
+	<key>COMPLETE_THE_PROGRESSION_PARAMETERS</key>
+	<string>Complete the progression parameters.</string>
+	<key>COMPLETE_THIS_SET_S_DETAILS_ON_IPHONE</key>
+	<string>Complete this set's details on iPhone</string>
+	<key>CONFIRMING</key>
+	<string>Confirming</string>
+	<key>CONFIRM_IMPORT</key>
+	<string>Confirm import</string>
+	<key>CONNECTING_TO_COACH</key>
+	<string>Connecting to coach</string>
+	<key>CONNECTING_TO_SERVER</key>
+	<string>Connecting to server…</string>
+	<key>CONNECTION_FAILED</key>
+	<string>Connection failed</string>
+	<key>CONNECT_ACCOUNT</key>
+	<string>Connect account</string>
+	<key>CONNECT_IPHONE</key>
+	<string>Connect iPhone</string>
+	<key>CONNECT_YOUR_OPENGYM_ACCOUNT_FIRST</key>
+	<string>Connect your openGym account first</string>
+	<key>CONTINUE_UNFINISHED_WORKOUTS_IN_ORDER_THE_NEXT_ROUND_STARTS_THE_DAY_AFTER</key>
+	<string>Continue unfinished workouts in order. The next round starts the day after the current round ends. Clearing the order stops the rotation; switching to a fixed weekly schedule keeps the rotation order.</string>
+	<key>CONTINUE_WORKOUT</key>
+	<string>Continue workout</string>
+	<key>CONVERT_ALL_WEIGHTS</key>
+	<string>Convert all weights</string>
+	<key>COPY_A</key>
+	<string> copy</string>
+	<key>COPY_EXERCISE_NAME</key>
+	<string>Copy exercise name</string>
+	<key>COPY_ROUTINE</key>
+	<string>Copy routine</string>
+	<key>COPY_SET</key>
+	<string>Copy set</string>
+	<key>COULD_NOT_APPLY</key>
+	<string>Could not apply</string>
+	<key>COULD_NOT_CALCULATE_WORKOUT_RULES</key>
+	<string>Could not calculate workout rules.</string>
+	<key>COULD_NOT_COMPLETE_ACTION</key>
+	<string>Could not complete action</string>
+	<key>COULD_NOT_DELETE</key>
+	<string>Could not delete</string>
+	<key>COULD_NOT_DELETE_THE_WORKOUT_IT_HAS_BEEN_KEPT_COUNT</key>
+	<string>Could not delete the workout. It has been kept: %1$@</string>
+	<key>COULD_NOT_ENABLE_REMINDERS_TRY_AGAIN_LATER</key>
+	<string>Could not enable reminders. Try again later.</string>
+	<key>COULD_NOT_LOAD</key>
+	<string>Could not load</string>
+	<key>COULD_NOT_LOAD_EXERCISE_LIBRARY_COUNT</key>
+	<string>Could not load exercise library: %1$@</string>
+	<key>COULD_NOT_LOAD_WORKOUT_RULES</key>
+	<string>Could not load workout rules.</string>
+	<key>COULD_NOT_PLAY_VIDEO</key>
+	<string>Could not play video</string>
+	<key>COULD_NOT_READ_HEALTH_SYNC_RECORDS_COUNT</key>
+	<string>Could not read health sync records: %1$@</string>
+	<key>COULD_NOT_READ_LOCAL_HEALTH_DATA_COUNT</key>
+	<string>Could not read local health data: %1$@</string>
+	<key>COULD_NOT_READ_THE_LOCAL_FILE_THE_ORIGINAL_HAS_BEEN_KEPT_DO</key>
+	<string>Could not read the local file. The original has been kept. Do not uninstall the app.</string>
+	<key>COULD_NOT_READ_THE_WORKOUT_DRAFT_THE_FILE_HAS_BEEN_KEPT_COUNT</key>
+	<string>Could not read the workout draft. The file has been kept: %1$@</string>
+	<key>COULD_NOT_READ_WORKOUT_DATA_SYNC_AND_TRY_AGAIN</key>
+	<string>Could not read workout data. Sync and try again.</string>
+	<key>COULD_NOT_REPLACE_EXERCISE</key>
+	<string>Could not replace exercise</string>
+	<key>COULD_NOT_REQUEST_NOTIFICATION_ACCESS_COUNT</key>
+	<string>Could not request notification access: %1$@</string>
+	<key>COULD_NOT_RESTORE_THE_STOP_REQUEST_COUNT</key>
+	<string>Could not restore the stop request: %1$@</string>
+	<key>COULD_NOT_SAVE</key>
+	<string>Could not save</string>
+	<key>COULD_NOT_SAVE_EXERCISE_ORDER</key>
+	<string>Could not save exercise order</string>
+	<key>COULD_NOT_SAVE_HEALTH_SYNC_CONFIRMATION_YOU_CAN_RETRY_COUNT</key>
+	<string>Could not save health sync confirmation. You can retry: %1$@</string>
+	<key>COULD_NOT_SAVE_HEALTH_SYNC_DATA_LOCALLY_COUNT</key>
+	<string>Could not save health sync data locally: %1$@</string>
+	<key>COULD_NOT_SAVE_ON_THIS_DEVICE</key>
+	<string>Could not save on this device</string>
+	<key>COULD_NOT_SAVE_ON_THIS_DEVICE_COUNT</key>
+	<string>Could not save on this device: %1$@</string>
+	<key>COULD_NOT_SAVE_ON_THIS_DEVICE_VIEW_DETAILS</key>
+	<string>Could not save on this device. View details</string>
+	<key>COULD_NOT_SAVE_THE_DRAFT_ON_IPHONE_CHECK_YOUR_PHONE</key>
+	<string>Could not save the draft on iPhone. Check your phone.</string>
+	<key>COULD_NOT_SAVE_THE_HEALTH_SYNC_STOP_REQUEST_COUNT</key>
+	<string>Could not save the health sync stop request: %1$@</string>
+	<key>COULD_NOT_SAVE_THE_WORKOUT_DRAFT_ON_THIS_DEVICE_COUNT</key>
+	<string>Could not save the workout draft on this device: %1$@</string>
+	<key>COULD_NOT_SAVE_TRY_AGAIN</key>
+	<string>Could not save. Try again.</string>
+	<key>COULD_NOT_SCHEDULE_REST_REMINDER_COUNT</key>
+	<string>Could not schedule rest reminder: %1$@</string>
+	<key>COULD_NOT_SET_A_REST_REMINDER_KEEP_AN_EYE_ON_THE_COUNTDOWN</key>
+	<string>Could not set a rest reminder. Keep an eye on the countdown.</string>
+	<key>COULD_NOT_STORE_LOGIN_DETAILS_SECURELY</key>
+	<string>Could not store login details securely.</string>
+	<key>COULD_NOT_SYNC_YOUR_RECORDS_ARE_SAFE_ON_THIS_DEVICE_TRY_AGAIN</key>
+	<string>Could not sync. Your records are safe on this device. Try again later.</string>
+	<key>COULD_NOT_UPDATE_LOGIN_DETAILS_KEYCHAIN_COUNT</key>
+	<string>Could not update login details (Keychain %1$@).</string>
+	<key>COUNT_ACTIVE_KCAL</key>
+	<string>%1$@ active kcal</string>
+	<key>COUNT_AND_ITS_SCHEDULE_WILL_BE_DELETED_THIS_CANNOT_BE_UNDONE_YOUR</key>
+	<string>“%1$@” and its schedule will be deleted. This cannot be undone. Your workout history and current workout are kept.</string>
+	<key>COUNT_BPM</key>
+	<string>%1$@ bpm</string>
+	<key>COUNT_COMPLETE</key>
+	<string>%1$@ complete</string>
+	<key>COUNT_COUNT_COUNT_PAIRS</key>
+	<string>%1$@ %2$@: %3$@ pairs</string>
+	<key>COUNT_COUNT_START_THE_NEXT_SET_WHEN_YOU_RE_READY</key>
+	<string>%1$@ · %2$@. Start the next set when you're ready.</string>
+	<key>COUNT_DAYS_PER_WEEK</key>
+	<string>%1$@ days per week</string>
+	<key>COUNT_DROPS</key>
+	<string> · %1$@ drops</string>
+	<key>COUNT_EXERCISES</key>
+	<string>%1$@ exercises</string>
+	<key>COUNT_EXERCISES_COUNT_SETS</key>
+	<string>%1$@ exercises · %2$@ sets</string>
+	<key>COUNT_EXERCISES_FOUND</key>
+	<string>%1$@ exercises found</string>
+	<key>COUNT_HR</key>
+	<string>%1$@ hr</string>
+	<key>COUNT_ITEMS_EXCLUDED</key>
+	<string>%1$@ items excluded</string>
+	<key>COUNT_MIN</key>
+	<string>%1$@ min</string>
+	<key>COUNT_MINUTES_PER_SESSION_INCLUDING_REST</key>
+	<string>%1$@ minutes per session, including rest</string>
+	<key>COUNT_MIN_A</key>
+	<string> %1$@ min</string>
+	<key>COUNT_MIN_COUNT_SETS</key>
+	<string>%1$@ min · %2$@ sets</string>
+	<key>COUNT_OPTIONS</key>
+	<string>%1$@ options</string>
+	<key>COUNT_PERSONAL_RECORDS</key>
+	<string>%1$@ personal records</string>
+	<key>COUNT_READY_FOR_YOUR_NEXT_SET</key>
+	<string>%1$@ · Ready for the next set</string>
+	<key>COUNT_REMAINING</key>
+	<string>%1$@ remaining</string>
+	<key>COUNT_REPS_A</key>
+	<string>%1$@ reps</string>
+	<key>COUNT_REST</key>
+	<string>%1$@ rest</string>
+	<key>COUNT_REST_PAUSE_MINI_SETS</key>
+	<string> · %1$@ rest-pause mini-sets</string>
+	<key>COUNT_SECOND</key>
+	<string>%1$@ second</string>
+	<key>COUNT_SET</key>
+	<string>%1$@ set</string>
+	<key>COUNT_SETS</key>
+	<string>%1$@ sets</string>
+	<key>COUNT_SUGGESTIONS</key>
+	<string>%1$@ suggestions</string>
+	<key>COUNT_TREND_POINTS_MEASURED_IN_COUNT</key>
+	<string>%1$@ trend points, measured in %2$@</string>
+	<key>COUNT_WARM_UP_SETS</key>
+	<string>%1$@ warm-up sets</string>
+	<key>CREATE</key>
+	<string>Create</string>
+	<key>CREATE_A_SINGLE_EXERCISE_ROUTINE</key>
+	<string>Create a single-exercise routine</string>
+	<key>CREATE_ROUTINE</key>
+	<string>Create routine</string>
+	<key>CURRENT_CONNECTION</key>
+	<string>Current connection</string>
+	<key>CURRENT_GYM</key>
+	<string>Current gym</string>
+	<key>CURRENT_RATIO</key>
+	<string>Current ratio</string>
+	<key>CURRENT_ROTATION</key>
+	<string>Current rotation</string>
+	<key>CURRENT_ROUND</key>
+	<string>Current round</string>
+	<key>CURRENT_WEIGHT_UNIT</key>
+	<string>Current weight unit</string>
+	<key>CUSTOM</key>
+	<string>custom</string>
+	<key>CUSTOM_EXERCISE</key>
+	<string>Custom exercise</string>
+	<key>CUSTOM_MEASUREMENTS</key>
+	<string>Custom measurements</string>
+	<key>DATA_IS_SENT_TO_COUNT_CONFIGURED_BY_YOUR_SERVER_USING_THE_ADMINISTRATOR</key>
+	<string>Data is sent to %1$@, configured by your server, using the administrator's service account. Your name, login credentials and other users' data are not included.</string>
+	<key>DATE</key>
+	<string>Date</string>
+	<key>DATE_AND_START_TIME</key>
+	<string>Date and start time</string>
+	<key>DATE_OVERRIDE</key>
+	<string>Date override</string>
+	<key>DAY</key>
+	<string>Day</string>
+	<key>DECLINED</key>
+	<string>declined</string>
+	<key>DECLINE_SUGGESTION</key>
+	<string>Decline suggestion</string>
+	<key>DECLINE_THIS_SUGGESTION</key>
+	<string>Decline this suggestion</string>
+	<key>DECLINE_THIS_SUGGESTION_A</key>
+	<string>Decline this suggestion?</string>
+	<key>DEFAULT</key>
+	<string>Default</string>
+	<key>DEFAULTS_TO_THREE_SETS_OF_ONEZERO_REPS</key>
+	<string>Defaults to 3 sets of 10 reps</string>
+	<key>DEFAULT_REST_COUNT_SECONDS</key>
+	<string>Default rest: %1$@ seconds</string>
+	<key>DELETE</key>
+	<string>Delete</string>
+	<key>DELETED_ROUTINE</key>
+	<string>Deleted routine</string>
+	<key>DELETE_EXERCISE</key>
+	<string>Delete exercise</string>
+	<key>DELETE_RECORD</key>
+	<string>Delete record</string>
+	<key>DELETE_ROUTINE</key>
+	<string>Delete routine?</string>
+	<key>DELETE_ROUTINE_A</key>
+	<string>Delete routine</string>
+	<key>DELETE_SET</key>
+	<string>Delete set</string>
+	<key>DELETE_THIS_EXERCISE</key>
+	<string>Delete this exercise?</string>
+	<key>DELETE_THIS_RECORD</key>
+	<string>Delete this record?</string>
+	<key>DELETE_THIS_WORKOUT</key>
+	<string>Delete this workout?</string>
+	<key>DELETE_WORKOUT_A</key>
+	<string>Delete workout</string>
+	<key>DELETING</key>
+	<string>Deleting</string>
+	<key>DELOAD_FACTOR_ZERO_FIVE_ZERO_NINEFIVE</key>
+	<string>Deload factor (0.5–0.95)</string>
+	<key>DELTS</key>
+	<string>delts</string>
+	<key>DESCRIPTION_AND_INSTRUCTIONS</key>
+	<string>Description and instructions</string>
+	<key>DISABLED_EXISTING_WORKOUT_RECORDS_ARE_KEPT</key>
+	<string>Disabled. Existing workout records are kept</string>
+	<key>DISCARD_CHANGES</key>
+	<string>Discard changes</string>
+	<key>DISCARD_ROTATION_CHANGES</key>
+	<string>Discard rotation changes?</string>
+	<key>DISCARD_SCHEDULE_CHANGES</key>
+	<string>Discard schedule changes?</string>
+	<key>DISCARD_UNSAVED_CHANGES</key>
+	<string>Discard unsaved changes?</string>
+	<key>DONE</key>
+	<string>Done</string>
+	<key>DON_T_LOG</key>
+	<string>Don't log</string>
+	<key>DOUBLE_PROGRESSION</key>
+	<string>Double progression</string>
+	<key>DOUBLE_PROGRESSION_INCREASES_REPS_BEFORE_WEIGHT_TRIPLE_PROGRESSION_ALSO_ADDS_SETS_BEFORE</key>
+	<string>Double progression increases reps before weight. Triple progression also adds sets before increasing weight. Leave parameters blank to use defaults.</string>
+	<key>DROPS</key>
+	<string>Drops</string>
+	<key>DROP_COUNT</key>
+	<string>Drop %1$@</string>
+	<key>DROP_SET</key>
+	<string>Drop-set</string>
+	<key>DROP_SETS_REST_PAUSE</key>
+	<string>Drop sets / Rest-pause</string>
+	<key>DUMBBELL</key>
+	<string>dumbbell</string>
+	<key>DUMBBELL_KETTLEBELL_LOAD</key>
+	<string>Dumbbell / kettlebell load</string>
+	<key>DURATION_MIN</key>
+	<string>Duration (min)</string>
+	<key>DURATION_SECONDS_SHORT</key>
+	<string>%1$@ s</string>
+	<key>EDIT_COUNT</key>
+	<string>Edit %1$@</string>
+	<key>EDIT_CUSTOM_EXERCISE</key>
+	<string>Edit custom exercise</string>
+	<key>EDIT_EXERCISE</key>
+	<string>Edit exercise</string>
+	<key>EDIT_RECORD</key>
+	<string>Edit record</string>
+	<key>EDIT_ROUTINE</key>
+	<string>Edit routine</string>
+	<key>EDIT_TRAINING_QUESTIONNAIRE</key>
+	<string>Edit training questionnaire</string>
+	<key>EDIT_WORKOUT</key>
+	<string>Edit workout</string>
+	<key>EFFORT</key>
+	<string>Effort</string>
+	<key>ELLIPTICAL_MACHINE</key>
+	<string>elliptical machine</string>
+	<key>ENABLED_FOR_YOUR_NEXT_WORKOUT</key>
+	<string>Enabled for your next workout</string>
+	<key>ENABLED_FOR_YOUR_NEXT_WORKOUT_ALLOW_ACCESS_ON_YOUR_WATCH_TOO_IF</key>
+	<string>Enabled for your next workout. Allow access on your watch too if you use one</string>
+	<key>ENABLED_MANAGE_READ_ACCESS_IN_APPLE_HEALTH</key>
+	<string>Enabled. Manage read access in Apple Health</string>
+	<key>ENABLE_AI_COACH</key>
+	<string>Enable AI coach</string>
+	<key>ENABLE_COACH</key>
+	<string>Enable coach</string>
+	<key>ENDED</key>
+	<string>Ended</string>
+	<key>END_REST</key>
+	<string>End rest</string>
+	<key>END_YOUR_REST_FIRST</key>
+	<string>End your rest first.</string>
+	<key>ENTER_AT_LEAST_ONE_MEASUREMENT</key>
+	<string>Enter at least one measurement</string>
+	<key>ENTER_A_GYM_NAME</key>
+	<string>Enter a gym name.</string>
+	<key>ENTER_A_ONE_TIME_PAIRING_CODE</key>
+	<string>Enter a one-time pairing code</string>
+	<key>ENTER_A_ROUTINE_NAME</key>
+	<string>Enter a routine name.</string>
+	<key>ENTER_A_VALID_DURATION_YOUR_INPUT_HAS_BEEN_KEPT</key>
+	<string>Enter a valid duration. Your input has been kept.</string>
+	<key>ENTER_A_VALID_HTTP_OR_HTTPS_URL</key>
+	<string>Enter a valid http or https URL.</string>
+	<key>ENTER_A_VALID_SERVER_ADDRESS_REMOTE_SERVERS_REQUIRE_HTTPS_LOCAL_ACCESS_SUPPORTS</key>
+	<string>Enter a valid server address. Remote servers require HTTPS; local access supports http://localhost:8080.</string>
+	<key>ENTER_A_VALID_TARGET_WEIGHT</key>
+	<string>Enter a valid target weight.</string>
+	<key>ENTER_A_WORKOUT_NAME</key>
+	<string>Enter a workout name.</string>
+	<key>ENTER_BODY_WEIGHT</key>
+	<string>Enter body weight</string>
+	<key>ENTER_VALID_WEIGHTS_GREATER_THAN_ZERO</key>
+	<string>Enter valid weights greater than zero.</string>
+	<key>EQUIPMENT</key>
+	<string>Equipment</string>
+	<key>EQUIPMENT_INVENTORY</key>
+	<string>Equipment inventory</string>
+	<key>EQUIPMENT_SELECTION</key>
+	<string>Equipment selection</string>
+	<key>ESTIMATED_FATIGUE</key>
+	<string>Estimated fatigue</string>
+	<key>ESTIMATED_ONE_REP_MAX</key>
+	<string>Estimated 1RM</string>
+	<key>ESTIMATED_ONE_REP_MAX_COUNT</key>
+	<string>Estimated 1RM %1$@</string>
+	<key>ESTIMATED_ONE_REP_MAX_YOU_COUNT_MEDIAN_COUNT_COUNT</key>
+	<string>Estimated 1RM: you %1$@ · median %2$@ %3$@</string>
+	<key>EST_ONE_REP_MAX</key>
+	<string>Est. 1RM</string>
+	<key>EVERY_COUNT_WORKOUTS</key>
+	<string>Every %1$@ workouts</string>
+	<key>EXERCISE</key>
+	<string>Exercise</string>
+	<key>EXERCISES</key>
+	<string>Exercises</string>
+	<key>EXERCISES_YOU_DISLIKE</key>
+	<string>Exercises you dislike</string>
+	<key>EXERCISES_YOU_ENJOY</key>
+	<string>Exercises you enjoy</string>
+	<key>EXERCISE_COMPLETE</key>
+	<string>Exercise complete</string>
+	<key>EXERCISE_COUNT</key>
+	<string>Exercise · %1$@</string>
+	<key>EXERCISE_COUNT_OF_COUNT</key>
+	<string>Exercise %1$@/%2$@</string>
+	<key>EXERCISE_DEMONSTRATION</key>
+	<string>Exercise demonstration</string>
+	<key>EXERCISE_DETAILS</key>
+	<string>Exercise details</string>
+	<key>EXERCISE_GROUP_COUNT_OF_COUNT</key>
+	<string>Exercise %1$@/%2$@</string>
+	<key>EXERCISE_INFORMATION</key>
+	<string>Exercise information</string>
+	<key>EXERCISE_MEDIA_ALIAKSANDR_MAKATSERCHYK_GYM_VISUAL_USED_IN_OPENGYM_UNDER_THE_ORIGINAL</key>
+	<string>Exercise media © Aliaksandr Makatserchyk · Gym visual
+Used in openGym under the original license.</string>
+	<key>EXERCISE_MENU</key>
+	<string>Exercise menu</string>
+	<key>EXERCISE_NAME</key>
+	<string>Exercise name</string>
+	<key>EXERCISE_NAME_COPIED</key>
+	<string>Exercise name copied</string>
+	<key>EXERCISE_NOTES</key>
+	<string>Exercise notes</string>
+	<key>EXERCISE_PROGRESS</key>
+	<string>Exercise progress</string>
+	<key>EXERCISE_PROGRESS_AND_HISTORY</key>
+	<string>Exercise progress and history</string>
+	<key>EXERCISE_PROGRESS_MUSCLES_AND_BODY_METRICS</key>
+	<string>Exercise progress, muscles and body metrics</string>
+	<key>EXERCISE_TIMER</key>
+	<string>Exercise timer</string>
+	<key>EXISTING_DATE_OVERRIDES</key>
+	<string>Existing date overrides</string>
+	<key>EXISTING_WEIGHTS_ARE_CONVERTED_AUTOMATICALLY_FOR_THIS_EXERCISE_ONLY</key>
+	<string>Existing weights are converted automatically for this exercise only.</string>
+	<key>EXPERIENCED_REBUILDING_CONSISTENCY</key>
+	<string>Experienced, rebuilding consistency</string>
+	<key>EXPLORE_EXERCISES</key>
+	<string>Explore exercises</string>
+	<key>EXPORT_ALL_ROUTINES</key>
+	<string>Export all routines</string>
+	<key>EZ_BARBELL</key>
+	<string>ez barbell</string>
+	<key>FAVOURITED</key>
+	<string>Favourited</string>
+	<key>FAVOURITES</key>
+	<string>Favourites</string>
+	<key>FILL_WITH_COMMON_WEIGHTS</key>
+	<string>Fill with common weights</string>
+	<key>FILTER_BY_GYM_EQUIPMENT</key>
+	<string>Filter by gym equipment</string>
+	<key>FILTER_EXERCISES_BY_GYM_EQUIPMENT</key>
+	<string>Filter exercises by gym equipment</string>
+	<key>FINISH_EARLY_A</key>
+	<string>Finish early</string>
+	<key>FINISH_ENTERING_THE_WEIGHT_BEFORE_CHANGING_UNITS_YOUR_INPUT_HAS_BEEN_KEPT</key>
+	<string>Finish entering the weight before changing units. Your input has been kept.</string>
+	<key>FINISH_SAVING_ON_IPHONE_FIRST</key>
+	<string>Finish saving on iPhone first.</string>
+	<key>FINISH_SYNCING</key>
+	<string>Finish syncing</string>
+	<key>FINISH_YOUR_CURRENT_WORKOUT_BEFORE_CHANGING_ACCOUNTS_OR_SERVERS</key>
+	<string>Finish your current workout before changing accounts or servers.</string>
+	<key>FINISH_YOUR_CURRENT_WORKOUT_BEFORE_CHANGING_HEALTH_SYNC_SETTINGS</key>
+	<string>Finish your current workout before changing health sync settings.</string>
+	<key>FINISH_YOUR_CURRENT_WORKOUT_FIRST</key>
+	<string>Finish your current workout first</string>
+	<key>FIVE_FIVE_STRENGTH_THREE_DAYS_A_WEEK</key>
+	<string>5 × 5 strength · 3 days a week</string>
+	<key>FIXED_WEEKLY_SCHEDULE</key>
+	<string>Fixed weekly schedule</string>
+	<key>FOLD_AWAY</key>
+	<string>Fold away</string>
+	<key>FOLLOW_ROUTINE</key>
+	<string>Follow routine</string>
+	<key>FOREARMS</key>
+	<string>forearms</string>
+	<key>FOREARMS_A</key>
+	<string>Forearms</string>
+	<key>FORMULA_BRZYCKI</key>
+	<string>Brzycki</string>
+	<key>FORMULA_EPLEY</key>
+	<string>Epley</string>
+	<key>FORMULA_LANDER</key>
+	<string>Lander</string>
+	<key>FORMULA_LOMBARDI</key>
+	<string>Lombardi</string>
+	<key>FORMULA_MAYHEW</key>
+	<string>Mayhew</string>
+	<key>FORMULA_OCONNER</key>
+	<string>O’Conner</string>
+	<key>FORMULA_WATHAN</key>
+	<string>Wathan</string>
+	<key>FOR_EXAMPLE_PUSH_PULL_LEGS</key>
+	<string>For example: Push / Pull / Legs</string>
+	<key>FOR_EXAMPLE_TWO_FOUR_SIX_EIGHT_ONEZERO_ONETWO</key>
+	<string>For example: 2, 4, 6, 8, 10, 12</string>
+	<key>FOR_EXAMPLE_UPPER_BODY_A</key>
+	<string>For example: Upper Body A</string>
+	<key>FR</key>
+	<string>Fr</string>
+	<key>FREESTYLE</key>
+	<string>Freestyle</string>
+	<key>FRI</key>
+	<string>Fri</string>
+	<key>FULL_BODY_A</key>
+	<string>full body</string>
+	<key>FULL_BODY_THREE_DAYS_A_WEEK</key>
+	<string>Full body · 3 days a week</string>
+	<key>GENERAL_FITNESS</key>
+	<string>General fitness</string>
+	<key>GENERATES_WARM_UP_AND_REST_PAUSE_SETS_MINI_SET_REPS_COUNT_TOWARDS</key>
+	<string>Generates warm-up and rest-pause sets. Mini-set reps count towards the work set total; volume is not counted twice.</string>
+	<key>GETTING_TO_KNOW_YOU</key>
+	<string>Getting to know you</string>
+	<key>GET_A_PAIRING_CODE_FROM_ACCOUNT_IN_THE_WEB_APP_IT_EXPIRES</key>
+	<string>Get a pairing code from Account in the web app. It expires in 5 minutes.</string>
+	<key>GLUTES</key>
+	<string>glutes</string>
+	<key>GLUTES_A</key>
+	<string>Glutes</string>
+	<key>GOT_IT</key>
+	<string>Got it</string>
+	<key>GO_TO_ROUTINES</key>
+	<string>Go to routines</string>
+	<key>GREYSKULL_LP</key>
+	<string>Greyskull LP</string>
+	<key>GYM</key>
+	<string>Gym</string>
+	<key>GYM_EQUIPMENT</key>
+	<string>Gym equipment</string>
+	<key>GYM_NAME</key>
+	<string>Gym name</string>
+	<key>HAMMER</key>
+	<string>hammer</string>
+	<key>HAMSTRINGS</key>
+	<string>hamstrings</string>
+	<key>HAMSTRINGS_A</key>
+	<string>Hamstrings</string>
+	<key>HEALTH_DATA_IS_UNAVAILABLE_ON_THIS_DEVICE</key>
+	<string>Health data is unavailable on this device</string>
+	<key>HEART_RATE</key>
+	<string>Heart rate</string>
+	<key>HEAVIER_WEIGHTS_FEWER_REPS</key>
+	<string>Heavier weights, fewer reps</string>
+	<key>HELP_ME_REVIEW_MY_LAST_WORKOUT</key>
+	<string>Help me review my last workout.</string>
+	<key>HIDE_RIR_RPE</key>
+	<string>Hide RIR / RPE</string>
+	<key>HIPS</key>
+	<string>Hips</string>
+	<key>HIP_FLEXORS_A</key>
+	<string>Hip flexors</string>
+	<key>HISTORY</key>
+	<string>History</string>
+	<key>HOME</key>
+	<string>Home</string>
+	<key>HOW_MANY_DAYS_A_WEEK_CAN_YOU_TRAIN</key>
+	<string>How many days a week can you train?</string>
+	<key>HOW_MUCH_TIME_DO_YOU_HAVE_PER_SESSION</key>
+	<string>How much time do you have per session?</string>
+	<key>HOW_TO</key>
+	<string>How to</string>
+	<key>HOW_YOU_TRAIN</key>
+	<string>How you train</string>
+	<key>IMPORTED</key>
+	<string>Imported</string>
+	<key>IMPORT_AND_REPLACE</key>
+	<string>Import and replace</string>
+	<key>IMPORT_PREVIEW</key>
+	<string>Import preview</string>
+	<key>IMPORT_ROUTINES</key>
+	<string>Import routines</string>
+	<key>IMPORT_THIS_PLAN</key>
+	<string>Import this plan</string>
+	<key>IMPROVE_A_SPECIFIC_ROUTINE</key>
+	<string>Improve a specific routine</string>
+	<key>IMPROVE_ONLY_MY_ROUTINE_COUNT_EXERCISE_SELECTION_ORDER_SETS_REP_RANGES_AND</key>
+	<string>Improve only my routine “%1$@”: exercise selection, order, sets, rep ranges and progression. Keep my other routines unchanged.</string>
+	<key>INCLINE_COUNT</key>
+	<string> · Incline %1$@%%</string>
+	<key>INCLINE_OPTIONAL</key>
+	<string>Incline % (optional)</string>
+	<key>INCOMPLETE</key>
+	<string>Incomplete</string>
+	<key>INCREASE_DURATION</key>
+	<string>Increase duration</string>
+	<key>INCREMENT_COUNT</key>
+	<string>Increment (%1$@)</string>
+	<key>INJURIES_JOINT_DISCOMFORT_EXERCISES_TO_AVOID_OR_SPACE_LIMITATIONS</key>
+	<string>Injuries, joint discomfort, exercises to avoid or space limitations</string>
+	<key>INVALID_INPUT_PLEASE_CHECK</key>
+	<string>Invalid input. Please check</string>
+	<key>IPHONE_IS_RECORDING_YOUR_WORKOUT</key>
+	<string>iPhone is recording your workout</string>
+	<key>IPHONE_IS_SAVING</key>
+	<string>iPhone is saving</string>
+	<key>ISOMETRIC</key>
+	<string>isometric</string>
+	<key>I_UNDERSTAND_CONTINUE</key>
+	<string>I understand, continue</string>
+	<key>JOIN_ANONYMOUS_TRAINING_COMPARISONS</key>
+	<string>Join anonymous training comparisons</string>
+	<key>JUST_STARTING_STRENGTH_TRAINING</key>
+	<string>Just starting strength training</string>
+	<key>KEEP_AT_LEAST_ONE_COMPLETED_SET</key>
+	<string>Keep at least one completed set.</string>
+	<key>KEEP_EDITING</key>
+	<string>Keep editing</string>
+	<key>KEEP_NUMBERS_CHANGE_UNIT_ONLY</key>
+	<string>Keep numbers, change unit only</string>
+	<key>KEEP_SCREEN_AWAKE_DURING_WORKOUTS</key>
+	<string>Keep screen awake during workouts</string>
+	<key>KETTLEBELL</key>
+	<string>kettlebell</string>
+	<key>KG_KILOGRAMS</key>
+	<string>kg — kilograms</string>
+	<key>LABEL_W</key>
+	<string>W</string>
+	<key>LANDMINE</key>
+	<string>landmine</string>
+	<key>LANGUAGE</key>
+	<string>Language</string>
+	<key>LANGUAGE_CHINESE</key>
+	<string>简体中文</string>
+	<key>LANGUAGE_ENGLISH</key>
+	<string>English</string>
+	<key>LAST_ONETWO_WEEKS</key>
+	<string>Last 12 weeks</string>
+	<key>LAST_READ</key>
+	<string>Last read</string>
+	<key>LAST_SET_TO_FAILURE_AMRAP</key>
+	<string>Last set to failure / AMRAP</string>
+	<key>LAST_SYNC</key>
+	<string>Last sync</string>
+	<key>LAST_WORKOUT</key>
+	<string>Last workout</string>
+	<key>LATS</key>
+	<string>lats</string>
+	<key>LB_POUNDS</key>
+	<string>lb — pounds</string>
+	<key>LEAVE_BLANK_TO_REMOVE_GOAL</key>
+	<string>Leave blank to remove goal</string>
+	<key>LEFT</key>
+	<string>Left</string>
+	<key>LEFT_A</key>
+	<string> · Left</string>
+	<key>LEFT_ANKLE</key>
+	<string>Left ankle</string>
+	<key>LEFT_CALF</key>
+	<string>Left calf</string>
+	<key>LEFT_FOREARM</key>
+	<string>Left forearm</string>
+	<key>LEFT_THIGH</key>
+	<string>Left thigh</string>
+	<key>LEFT_UPPER_ARM</key>
+	<string>Left upper arm</string>
+	<key>LEFT_WRIST</key>
+	<string>Left wrist</string>
+	<key>LEVERAGE_MACHINE</key>
+	<string>leverage machine</string>
+	<key>LICENSES_AND_CREDITS</key>
+	<string>Licenses and credits</string>
+	<key>LINEAR_PROGRESSION</key>
+	<string>Linear progression</string>
+	<key>LIST_VIEW</key>
+	<string>List view</string>
+	<key>LIVE_ACTIVITIES_ARE_OFF_ENABLE_THEM_FOR_OPENGYM_IN_SYSTEM_SETTINGS</key>
+	<string>Live Activities are off. Enable them for openGym in system settings.</string>
+	<key>LIVE_ACTIVITY_HAS_NOT_STARTED_IT_WILL_RETRY_WHEN_YOU_RETURN_TO</key>
+	<string>Live Activity has not started. It will retry when you return to the app.</string>
+	<key>LOADING_VIDEO</key>
+	<string>Loading video</string>
+	<key>LOCAL_DATA_LOADED</key>
+	<string>Local data loaded</string>
+	<key>LOCAL_SERVER_EXAMPLE</key>
+	<string>http://localhost:8080</string>
+	<key>LOGGING_MODE</key>
+	<string>Logging mode</string>
+	<key>LOG_BODY_WEIGHT</key>
+	<string>Log body weight</string>
+	<key>LOG_LEFT_AND_RIGHT_SEPARATELY</key>
+	<string>Log left and right separately</string>
+	<key>LOG_MEASUREMENTS</key>
+	<string>Log measurements</string>
+	<key>LOG_RIR_RPE</key>
+	<string>Log RIR / RPE</string>
+	<key>LOSE_BODY_FAT</key>
+	<string>Lose body fat</string>
+	<key>LOWER_ARMS</key>
+	<string>lower arms</string>
+	<key>LOWER_BACK_A</key>
+	<string>Lower back</string>
+	<key>LOWER_LEGS</key>
+	<string>lower legs</string>
+	<key>MACEBELL</key>
+	<string>macebell</string>
+	<key>MAINTAIN_STRENGTH_WHILE_LOSING_FAT</key>
+	<string>Maintain strength while losing fat</string>
+	<key>MAKE_SUPERSET_WITH_NEXT</key>
+	<string>Make superset with next</string>
+	<key>MAKE_SUPERSET_WITH_PREVIOUS</key>
+	<string>Make superset with previous</string>
+	<key>MARK_AS_FAILURE</key>
+	<string>Mark as failure</string>
+	<key>MARK_AS_WARM_UP</key>
+	<string>Mark as warm-up</string>
+	<key>MARK_AS_WORK_SET</key>
+	<string>Mark as work set</string>
+	<key>MAX</key>
+	<string>Max</string>
+	<key>MAXIMUM_COUNT_CHARACTERS_CURRENTLY_COUNT</key>
+	<string>Maximum %1$@ characters; currently %2$@.</string>
+	<key>MAX_REPS</key>
+	<string>Max reps</string>
+	<key>MEASUREMENT</key>
+	<string>Measurement</string>
+	<key>MEASUREMENT_CHEST</key>
+	<string>Chest</string>
+	<key>MEASUREMENT_NAME</key>
+	<string>Measurement name</string>
+	<key>MEASUREMENT_NECK</key>
+	<string>Neck</string>
+	<key>MEASUREMENT_SHOULDERS</key>
+	<string>Shoulders</string>
+	<key>MEDIAN_WEEKLY_WORKOUTS</key>
+	<string>Median weekly workouts</string>
+	<key>MEDICINE_BALL</key>
+	<string>medicine ball</string>
+	<key>MESSAGE_TOO_LONG</key>
+	<string>Message too long</string>
+	<key>MESSAGE_TOO_LONG_VIEW_DETAILS</key>
+	<string>Message too long. View details</string>
+	<key>METRIC</key>
+	<string>Metric</string>
+	<key>MINIMUM_REPS_BOTH_SIDES_COMBINED</key>
+	<string>Minimum reps (both sides combined)</string>
+	<key>MINI_SET_COUNT</key>
+	<string>Mini-set %1$@</string>
+	<key>MINUTES</key>
+	<string>Minutes</string>
+	<key>MINUTES_PER_SET</key>
+	<string>Minutes per set</string>
+	<key>MO</key>
+	<string>Mo</string>
+	<key>MOBILITY</key>
+	<string>mobility</string>
+	<key>MODE</key>
+	<string>Mode</string>
+	<key>MON</key>
+	<string>Mon</string>
+	<key>MORE_REPS_SHORTER_RESTS_AND_CARDIO</key>
+	<string>More reps, shorter rests and cardio</string>
+	<key>MORE_WORKOUTS</key>
+	<string>More workouts</string>
+	<key>MOVE_ITEM_COUNT_DOWN</key>
+	<string>Move item %1$@ down</string>
+	<key>MOVE_ITEM_COUNT_UP</key>
+	<string>Move item %1$@ up</string>
+	<key>MOVE_OUT_OF_THE_SUPERSET</key>
+	<string>Move out of the superset</string>
+	<key>MY_GYM</key>
+	<string>My gym</string>
+	<key>MY_ROTATION</key>
+	<string>My rotation</string>
+	<key>NEAR_REFERENCE_RATIO</key>
+	<string>Near reference ratio</string>
+	<key>NECK</key>
+	<string>neck</string>
+	<key>NEEDS_ATTENTION</key>
+	<string>Needs attention</string>
+	<key>NEW_GYM</key>
+	<string>New gym</string>
+	<key>NEW_INPUT_WAS_ENTERED_AFTER_SUBMITTING_IT_HAS_BEEN_KEPT_FOR_YOU</key>
+	<string>New input was entered after submitting. It has been kept for you to review.</string>
+	<key>NEW_INPUT_WAS_ENTERED_WHILE_SUBMITTING_YOUR_LOCAL_DRAFT_HAS_BEEN_KEPT</key>
+	<string>New input was entered while submitting. Your local draft has been kept.</string>
+	<key>NEW_ROUTINE</key>
+	<string>New routine</string>
+	<key>NEW_TO_TRAINING</key>
+	<string>New to training</string>
+	<key>NEXT_EXERCISE</key>
+	<string>Next exercise</string>
+	<key>NEXT_ROUND_STARTS_COUNT</key>
+	<string>Next round starts %1$@.</string>
+	<key>NEXT_WEEK</key>
+	<string>Next week</string>
+	<key>NEXT_WORKOUT</key>
+	<string>Next workout</string>
+	<key>NINEZERO_DAYS</key>
+	<string>90 days</string>
+	<key>NONE_SELECTED</key>
+	<string>None selected</string>
+	<key>NOTES_AND_UNITS</key>
+	<string>Notes and units</string>
+	<key>NOTES_FOR_THIS_EXERCISE</key>
+	<string>Notes for this exercise</string>
+	<key>NOTES_FROM_THE_COACH</key>
+	<string>Notes from the Coach</string>
+	<key>NOTIFICATIONS_APPEAR_IN_THE_BACKGROUND_AND_ON_THE_LOCK_SCREEN_AND_ARE</key>
+	<string>Notifications appear in the background and on the Lock Screen, and are cleared when you open the app. In the app, reminders use sound only.</string>
+	<key>NOTIFICATIONS_ARE_BLOCKED_ALLOW_THEM_IN_SYSTEM_SETTINGS</key>
+	<string>Notifications are blocked. Allow them in system settings.</string>
+	<key>NOTIFICATIONS_ARE_CURRENTLY_SILENT_ENABLE_BANNERS_AND_SOUND_IN_SYSTEM_SETTINGS</key>
+	<string>Notifications are currently silent. Enable banners and sound in system settings.</string>
+	<key>NOTIFICATION_BANNERS_ARE_OFF_ENABLE_THEM_IN_SYSTEM_SETTINGS</key>
+	<string>Notification banners are off. Enable them in system settings.</string>
+	<key>NOTIFICATION_STATUS</key>
+	<string>Notification status</string>
+	<key>NOT_APPLIED</key>
+	<string>Not applied</string>
+	<key>NOT_AUTHORIZED</key>
+	<string>Not authorized</string>
+	<key>NOT_ENABLED</key>
+	<string>Not enabled</string>
+	<key>NOT_ENOUGH_PARTICIPANTS_YET_COUNT_OF_COUNT</key>
+	<string>Not enough participants yet: %1$@ of %2$@.</string>
+	<key>NOT_ENTERED</key>
+	<string>Not entered</string>
+	<key>NOT_STARTED</key>
+	<string>Not started</string>
+	<key>NOT_SYNCED</key>
+	<string>Not synced</string>
+	<key>NO_ACCOUNT_IS_AVAILABLE_TO_SAVE_THIS_WORKOUT_DRAFT_LOCALLY</key>
+	<string>No account is available to save this workout draft locally.</string>
+	<key>NO_AUTOMATIC_PROGRESSION</key>
+	<string>No automatic progression</string>
+	<key>NO_CHANGES_NEEDED_RIGHT_NOW_KEEP_LOGGING_YOUR_WORKOUTS_AND_CHECK_BACK</key>
+	<string>No changes needed right now. Keep logging your workouts and check back for a review.</string>
+	<key>NO_COACH_SUGGESTIONS_YET</key>
+	<string>No coach suggestions yet</string>
+	<key>NO_COMPARABLE_RECORDS_YET</key>
+	<string>No comparable records yet</string>
+	<key>NO_DATA_YET</key>
+	<string>No data yet</string>
+	<key>NO_EXERCISES_FOUND</key>
+	<string>No exercises found</string>
+	<key>NO_EXERCISES_YET</key>
+	<string>No exercises yet.</string>
+	<key>NO_EXERCISE_HISTORY_YET</key>
+	<string>No exercise history yet</string>
+	<key>NO_RECORDS_YET</key>
+	<string>No records yet</string>
+	<key>NO_ROTATION_YET</key>
+	<string>No rotation yet</string>
+	<key>NO_ROUTINES_YET</key>
+	<string>No routines yet.</string>
+	<key>NO_SETS_YET</key>
+	<string>No sets yet</string>
+	<key>NO_WEIGHT_DATA_AVAILABLE_THERE_MAY_BE_NO_RECORDS_OR_READ_ACCESS</key>
+	<string>No weight data available. There may be no records, or read access may not be allowed</string>
+	<key>NO_WEIGHT_RECORDS_YET</key>
+	<string>No weight records yet</string>
+	<key>NO_WORKOUTS_YET</key>
+	<string>No workouts yet</string>
+	<key>NO_WORKOUT_SCHEDULED</key>
+	<string>No workout scheduled</string>
+	<key>OBLIQUES_A</key>
+	<string>Obliques</string>
+	<key>OFFLINE_ACCOUNT</key>
+	<string>Offline account</string>
+	<key>OFFLINE_USING_LOCAL_DATA</key>
+	<string>Offline · Using local data</string>
+	<key>OK</key>
+	<string>OK</string>
+	<key>OLYMPIC</key>
+	<string>olympic</string>
+	<key>OLYMPIC_BARBELL</key>
+	<string>olympic barbell</string>
+	<key>ONETWO_REPS_THREE_REST_PAUSE_MINI_SETS</key>
+	<string>12 reps · 3 rest-pause mini-sets</string>
+	<key>ONEZERO_REPS</key>
+	<string>10 reps</string>
+	<key>ONE_MONTH</key>
+	<string>1 month</string>
+	<key>ONE_REP_MAX_FORMULA</key>
+	<string>1RM formula</string>
+	<key>ONE_YEAR</key>
+	<string>1 year</string>
+	<key>ONLY_AGGREGATE_MEDIANS_ARE_COMPARED_NAMES_BODY_WEIGHT_AND_INDIVIDUAL_WORKOUTS_ARE</key>
+	<string>Only aggregate medians are compared. Names, body weight and individual workouts are not shown. Turning this off immediately excludes you from the statistics.</string>
+	<key>ONLY_NEW_WORKOUTS_STARTED_AFTER_ENABLING_SYNC_ARE_INCLUDED_PAST_WORKOUTS_ARE</key>
+	<string>
+
+Only new workouts started after enabling sync are included. Past workouts are not uploaded or updated. A connected Apple Watch is preferred for heart rate and calorie tracking; allow access on your watch the first time. Health metrics stay on your devices and in Apple Health.</string>
+	<key>OPEN_APP</key>
+	<string>Open app</string>
+	<key>OPEN_EXERCISE_TUTORIAL</key>
+	<string>Open exercise tutorial</string>
+	<key>OPEN_HEALTH_SYNC_SETTINGS_IN_OPENGYM_AND_ALLOW_ACCESS</key>
+	<string>Open health sync settings in openGym and allow access.</string>
+	<key>OPEN_OPENGYM_ON_IPHONE</key>
+	<string>Open openGym on iPhone</string>
+	<key>ORDER</key>
+	<string>Order</string>
+	<key>ORDER_PROGRESS</key>
+	<string>Order / Progress</string>
+	<key>OTHER_GOALS_OR_PREFERENCES</key>
+	<string>Other goals or preferences</string>
+	<key>OUTDATED</key>
+	<string>Outdated</string>
+	<key>PAIRING</key>
+	<string>Pairing</string>
+	<key>PAIR_AGAIN</key>
+	<string>Pair again</string>
+	<key>PAIR_AGAIN_TO_RECONNECT</key>
+	<string>Pair again to reconnect</string>
+	<key>PAIR_OPENGYM</key>
+	<string>Pair openGym</string>
+	<key>PAIR_OPENGYM_AGAIN</key>
+	<string>Pair openGym again?</string>
+	<key>PAIR_YOUR_ACCOUNT_IN_SETTINGS_OR_PAIR_AGAIN_IF_YOUR_CONNECTION_HAS</key>
+	<string>Pair your account in Settings, or pair again if your connection has expired.</string>
+	<key>PAIR_YOUR_ACCOUNT_THEN_ASK_YOUR_ADMINISTRATOR_TO_ENABLE_THE_AI_COACH</key>
+	<string>Pair your account, then ask your administrator to enable the AI coach in the web dashboard.</string>
+	<key>PARTICIPANTS</key>
+	<string>Participants</string>
+	<key>PAST_SUGGESTIONS</key>
+	<string>Past suggestions</string>
+	<key>PAUSE</key>
+	<string>Pause</string>
+	<key>PECTORALS</key>
+	<string>pectorals</string>
+	<key>PERSONAL_BEST</key>
+	<string>Personal best</string>
+	<key>PERSONAL_SETTINGS</key>
+	<string>Personal settings</string>
+	<key>PICK_EQUIPMENT</key>
+	<string>Pick equipment</string>
+	<key>PILATES</key>
+	<string>pilates</string>
+	<key>PLAN</key>
+	<string>Plan</string>
+	<key>PLATES_AND_DUMBBELLS</key>
+	<string>Plates and dumbbells</string>
+	<key>PLATES_PAIRS</key>
+	<string>Plates (pairs)</string>
+	<key>PLYOMETRICS</key>
+	<string>plyometrics</string>
+	<key>PREFERRED_TRAINING_DAYS_OPTIONAL</key>
+	<string>Preferred training days (optional)</string>
+	<key>PREVIEW</key>
+	<string>Preview</string>
+	<key>PREVIOUSLY_TRAINED</key>
+	<string>Previously trained</string>
+	<key>PREVIOUS_EXERCISE</key>
+	<string>Previous exercise</string>
+	<key>PREVIOUS_WEEK</key>
+	<string>Previous week</string>
+	<key>PREVIOUS_WORKOUT_EMPTY</key>
+	<string>Last workout: no history for this exercise yet</string>
+	<key>PREVIOUS_WORKOUT_NOTE</key>
+	<string>Previous note: %1$@</string>
+	<key>PREVIOUS_WORKOUT_SUMMARY</key>
+	<string>Last workout %1$@ · %2$@ · %3$@</string>
+	<key>PRIMARY_MUSCLE_GROUPS</key>
+	<string>Primary muscle groups</string>
+	<key>PROCESSING</key>
+	<string>Processing</string>
+	<key>PROGRESSION_RULE</key>
+	<string>Progression rule</string>
+	<key>PROGRESS_ANALYSIS</key>
+	<string>Progress analysis</string>
+	<key>PULL_UP_BAR_A</key>
+	<string>Pull-up bar</string>
+	<key>PUSH_PULL_LEGS_THREE_DAYS_A_WEEK</key>
+	<string>Push / Pull / Legs · 3 days a week</string>
+	<key>PYRAMID_AND_MAX_SETS</key>
+	<string>Pyramid and Max sets</string>
+	<key>PYRAMID_SETS</key>
+	<string>Pyramid sets</string>
+	<key>QUADS</key>
+	<string>quads</string>
+	<key>QUADS_A</key>
+	<string>Quads</string>
+	<key>RANGE</key>
+	<string>Range</string>
+	<key>READS_BODY_WEIGHT_AND_SYNCS_IT_TO_THIS_ACCOUNT_WITHOUT_WRITING_TO</key>
+	<string>Reads body weight and syncs it to this account without writing to Apple Health. Manage read access in the Health app.</string>
+	<key>READY_FOR_YOUR_NEXT_SET</key>
+	<string>Ready for the next set</string>
+	<key>READY_TO_START</key>
+	<string>Ready to start</string>
+	<key>RECORDING</key>
+	<string>Recording</string>
+	<key>RECORDING_ACTIVITY</key>
+	<string>Recording activity</string>
+	<key>RECORD_MENU</key>
+	<string>Record menu</string>
+	<key>REFERENCE_PERFORMANCE</key>
+	<string>Reference performance</string>
+	<key>REFERENCE_RATIO</key>
+	<string>Reference ratio</string>
+	<key>REFERENCE_SYSTEM</key>
+	<string>Reference system</string>
+	<key>REFRESH</key>
+	<string>Refresh</string>
+	<key>REFRESHING</key>
+	<string>Refreshing</string>
+	<key>REMOVE_EXERCISE</key>
+	<string>Remove exercise</string>
+	<key>REMOVE_EXERCISE_AND_SETS</key>
+	<string>Remove exercise and sets</string>
+	<key>REMOVE_FROM_FAVOURITES</key>
+	<string>Remove from favourites</string>
+	<key>REMOVE_FROM_ROTATION</key>
+	<string>Remove from rotation</string>
+	<key>REMOVE_THIS_EXERCISE</key>
+	<string>Remove this exercise?</string>
+	<key>REORDER_EXERCISES</key>
+	<string>Reorder exercises</string>
+	<key>REPLACES_YOUR_WEEKLY_SCHEDULE_AND_FUTURE_DATE_OVERRIDES_EXISTING_ROUTINES_AND_WORKOUT</key>
+	<string>Replaces your weekly schedule and future date overrides. Existing routines and workout history are kept.</string>
+	<key>REPLACE_THIS_EXERCISE</key>
+	<string>Replace this exercise?</string>
+	<key>REPLACE_WEEKLY_SCHEDULE</key>
+	<string>Replace weekly schedule?</string>
+	<key>REPS</key>
+	<string>Reps</string>
+	<key>REPS_A</key>
+	<string>reps</string>
+	<key>RESET_THIS_ROUND_S_PROGRESS_AND_KEEP_WORKOUT_HISTORY</key>
+	<string>Reset this round's progress and keep workout history.</string>
+	<key>RESISTANCE_BAND</key>
+	<string>resistance band</string>
+	<key>RESOLVE_THE_DRAFT_SAVE_ISSUE_ON_IPHONE</key>
+	<string>Resolve the draft save issue on iPhone</string>
+	<key>REST</key>
+	<string>Rest</string>
+	<key>RESTART_ROUND</key>
+	<string>Restart round</string>
+	<key>RESTART_THE_CURRENT_ROUND</key>
+	<string>Restart the current round?</string>
+	<key>RESTORE_DEFAULT_EXERCISES</key>
+	<string>Restore default exercises</string>
+	<key>REST_BETWEEN_MINI_SETS_SECONDS</key>
+	<string>Rest between mini-sets (seconds)</string>
+	<key>REST_BETWEEN_SETS</key>
+	<string>Rest between sets</string>
+	<key>REST_BETWEEN_SETS_COUNT_SECONDS</key>
+	<string>Rest between sets: %1$@ seconds</string>
+	<key>REST_BETWEEN_SETS_SECONDS_ZERO_FOR_DEFAULT</key>
+	<string>Rest between sets (seconds, 0 for default)</string>
+	<key>REST_BETWEEN_WARM_UPS_SECONDS_ZERO_FOR_DEFAULT</key>
+	<string>Rest between warm-ups (seconds, 0 for default)</string>
+	<key>REST_COMPLETE</key>
+	<string>Rest complete</string>
+	<key>REST_DAY</key>
+	<string>Rest day</string>
+	<key>REST_END_NOTIFICATIONS</key>
+	<string>Rest-end notifications</string>
+	<key>REST_END_REMINDERS_ARE_OFF</key>
+	<string>Rest-end reminders are off.</string>
+	<key>REST_IN_SECONDS_ZERO_FOR_DEFAULT</key>
+	<string>Rest in seconds (0 for default)</string>
+	<key>REST_ON_THIS_DAY</key>
+	<string>Rest on this day</string>
+	<key>REST_PAUSE</key>
+	<string>Rest-pause</string>
+	<key>REST_PAUSE_REST_COUNT_SECONDS</key>
+	<string>Rest-pause rest: %1$@ seconds</string>
+	<key>REST_PAUSE_TOTAL_REPS</key>
+	<string>Rest-pause total reps</string>
+	<key>RESUME</key>
+	<string>Resume</string>
+	<key>RESUME_PLAYBACK</key>
+	<string>Resume playback</string>
+	<key>RETRY_CONFIRMATION</key>
+	<string>Retry confirmation</string>
+	<key>RETRY_CONNECTION</key>
+	<string>Retry connection</string>
+	<key>RETRY_LOCAL_SAVE</key>
+	<string>Retry local save</string>
+	<key>RETRY_NEEDED</key>
+	<string>Retry needed</string>
+	<key>RETRY_WORKOUT_SYNC</key>
+	<string>Retry workout sync</string>
+	<key>RETURNING_TO_TRAINING</key>
+	<string>Returning to training</string>
+	<key>REVIEWED_HISTORY</key>
+	<string>Reviewed · History</string>
+	<key>REVIEW_AND_ACCEPT_THE_DATA_DISCLOSURE_FIRST</key>
+	<string>Review and accept the data disclosure first.</string>
+	<key>REVIEW_MY_LAST_WORKOUT</key>
+	<string>Review my last workout</string>
+	<key>REVIEW_MY_TRAINING</key>
+	<string>Review my training</string>
+	<key>REVIEW_MY_TRAINING_AND_SUGGEST_WHERE_I_CAN_IMPROVE</key>
+	<string>Review my training and suggest where I can improve.</string>
+	<key>REVIEW_SCHEDULE</key>
+	<string>Review schedule</string>
+	<key>REVIEW_TRAINING</key>
+	<string>Review training</string>
+	<key>REVISE_REQUEST</key>
+	<string>Revise request</string>
+	<key>RIGHT</key>
+	<string>Right</string>
+	<key>RIGHT_A</key>
+	<string> · Right</string>
+	<key>RIGHT_ANKLE</key>
+	<string>Right ankle</string>
+	<key>RIGHT_CALF</key>
+	<string>Right calf</string>
+	<key>RIGHT_FOREARM</key>
+	<string>Right forearm</string>
+	<key>RIGHT_THIGH</key>
+	<string>Right thigh</string>
+	<key>RIGHT_UPPER_ARM</key>
+	<string>Right upper arm</string>
+	<key>RIGHT_WRIST</key>
+	<string>Right wrist</string>
+	<key>RIR</key>
+	<string>RIR</string>
+	<key>ROLLER</key>
+	<string>roller</string>
+	<key>ROPE</key>
+	<string>rope</string>
+	<key>ROTATION_NAME</key>
+	<string>Rotation name</string>
+	<key>ROTATION_RULES</key>
+	<string>Rotation rules</string>
+	<key>ROTATION_SCHEDULE</key>
+	<string>Rotation schedule</string>
+	<key>ROTATION_SETTINGS_CHANGED_ON_ANOTHER_DEVICE_REOPEN_THEM_TO_REVIEW</key>
+	<string>Rotation settings changed on another device. Reopen them to review.</string>
+	<key>ROUTINES</key>
+	<string>Routines</string>
+	<key>ROUTINES_ARE_ADDED_AS_COPIES_YOUR_WEEKLY_SCHEDULE_WILL_BE_REPLACED_DATE</key>
+	<string>Routines are added as copies. Your weekly schedule will be replaced; date overrides are kept.</string>
+	<key>ROUTINES_IMPORTED</key>
+	<string>Routines imported.</string>
+	<key>ROUTINE_CHANGES</key>
+	<string>Routine changes</string>
+	<key>ROUTINE_FILES</key>
+	<string>Routine files</string>
+	<key>ROUTINE_FILE_IS_TOO_LARGE_ONEZERO_MB_MAXIMUM</key>
+	<string>Routine file is too large (10 MB maximum).</string>
+	<key>ROUTINE_NAME</key>
+	<string>Routine name</string>
+	<key>ROUTINE_TOOLS</key>
+	<string>Routine tools</string>
+	<key>RPE</key>
+	<string>RPE</string>
+	<key>RULE_INCREMENT_POSITIVE</key>
+	<string>The progression increment must be greater than zero.</string>
+	<key>SA</key>
+	<string>Sa</string>
+	<key>SANDBAG</key>
+	<string>sandbag</string>
+	<key>SAT</key>
+	<string>Sat</string>
+	<key>SAVE</key>
+	<string>Save</string>
+	<key>SAVE_AND_SUBMIT</key>
+	<string>Save and submit</string>
+	<key>SAVE_AND_SUBMIT_WORKOUT</key>
+	<string>Save and submit workout?</string>
+	<key>SAVE_AND_SUBMIT_WORKOUT_A</key>
+	<string>Save and submit workout</string>
+	<key>SAVE_ANSWERS</key>
+	<string>Save answers</string>
+	<key>SAVE_ERROR_DETAILS</key>
+	<string>Save error details</string>
+	<key>SAVE_GOAL</key>
+	<string>Save goal</string>
+	<key>SAVE_ON_IPHONE</key>
+	<string>Save on iPhone</string>
+	<key>SAVE_REVIEW</key>
+	<string>Save review</string>
+	<key>SAVE_TO_COACH_HISTORY</key>
+	<string>Save to coach history?</string>
+	<key>SAVE_TO_SERVER</key>
+	<string>Save to server</string>
+	<key>SAVE_WORKOUT</key>
+	<string>Save workout</string>
+	<key>SAVE_WORKOUT_AND_HISTORY_DRAFTS_BEFORE_CHANGING_YOUR_ACCOUNT_S_UNIT</key>
+	<string>Save workout and history drafts before changing your account's unit.</string>
+	<key>SAVE_YOUR_WORKOUT_AND_HISTORY_DRAFTS_FIRST</key>
+	<string>Save your workout and history drafts first.</string>
+	<key>SAVING</key>
+	<string>Saving</string>
+	<key>SCHEDULE</key>
+	<string>Schedule</string>
+	<key>SCHEDULED</key>
+	<string>Scheduled</string>
+	<key>SCHEDULE_TYPE</key>
+	<string>Schedule type</string>
+	<key>SEARCH_EXERCISES</key>
+	<string>Search exercises</string>
+	<key>SEARCH_EXERCISES_MUSCLES</key>
+	<string>Search exercises, muscles…</string>
+	<key>SEARCH_WORKOUT_NAMES_DATES_AND_EXERCISES</key>
+	<string>Search workout names, dates and exercises</string>
+	<key>SEATED_SINGLE_ARM_DUMBBELL_SHOULDER_PRESS_ALTERNATING</key>
+	<string>Seated single-arm dumbbell shoulder press (alternating)</string>
+	<key>SEC</key>
+	<string>sec</string>
+	<key>SECONDARY_MUSCLES</key>
+	<string>Secondary muscles</string>
+	<key>SECONDS_PER_SET</key>
+	<string>Seconds per set</string>
+	<key>SEND_A_MESSAGE</key>
+	<string>Send a message</string>
+	<key>SEND_TO_COACH</key>
+	<string>Send to coach</string>
+	<key>SEPARATING_EXERCISES_IN_A_SUPERSET_WILL_UNGROUP_THEM</key>
+	<string>Separating exercises in a superset will ungroup them.</string>
+	<key>SERRATUS</key>
+	<string>Serratus</string>
+	<key>SERVER</key>
+	<string>Server</string>
+	<key>SERVER_CONNECTED_ACCOUNT_NOT_PAIRED</key>
+	<string>Server connected · Account not paired</string>
+	<key>SERVICE</key>
+	<string>Service</string>
+	<key>SERVICE_TEMPORARILY_UNAVAILABLE</key>
+	<string>Service temporarily unavailable.</string>
+	<key>SESSION_LENGTH</key>
+	<string>Session length</string>
+	<key>SESSION_NOTE</key>
+	<string>Session note</string>
+	<key>SETS</key>
+	<string>Sets</string>
+	<key>SETS_A</key>
+	<string>sets</string>
+	<key>SETS_UP_TO</key>
+	<string>Sets up to</string>
+	<key>SETTINGS</key>
+	<string>Settings</string>
+	<key>SET_AND_START_REST</key>
+	<string>Set and start rest</string>
+	<key>SET_BY_SET</key>
+	<string>Set by set</string>
+	<key>SET_COUNT</key>
+	<string>Set %1$@</string>
+	<key>SET_COUNT_OF_COUNT</key>
+	<string>Set %1$@ of %2$@</string>
+	<key>SET_DIFFERENT_REPS_WEIGHT_AND_REST_FOR_EACH_SET_MAX_SETS_RECORD</key>
+	<string>Set different reps, weight and rest for each set. Max sets record actual reps and do not progress automatically.</string>
+	<key>SET_ONETWO_OF_ONETWO_RIGHT_WARM_UP</key>
+	<string>Set 12 of 12 · Right · Warm-up</string>
+	<key>SET_RECORDS_WILL_BE_KEPT_UNDER_THE_NEW_EXERCISE_VOLUME_AND_PERSONAL</key>
+	<string>Set records will be kept under the new exercise. Volume and personal records are recalculated when you submit.</string>
+	<key>SET_TWO_OF_FOUR</key>
+	<string>Set 2 of 4</string>
+	<key>SET_TYPE</key>
+	<string>Set type</string>
+	<key>SEVEN_DAYS</key>
+	<string>7 days</string>
+	<key>SHARE</key>
+	<string>Share</string>
+	<key>SHINS_A</key>
+	<string>Shins</string>
+	<key>SHOULDERS</key>
+	<string>shoulders</string>
+	<key>SHOULDERS_A</key>
+	<string>Shoulders</string>
+	<key>SKIERG_MACHINE</key>
+	<string>skierg machine</string>
+	<key>SLED_MACHINE</key>
+	<string>sled machine</string>
+	<key>SMITH_MACHINE</key>
+	<string>smith machine</string>
+	<key>SOME_NUMBERS_ARE_INCOMPLETE_CHECK_THE_WEIGHT_REPS_OR_DURATION_YOUR_INPUT</key>
+	<string>Some numbers are incomplete. Check the weight, reps or duration. Your input has been kept.</string>
+	<key>SPEED</key>
+	<string>Speed</string>
+	<key>SPEED_KM_H</key>
+	<string>Speed (km/h)</string>
+	<key>SPEED_MPH</key>
+	<string>Speed (mph)</string>
+	<key>SPINE</key>
+	<string>spine</string>
+	<key>STABILITY_BALL</key>
+	<string>stability ball</string>
+	<key>START</key>
+	<string>Start</string>
+	<key>STARTER_TEMPLATES</key>
+	<string>Starter templates</string>
+	<key>STARTER_WORKOUT</key>
+	<string>Starter workout</string>
+	<key>STARTING_TARGETS</key>
+	<string>Starting targets</string>
+	<key>START_A_WORKOUT_ON_IPHONE</key>
+	<string>Start a workout on iPhone</string>
+	<key>START_NEW_PASS</key>
+	<string>Start new pass</string>
+	<key>START_TIMER</key>
+	<string>Start timer</string>
+	<key>START_TODAY_S_WORKOUTS</key>
+	<string>Start today's workouts</string>
+	<key>START_WORKOUT</key>
+	<string>Start workout</string>
+	<key>STATIONARY_BIKE</key>
+	<string>stationary bike</string>
+	<key>STATS</key>
+	<string>Stats</string>
+	<key>STATUS_OFF</key>
+	<string>Off</string>
+	<key>STEPMILL_MACHINE</key>
+	<string>stepmill machine</string>
+	<key>STOPPING_ACTIVITY_TRACKING_RETRY_SYNCING_SHORTLY</key>
+	<string>Stopping activity tracking. Retry syncing shortly.</string>
+	<key>STOP_THE_CURRENT_ROTATION</key>
+	<string>Stop the current rotation?</string>
+	<key>STRAIGHT_SETS</key>
+	<string>Straight sets</string>
+	<key>STRENGTH_A</key>
+	<string>strength</string>
+	<key>STRENGTH_RETENTION</key>
+	<string>Strength retention</string>
+	<key>STRETCHING</key>
+	<string>stretching</string>
+	<key>STRUCTURAL_BALANCE</key>
+	<string>Structural balance</string>
+	<key>SU</key>
+	<string>Su</string>
+	<key>SUBMITTING</key>
+	<string>Submitting</string>
+	<key>SUGGESTED_CHANGES</key>
+	<string>Suggested changes</string>
+	<key>SUGGESTION_DETAILS</key>
+	<string>Suggestion details</string>
+	<key>SUN</key>
+	<string>Sun</string>
+	<key>SUPERSET</key>
+	<string>Superset</string>
+	<key>SUSPENSION_TRAINER</key>
+	<string>suspension trainer</string>
+	<key>SWAP_EXERCISE</key>
+	<string>Swap exercise</string>
+	<key>SWIFTUI_NATIVE_PREVIEW_ZERO_ONE</key>
+	<string>SwiftUI native preview · 0.1</string>
+	<key>SWITCH_TO_COUNT</key>
+	<string>Switch to %1$@</string>
+	<key>SYNC</key>
+	<string>Sync</string>
+	<key>SYNCED</key>
+	<string>Synced</string>
+	<key>SYNCING</key>
+	<string>Syncing…</string>
+	<key>SYNCS_TO_ALL_DEVICES_YOU_CAN_UNDO_THIS_FROM_THE_COACH_MENU</key>
+	<string>Syncs to all devices. You can undo this from the coach menu.</string>
+	<key>SYNC_INCOMPLETE</key>
+	<string>Sync incomplete</string>
+	<key>SYNC_INCOMPLETE_COUNT</key>
+	<string>Sync incomplete: %1$@</string>
+	<key>SYNC_IN_PROGRESS_TRY_AGAIN_SHORTLY</key>
+	<string>Sync in progress. Try again shortly.</string>
+	<key>SYNC_NOW</key>
+	<string>Sync now</string>
+	<key>SYNC_PENDING</key>
+	<string>Sync pending</string>
+	<key>SYNC_STATUS</key>
+	<string>Sync status</string>
+	<key>SYNC_STOPPED</key>
+	<string>Sync stopped</string>
+	<key>SYNC_STOPPED_COUNT</key>
+	<string>Sync stopped: %1$@</string>
+	<key>SYNC_STOPPED_EXISTING_WEIGHT_RECORDS_ARE_KEPT</key>
+	<string>Sync stopped. Existing weight records are kept</string>
+	<key>SYNC_WEIGHT_FROM_APPLE_HEALTH</key>
+	<string>Sync weight from Apple Health</string>
+	<key>SYNC_WEIGHT_NOW</key>
+	<string>Sync weight now</string>
+	<key>SYNC_WORKOUTS_TO_APPLE_FITNESS</key>
+	<string>Sync workouts to Apple Fitness</string>
+	<key>SYSTEM_NOTIFICATIONS</key>
+	<string>System notifications</string>
+	<key>SYSTEM_NOTIFICATION_SETTINGS</key>
+	<string>System notification settings</string>
+	<key>SYSTEM_WORKOUT_INTERRUPTED_COUNT</key>
+	<string>System workout interrupted: %1$@</string>
+	<key>TAP_TO_PAUSE</key>
+	<string>tap to pause</string>
+	<key>TARGETS_BY_SET</key>
+	<string>Targets by set</string>
+	<key>TARGET_WEIGHT_COUNT</key>
+	<string>Target weight (%1$@)</string>
+	<key>TEMPLATES_AND_ROUTINE_IMPORT_EXPORT</key>
+	<string>Templates and routine import / export</string>
+	<key>TH</key>
+	<string>Th</string>
+	<key>THE_AI_COACH_IS_NOT_ENABLED_ON_THIS_SERVER</key>
+	<string>The AI coach is not enabled on this server.</string>
+	<key>THE_AI_SERVICE_IS_TEMPORARILY_UNAVAILABLE_TRY_AGAIN_LATER</key>
+	<string>The AI service is temporarily unavailable. Try again later.</string>
+	<key>THE_COACH_COULD_NOT_COMPLETE_YOUR_REQUEST_RETRY_OR_CONTACT_YOUR_ADMINISTRATOR</key>
+	<string>The coach could not complete your request. Retry or contact your administrator.</string>
+	<key>THE_COACH_IS_PROCESSING_YOUR_REQUEST_PLEASE_WAIT</key>
+	<string>The coach is processing your request. Please wait.</string>
+	<key>THE_COACH_REQUEST_TIMED_OUT_TRY_AGAIN_LATER</key>
+	<string>The coach request timed out. Try again later.</string>
+	<key>THE_COACH_RESPONSE_COULD_NOT_BE_USED_REQUEST_A_NEW_ONE</key>
+	<string>The coach response could not be used. Request a new one.</string>
+	<key>THE_CURRENT_SET_HAS_CHANGED_REFRESH_AND_TRY_AGAIN</key>
+	<string>The current set has changed. Refresh and try again.</string>
+	<key>THE_DURATION_IS_INCOMPLETE_YOUR_LOCAL_INPUT_HAS_BEEN_KEPT</key>
+	<string>The duration is incomplete. Your local input has been kept.</string>
+	<key>THE_END_TIME_CANNOT_BE_IN_THE_FUTURE_DURATION_MUST_BE_BETWEEN</key>
+	<string>The end time cannot be in the future. Duration must be between 0 and 1,440 minutes.</string>
+	<key>THE_EXERCISE_LIST_HAS_CHANGED_OPEN_THE_REORDER_SCREEN_AGAIN</key>
+	<string>The exercise list has changed. Open the reorder screen again.</string>
+	<key>THE_EXERCISE_WILL_BE_REMOVED_FROM_YOUR_ROUTINES_COMPLETED_WORKOUTS_KEEP_ITS</key>
+	<string>The exercise will be removed from your routines. Completed workouts keep its name, muscles and set records.</string>
+	<key>THE_LOCAL_DRAFT_WILL_BE_DELETED_AND_ITS_TIMER_STOPPED_THIS_CANNOT</key>
+	<string>The local draft will be deleted and its timer stopped. This cannot be undone. Saved workout history and routines are kept.</string>
+	<key>THE_ORIGINAL_ROUTINE_WAS_DELETED</key>
+	<string>The original routine was deleted.</string>
+	<key>THE_PENDING_SUGGESTION_HAS_CHANGED_REFRESH_TO_REVIEW_IT_AGAIN</key>
+	<string>The pending suggestion has changed. Refresh to review it again.</string>
+	<key>THE_PREVIOUS_WORKOUT_HAS_NOT_ENDED_CONNECT_IPHONE_AND_RETRY_SYNCING</key>
+	<string>The previous workout has not ended. Connect iPhone and retry syncing.</string>
+	<key>THE_RECORD_ON_YOUR_PHONE_HAS_CHANGED_CHECK_THE_CURRENT_SET_AND</key>
+	<string>The record on your phone has changed. Check the current set and try again.</string>
+	<key>THE_SCHEDULE_S_OWNER_CHANGED_REFRESH_AND_TRY_AGAIN</key>
+	<string>The schedule's owner changed. Refresh and try again.</string>
+	<key>THE_SERVER_CANNOT_RUN_THE_COACH_SAFELY_RIGHT_NOW_CONTACT_YOUR_ADMINISTRATOR</key>
+	<string>The server cannot run the coach safely right now. Contact your administrator.</string>
+	<key>THE_SERVER_HAS_NOT_CONFIRMED_THIS_SAVE_YOUR_LOCAL_DATA_IS_SAFE</key>
+	<string>The server has not confirmed this save. Your local data is safe. You can retry.</string>
+	<key>THE_SERVER_RETURNED_DATA_THAT_COULD_NOT_BE_READ</key>
+	<string>The server returned data that could not be read.</string>
+	<key>THE_SERVER_S_COACH_CONFIGURATION_IS_INCOMPLETE_CONTACT_YOUR_ADMINISTRATOR</key>
+	<string>The server's coach configuration is incomplete. Contact your administrator.</string>
+	<key>THE_SERVER_S_WEIGHT_UNIT_CHANGED_YOUR_WORKOUT_DRAFT_IS_SAFE_ON</key>
+	<string>The server's weight unit changed. Your workout draft is safe on this device.</string>
+	<key>THE_SERVICE_RESTARTED_WHILE_GENERATING_A_RESPONSE_TRY_AGAIN</key>
+	<string>The service restarted while generating a response. Try again.</string>
+	<key>THE_UNIT_CHANGED_REOPEN_THE_EDITOR</key>
+	<string>The unit changed. Reopen the editor.</string>
+	<key>THE_WEIGHT_UNIT_CHANGED_ON_ANOTHER_DEVICE_REFRESH_AND_TRY_AGAIN</key>
+	<string>The weight unit changed on another device. Refresh and try again.</string>
+	<key>THE_WEIGHT_UNIT_CHANGED_REOPEN_THE_EDITOR</key>
+	<string>The weight unit changed. Reopen the editor.</string>
+	<key>THE_WEIGHT_UNIT_CHANGED_REOPEN_THIS_SCREEN</key>
+	<string>The weight unit changed. Reopen this screen.</string>
+	<key>THE_WORKOUT_CHANGED_UPDATED_TO_MATCH_YOUR_PHONE</key>
+	<string>The workout changed. Updated to match your phone.</string>
+	<key>THE_WORKOUT_HAS_CHANGED_CHECK_THE_LATEST_DETAILS_BEFORE_CONTINUING</key>
+	<string>The workout has changed. Check the latest details before continuing.</string>
+	<key>THINKING</key>
+	<string>thinking…</string>
+	<key>THIS_ACTION_HAS_EXPIRED_OPEN_THE_WORKOUT_SCREEN</key>
+	<string>This action has expired. Open the workout screen.</string>
+	<key>THIS_CANNOT_BE_UNDONE_OTHER_WORKOUTS_ARE_KEPT_AND_RELATED_PERSONAL_RECORDS</key>
+	<string>This cannot be undone. Other workouts are kept and related personal records are recalculated. Save and submit any local edits to this workout before deleting it.</string>
+	<key>THIS_EXERCISE_AND_ITS_SET_RECORDS_WILL_BE_REMOVED_FROM_THIS_WORKOUT</key>
+	<string>This exercise and its set records will be removed from this workout. Your routine stays unchanged.</string>
+	<key>THIS_EXERCISE_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT</key>
+	<string>This exercise changed on another device. Refresh to review it.</string>
+	<key>THIS_IOS_VERSION_SYNCS_WORKOUT_DURATION_WHEN_YOU_FINISH_WITHOUT_LIVE_METRICS</key>
+	<string>This iOS version syncs workout duration when you finish, without live metrics.</string>
+	<key>THIS_ITEM_CHANGED_ON_ANOTHER_DEVICE_YOUR_LOCAL_EDITS_ARE_SAFE_COMPARE</key>
+	<string>This item changed on another device. Your local edits are safe. Compare both versions before submitting again.</string>
+	<key>THIS_MEASUREMENT_ALREADY_EXISTS</key>
+	<string>This measurement already exists.</string>
+	<key>THIS_RECORD_ALREADY_EXISTS_REOPEN_THE_EDITOR</key>
+	<string>This record already exists. Reopen the editor.</string>
+	<key>THIS_RECORD_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT</key>
+	<string>This record changed on another device. Refresh to review it.</string>
+	<key>THIS_RECORD_HAS_A_LOCAL_DRAFT_SAVE_OR_DISCARD_IT_FIRST</key>
+	<string>This record has a local draft. Save or discard it first.</string>
+	<key>THIS_RECORD_WAS_DELETED_ON_ANOTHER_DEVICE</key>
+	<string>This record was deleted on another device.</string>
+	<key>THIS_ROUTINE_WAS_DELETED_AN_OLD_COPY_CANNOT_BE_SAVED_OVER_IT</key>
+	<string>This routine was deleted. An old copy cannot be saved over it.</string>
+	<key>THIS_ROUTINE_WAS_REMOVED_REFRESH_AND_TRY_AGAIN</key>
+	<string>This routine was removed. Refresh and try again.</string>
+	<key>THIS_SERVICE_ACCOUNT_IS_RESTRICTED_TO_ITS_OWNER_ASK_YOUR_ADMINISTRATOR_TO</key>
+	<string>This service account is restricted to its owner. Ask your administrator to configure a shareable service.</string>
+	<key>THIS_SET</key>
+	<string>This set</string>
+	<key>THIS_WEEK</key>
+	<string>This week</string>
+	<key>THIS_WORKOUT_ACTION_IS_NOT_SUPPORTED</key>
+	<string>This workout action is not supported.</string>
+	<key>THIS_WORKOUT_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT</key>
+	<string>This workout changed on another device. Refresh to review it.</string>
+	<key>THIS_WORKOUT_IS_ALREADY_SAVED_ON_THE_SERVER_WITH_DIFFERENT_DETAILS_YOUR</key>
+	<string>This workout is already saved on the server with different details. Your local draft is safe. Compare both versions.</string>
+	<key>THIS_WORKOUT_WAS_DELETED_SAVING_YOUR_EDITS_WILL_NOT_RECREATE_IT</key>
+	<string>This workout was deleted. Saving your edits will not recreate it.</string>
+	<key>THREEZERO_DAYS</key>
+	<string>30 days</string>
+	<key>THREE_MONTHS</key>
+	<string>3 months</string>
+	<key>THU</key>
+	<string>Thu</string>
+	<key>TIMED</key>
+	<string>Timed</string>
+	<key>TIMER_PAUSED</key>
+	<string>Timer paused</string>
+	<key>TIMER_RUNNING</key>
+	<string>Timer running</string>
+	<key>TIMER_RUNNING_FINISH_IT_ON_IPHONE</key>
+	<string>Timer running. Finish it on iPhone</string>
+	<key>TIME_RANGE</key>
+	<string>Time range</string>
+	<key>TIME_SERVER_TIME_ZONE</key>
+	<string>Time (server time zone)</string>
+	<key>TIRE</key>
+	<string>tire</string>
+	<key>TODAY</key>
+	<string>Today</string>
+	<key>TODAY_S_USAGE_COUNT_COUNT</key>
+	<string>Today's usage %1$@ / %2$@</string>
+	<key>TODAY_S_WEIGHT_COUNT</key>
+	<string>Today's weight (%1$@)</string>
+	<key>TOO_MANY_REPS_FOR_A_RELIABLE_ESTIMATE</key>
+	<string>Too many reps for a reliable estimate</string>
+	<key>TOP_SET</key>
+	<string>Top set</string>
+	<key>TOTAL_CALORIES</key>
+	<string>Total calories</string>
+	<key>TOTAL_REPS_BOTH_SIDES</key>
+	<string>Total reps (both sides)</string>
+	<key>TOTAL_WORKOUTS</key>
+	<string>Total workouts</string>
+	<key>TO_FAILURE</key>
+	<string>, to failure</string>
+	<key>TRAINING_ACTIVITY</key>
+	<string>Training activity</string>
+	<key>TRAINING_ACTIVITY_OVER_THE_LAST_TWELVE_WEEKS</key>
+	<string>Training activity over the last twelve weeks</string>
+	<key>TRAINING_BY_MUSCLE</key>
+	<string>Training by muscle</string>
+	<key>TRAINING_QUESTIONNAIRE</key>
+	<string>Training questionnaire</string>
+	<key>TRAINING_REGULARLY</key>
+	<string>Training regularly</string>
+	<key>TRAINING_VOLUME_AND_GRADUAL_PROGRESSION</key>
+	<string>Training volume and gradual progression</string>
+	<key>TRAPS</key>
+	<string>traps</string>
+	<key>TRAPS_A</key>
+	<string>Traps</string>
+	<key>TRAP_BAR</key>
+	<string>trap bar</string>
+	<key>TRICEPS</key>
+	<string>triceps</string>
+	<key>TRICEPS_A</key>
+	<string>Triceps</string>
+	<key>TRIPLE_PROGRESSION</key>
+	<string>Triple progression</string>
+	<key>TRY_AGAIN</key>
+	<string>Try again</string>
+	<key>TRY_AGAIN_IN_COUNT_SECONDS</key>
+	<string>Try again in %1$@ seconds.</string>
+	<key>TRY_AGAIN_LATER</key>
+	<string>Try again later</string>
+	<key>TU</key>
+	<string>Tu</string>
+	<key>TUE</key>
+	<string>Tue</string>
+	<key>TURN_OFF</key>
+	<string>Turn off</string>
+	<key>TURN_OFF_YOUR_CUSTOM_INVENTORY_TO_USE_STANDARD_PLATES_DUMBBELL_WEIGHTS_ARE</key>
+	<string>Turn off your custom inventory to use standard plates. Dumbbell weights are used for adjustments and progression; leave blank to use the exercise's weight increment.</string>
+	<key>UNAVAILABLE</key>
+	<string>Unavailable</string>
+	<key>UNDO_CHANGES</key>
+	<string>Undo changes</string>
+	<key>UNDO_HISTORY</key>
+	<string>Undo history</string>
+	<key>UNDO_LAST_COACH_CHANGES</key>
+	<string>Undo last coach changes</string>
+	<key>UNDO_SET_DELETION</key>
+	<string>Undo set deletion</string>
+	<key>UNDO_THE_LAST_COACH_CHANGES</key>
+	<string>Undo the last Coach changes?</string>
+	<key>UNITS_AND_ESTIMATES</key>
+	<string>Units and estimates</string>
+	<key>UNIT_SPEED_KMH</key>
+	<string>km/h</string>
+	<key>UNIT_SPEED_MPH</key>
+	<string>mph</string>
+	<key>UNKNOWN_ROUTINE</key>
+	<string>Unknown routine</string>
+	<key>UNPAIR</key>
+	<string>Unpair</string>
+	<key>UNRECOGNIZED_EXERCISES_WILL_NOT_BE_IMPORTED</key>
+	<string>Unrecognized exercises will not be imported.</string>
+	<key>UPDATE_CURRENT_WORKOUT</key>
+	<string>Update current workout</string>
+	<key>UPDATE_OPENGYM_ON_YOUR_PHONE_AND_WATCH</key>
+	<string>Update openGym on your phone and watch</string>
+	<key>UPPER_ARMS</key>
+	<string>upper arms</string>
+	<key>UPPER_BACK_A</key>
+	<string>Upper back</string>
+	<key>UPPER_BODY_ERGOMETER</key>
+	<string>upper body ergometer</string>
+	<key>UPPER_LEGS</key>
+	<string>upper legs</string>
+	<key>UPPER_LOWER_FOUR_DAYS_A_WEEK</key>
+	<string>Upper / Lower · 4 days a week</string>
+	<key>UP_NEXT</key>
+	<string>Up next</string>
+	<key>USE_A_NAME_BETWEEN_ONE_AND_EIGHTZERO_CHARACTERS</key>
+	<string>Use a name between 1 and 80 characters.</string>
+	<key>USE_IMPORTED_WEEKLY_SCHEDULE</key>
+	<string>Use imported weekly schedule</string>
+	<key>USE_LAST_WORKOUT</key>
+	<string>Use last workout</string>
+	<key>USE_MY_PLATE_INVENTORY</key>
+	<string>Use my plate inventory</string>
+	<key>USE_ROUTINE_TARGETS</key>
+	<string>Use routine targets</string>
+	<key>USE_THIS_WEEKLY_SCHEDULE</key>
+	<string>Use this weekly schedule</string>
+	<key>VIDEO_OR_TUTORIAL_URL_OPTIONAL</key>
+	<string>Video or tutorial URL (optional)</string>
+	<key>VIEW_DETAILS</key>
+	<string>View details</string>
+	<key>VIEW_FULL_SUGGESTION_AND_OUTCOME</key>
+	<string>View full suggestion and outcome</string>
+	<key>VIEW_STATUS</key>
+	<string>View status</string>
+	<key>VOLUME_COUNT_A</key>
+	<string>Volume %1$@</string>
+	<key>WAIST</key>
+	<string>waist</string>
+	<key>WAIST_A</key>
+	<string>Waist</string>
+	<key>WAITING_FOR_APPLE_WATCH_TO_START_TRACKING_ALLOW_ACCESS_ON_YOUR_WATCH</key>
+	<string>Waiting for Apple Watch to start tracking. Allow access on your watch the first time</string>
+	<key>WARM_UP</key>
+	<string>Warm-up</string>
+	<key>WARM_UP_A</key>
+	<string> · Warm-up</string>
+	<key>WARM_UP_AND_REST</key>
+	<string>Warm-up and rest</string>
+	<key>WATCH_TRACKING_HAS_NOT_STARTED_OPEN_OPENGYM_ON_YOUR_WATCH_AND_TRY</key>
+	<string>Watch tracking has not started. Open openGym on your watch and try again: %1$@</string>
+	<key>WE</key>
+	<string>We</string>
+	<key>WED</key>
+	<string>Wed</string>
+	<key>WEEKLY</key>
+	<string>Weekly</string>
+	<key>WEEKLY_BY_DATE</key>
+	<string>Weekly / By date</string>
+	<key>WEEKLY_SCHEDULE</key>
+	<string>Weekly schedule</string>
+	<key>WEEK_OVERVIEW</key>
+	<string>Week overview</string>
+	<key>WEIGHTED</key>
+	<string>weighted</string>
+	<key>WEIGHTED_ESTIMATE</key>
+	<string>Weighted estimate</string>
+	<key>WEIGHT_CONVENTION</key>
+	<string>Weight convention</string>
+	<key>WEIGHT_COUNT</key>
+	<string>Weight (%1$@)</string>
+	<key>WEIGHT_HISTORY_AND_GOAL</key>
+	<string>Weight history and goal</string>
+	<key>WEIGHT_MACHINES</key>
+	<string>Weight machines</string>
+	<key>WEIGHT_PER_DUMBBELL_COUNT</key>
+	<string>Weight per dumbbell (%1$@)</string>
+	<key>WEIGHT_PER_IMPLEMENT</key>
+	<string>Weight per implement</string>
+	<key>WEIGHT_PLATE</key>
+	<string>weight plate</string>
+	<key>WEIGHT_REDUCTION_PER_DROP</key>
+	<string>Weight reduction per drop %</string>
+	<key>WEIGHT_SAVED_ON_THIS_DEVICE_WAITING_TO_SYNC_COUNT</key>
+	<string>Weight saved on this device, waiting to sync: %1$@</string>
+	<key>WEIGHT_SYNCED</key>
+	<string>Weight synced</string>
+	<key>WEIGHT_TREND</key>
+	<string>Weight trend</string>
+	<key>WEIGHT_UNIT</key>
+	<string>Weight unit</string>
+	<key>WEIGHT_UNIT_FOR_THIS_WORKOUT</key>
+	<string>Weight unit for this workout</string>
+	<key>WEIGHT_ZERO_TO_USE_LAST_WORKOUT</key>
+	<string>Weight (0 to use last workout)</string>
+	<key>WHAT_ARE_YOU_TRAINING_FOR</key>
+	<string>What are you training for?</string>
+	<key>WHAT_DATA_IS_SHARED</key>
+	<string>What data is shared</string>
+	<key>WHAT_EQUIPMENT_CAN_YOU_USE</key>
+	<string>What equipment can you use?</string>
+	<key>WHAT_LIMITATIONS_SHOULD_WE_CONSIDER</key>
+	<string>What limitations should we consider?</string>
+	<key>WHAT_S_YOUR_TRAINING_EXPERIENCE</key>
+	<string>What's your training experience?</string>
+	<key>WHAT_TO_WATCH</key>
+	<string>What to watch</string>
+	<key>WHAT_WENT_WELL</key>
+	<string>What went well</string>
+	<key>WHEEL_ROLLER</key>
+	<string>wheel roller</string>
+	<key>WORKOUT</key>
+	<string>Workout</string>
+	<key>WORKOUTS</key>
+	<string>Workouts</string>
+	<key>WORKOUTS_FOR_COUNT</key>
+	<string>Workouts for %1$@</string>
+	<key>WORKOUT_ACTION</key>
+	<string>Workout action</string>
+	<key>WORKOUT_COMPLETE_SAVE_IT_ON_IPHONE</key>
+	<string>Workout complete. Save it on iPhone</string>
+	<key>WORKOUT_DEBRIEF</key>
+	<string>Workout debrief</string>
+	<key>WORKOUT_DETAILS</key>
+	<string>Workout details</string>
+	<key>WORKOUT_DONE</key>
+	<string>Workout done</string>
+	<key>WORKOUT_DURATION_SYNCED_NO_LIVE_ACTIVITY_DATA_WAS_AVAILABLE_FOR_THIS_SESSION</key>
+	<string>Workout duration synced. No live activity data was available for this session.</string>
+	<key>WORKOUT_HISTORY</key>
+	<string>Workout history</string>
+	<key>WORKOUT_HISTORY_AND_PROGRESS</key>
+	<string>Workout history and progress</string>
+	<key>WORKOUT_INFORMATION</key>
+	<string>Workout information</string>
+	<key>WORKOUT_IN_PROGRESS</key>
+	<string>Workout in progress</string>
+	<key>WORKOUT_LOGGED</key>
+	<string>Workout logged</string>
+	<key>WORKOUT_MENU</key>
+	<string>Workout menu</string>
+	<key>WORKOUT_NOTES</key>
+	<string>Workout notes</string>
+	<key>WORKOUT_ORDER</key>
+	<string>Workout order</string>
+	<key>WORKOUT_PREFERENCES</key>
+	<string>Workout preferences</string>
+	<key>WORKOUT_PREFERENCES_AND_UNITS</key>
+	<string>Workout preferences and units</string>
+	<key>WORKOUT_RECOVERY_IS_INCOMPLETE_UNLOCK_YOUR_DEVICE_AND_RETRY_COUNT</key>
+	<string>Workout recovery is incomplete. Unlock your device and retry: %1$@</string>
+	<key>WORKOUT_RULES_ARE_UNAVAILABLE</key>
+	<string>Workout rules are unavailable.</string>
+	<key>WORKOUT_RULES_RETURNED_INVALID_DATA</key>
+	<string>Workout rules returned invalid data.</string>
+	<key>WORKOUT_SCHEDULE</key>
+	<string>Workout schedule</string>
+	<key>WORKOUT_SCHEDULED</key>
+	<string>Workout scheduled</string>
+	<key>WORKOUT_STARTED_COUNT_DELETED_EXERCISES_COULD_NOT_BE_REPEATED</key>
+	<string>Workout started. %1$@ deleted exercises could not be repeated.</string>
+	<key>WORKOUT_STATISTICS</key>
+	<string>Workout statistics</string>
+	<key>WORKOUT_SYNCED_TO_APPLE_HEALTH_AND_FITNESS</key>
+	<string>Workout synced to Apple Health and Fitness</string>
+	<key>WORKOUT_SYNC_INCOMPLETE_YOU_CAN_RETRY</key>
+	<string>Workout sync incomplete. You can retry</string>
+	<key>WORKOUT_SYNC_IS_OFF</key>
+	<string>Workout sync is off</string>
+	<key>WORKOUT_TITLE</key>
+	<string>Workout title</string>
+	<key>YOGA</key>
+	<string>yoga</string>
+	<key>YOUR_ACCOUNT_COULD_NOT_BE_IDENTIFIED_THE_DRAFT_CANNOT_BE_SAFELY_SAVED</key>
+	<string>Your account could not be identified. The draft cannot be safely saved locally.</string>
+	<key>YOUR_ACCOUNT_COULD_NOT_BE_IDENTIFIED_THIS_WORKOUT_CANNOT_BE_DELETED</key>
+	<string>Your account could not be identified. This workout cannot be deleted.</string>
+	<key>YOUR_ACCOUNT_S_UNIT_HAS_CHANGED</key>
+	<string>Your account's unit has changed.</string>
+	<key>YOUR_COACH_IS_NOT_A_DOCTOR_OR_PHYSIOTHERAPIST_IF_YOU_HAVE_PAIN</key>
+	<string>Your coach is not a doctor or physiotherapist. If you have pain, consult a qualified professional.</string>
+	<key>YOUR_EDITS_ARE_STILL_IN_MEMORY_BUT_COULD_NOT_BE_SAVED_ON</key>
+	<string>Your edits are still in memory, but could not be saved on this device: %1$@</string>
+	<key>YOUR_INPUT_HAS_BEEN_KEPT</key>
+	<string>Your input has been kept</string>
+	<key>YOUR_LOCAL_EDITS_HAVE_CHANGED_SUBMIT_THE_LATEST_VERSION</key>
+	<string>Your local edits have changed. Submit the latest version.</string>
+	<key>YOUR_PHONE_HAS_NOT_CONFIRMED_YET_YOU_CAN_RETRY_CONFIRMATION</key>
+	<string>Your phone has not confirmed yet. You can retry confirmation.</string>
+	<key>YOUR_REST_TIMER_HAS_CHANGED_CHECK_THE_CURRENT_TIMER_BEFORE_CONTINUING</key>
+	<string>Your rest timer has changed. Check the current timer before continuing.</string>
+	<key>YOUR_ROUTINES_CHANGED_ON_ANOTHER_DEVICE_REQUEST_A_NEW_REVIEW</key>
+	<string>Your routines changed on another device. Request a new review.</string>
+	<key>YOUR_ROUTINES_STAY_UNCHANGED_THE_SUGGESTION_IS_KEPT_IN_HISTORY</key>
+	<string>Your routines stay unchanged. The suggestion is kept in history.</string>
+	<key>YOUR_ROUTINES_WILL_NOT_CHANGE</key>
+	<string>Your routines will not change.</string>
+	<key>YOUR_ROUTINES_WILL_RETURN_TO_THEIR_PREVIOUS_STATE_WORKOUTS_LOGGED_SINCE_THEN</key>
+	<string>Your routines will return to their previous state. Workouts logged since then are kept.</string>
+	<key>YOUR_TRAINING_ANSWERS_CHANGED_ON_ANOTHER_DEVICE_REOPEN_THE_QUESTIONNAIRE_TO_EDIT</key>
+	<string>Your training answers changed on another device. Reopen the questionnaire to edit them.</string>
+	<key>YOUR_UNSAVED_CHANGES_WILL_BE_DISCARDED</key>
+	<string>Your unsaved changes will be discarded.</string>
+	<key>YOUR_WEEKLY_WORKOUTS</key>
+	<string>Your weekly workouts</string>
+	<key>YOUR_WEIGHT_INPUT_HAS_BEEN_KEPT</key>
+	<string>Your weight input has been kept</string>
+	<key>YOUR_WORKOUT_STARTED_BUT_HEALTH_SYNC_HAS_NOT_COUNT</key>
+	<string>Your workout started, but health sync has not: %1$@</string>
+	<key>YOU_CAN_SCHEDULE_SEVERAL_ROUTINES_ON_EACH_WEEKDAY_A_DATE_OVERRIDE_AFFECTS</key>
+	<string>You can schedule several routines on each weekday. A date override affects only that date; your weekly schedule and rotations are kept.</string>
+	<key>YOU_VE_REACHED_TODAY_S_REQUEST_LIMIT_TRY_AGAIN_TOMORROW</key>
+	<string>You've reached today's request limit. Try again tomorrow.</string>
+</dict>
+</plist>

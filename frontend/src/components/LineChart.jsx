@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { fmtNum, fmtDate, MONTHS, isoOf } from '../lib/format.js'
-import { t } from '../lib/i18n.js'
+import { t , translateValue } from '../lib/i18n.js'
 
 const W = 340   // viewBox width; the svg stretches to its container, height comes from `h`
 
@@ -46,7 +46,7 @@ export default function LineChart({ points, h = 150, unit = '', color = 'var(--a
     tip.style.top = (cy < th + 14 ? Math.min(ch - th - M, cy + 14) : M) + 'px'
   })
 
-  if (!points || points.length === 0) return <div className="empty small">{t('No data yet')}</div>
+  if (!points || points.length === 0) return <div className="empty small">{t("NO_DATA_YET" /* 暂无数据 */)}</div>
   const H = h
   const P = { l: axes ? 34 : 8, r: 12, t: 10, b: axes ? 22 : 8 }
   const single = points.length === 1
@@ -83,11 +83,11 @@ export default function LineChart({ points, h = 150, unit = '', color = 'var(--a
     const d0 = new Date(t0), d1 = new Date(t1)
     const ticks = []
     let m = new Date(d0.getFullYear(), d0.getMonth() + 1, 1)
-    while (m <= d1) { ticks.push({ t: +m, txt: t(MONTHS[m.getMonth()]) }); m = new Date(m.getFullYear(), m.getMonth() + 1, 1) }
+    while (m <= d1) { ticks.push({ t: +m, txt: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MONTHS[m.getMonth()]) }); m = new Date(m.getFullYear(), m.getMonth() + 1, 1) }
     if (ticks.length === 0 && !single) {
       for (let i = 0; i <= 2; i++) {
         const tv = t0 + (t1 - t0) * i / 2, dd = new Date(tv)
-        ticks.push({ t: tv, txt: dd.getDate() + ' ' + t(MONTHS[dd.getMonth()]), anchor: i === 0 ? 'start' : i === 2 ? 'end' : 'middle' })
+        ticks.push({ t: tv, txt: dd.getDate() + ' ' + translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MONTHS[dd.getMonth()]), anchor: i === 0 ? 'start' : i === 2 ? 'end' : 'middle' })
       }
     }
     const every = Math.max(1, Math.ceil(ticks.length / 7))

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
 import { DAYN, DAYS, weekOrder, weekStartOf, uid, exCount, routineCount, todayISO, fmtDate } from '../lib/format.js'
-import { t } from '../lib/i18n.js'
+import { t , translateValue } from '../lib/i18n.js'
 import {
   dayAssignSheet, starterPlanSheet, confirmSheet, menuSheet,
   planHasRoutines, exportPlanFile, printWholePlan, importPlanFile,
@@ -49,14 +49,14 @@ export function deleteRoutineWithUndo(id) {
   // What the removal moved (weekdays, reschedules, the loop), for the Undo to mark as put back:
   // a change another device made to one of them before it saw the removal then still wins.
   snap.marks = undoMarks(before, useStore.getState().S)
-  useUI.getState().toast(t('“{0}” gone.', snap.routine.name), { action: t('Undo'), onAction: () => undoDeleteRoutine(snap) })
+  useUI.getState().toast(t("COUNT_GONE" /* “{0}”没了。 */, snap.routine.name), { action: t("UNDO" /* 撤销 */), onAction: () => undoDeleteRoutine(snap) })
   return true
 }
 export function undoDeleteRoutine(snap) {
   let ok = false
   useStore.getState().update(s => { ok = restoreRoutine(s, snap); if (ok && snap.marks) markUndone(s, snap.marks) })
   // False when a sync brought it back first (another device's Undo, or its later edit).
-  if (!ok) useUI.getState().toast(t('It’s already back.'))
+  if (!ok) useUI.getState().toast(t("IT_S_ALREADY_BACK" /* 它已经回来了。 */))
   return ok
 }
 
@@ -75,14 +75,14 @@ export function takeOutOfLoop(id, setSeq, seq, label) {
   const mark = loopMark(after)
   const marks = undoMarks(before, after)
   const name = before.routines.find(r => r.id === id)?.name ?? id
-  useUI.getState().toast(t('“{0}” is out of the loop.', name), { action: t('Undo'), onAction: () => undoTakeOut({ id, at, label, snap, mark, marks }) })
+  useUI.getState().toast(t("COUNT_IS_OUT_OF_THE_LOOP" /* “{0}”已移出循环。 */, name), { action: t("UNDO" /* 撤销 */), onAction: () => undoTakeOut({ id, at, label, snap, mark, marks }) })
   return true
 }
 // What the loop looked like right after a removal: the saved loop, the pass and the mode switch.
 const loopMark = S => JSON.stringify([S.rotation ?? null, S.queue ?? null, S.scheduleMode ?? null])
 export function undoTakeOut({ id, at, label, snap, mark, marks }) {
   if (!useStore.getState().S.routines.some(r => r.id === id)) {
-    useUI.getState().toast(t('Too late, that one’s gone'))
+    useUI.getState().toast(t("TOO_LATE_THAT_ONE_S_GONE" /* 太晚了，那组已经没了 */))
     return false
   }
   useStore.getState().update(s => {
@@ -146,13 +146,13 @@ export default function Plan() {
   const openMenu = () => {
     const has = planHasRoutines(S)
     menuSheet({
-      title: t('Plan'),
-      subtitle: has ? null : t('Add an exercise to a routine first. An empty plan has nothing to share.'),
+      title: t("PLAN" /* 计划 */),
+      subtitle: has ? null : t("ADD_AN_EXERCISE_TO_A_ROUTINE_FIRST_AN_EMPTY_PLAN_HAS_NOTHING" /* 请先给训练计划添加动作。空计划没什么可分享的。 */),
       items: [
-        { icon: 'share', label: t('Export plan file'), sub: t('A small file a friend can import into their own openGym. Routines only, none of your workouts or weigh-ins.'), disabled: !has, onClick: exportPlanFile },
-        { icon: 'note', label: t('Print / Save as PDF'), disabled: !has, onClick: printWholePlan },
-        { icon: 'download', label: t('Import a plan file'), onClick: () => fileRef.current?.click() },
-        { icon: 'clipboard', label: t('Load starter plan'), onClick: starterPlanSheet },
+        { icon: 'share', label: t("EXPORT_PLAN_FILE" /* 导出计划文件 */), sub: t("A_SMALL_FILE_A_FRIEND_CAN_IMPORT_INTO_THEIR_OWN_OPENGYM_ROUTINES" /* 一个小文件，朋友可以导入到自己的 openGym。只有训练计划，不含你的训练记录和体重。 */), disabled: !has, onClick: exportPlanFile },
+        { icon: 'note', label: t("PRINT_SAVE_AS_PDF" /* 打印 / 保存为 PDF */), disabled: !has, onClick: printWholePlan },
+        { icon: 'download', label: t("IMPORT_A_PLAN_FILE" /* 导入计划文件 */), onClick: () => fileRef.current?.click() },
+        { icon: 'clipboard', label: t("LOAD_STARTER_PLAN" /* 加载入门计划 */), onClick: starterPlanSheet },
       ],
     })
   }
@@ -162,15 +162,15 @@ export default function Plan() {
 
   return <div className="narrow plan">
     <div className="hdr">
-      <div><h1>{t('Plan')}</h1><div className="sub">{mode === 'rotation' ? t('Your routines in a loop') : t('Your weekly routine')}</div></div>
+      <div><h1>{t("PLAN" /* 计划 */)}</h1><div className="sub">{mode === 'rotation' ? t("YOUR_ROUTINES_IN_A_LOOP" /* 你的训练计划循环进行 */) : t("YOUR_WEEKLY_ROUTINE" /* 你的每周安排 */)}</div></div>
       <div className="hdr-actions">
-        {showCoach && <Button size="sm" variant="tinted" icon="sparkles" onClick={() => nav('/coach')}>{t('Coach')}</Button>}
-        <button className="iconbtn" onClick={openMenu} aria-label={t('Plan options')} title={t('Plan options')}><Icon name="share" /></button>
+        {showCoach && <Button size="sm" variant="tinted" icon="sparkles" onClick={() => nav('/coach')}>{t("COACH" /* 教练 */)}</Button>}
+        <button className="iconbtn" onClick={openMenu} aria-label={t("PLAN_OPTIONS" /* 计划选项 */)} title={t("PLAN_OPTIONS" /* 计划选项 */)}><Icon name="share" /></button>
       </div>
     </div>
     <input ref={fileRef} type="file" accept="application/json,.json" onChange={pickFile} hidden />
     <Segmented className="plan-views" value={view} onChange={setView}
-      options={[{ value: 'schedule', label: t('Schedule') }, { value: 'routines', label: t('Routines') }]} />
+      options={[{ value: 'schedule', label: t("SCHEDULE" /* 训练安排 */) }, { value: 'routines', label: t("ROUTINES" /* 训练计划 */) }]} />
     {view === 'routines'
       ? <Routines S={S} update={update} nav={nav} />
       : <Schedule S={S} update={update} nav={nav} mode={mode} />}
@@ -206,9 +206,9 @@ function Schedule({ S, update, nav, mode }) {
     if (v === 'rotation') { update(s => { chooseRotation(s) }); return }
     if (!liveQ) { update(s => { chooseFixedWeek(s) }); return }
     confirmSheet({
-      title: t('Back to a fixed week?'),
-      message: t('The loop stops. Your weekdays stay as they are, and the loop is saved for later.'),
-      confirmText: t('Use Fixed Week'),
+      title: t("BACK_TO_A_FIXED_WEEK" /* 回到固定周？ */),
+      message: t("THE_LOOP_STOPS_YOUR_WEEKDAYS_STAY_AS_THEY_ARE_AND_THE_LOOP" /* 循环将停止。你的每周安排保持不变，循环会保存以后再用。 */),
+      confirmText: t("USE_FIXED_WEEK" /* 使用固定周 */),
       onConfirm: () => update(s => { chooseFixedWeek(s) }),
     })
   }
@@ -228,7 +228,7 @@ function Schedule({ S, update, nav, mode }) {
   const takeOut = id => takeOutOfLoop(id, setSeq, seq, seqLabel)
   const swipe = workoutControls(S).swipeSets && !external
   const addToSeq = () => menuSheet({
-    title: t('Add to the rotation'),
+    title: t("ADD_TO_THE_ROTATION" /* 添加到轮换 */),
     items: S.routines.filter(r => !seq.includes(r.id)).map(r => ({
       icon: glyphOf(r.emoji), label: r.name, onClick: () => setSeq([...seq, r.id]),
     })),
@@ -242,10 +242,10 @@ function Schedule({ S, update, nav, mode }) {
   const ownSeq = S.rotation?.sequence || []
   const replacesOwn = ownSeq.length > 0 && (ownSeq.length !== seq.length || ownSeq.some((id, i) => id !== seq[i]))
   const adopt = () => confirmSheet({
-    title: t('Use this rotation?'),
-    message: t('Your coach gives up control of this week: openGym owns the queue from here on and repeats these sessions by itself once they are all done. A new week from the coach’s app would replace this rotation.')
-      + (replacesOwn ? ' ' + t('Your own loop gets replaced.') : ''),
-    confirmText: t('Use this rotation'),
+    title: t("USE_THIS_ROTATION_A" /* 使用此轮换？ */),
+    message: t("YOUR_COACH_GIVES_UP_CONTROL_OF_THIS_WEEK_OPENGYM_OWNS_THE_QUEUE" /* 你的教练放弃对本周的控制权：从现在起队列归 openGym 所有，它会在这些训练全部完成后自动重复它们。教练的应用推送的新一周会替换这个轮换。 */)
+      + (replacesOwn ? ' ' + t("YOUR_OWN_LOOP_GETS_REPLACED" /* 你自己的循环会被替换。 */) : ''),
+    confirmText: t("USE_THIS_ROTATION" /* 使用此轮换 */),
     onConfirm: () => update(s => saveRotation(s, seq, '')),
   })
 
@@ -256,12 +256,12 @@ function Schedule({ S, update, nav, mode }) {
   // One weekday: what is on it at a glance, and a tap to change it (dayAssignSheet picks one
   // routine, several for a combined day, or a rest day).
   const dayRow = (d, rs = dayRoutines(d)) => {
-    return <div key={d} className="item plan-day" data-day={d} aria-label={t(DAYN[d])} {...tappable(() => dayAssignSheet(d))}>
-      <span className={'plan-day-n' + (d === todayDow ? ' today' : '')} aria-hidden="true">{t(DAYS[d])}</span>
+    return <div key={d} className="item plan-day" data-day={d} aria-label={translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAYN[d])} {...tappable(() => dayAssignSheet(d))}>
+      <span className={'plan-day-n' + (d === todayDow ? ' today' : '')} aria-hidden="true">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAYS[d])}</span>
       <span className={'lrow-i' + (rs.length ? '' : ' rest')}><Icon name={rs.length ? glyphOf(rs[0].emoji) : 'moon'} /></span>
       <div className="grow">
-        <div className="tt">{rs.length ? deriveSessionName(rs.map(r => r.name)) : t('Rest day')}</div>
-        <div className="ss">{rs.length === 1 ? exCount(rs[0].ex.length) : rs.length ? routineCount(rs.length) : t('Tap to plan something')}</div>
+        <div className="tt">{rs.length ? deriveSessionName(rs.map(r => r.name)) : t("REST_DAY" /* 休息日 */)}</div>
+        <div className="ss">{rs.length === 1 ? exCount(rs[0].ex.length) : rs.length ? routineCount(rs.length) : t("TAP_TO_PLAN_SOMETHING" /* 点一下来安排训练 */)}</div>
       </div>
       <Icon name="chevronRight" className="chev" />
     </div>
@@ -272,49 +272,49 @@ function Schedule({ S, update, nav, mode }) {
   const plannedDays = weekOrder(ws).filter(d => extraRoutines(d).length)
   const doneCount = qv ? qv.items.filter(i => i.state === 'done').length : 0
   const stateWord = item => item.state === 'pinned' ? fmtDate(item.on, true)
-    : { done: t('Done'), next: t('Up next'), later: t('Later') }[item.state]
+    : { done: t("DONE" /* 完成 */), next: t("UP_NEXT" /* 下一个 */), later: t("LATER" /* 稍后 */) }[item.state]
   const editing = editLoop && !external
 
   return <>
     <Section className="plan-mode" footer={mode === 'rotation'
-      ? t('Routines in a loop. Whatever is next stays next until you train it, whatever the day.')
-      : t('The same routines on the same weekdays, every week.')}>
-      <Row icon="repeat" iconTint="var(--orange)" title={t('How you train')}>
+      ? t("ROUTINES_IN_A_LOOP_WHATEVER_IS_NEXT_STAYS_NEXT_UNTIL_YOU_TRAIN" /* 训练计划按循环进行。下一个会一直排在下一个，直到你完成它，不管哪天。 */)
+      : t("THE_SAME_ROUTINES_ON_THE_SAME_WEEKDAYS_EVERY_WEEK" /* 每周同样的日子，同样的训练计划。 */)}>
+      <Row icon="repeat" iconTint="var(--orange)" title={t("HOW_YOU_TRAIN" /* 训练方式 */)}>
         {/* A planner's own queue is not this app's to switch off: text, not a control. */}
         {external
-          ? <span className="small dim plan-mode-locked">{t('Rotation')} · {t('Externally managed')}</span>
+          ? <span className="small dim plan-mode-locked">{t("ROTATION" /* 轮换 */)} · {t("EXTERNALLY_MANAGED" /* 由外部管理 */)}</span>
           : <Segmented className="seg-inline" value={mode} onChange={setMode}
-              options={[{ value: 'week', label: t('Fixed Week') }, { value: 'rotation', label: t('Rotation') }]} />}
+              options={[{ value: 'week', label: t("FIXED_WEEK" /* 固定周 */) }, { value: 'rotation', label: t("ROTATION" /* 轮换 */) }]} />}
       </Row>
     </Section>
 
     {!S.routines.length && <div className="empty plan-empty">
-      <div className="ico"><Icon name="clipboard" /></div>{t('No routines yet.')}<br />{t('Make one, or grab the starter plan to get going.')}
-      <div style={{ marginTop: 12 }}><Button icon="clipboard" onClick={starterPlanSheet}>{t('Load starter plan')}</Button></div>
+      <div className="ico"><Icon name="clipboard" /></div>{t("NO_ROUTINES_YET" /* 还没有训练计划。 */)}<br />{t("MAKE_ONE_OR_GRAB_THE_STARTER_PLAN_TO_GET_GOING" /* 自己建一个，或者拿入门计划开始。 */)}
+      <div style={{ marginTop: 12 }}><Button icon="clipboard" onClick={starterPlanSheet}>{t("LOAD_STARTER_PLAN" /* 加载入门计划 */)}</Button></div>
     </div>}
 
     {/* A queue payload that arrived unusable: a fix-up, shown whichever way you train. Giving it
         up also gives up S.scheduleMode='rotation', or the loop would sit there with no queue. */}
     {recovery && <div className="empty">
-      {t('This rotation couldn’t be read. Another device may have written it.')}
+      {t("THIS_ROTATION_COULDN_T_BE_READ_ANOTHER_DEVICE_MAY_HAVE_WRITTEN_IT" /* 无法读取此轮换。可能是另一台设备写入的。 */)}
       <div style={{ marginTop: 10 }}>
-        <Button size="sm" variant="tinted" aria-label={t('Discard it')} onClick={() => update(s => { s.queue = null; s.scheduleMode = 'week' })}>{t('Discard it')}</Button>
+        <Button size="sm" variant="tinted" aria-label={t("DISCARD_IT" /* 丢弃它 */)} onClick={() => update(s => { s.queue = null; s.scheduleMode = 'week' })}>{t("DISCARD_IT" /* 丢弃它 */)}</Button>
       </div>
     </div>}
 
     {mode === 'week' ? <>
-      <h4 className="sec">{t('This week')}</h4>
+      <h4 className="sec">{t("THIS_WEEK" /* 本周 */)}</h4>
       <div className="list plan-week">{weekOrder(ws).map(d => dayRow(d))}</div>
-      <p className="sect-f">{t('Want two routines on one day? Tap the day and pick both.')}</p>
+      <p className="sect-f">{t("WANT_TWO_ROUTINES_ON_ONE_DAY_TAP_THE_DAY_AND_PICK_BOTH" /* 一天想练两个训练计划？点一下那天，两个都选上。 */)}</p>
     </> : <div className="rotation">
       <div className="row between plan-sec-h">
-        <h4 className="sec">{t('The loop')}{external && <span className="tag" style={{ marginInlineStart: 8 }}>{t('Externally managed')}</span>}</h4>
+        <h4 className="sec">{t("THE_LOOP" /* 循环 */)}{external && <span className="tag" style={{ marginInlineStart: 8 }}>{t("EXTERNALLY_MANAGED" /* 由外部管理 */)}</span>}</h4>
         {/* A coach's own queue is read-only here: the one way to change what it holds is to
             adopt it first ("Use this rotation" below), never a tap on one of its rows. */}
         {!external && <div className="row plan-sec-acts" style={{ gap: 6 }}>
-          {seq.length > 0 && <button className="plan-textbtn" aria-pressed={editLoop} onClick={() => setEditLoop(e => !e)}>{editLoop ? t('Done') : t('Edit')}</button>}
-          <Button size="sm" variant="tinted" icon="plus" aria-label={t('Add routine to the rotation')}
-            disabled={S.routines.every(r => seq.includes(r.id))} onClick={addToSeq}>{t('Add')}</Button>
+          {seq.length > 0 && <button className="plan-textbtn" aria-pressed={editLoop} onClick={() => setEditLoop(e => !e)}>{editLoop ? t("DONE" /* 完成 */) : t("EDIT" /* 编辑 */)}</button>}
+          <Button size="sm" variant="tinted" icon="plus" aria-label={t("ADD_ROUTINE_TO_THE_ROTATION" /* 将训练计划添加到轮换 */)}
+            disabled={S.routines.every(r => seq.includes(r.id))} onClick={addToSeq}>{t("ADD" /* 添加 */)}</Button>
         </div>}
       </div>
       {seq.length ? <div className="list plan-loop" ref={loopReorder.listRef}>
@@ -325,7 +325,7 @@ function Schedule({ S, update, nav, mode }) {
           // nothing to copy. The row the reorder measures is the swipe's outer element.
           const reorderProps = { 'data-reorder-row': '', style: loopReorder.rowStyle(i) }
           const row = <div {...(swipe ? {} : { key: id, ...reorderProps })} className={'item rotation-row' + (item?.state === 'done' ? ' is-done' : '')}>
-            {editing && <button className="plan-minus" aria-label={t('Remove {0}', r?.name ?? id)} title={t('Remove')}
+            {editing && <button className="plan-minus" aria-label={t("REMOVE_COUNT_A" /* 移除 {0} */, r?.name ?? id)} title={t("REMOVE" /* 移除 */)}
               onClick={() => takeOut(id)}><Icon name="minus" /></button>}
             <span className={'plan-order' + (item?.state === 'next' ? ' next' : '')}>{item?.state === 'done' ? <Icon name="check" /> : i + 1}</span>
             <span className="lrow-i"><Icon name={glyphOf(r?.emoji)} /></span>
@@ -333,43 +333,43 @@ function Schedule({ S, update, nav, mode }) {
               <div className="tt">{r?.name ?? id}</div>
               <div className="ss">{item ? stateWord(item) : r ? exCount(r.ex.length) : ''}</div>
             </div>
-            {editing && seq.length > 1 && <button className="plan-handle" aria-label={t('Move {0}', r?.name ?? id)} title={t('Drag to reorder')}
+            {editing && seq.length > 1 && <button className="plan-handle" aria-label={t("MOVE_COUNT" /* 移动 {0} */, r?.name ?? id)} title={t("DRAG_TO_REORDER" /* 拖动调整顺序 */)}
               {...loopReorder.handle(i)}><Icon name="chevronsUpDown" /></button>}
           </div>
           return swipe
-            ? <SwipeRow key={id} {...reorderProps} className="swrow-item" deleteLabel={t('Remove')} deleteIcon="minus"
+            ? <SwipeRow key={id} {...reorderProps} className="swrow-item" deleteLabel={t("REMOVE" /* 移除 */)} deleteIcon="minus"
               onDelete={() => takeOut(id)}>{row}</SwipeRow>
             : row
         })}
-      </div> : <div className="empty">{t('No rotation yet. Add routines in the order you want to train them. The first one you haven’t logged stays up next.')}</div>}
+      </div> : <div className="empty">{t("NO_ROTATION_YET_ADD_ROUTINES_IN_THE_ORDER_YOU_WANT_TO_TRAIN" /* 还没有轮换。按你想训练的顺序添加训练计划。第一个还没记录的训练计划会一直排在下一个。 */)}</div>}
       {seq.length > 0 && <p className="sect-f">
-        {qv ? (qv.waiting ? t('Next round starts {0}.', fmtDate(qv.startsOn, true)) : t('{0} of {1} done this round.', doneCount, qv.items.length)) + ' ' : ''}
-        {external ? '' : editing ? t('Drag to reorder. Tap the minus to take one out.') : t('Trained out of order? Just pick another routine on Home.')}
+        {qv ? (qv.waiting ? t("NEXT_ROUND_STARTS_COUNT" /* 下一轮从 {0} 开始。 */, fmtDate(qv.startsOn, true)) : t("COUNT_OF_COUNT_DONE_THIS_ROUND" /* 本轮已完成 {0}/{1}。 */, doneCount, qv.items.length)) + ' ' : ''}
+        {external ? '' : editing ? t("DRAG_TO_REORDER_TAP_THE_MINUS_TO_TAKE_ONE_OUT" /* 拖动可调整顺序。点减号可移除一个。 */) : t("TRAINED_OUT_OF_ORDER_JUST_PICK_ANOTHER_ROUTINE_ON_HOME" /* 没按顺序练？在首页选另一个训练计划就行。 */)}
       </p>}
       <div className="row" style={{ gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
-        {external && <Button size="sm" variant="tinted" aria-label={t('Use this rotation')} onClick={adopt}>{t('Use this rotation')}</Button>}
+        {external && <Button size="sm" variant="tinted" aria-label={t("USE_THIS_ROTATION" /* 使用此轮换 */)} onClick={adopt}>{t("USE_THIS_ROTATION" /* 使用此轮换 */)}</Button>}
         {/* Throws the current round away and starts the saved loop again today; nothing logged
             before this moment counts for it (startNewPass, the strict pass). */}
-        {!!liveQ && !external && <Button size="sm" icon="reset" aria-label={t('Start the loop over')}
-          onClick={() => update(s => startNewPass(s))}>{t('Start the loop over')}</Button>}
+        {!!liveQ && !external && <Button size="sm" icon="reset" aria-label={t("START_THE_LOOP_OVER" /* 重新开始循环 */)}
+          onClick={() => update(s => startNewPass(s))}>{t("START_THE_LOOP_OVER" /* 重新开始循环 */)}</Button>}
         {/* Rotation chosen and a loop saved, but no round running (it was stopped elsewhere). */}
-        {!liveQ && !recovery && seq.length > 0 && <Button size="sm" variant="tinted" icon="play" aria-label={t('Start the loop')}
-          onClick={() => update(s => startPass(s))}>{t('Start the loop')}</Button>}
+        {!liveQ && !recovery && seq.length > 0 && <Button size="sm" variant="tinted" icon="play" aria-label={t("START_THE_LOOP" /* 开始循环 */)}
+          onClick={() => update(s => startPass(s))}>{t("START_THE_LOOP" /* 开始循环 */)}</Button>}
       </div>
       {/* The weekday routines ride along beside a loop (effectiveRoutineIds, history.js) and feed
           the same tally (weekTally, queue.js), so the days that still add one stay in sight; a
           day whose only routines are in the loop already adds nothing and is left out. */}
       {plannedDays.length > 0 && <>
-        <h4 className="sec">{t('Also on fixed days')}</h4>
+        <h4 className="sec">{t("ALSO_ON_FIXED_DAYS" /* 固定日也有安排 */)}</h4>
         <div className="list plan-week">{plannedDays.map(d => dayRow(d, extraRoutines(d)))}</div>
-        <p className="sect-f">{t('These count on top of the loop. Tap a day to change or clear it.')}</p>
+        <p className="sect-f">{t("THESE_COUNT_ON_TOP_OF_THE_LOOP_TAP_A_DAY_TO_CHANGE" /* 这些在循环之外另算。点某一天可更改或清空。 */)}</p>
       </>}
     </div>}
 
     {/* Weekly muscle volume is analysis: it moved to Stats, next to Muscle balance. Stats only
         shows that card once there is a routine, so the link waits for one too. */}
     {S.routines.length > 0 && <Section className="plan-link">
-      <Row icon="chart" iconTint="var(--indigo)" title={t('Weekly muscle volume')} subtitle={t('Now in Stats, next to Muscle balance')}
+      <Row icon="chart" iconTint="var(--indigo)" title={t("WEEKLY_MUSCLE_VOLUME" /* 每周肌群训练量 */)} subtitle={t("NOW_IN_STATS_NEXT_TO_MUSCLE_BALANCE" /* 现在在统计里，肌肉平衡旁边 */)}
         accessory="chevron" onClick={() => nav('/stats?focus=weekly-volume')} />
     </Section>}
   </>
@@ -392,7 +392,7 @@ function Routines({ S, update, nav }) {
   }))
 
   const addRoutine = () => {
-    const r = { id: uid(), name: t('New routine'), emoji: DEFAULT_GLYPH, ex: [] }
+    const r = { id: uid(), name: t("NEW_ROUTINE" /* 新建训练计划 */), emoji: DEFAULT_GLYPH, ex: [] }
     update(s => { s.routines.push(r) })
     nav('/plan/r/' + r.id)
   }
@@ -402,7 +402,7 @@ function Routines({ S, update, nav }) {
   // The swipe's other side: a copy right below the original, named the way "Copy routine" names
   // one, and staying on this list rather than opening it.
   const duplicate = r => {
-    const copy = copyRoutine(r, t('Copy'))
+    const copy = copyRoutine(r, t("COPY" /* 副本 */))
     update(s => {
       const at = s.routines.findIndex(x => x.id === r.id)
       s.routines.splice(at < 0 ? s.routines.length : at + 1, 0, copy)
@@ -410,30 +410,30 @@ function Routines({ S, update, nav }) {
     setFlash({ id: copy.id, n: ++flashSeq })
     // With its own Undo: the toast takes the place of any Undo still showing (one toast at a
     // time), so the newest swipe is at least the one you can take back.
-    useUI.getState().toast(t('Copied as “{0}”.', copy.name), { action: t('Undo'), onAction: () => {
+    useUI.getState().toast(t("COPIED_AS_COUNT" /* 已复制为“{0}”。 */, copy.name), { action: t("UNDO" /* 撤销 */), onAction: () => {
       update(s => { if (s.routines.some(x => x.id === copy.id)) deleteRoutine(s, copy.id) })
     } })
   }
   // The weekdays a routine is on, short, in the order the week runs.
   const order = weekOrder(weekStartOf(S))
-  const daysOf = id => order.filter(d => [].concat(S.week[d] || []).includes(id)).map(d => t(DAYS[d]))
+  const daysOf = id => order.filter(d => [].concat(S.week[d] || []).includes(id)).map(d => translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(DAYS[d]))
   const sub = r => [exCount(r.ex.length), daysOf(r.id).join(', ')].filter(Boolean).join(' · ')
 
   return <>
     <div className="row between plan-sec-h plan-routines-bar">
       {routines.length > 0
-        ? <button className="plan-textbtn" aria-pressed={edit} onClick={() => setEdit(e => !e)}>{edit ? t('Done') : t('Edit')}</button>
+        ? <button className="plan-textbtn" aria-pressed={edit} onClick={() => setEdit(e => !e)}>{edit ? t("DONE" /* 完成 */) : t("EDIT" /* 编辑 */)}</button>
         : <span />}
-      <Button size="sm" variant="tinted" icon="plus" onClick={addRoutine}>{t('New routine')}</Button>
+      <Button size="sm" variant="tinted" icon="plus" onClick={addRoutine}>{t("NEW_ROUTINE" /* 新建训练计划 */)}</Button>
     </div>
     {routines.length ? <>
       {edit
         ? <div className="list routine-list plan-routines is-editing" ref={reorder.listRef}>{routines.map((r, i) =>
           <div key={r.id} data-reorder-row className="item plan-routine" style={reorder.rowStyle(i)}>
-            <button className="plan-minus" aria-label={t('Delete {0}', r.name)} title={t('Delete routine')} onClick={() => remove(r)}><Icon name="minus" /></button>
+            <button className="plan-minus" aria-label={t("DELETE_COUNT_A" /* 删除 {0} */, r.name)} title={t("DELETE_ROUTINE_A" /* 删除训练计划 */)} onClick={() => remove(r)}><Icon name="minus" /></button>
             <span className="lrow-i"><Icon name={glyphOf(r.emoji)} /></span>
             <div className="grow"><div className="tt">{r.name}</div><div className="ss">{sub(r)}</div></div>
-            {routines.length > 1 && <button className="plan-handle" aria-label={t('Move {0}', r.name)} title={t('Drag to reorder')}
+            {routines.length > 1 && <button className="plan-handle" aria-label={t("MOVE_COUNT" /* 移动 {0} */, r.name)} title={t("DRAG_TO_REORDER" /* 拖动调整顺序 */)}
               {...reorder.handle(i)}><Icon name="chevronsUpDown" /></button>}
           </div>)}</div>
         : <div className="list routine-list plan-routines">{routines.map(r => {
@@ -445,15 +445,15 @@ function Routines({ S, update, nav }) {
           // toward the end duplicates. Edit's minus and the routine's own page stay the way in
           // for a keyboard and a screen reader.
           return swipe
-            ? <SwipeRow key={r.id} className="swrow-item" copyLabel={t('Duplicate')}
+            ? <SwipeRow key={r.id} className="swrow-item" copyLabel={t("DUPLICATE" /* 复制一份 */)}
               onDelete={() => remove(r)} onCopy={() => duplicate(r)}
               flash={flash?.id === r.id ? flash.n : 0}>{row}</SwipeRow>
             : row
         })}</div>}
-      <p className="sect-f">{edit ? t('Drag to reorder. Tap the minus to delete.') : t('Tap a routine to edit it. Reorder and delete are behind Edit.')}</p>
+      <p className="sect-f">{edit ? t("DRAG_TO_REORDER_TAP_THE_MINUS_TO_DELETE" /* 拖动可调整顺序。点减号可删除。 */) : t("TAP_A_ROUTINE_TO_EDIT_IT_REORDER_AND_DELETE_ARE_BEHIND_EDIT" /* 点训练计划即可编辑。调整顺序和删除在“编辑”里。 */)}</p>
     </> : <>
-      <div className="empty"><div className="ico"><Icon name="clipboard" /></div>{t('No routines yet.')}<br />{t('Make one, or grab the starter plan to get going.')}</div>
-      <Button icon="clipboard" onClick={starterPlanSheet}>{t('Load starter plan')}</Button>
+      <div className="empty"><div className="ico"><Icon name="clipboard" /></div>{t("NO_ROUTINES_YET" /* 还没有训练计划。 */)}<br />{t("MAKE_ONE_OR_GRAB_THE_STARTER_PLAN_TO_GET_GOING" /* 自己建一个，或者拿入门计划开始。 */)}</div>
+      <Button icon="clipboard" onClick={starterPlanSheet}>{t("LOAD_STARTER_PLAN" /* 加载入门计划 */)}</Button>
     </>}
   </>
 }

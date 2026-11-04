@@ -72,17 +72,17 @@ public class RestAlertPlugin extends Plugin {
         }
         RestAlert.setAccentColor((int) number(call, "accent", 0xFF30D158L), (int) number(call, "ink", 0xFF000000L));
         RestAlert.setLabels(
-                call.getString("pause", "Pause"),
-                call.getString("resume", "Resume"),
-                call.getString("minus", "\u2212 15s"),
-                call.getString("plus", "+ 15s"),
-                call.getString("skip", "Skip")
+                call.getString("pause", ctx.getString(R.string.localized_pause)),
+                call.getString("resume", ctx.getString(R.string.localized_resume)),
+                call.getString("minus", ctx.getString(R.string.localized_rest_minus)),
+                call.getString("plus", ctx.getString(R.string.localized_rest_plus)),
+                call.getString("skip", ctx.getString(R.string.localized_skip))
         );
         RestAlert.schedule(
                 ctx.getApplicationContext(),
                 at,
                 (int) number(call, "id", RestAlert.NOTIFICATION_ID),
-                call.getString("title", "Rest over"),
+                call.getString("title", ctx.getString(R.string.localized_rest_complete)),
                 !Boolean.FALSE.equals(call.getBoolean("sound", Boolean.TRUE)),
                 // Settings → Sound (#306): the sound by name; a page from before it sends only `classic`.
                 call.getString("tone", Boolean.TRUE.equals(call.getBoolean("classic", Boolean.FALSE)) ? "classic" : "chime"),
@@ -92,7 +92,7 @@ public class RestAlertPlugin extends Plugin {
                 call.getString("visibility", "public"),
                 call.getString("importance", "high"),
                 Boolean.TRUE.equals(call.getBoolean("localOnly", Boolean.FALSE)),
-                call.getString("countdownTitle", "Rest"),
+                call.getString("countdownTitle", ctx.getString(R.string.localized_rest)),
                 number(call, "totalMs", 0)
         );
         call.resolve();

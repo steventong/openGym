@@ -1,0 +1,23 @@
+{
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGym/Services/CoachSession.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachSession.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachSession.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachSession.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachSession.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachSession.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGym/Views/Coach/CoachView.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachView.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachView.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachView.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachView.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/CoachView.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGym/Views/ExerciseManagementControls.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseManagementControls.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseManagementControls.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseManagementControls.dia",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseManagementControls.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-tests/Build/Intermediates.noindex/OpenGym.build/Debug-iphonesimulator/OpenGym.build/Objects-normal/arm64/ExerciseManagementControls.swiftdeps"
+  }
+}

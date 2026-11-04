@@ -37,11 +37,11 @@ export const INERT = ['head', 'hair', 'neck', 'hands', 'feet', 'knees', 'ankles'
 // the cardio pseudo-muscle only under the dataset's own lowercase spelling, and every place
 // that shows it capitalises with CSS — a capitalised key here rendered English everywhere.
 export const MUSCLE_NAME = {
-  trapezius: 'Traps', deltoids: 'Shoulders', chest: 'Chest', 'upper-back': 'Upper back',
-  serratus: 'Serratus', biceps: 'Biceps', triceps: 'Triceps', forearm: 'Forearms',
-  abs: 'Abs', obliques: 'Obliques', 'lower-back': 'Lower back', gluteal: 'Glutes',
-  quadriceps: 'Quads', hamstring: 'Hamstrings', adductors: 'Adductors',
-  'hip-flexors': 'Hip flexors', calves: 'Calves', tibialis: 'Shins', 'cardiovascular system': 'cardiovascular system',
+  trapezius: "TRAPS_A" /* 斜方肌 */, deltoids: "SHOULDERS_A" /* 肩部 */, chest: "CHEST_A" /* 胸部 */, 'upper-back': "UPPER_BACK_A" /* 上背部 */,
+  serratus: "SERRATUS" /* 前锯肌 */, biceps: "BICEPS_A" /* 肱二头肌 */, triceps: "TRICEPS_A" /* 肱三头肌 */, forearm: "FOREARMS_A" /* 前臂 */,
+  abs: "ABS_A" /* 腹肌 */, obliques: "OBLIQUES_A" /* 腹斜肌 */, 'lower-back': "LOWER_BACK_A" /* 下背部 */, gluteal: "GLUTES_A" /* 臀部 */,
+  quadriceps: "QUADS_A" /* 股四头肌 */, hamstring: "HAMSTRINGS_A" /* 腘绳肌 */, adductors: "ADDUCTORS_A" /* 内收肌 */,
+  'hip-flexors': "HIP_FLEXORS_A" /* 髋屈肌 */, calves: "CALVES_A" /* 小腿 */, tibialis: "SHINS_A" /* 胫前肌 */, 'cardiovascular system': "CARDIOVASCULAR_SYSTEM" /* 心血管系统 */,
 }
 
 // Every spelling that occurs in the dataset's `tg` and `sm` fields. null = not drawable.

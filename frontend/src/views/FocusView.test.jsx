@@ -6,6 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import Workout from './Workout.jsx'
 import { DEF, useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
+import { _setLangState } from '../lib/i18n-core.js'
+import zh from '../../../localization/zh.json'
 
 vi.mock('../lib/sound.js', () => ({ beep: vi.fn(), vibrate: vi.fn(), unlock: vi.fn() }))
 vi.mock('../lib/api.js', () => ({ api: vi.fn(() => Promise.resolve({})) }))
@@ -50,11 +52,24 @@ afterEach(() => {
   if (sheetContainer) sheetContainer.remove()
   if (root) act(() => root.unmount())
   if (container) container.remove()
+  _setLangState('en', {}, null, null)
   sheetRoot = sheetContainer = root = container = null
   useUI.getState().stopRest()
 })
 
 describe('Focus workout view', () => {
+  it('uses shared Chinese set, prescription and completion copy', () => {
+    _setLangState('zh', zh, null, null)
+    mount({ id: SQUAT, target: { sets: 4, reps: 8, weight: 95, restSec: 90 },
+      sets: Array.from({ length: 4 }, () => ({ w: 95, r: 8, done: false })) })
+    const summary = container.querySelector('.focus-prescription')
+    expect(summary.querySelector('.focus-progress').textContent).toBe('第 1/4 组')
+    expect(summary.textContent).toContain('8 次')
+    expect(summary.textContent).toContain('休息 90 秒')
+    expect(summary.textContent).not.toMatch(/Rest|Reps/)
+    expect(container.querySelector('button[aria-label="完成本组"]').textContent).toBe('完成本组')
+  })
+
   it('omits a plan that repeats the prescription and keeps plate guidance in the badge row', () => {
     mount({
       id: SQUAT,
@@ -85,7 +100,7 @@ describe('Focus workout view', () => {
     const plan = summary.querySelector('.focus-badge.plan')
     expect(plan).toBeTruthy()
     expect(plan.textContent).toBe('Plan: 3 × 5')
-    expect(summary.textContent).toContain('8 Reps')
+    expect(summary.textContent).toContain('8 reps')
     expect(summary.textContent).not.toContain('today')
   })
 
@@ -118,7 +133,7 @@ describe('Focus workout view', () => {
     sheetRoot = createRoot(sheetContainer)
     act(() => sheetRoot.render(sheet.render(() => useUI.getState().closeSheet(sheet.id))))
     const item = [...sheetContainer.querySelectorAll('.menu-item')]
-      .find(el => el.querySelector('.tt')?.textContent === 'Add burst')
+      .find(el => el.querySelector('.tt')?.textContent === 'Add rest-pause mini-set')
     act(() => item.click())
 
     expect(useStore.getState().S.active.entries[0].sets[0].clusters[0].restSec).toBe(7)
@@ -130,7 +145,7 @@ describe('Focus workout view', () => {
 describe('Focus view cardio speed', () => {
   const BIKE = '2138'   // stationary bike, cardio
   const bike = () => ({ id: BIKE, target: { sets: 1, min: 20, speed: 8 }, sets: [{ min: 20, speed: 8, done: false }] })
-  const cell = () => container.querySelector('button[aria-label="Increase speed"]').closest('.stp-w')
+  const cell = () => container.querySelector('[data-stepper="speed"] button[aria-label="Increase"]').closest('.stp-w')
   const stored = () => useStore.getState().S.active.entries[0].sets[0].speed
   const type = value => {
     const input = cell().querySelector('input')
@@ -144,7 +159,7 @@ describe('Focus view cardio speed', () => {
     mount(bike())
     expect(cell().querySelector('.stp-l').textContent).toBe('Speed (mph)')
     expect(cell().querySelector('input').value).toBe('4.97')   // 8 km/h
-    act(() => container.querySelector('button[aria-label="Increase speed"]').click())
+    act(() => container.querySelector('[data-stepper="speed"] button[aria-label="Increase"]').click())
     expect(stored()).toBe(8.8)
     type('6')
     expect(stored()).toBe(9.66)
@@ -157,7 +172,7 @@ describe('Focus view cardio speed', () => {
     mount(bike(), { speedUnit: 'kmh' })
     expect(cell().querySelector('.stp-l').textContent).toBe('Speed (km/h)')
     expect(cell().querySelector('input').value).toBe('8')
-    act(() => container.querySelector('button[aria-label="Increase speed"]').click())
+    act(() => container.querySelector('[data-stepper="speed"] button[aria-label="Increase"]').click())
     expect(stored()).toBe(8.5)
   })
 })

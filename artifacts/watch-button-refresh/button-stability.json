@@ -1,0 +1,8 @@
+{
+  "sample_seconds": "3-8 (rest countdown active)",
+  "sampled_frames": 150,
+  "unique_button_frames": 5,
+  "max_pixel_channel_difference": 35,
+  "max_mean_channel_difference": 0.39218047527296085,
+  "max_percent_channels_over_20": 0.06101477199743096
+}

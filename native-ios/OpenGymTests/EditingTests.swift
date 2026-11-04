@@ -1,4 +1,6 @@
 import XCTest
+import SwiftUI
+import UIKit
 @testable import OpenGym
 final class EditingTests:XCTestCase {
     @MainActor func testCalendarMarkersPreferRecordsOverPlansAndRespectRestOverrides() throws {
@@ -195,4 +197,136 @@ final class EditingTests:XCTestCase {
         }
     }
 
+}
+
+
+extension EditingTests {
+    @MainActor func testHistoryFieldsCommitOnBlurAndFlushWithoutPerKeystrokeWrites() async throws {
+        let buffer = InputCommitBuffer()
+        var value = "", writes: [String] = []
+        let field = BufferedTextField("Weight", text: Binding(get: { value }, set: { value = $0; writes.append($0) }))
+            .environment(\.inputCommitBuffer, buffer)
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIHostingController(rootView: field)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil }
+        try await Task.sleep(for: .milliseconds(100))
+        let input = try XCTUnwrap(descendant(UITextField.self, in: window))
+        XCTAssertTrue(input.becomeFirstResponder())
+        for character in "12.50" { input.insertText(String(character)) }
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(input.text, "12.50")
+        XCTAssertEqual(value, "")
+        XCTAssertTrue(writes.isEmpty, "Typing must not enter the model or persistence path")
+
+        input.resignFirstResponder()
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(writes, ["12.50"])
+
+        // Closing/saving/backgrounding flushes synchronously, even if focus hasn't changed.
+        XCTAssertTrue(input.becomeFirstResponder())
+        input.insertText("1")
+        buffer.commitAll()
+        XCTAssertEqual(value, "12.501")
+        XCTAssertEqual(writes.count, 2)
+        XCTAssertTrue(input.isFirstResponder)
+        input.resignFirstResponder()
+        try await Task.sleep(for: .milliseconds(100))
+        buffer.commitAll()
+        XCTAssertEqual(writes.count, 2, "Later blur/disappearance must not recreate a submitted draft")
+    }
+
+    @MainActor func testMultilineInputFlushesAndUnbufferedFieldsRemainImmediate() async throws {
+        let buffer = InputCommitBuffer()
+        var note = "", live = ""
+        let fields = VStack {
+            BufferedTextField("Note", text: Binding(get: { note }, set: { note = $0 }), axis: .vertical)
+                .environment(\.inputCommitBuffer, buffer)
+            BufferedTextField("Live", text: Binding(get: { live }, set: { live = $0 }))
+        }
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIHostingController(rootView: fields)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil }
+        try await Task.sleep(for: .milliseconds(100))
+        let noteInput = try XCTUnwrap(descendant(UITextView.self, in: window))
+        XCTAssertTrue(noteInput.becomeFirstResponder())
+        noteInput.insertText("训练备注\n第二行")
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(note, "")
+        buffer.commitAll()
+        XCTAssertEqual(note, "训练备注\n第二行")
+        let liveInput = try XCTUnwrap(descendant(UITextField.self, in: window))
+        XCTAssertTrue(liveInput.becomeFirstResponder())
+        liveInput.insertText("25")
+        XCTAssertEqual(live, "25")
+        liveInput.resignFirstResponder()
+    }
+
+    @MainActor func testNumericInputDefersParsedValueUntilSaveAndSupportsDiscard() async throws {
+        let buffer = InputCommitBuffer()
+        var value = 20.0, writes = 0
+        let field = BufferedNumberField("Weight", value: Binding(get: { value }, set: { value = $0; writes += 1 }))
+            .environment(\.inputCommitBuffer, buffer)
+            .environment(\.locale, Locale(identifier: "en_US"))
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIHostingController(rootView: field)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil }
+        try await Task.sleep(for: .milliseconds(100))
+        let input = try XCTUnwrap(descendant(UITextField.self, in: window))
+        XCTAssertTrue(input.becomeFirstResponder())
+        input.selectedTextRange = input.textRange(from: input.beginningOfDocument, to: input.endOfDocument)
+        input.insertText("42.5")
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(value, 20)
+        XCTAssertEqual(writes, 0)
+        XCTAssertTrue(buffer.hasPending)
+        buffer.commitAll()
+        XCTAssertEqual(value, 42.5)
+        XCTAssertEqual(writes, 1)
+        XCTAssertFalse(buffer.hasPending)
+        input.insertText("1")
+        try await Task.sleep(for: .milliseconds(100))
+        buffer.discardAll()
+        input.resignFirstResponder()
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(value, 42.5)
+        XCTAssertEqual(writes, 1)
+    }
+
+    @MainActor func testSearchDoesNotFilterWhileTypingAndCommitsOnReturn() async throws {
+        var query = "", searches: [String] = []
+        let field = CommittedSearchField("Search", text: Binding(get: { query }, set: { query = $0; searches.append($0) }))
+            .submitLabel(.search)
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = UIHostingController(rootView: field)
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil }
+        try await Task.sleep(for: .milliseconds(100))
+        let input = try XCTUnwrap(descendant(UITextField.self, in: window))
+        XCTAssertTrue(input.becomeFirstResponder())
+        for character in "bench press" { input.insertText(String(character)) }
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertTrue(searches.isEmpty)
+        _ = input.delegate?.textFieldShouldReturn?(input)
+        input.sendActions(for: .editingDidEndOnExit)
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(searches, ["bench press"])
+        input.resignFirstResponder()
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(searches.count, 1)
+    }
+
+    @MainActor private func descendant<T: UIView>(_ type: T.Type, in root: UIView) -> T? {
+        if let match = root as? T { return match }
+        for child in root.subviews {
+            if let match = descendant(type, in: child) { return match }
+        }
+        return nil
+    }
 }

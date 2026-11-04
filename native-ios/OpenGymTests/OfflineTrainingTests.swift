@@ -295,9 +295,46 @@ final class OfflineTrainingTests: XCTestCase {
         s.state = ["unit":"kg","customEx":[custom],"workouts":[
             ["id":"a","d":"2026-10-20","start":1000,"entries":[["id":"gym-a","sets":[["w":15,"r":12,"done":true],["w":30,"r":99,"done":false]]]]],
             ["id":"b","d":"2026-10-21","start":2000,"entries":[["id":"gym-b","sets":[["w":90,"r":4,"done":true]]]]]]]
-        let text = s.previousExerciseText(["id":"gym-a"],before:3000,exclude:"new")
+        let text = s.previousExerciseReference(["id":"gym-a"],before:3000,exclude:"new").text
         XCTAssertTrue(text.contains("2026-10-20"));XCTAssertTrue(text.contains("15"));XCTAssertFalse(text.contains("90"));XCTAssertFalse(text.contains("99"))
     }
+    @MainActor func testPreviousBodyweightReferenceKeepsZeroRepsAndMatchingEntryNote() throws {
+        let s = try store()
+        func workout(_ id: String, _ start: Int, _ reps: Int, _ note: String, rid: String = "A", done: Bool = true) -> [String: Any] {
+            ["id": id, "d": "2026-11-01", "start": start, "note": "整次训练备注不应显示",
+             "entries": [["id": "bodyweight-test", "rid": rid, "note": note,
+                          "target": ["mode": "reps", "bodyweight": true],
+                          "sets": [["w": 0, "r": reps, "done": done]]]]]
+        }
+        s.state = ["unit": "kg", "logRef": "best", "workouts": [
+            workout("old-best", 1000, 30, "旧备注"),
+            workout("last", 2000, 12, "  控制下放\n不要摆动  "),
+            workout("other-routine", 2100, 88, "另一个计划", rid: "B"),
+            workout("unfinished", 2200, 99, "未完成的备注", done: false),
+            workout("current", 2300, 77, "当前备注"),
+            workout("future", 4000, 66, "未来备注")]]
+        let reference = s.previousExerciseReference(["id": "bodyweight-test", "rid": "A"], before: 3000, exclude: "current")
+        XCTAssertEqual(reference.text, "上次 2026-11-01 · 0 × 12 · kg")
+        XCTAssertEqual(reference.note, "控制下放\n不要摆动")
+    }
+
+    @MainActor func testPreviousReferenceDoesNotBorrowOlderNotesWhenLatestHasNone() throws {
+        let s = try store()
+        for note in ["", " \n "] {
+            s.state = ["unit": "kg", "workouts": [
+                ["id": "old", "d": "2026-10-31", "start": 1000,
+                 "entries": [["id": "bodyweight-test", "note": "旧备注", "sets": [["w": 0, "r": 12, "done": true]]]]],
+                ["id": "last", "d": "2026-11-01", "start": 2000,
+                 "entries": [["id": "bodyweight-test", "note": note, "sets": [["w": 0, "r": 10, "done": true]]]]]]]
+            let reference = s.previousExerciseReference(["id": "bodyweight-test"], before: 3000, exclude: "new")
+            XCTAssertTrue(reference.text.contains("2026-11-01"))
+            XCTAssertNil(reference.note)
+        }
+        let missing = s.previousExerciseReference(["id": "different-exercise"], before: 3000, exclude: "new")
+        XCTAssertEqual(missing.text, "上次：暂无同一动作的训练记录")
+        XCTAssertNil(missing.note)
+    }
+
     func testHealthWeightLatestPerDayConversionManualProtectionAndIdempotence() {
         let samples:[String:[String:Any]] = ["old":["kg":70,"time":1000,"day":"2026-10-20"],"new":["kg":71,"time":2000,"day":"2026-10-20"],"manual":["kg":80,"time":3000,"day":"2026-10-21"]]
         let state:[String:Any] = ["unit":"lb","bodyweight":[["d":"2026-10-21","w":150,"t":900]],"workouts":[["id":"keep"]]]

@@ -1,6 +1,7 @@
 import Foundation
 extension GymStore {
     func changeActive(_ change:(inout [String:Any]) throws -> Void) {
+        liveInputBuffer.commitAll()
         guard var d = draft else { return }
         do { var raw = d.activeJSON;try change(&raw);guard !RecordPatch.equal(raw,d.activeJSON) else { return };if !RecordPatch.equal(raw["entries"],d.activeJSON["entries"]) { raw.removeValue(forKey:"nativeFinishAt") };if let undo = raw["nativeSetUndo"] as? [String: Any], !RecordPatch.equal(undo["expected"], raw["entries"]) { raw.removeValue(forKey: "nativeSetUndo") };try d.setActive(raw);draft = d } catch { WorkoutActivityDiagnostics.failureIfTracing("draft.mutation.failed", error: error); self.error = error.localizedDescription }
     }
@@ -12,6 +13,7 @@ extension GymStore {
         }
     }
     @discardableResult func liveRowAction(entry:Int,set:Int,action:[String:Any]) -> Bool {
+        liveInputBuffer.commitAll()
         guard let d = draft,d.rawEntries.indices.contains(entry) else { return false }
         let en = d.rawEntries[entry],rows = en["sets"] as? [[String:Any]] ?? [];guard rows.indices.contains(set) else { return false }
         do {
@@ -54,6 +56,18 @@ extension GymStore {
         } catch { WorkoutActivityDiagnostics.failureIfTracing("rest.rules.failed", error: error); self.error = error.localizedDescription }
     }
     var restEntry: Int? { (draft?.activeJSON["nativeRest"] as? [String:Any])?["entry"] as? Int }
+    var trainingActionReadyAt: Date? {
+        (draft?.activeJSON["nativeActionReadyAt"] as? Double).map(Date.init(timeIntervalSince1970:))
+    }
+    func protectTrainingAction(at now: Date) {
+        changeActive { $0["nativeActionReadyAt"] = TrainingActionTiming.deadline(after: now).timeIntervalSince1970 }
+    }
+    func endRestFromTextButton(at now: Date) {
+        changeActive {
+            $0.removeValue(forKey: "nativeRest")
+            $0["nativeActionReadyAt"] = TrainingActionTiming.deadline(after: now).timeIntervalSince1970
+        }
+    }
     func startRest(entry:Int,seconds:Double,set:Int? = nil) {
         changeActive { raw in
             if seconds > 0 {
@@ -100,11 +114,14 @@ extension GymStore {
             raw["nativeRest"] = ["entry": entry, "end": Date().addingTimeInterval(seconds).timeIntervalSince1970]
         }
     }
-    func previousExerciseText(_ entry:[String:Any],before:Double,exclude:String) -> String {
-        let payload:[String:Any] = ["state":state,"entry":entry,"before":before,"exclude":exclude]
-        let prefix = state["logRef"] as? String == "best" ? "最佳":"上次"
-        guard let result = try? WebRules.shared.call("personalReference",payload:payload) as? [String:Any], let date = result["date"] as? String, let label = result["label"] as? String else { return "\(prefix)：暂无同一动作的训练记录" }
-        return "\(prefix) \(date) · \(label) · \(unit)"
+    func previousExerciseReference(_ entry: [String: Any], before: Double, exclude: String) -> (text: String, note: String?) {
+        let payload: [String: Any] = ["state": state, "entry": entry, "before": before, "exclude": exclude, "reference": "last"]
+        guard let result = try? WebRules.shared.call("personalReference", payload: payload) as? [String: Any],
+              let date = result["date"] as? String, let label = result["label"] as? String else {
+            return (L10n.text("PREVIOUS_WORKOUT_EMPTY" /* 上次：暂无同一动作的训练记录 */), nil)
+        }
+        let note = (result["note"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (L10n.text("PREVIOUS_WORKOUT_SUMMARY" /* 上次 {0} · {1} · {2} */, date, label, unit), note?.isEmpty == false ? note : nil)
     }
     func setLiveNote(entry:Int,text:String) {
         changeActive { raw in var entries = raw["entries"] as? [[String:Any]] ?? [];guard entries.indices.contains(entry) else {return};entries[entry]["note"] = text;raw["entries"] = entries }
@@ -155,6 +172,7 @@ extension GymStore {
     }
     var workTimer: [String:Any]? { draft?.activeJSON["nativeTimer"] as? [String:Any] }
     func startWorkTimer(entry:Int,set:Int) {
+        liveInputBuffer.commitAll()
         guard let d = draft,d.rawEntries.indices.contains(entry),workTimer == nil else { return }
         let rows = d.rawEntries[entry]["sets"] as? [[String:Any]] ?? [];guard rows.indices.contains(set) else { return }
         let seconds = max(1,number(rows[set]["sec"] ?? 45)),now = Date().timeIntervalSince1970
@@ -184,9 +202,9 @@ extension GymStore {
         let active = draft?.activeJSON
         return await mutate(reportError:false) { source in
             // Progress may change while editing; preserve it. Do not adopt another owner's queue silently.
-            for key in ["rotation","scheduleMode"] where !RecordPatch.equal(baseline[key],source[key]) { throw APIError.response(409,"循环设置已在另一台设备改变，请重新打开后核对。") }
+            for key in ["rotation","scheduleMode"] where !RecordPatch.equal(baseline[key],source[key]) { throw APIError.response(409,L10n.text("ROTATION_SETTINGS_CHANGED_ON_ANOTHER_DEVICE_REOPEN_THEM_TO_REVIEW" /* 循环设置已在另一台设备改变，请重新打开后核对。 */)) }
             let oldQueue = baseline["queue"] as? [String:Any] ?? [:],newQueue = source["queue"] as? [String:Any] ?? [:]
-            if !RecordPatch.equal(oldQueue["rotationId"],newQueue["rotationId"]) { throw APIError.response(409,"排期归属已改变，请刷新后重试。") }
+            if !RecordPatch.equal(oldQueue["rotationId"],newQueue["rotationId"]) { throw APIError.response(409,L10n.text("THE_SCHEDULE_S_OWNER_CHANGED_REFRESH_AND_TRY_AGAIN" /* 排期归属已改变，请刷新后重试。 */)) }
             var payload:[String:Any] = ["state":source,"action":action,"ids":ids,"label":label,"today":dayString(),"now":Date().timeIntervalSince1970*1000]
             if let active { payload["active"] = active }
             guard let result = try WebRules.shared.call("rotationChange",payload:payload) as? [String:Any] else { throw APIError.invalidResponse };return result

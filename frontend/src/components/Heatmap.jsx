@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { fmtVol, isoOf, todayISO, MONTHS, weekStartOf, weekDayOffset } from '../lib/format.js'
 import { workoutDay, workoutDuration, workoutVolume } from '../lib/history.js'
-import { t, tn } from '../lib/i18n.js'
+import { t, tn , translateValue } from '../lib/i18n.js'
 import { tappable } from '../lib/use-sheet-keyboard.js'
 import { Segmented } from './ui.jsx'
 import { dayNoteOf, dayNoteLine } from '../lib/day-notes.js'
@@ -61,7 +61,7 @@ export default function Heatmap({ S, onDay, metric: selectedMetric, onMetricChan
     const colStart = new Date(start); colStart.setDate(start.getDate() + wk * 7)
     const mo = colStart.getMonth()
     const showM = mo !== lastMonth && colStart.getDate() <= 7 && wk < 51
-    months.push(<span key={wk}>{showM ? t(MONTHS[mo]) : ''}</span>)
+    months.push(<span key={wk}>{showM ? translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MONTHS[mo]) : ''}</span>)
     if (colStart.getDate() <= 7) lastMonth = mo
     const cells = []
     for (let d = 0; d < 7; d++) {
@@ -73,7 +73,7 @@ export default function Heatmap({ S, onDay, metric: selectedMetric, onMetricChan
       const note = !a && dayNoteOf(S, key)
       const cls = 'hm-c l' + level(a) + (note ? ' noted' : '') + (key === todayISO() ? ' today' : '') + (day > today ? ' future' : '')
       cells.push(<div key={d} className={cls}
-        title={key + (a ? ` · ${tn('{0} workout', '{0} workouts', a.n)} · ${t('{0} min', a.min)} · ${fmtVol(a.vol, S.unit)}` : note ? ` · ${dayNoteLine(note, t)}` : '')}
+        title={key + (a ? ` · ${tn("COUNT_WORKOUT" /* {0} 次训练 */, "COUNT_WORKOUTS" /* {0} 次训练 */, a.n)} · ${t("COUNT_MIN" /* {0} 分钟 */, a.min)} · ${fmtVol(a.vol, S.unit)}` : note ? ` · ${dayNoteLine(note, t)}` : '')}
         {...tappable(a || note ? () => onDay?.(key) : undefined)} />)
     }
     cols.push(<div key={wk} className="hm-col">{cells}</div>)
@@ -81,14 +81,14 @@ export default function Heatmap({ S, onDay, metric: selectedMetric, onMetricChan
 
   return <>
     <Segmented value={metric} onChange={changeMetric}
-      options={[{ value: 'time', label: t('Time') }, { value: 'vol', label: t('Volume') }]} />
+      options={[{ value: 'time', label: t("TIME" /* 时间 */) }, { value: 'vol', label: t("VOLUME" /* 训练量 */) }]} />
     <div className="hm-wrap" ref={wrapRef}>
       <div className="hm-months" style={{ marginInlineStart: 30 }}>{months}</div>
       <div className="hm-body">
-        <div className="hm-days">{dayLabels.map((lbl, i) => <span key={i}>{lbl ? t(lbl) : ''}</span>)}</div>
+        <div className="hm-days">{dayLabels.map((lbl, i) => <span key={i}>{lbl ? translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(lbl) : ''}</span>)}</div>
         <div className="hm-grid">{cols}</div>
       </div>
     </div>
-    <div className="hm-legend">{t(metric === 'vol' ? 'Less volume' : 'Less time')} <div className="hm-c l0" /><div className="hm-c l1" /><div className="hm-c l2" /><div className="hm-c l3" /><div className="hm-c l4" /> {t(metric === 'vol' ? 'More volume' : 'More time')}</div>
+    <div className="hm-legend">{t(metric === 'vol' ? "LESS_VOLUME" /* 训练量较低 */ : "LESS_TIME" /* 少 */)} <div className="hm-c l0" /><div className="hm-c l1" /><div className="hm-c l2" /><div className="hm-c l3" /><div className="hm-c l4" /> {t(metric === 'vol' ? "MORE_VOLUME" /* 训练量较高 */ : "MORE_TIME" /* 多 */)}</div>
   </>
 }

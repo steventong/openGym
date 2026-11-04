@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "band-two-legs-calf-raise-band-under-both-legs-v-2.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,0 +1,661 @@
+[
+  {
+    "isFramework" : true,
+    "moduleName" : "Accessibility",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/Accessibility.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "Combine",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/Combine.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "CoreAudio",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreAudio.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "CoreData",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreData.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "CoreFoundation",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreFoundation.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "CoreGraphics",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreGraphics.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "CoreLocation",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreLocation.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "CoreMedia",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreMedia.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "CoreMotion",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreMotion.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "CoreText",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreText.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "CoreTransferable",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreTransferable.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "CoreVideo",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/CoreVideo.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "Darwin",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/Darwin.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "DataDetection",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/DataDetection.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "DeveloperToolsSupport",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/DeveloperToolsSupport.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "Dispatch",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/Dispatch.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "Foundation",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/Foundation.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "GeoToolbox",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/GeoToolbox.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "HealthKit",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/HealthKit.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "HomeKit",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/HomeKit.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "MapKit",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/MapKit.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "OSLog",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/OSLog.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "ObjectiveC",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/ObjectiveC.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "Observation",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/Observation.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "SceneKit",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/SceneKit.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "Spatial",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/Spatial.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "Swift",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/Swift.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "SwiftOnoneSupport",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/SwiftOnoneSupport.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "SwiftUI",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/SwiftUI.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "SwiftUICore",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/SwiftUICore.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "Symbols",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/Symbols.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "System",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/System.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "UIKit",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/UIKit.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "UniformTypeIdentifiers",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/UniformTypeIdentifiers.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "WatchKit",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/WatchKit.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "XPC",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/XPC.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "_Builtin_float",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/_Builtin_float.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "_Concurrency",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/_Concurrency.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "_DarwinFoundation1",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/_DarwinFoundation1.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "_DarwinFoundation2",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/_DarwinFoundation2.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "_DarwinFoundation3",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/_DarwinFoundation3.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "_StringProcessing",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/_StringProcessing.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : true,
+    "moduleName" : "_WatchKit_SwiftUI",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/_WatchKit_SwiftUI.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "os",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/os.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "isFramework" : false,
+    "moduleName" : "simd",
+    "modulePath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/swift\/watchsimulator\/prebuilt-modules\/27.2\/simd.swiftmodule\/x86_64-apple-watchos-simulator.swiftmodule"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/Accessibility.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/Accessibility-92G1NL6HKE7MVNJ10KOFHK9ST.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "Accessibility"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreAudio.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreAudio-E525891E37RNTFNZJNGQPBIHW.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreAudio"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreAudioTypes.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreAudioTypes-8S70HXJ47H9V8RJLOLHKM9KIH.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreAudioTypes"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreData.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreData-5HEIWAL8P3FD9KBI8ALD8NB6V.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreData"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreFoundation.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreFoundation-643T5HVRP5GD48IYRAN4MJZZI.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreFoundation"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreGraphics.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreGraphics-183EB24IUOCJTYHFN4WP5AN79.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreGraphics"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreLocation.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreLocation-2R1HR3L6YX0T9K3K2FHJH52EU.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreLocation"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreMedia.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreMedia-DDQR2BBHZNWWBJBCPP3QU9EN7.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreMedia"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreMotion.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreMotion-2IWMDTZNQYW54FN51R038993X.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreMotion"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreText.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreText-5MHFVLH98S1W7KAF5UXY4R79R.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreText"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreTransferable.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreTransferable-1UOR5437YE87RCGD13ZLYYTGL.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreTransferable"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/CoreVideo.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/CoreVideo-5OWN7QJKBWRA6L33C1JH73GC6.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "CoreVideo"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/Darwin.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/Darwin-96IOJQB7W0G0I1UZMFIYTIGRO.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "Darwin"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/DataDetection.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/DataDetection-7JENW282WJ0LFQ4OF5QYI0IUK.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "DataDetection"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/DeveloperToolsSupport.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/DeveloperToolsSupport-DSN6F4W4E49MJTDRJLFYX79UN.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "DeveloperToolsSupport"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/dispatch.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/Dispatch-1ZFL1D6HI3DD7N4F3JEXRNXYM.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "Dispatch"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/Foundation.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/Foundation-DQ0S9TGM69YXBMWNDCRDWY74J.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "Foundation"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/HealthKit.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/HealthKit-99T0NGNQ7JIRWZOMZREBZKG3V.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "HealthKit"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/HomeKit.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/HomeKit-37V5CPXL07PPGYRIITQ5YH6FP.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "HomeKit"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/DarwinBasic.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/MachO-1R8M3EPZ6GFM97DCTURAM787C.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "MachO"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/MapKit.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/MapKit-8RATRXJRQD8L75IMNEHJFXLTZ.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "MapKit"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/OSLog.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/OSLog-DJTQHL0P4EMGDWLEZ93GQBU1O.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "OSLog"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/ObjectiveC.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/ObjectiveC-7WEL21BAE4FUMI439FSTU84ZR.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "ObjectiveC"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/QuartzCore.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/QuartzCore-8Q2F4DKCRO7G9CY0H6L3WRA2U.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "QuartzCore"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/SceneKit.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/SceneKit-6WBKEOF3K5HITRQ7QAJM8AL7A.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "SceneKit"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/Security.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/Security-INL3DVWELFPXXROTRZROFMA6.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "Security"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/Spatial\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/Spatial-5MGSSBRJ4YK3TWHIRYH18TM9N.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "Spatial"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/lib\/swift\/shims\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/SwiftShims-4JIS7H9P3916ZVWTC5LMLAHSP.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "SwiftShims"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/SwiftUI.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/SwiftUI-3DQH6TEEPY1K5V37RFVWJN8Z1.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "SwiftUI"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/SwiftUICore.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/SwiftUICore-2UKSJ2ND5E4RMTKKV4RFAB8FW.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "SwiftUICore"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/Symbols.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/Symbols-4LJ2QKG4QIZY9WQHQW5KOO81H.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "Symbols"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/UIKit.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/UIKit-CR7CKSV076VLLD4JP8KGCDFI3.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "UIKit"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/SubFrameworks\/UIUtilities.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/UIUtilities-BMN7P2NPXMI0R2CP2BC18DO8V.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "UIUtilities"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/UniformTypeIdentifiers.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/UniformTypeIdentifiers-A13TN29LCC55RWNN08UPZE2UA.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "UniformTypeIdentifiers"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/UserNotifications.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/UserNotifications-D1SS0HHP5VJZCHU864I9IICLF.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "UserNotifications"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/WatchConnectivity.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/WatchConnectivity-5R9R6LUK9LFC0SHIIM6GJXE3I.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "WatchConnectivity"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/WatchKit.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/WatchKit-2RSKYA5KPQQ6FK2EPUPQ6POCD.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "WatchKit"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/xpc.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/XPC-AOFO0RDG88H5BZOAMALJVY177.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "XPC"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/DarwinFoundation1.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_AvailabilityInternal-C84QLHMK4IVARH1J9N2UA27ZW.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_AvailabilityInternal"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_float-1HG46AZVPSTTVBO41ZHYKC0I7.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_float"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_intrinsics-737ENPEKYK95UJVSD1TQHDDKI.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_intrinsics"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_inttypes-8CU5G3VTBYXKK9FK1M7SQFSUO.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_inttypes"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_limits-20668VQVIGHN5IYYNAIJCWRXX.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_limits"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_stdarg-E2XDBYERF6OGE6K0T2WCXEP9L.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_stdarg"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_stdatomic-BBL8ZN2J8M3QQ05CDJLUU3JQ4.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_stdatomic"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_stdbool-6I4U1GO6T46PNL6JQCIQ2NH7I.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_stdbool"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_stddef-7K5KM5G6DNTDXIXVU5PU933A0.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_stddef"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_stdint-DVXB4PI0Z5YOODL472F1QC5UO.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_stdint"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_Builtin_tgmath-8FOT30E9OFWLXX0AMBYS39BER.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_Builtin_tgmath"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/DarwinFoundation1.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_DarwinFoundation1-C0SPJXXOKM9RU765FWFYN5FTX.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_DarwinFoundation1"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/DarwinFoundation2.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_DarwinFoundation2-CEMF9MWRCSJM132L7VPGLEAJ5.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_DarwinFoundation2"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/DarwinFoundation3.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_DarwinFoundation3-E6GFHHGX02V4XK32U4TAJUW33.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_DarwinFoundation3"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/System\/Library\/Frameworks\/_LocationEssentials.framework\/Modules\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_LocationEssentials-2LS0GYRVCXJ07F7P987ADDDQ5.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_LocationEssentials"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/lib\/swift\/shims\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/_SwiftConcurrencyShims-A54UJI2K86JF8JNMYQTGN6D7Q.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "_SwiftConcurrencyShims"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/os.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/os-DNGNIKA01V9A5VDA8QD68T0C6.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "os"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/os.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/os_object-32LWW7IP64Y0RH31N7EXK9ECF.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "os_object"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/os.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/os_workgroup-E6VKBFM114BIIMH94GUO1A3TG.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "os_workgroup"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/ptrauth-AGXOMAU8728FYW81OUFF048IK.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "ptrauth"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Toolchains\/XcodeDefault.xctoolchain\/usr\/lib\/clang\/21\/include\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/ptrcheck-4PLQBHL1J37KZMW66NGII1ED0.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "ptrcheck"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/simd\/module.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/simd-J06Y8E56OFMJO5340GDIUMVM.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "simd"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/c_standard_library.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/string_h-AQAMOOPGLYN8U5KGZM07XO1ML.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "string_h"
+  },
+  {
+    "clangModuleMapPath" : "\/Applications\/Xcode.app\/Contents\/Developer\/Platforms\/WatchSimulator.platform\/Developer\/SDKs\/WatchSimulator.sdk\/usr\/include\/DarwinFoundation2.modulemap",
+    "clangModulePath" : "\/Users\/tongwanglin\/Workspace\/openGym\/artifacts\/watch-balanced-tests\/SDKExplicitPrecompiledModules\/sys_types-AWU5XA5AEPUIMFCEKV6GKDBBR.pcm",
+    "isBridgingHeaderDependency" : false,
+    "isFramework" : false,
+    "moduleName" : "sys_types"
+  }
+]

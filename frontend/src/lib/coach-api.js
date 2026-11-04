@@ -40,7 +40,7 @@ const local = async () => {
     localMod.setNotifier(ev => {
       const toast = useUI.getState().toast
       if (ev.kind === 'failed') toast(jobErrorText(ev.errorClass, ev.detail))
-      else if (ev.kind === 'nochange') toast(t('Nothing to change right now: {0}', String(ev.reading || '').slice(0, 140)))
+      else if (ev.kind === 'nochange') toast(t("NOTHING_TO_CHANGE_RIGHT_NOW_COUNT" /* 目前无需更改：{0} */, String(ev.reading || '').slice(0, 140)))
     })
   }
   return localMod
@@ -147,33 +147,33 @@ export function useCoachStatus(active = true) {
 // module loads once, in English, before any locale pack has arrived, and a language picked later
 // would otherwise never reach these lines. The lookup is still JOB_ERRORS[cls].
 export const JOB_ERRORS = {
-  get off() { return t('The Coach isn’t set up on this instance.') },
-  get busy() { return t('The Coach is already thinking about your training.') },
-  get cap() { return t('The Coach is taking a rest day. Try again tomorrow.') },
-  get consent() { return t('The Coach needs your go-ahead first.') },
-  get timeout() { return t('The Coach took too long and gave up.') },
-  get auth() { return t('The Coach couldn’t sign in to its provider. The instance owner needs to check its setup.') },
-  get missing() { return t('The Coach isn’t installed properly on this instance.') },
-  get provider() { return t('The Coach couldn’t run. The instance owner needs to check its setup.') },
-  get unusable() { return t('The Coach answered with something the app couldn’t use.') },
-  get restart() { return t('The server restarted while the Coach was thinking.') },
-  get nostate() { return t('The Coach couldn’t read your training data.') },
-  get noworkout() { return t('There’s no workout to look at yet. Log one first.') },
+  get off() { return t("THE_COACH_ISN_T_SET_UP_ON_THIS_INSTANCE" /* 此实例上尚未设置教练。 */) },
+  get busy() { return t("THE_COACH_IS_ALREADY_THINKING_ABOUT_YOUR_TRAINING" /* 教练已经在思考你的训练了。 */) },
+  get cap() { return t("THE_COACH_IS_TAKING_A_REST_DAY_TRY_AGAIN_TOMORROW" /* 教练今天放休息日。明天再试吧。 */) },
+  get consent() { return t("THE_COACH_NEEDS_YOUR_GO_AHEAD_FIRST" /* 教练需要先获得你的同意。 */) },
+  get timeout() { return t("THE_COACH_TOOK_TOO_LONG_AND_GAVE_UP" /* 教练耗时太久，已放弃。 */) },
+  get auth() { return t("THE_COACH_COULDN_T_SIGN_IN_TO_ITS_PROVIDER_THE_INSTANCE_OWNER" /* 教练无法登录其提供商。需要实例所有者检查配置。 */) },
+  get missing() { return t("THE_COACH_ISN_T_INSTALLED_PROPERLY_ON_THIS_INSTANCE" /* 此实例上的教练安装不正确。 */) },
+  get provider() { return t("THE_COACH_COULDN_T_RUN_THE_INSTANCE_OWNER_NEEDS_TO_CHECK_ITS" /* 教练无法运行。需要实例所有者检查配置。 */) },
+  get unusable() { return t("THE_COACH_ANSWERED_WITH_SOMETHING_THE_APP_COULDN_T_USE" /* 应用无法使用教练给出的回答。 */) },
+  get restart() { return t("THE_SERVER_RESTARTED_WHILE_THE_COACH_WAS_THINKING" /* 教练思考时服务器重启了。 */) },
+  get nostate() { return t("THE_COACH_COULDN_T_READ_YOUR_TRAINING_DATA" /* 教练无法读取你的训练数据。 */) },
+  get noworkout() { return t("THERE_S_NO_WORKOUT_TO_LOOK_AT_YET_LOG_ONE_FIRST" /* 还没有可查看的训练。先记录一次吧。 */) },
   // The refusal at enqueue when the process cannot drop privileges (api/coach/jobs.js). The same
   // words as api/coach/routes.js USER_ERROR.unprivileged; what to fix goes to the admin card.
-  get unprivileged() { return t('The Coach is switched off on this instance for safety reasons.') },
-  get internal() { return t('Something went wrong on the server.') }
+  get unprivileged() { return t("THE_COACH_IS_SWITCHED_OFF_ON_THIS_INSTANCE_FOR_SAFETY_REASONS" /* 出于安全原因，此实例已关闭教练。 */) },
+  get internal() { return t("SOMETHING_WENT_WRONG_ON_THE_SERVER" /* 服务器出了点问题。 */) }
 }
 
 // The same failures on a phone that brought its own key: there is no instance owner to
 // check anything, the person reading this is the operator, and the provider's own words
 // are the only thing that lets them fix it (a spent quota, a wrong model, a rejected key).
 export const BYOK_ERRORS = {
-  get auth() { return t('Your AI provider rejected the key on this phone. Check it under Settings → AI Coach.') },
-  get missing() { return t('The Coach isn’t set up on this phone. Check Settings → AI Coach.') },
-  get provider() { return t('Your AI provider couldn’t answer.') },
-  get unusable() { return t('The Coach answered with something the app couldn’t use.') },
-  get internal() { return t('Something went wrong on this phone.') }
+  get auth() { return t("YOUR_AI_PROVIDER_REJECTED_THE_KEY_ON_THIS_PHONE_CHECK_IT_UNDER" /* 你的 AI 提供商拒绝了此手机上的密钥。请在“设置 → AI 教练”中检查。 */) },
+  get missing() { return t("THE_COACH_ISN_T_SET_UP_ON_THIS_PHONE_CHECK_SETTINGS_AI" /* 此手机上尚未设置教练。请查看“设置 → AI 教练”。 */) },
+  get provider() { return t("YOUR_AI_PROVIDER_COULDN_T_ANSWER" /* 你的 AI 提供商未能给出回答。 */) },
+  get unusable() { return t("THE_COACH_ANSWERED_WITH_SOMETHING_THE_APP_COULDN_T_USE" /* 应用无法使用教练给出的回答。 */) },
+  get internal() { return t("SOMETHING_WENT_WRONG_ON_THIS_PHONE" /* 此手机上出了点问题。 */) }
 }
 
 /** The line the person sees for a failed job — with the reason attached where they can act on it. */

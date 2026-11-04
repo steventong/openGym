@@ -57,6 +57,16 @@ describe('fmtSec', () => {
 })
 
 describe('setLabel', () => {
+  it('can show zero added weight for native bodyweight references without changing default labels', () => {
+    const options = { showZeroWeight: true }
+    expect(setLabel(BW, { w: 0, r: 12 }, null, 'km/h', options)).toBe('0 × 12')
+    expect(setLabel(BW, { w: 0, r: 0 }, null, 'km/h', options)).toBe('0 × 0')
+    expect(setLabel(BW, { w: 5, r: 8 }, null, 'km/h', options)).toBe('+5 × 8')
+    expect(setLabel(BW, { w: 0, r: 12 })).toBe('12')
+    expect(setLabel(BW, { w: 5, r: 8, type: 'dropset', drops: [{ w: 0, r: 6 }] }, null, 'km/h', options)).toBe('+5 × 8 ↘ 0 × 6')
+    expect(setLabel(BW, { w: 0, sec: 45 }, { mode: 'time' }, 'km/h', options)).toBe('0:45')
+  })
+
   it('describes each mode in its own terms', () => {
     expect(setLabel(LIFT, { w: 60, r: 10 })).toBe('60×10')
     expect(setLabel(CARDIO, { min: 20, speed: 9 })).toBe('20 min @ 9 km/h')

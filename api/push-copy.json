@@ -1,0 +1,26 @@
+{
+  "en": {
+    "REST_COMPLETE": "Rest complete",
+    "NOTIFICATION_NEXT_SET": "Time for your next set.",
+    "NOTIFICATION_TEST_BODY": "Test notification ✅ This is what alerts look like.",
+    "NOTIFICATION_WORKOUT_TODAY": "Workout planned today",
+    "NOTIFICATION_ROUTINE_TODAY": "{0} {1} today",
+    "NOTIFICATION_WORKOUT_BODY": "It's on your plan. Let's go 💪"
+  },
+  "zh": {
+    "REST_COMPLETE": "休息结束",
+    "NOTIFICATION_NEXT_SET": "准备好后开始下一组。",
+    "NOTIFICATION_TEST_BODY": "测试通知 ✅ 提醒会以这种方式显示。",
+    "NOTIFICATION_WORKOUT_TODAY": "今天有训练安排",
+    "NOTIFICATION_ROUTINE_TODAY": "{0} 今天训练：{1}",
+    "NOTIFICATION_WORKOUT_BODY": "按计划开始今天的训练吧 💪"
+  },
+  "pt-BR": {
+    "REST_COMPLETE": "Descanso terminado 💪",
+    "NOTIFICATION_NEXT_SET": "Hora da próxima série.",
+    "NOTIFICATION_TEST_BODY": "Notificação de teste ✅ É assim que os alertas aparecem.",
+    "NOTIFICATION_WORKOUT_TODAY": "Treino planejado para hoje",
+    "NOTIFICATION_ROUTINE_TODAY": "{0} {1} hoje",
+    "NOTIFICATION_WORKOUT_BODY": "Está no seu plano. Bora treinar 💪"
+  }
+}

@@ -1,3 +1,6 @@
+import english from '../../../localization/en.json' with { type: 'json' }
+import legacyValues from '../../../localization/metadata/legacy-values.json' with { type: 'json' }
+
 // Runtime-agnostic core of the i18n module: state, constants and readers (t, dateLocale,
 // instrFor, exerciseNameFor, getLang). Plain Node-loadable — the browser-only pieces
 // (import.meta.glob lazy
@@ -74,35 +77,25 @@ export const getLang = () => lang
 export const dateLocale = () => DATE_LOCALES[lang] || 'en-GB'
 export const getVersion = () => version
 
-// Translate a source string; {0},{1}… are replaced with args (also on the English fallback).
+// 使用大写下划线 key 读取 JSON，并替换 {0}、{1} 等占位符。
 export function t(s, ...args) {
-  let v = dict[s] || s
+  if (s == null) return ''
+  const key = legacyValues[s] || s
+  let v = dict[key] || dict[s] || dict[english[key]] || english[key] || s
   // A plural key (an object of forms, read by tn()) reached through plain t() — a call site
   // that was not moved to tn(). Pick a form rather than crash on replaceAll.
   if (v && typeof v === 'object') {
     const forms = v
     v = (typeof args[0] === 'number' && forms[pluralCategory(args[0])]) || forms.other || forms.many || forms.one || s
   }
-  for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', args[i])
-  return v
+  return v.replace(/\{(\d+)\}/g, (match, index) => index < args.length ? String(args[index]) : match)
 }
 
-/* ------------------------------------------------------------------ plurals --
-   English has two forms and the source strings are the keys, so a count used to be
-   written `t(n === 1 ? '{0} set' : '{0} sets', n)` and every pack inherited that
-   two-way split. Russian, Ukrainian and Polish have three (1 подход, 2 подхода,
-   5 подходов) and Arabic six, so those packs could only pick the least wrong of two
-   — "2 подходов" — or dodge the grammar entirely, which is why the Russian pack
-   reads "Упражнений: {0}" where a person would say "2 упражнения".
+// 兼容目录、历史导入、服务器错误的原始值；业务数据不随语言改变。
+export const englishText = key => english[key] || key || ''
+export const translateValue = (value, ...args) => t(value, ...args)
 
-   The rule itself comes from the platform, the same way fmtAgo takes relative time
-   from Intl.RelativeTimeFormat: no pack carries a rule, only its own forms. A pack
-   answers a plural key with either a plain string (unchanged, still correct for every
-   two-form language) or an object keyed by CLDR category:
-
-     '{0} sets': { one: '{0} подход', few: '{0} подхода', many: '{0} подходов' }
-
-   Keys stay the English plural, so a pack that says nothing new behaves as before. */
+// JSON 可提供 CLDR 复数形式；英文通过单复数 key 选择，其他语言使用自身规则。
 const pluralCategory = n => {
   try { return new Intl.PluralRules(dateLocale()).select(n) }
   catch { return n === 1 ? 'one' : 'other' }
@@ -114,14 +107,13 @@ const pluralCategory = n => {
  * forms of the target language, falling back through `other` to the English pair.
  */
 export function tn(one, other, n, ...rest) {
-  const forms = dict[other]
+  const forms = dict[legacyValues[other] || other] || dict[other] || dict[english[other]]
   if (forms && typeof forms === 'object') {
     const form = forms[pluralCategory(n)] || forms.other || forms.many || forms.one
     if (form) {
       let v = form
       const args = [n, ...rest]
-      for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', args[i])
-      return v
+      return v.replace(/\{(\d+)\}/g, (match, index) => index < args.length ? String(args[index]) : match)
     }
   }
   return t(n === 1 ? one : other, n, ...rest)

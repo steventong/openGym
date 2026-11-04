@@ -4,6 +4,7 @@ import WatchConnectivity
 import UserNotifications
 import WatchKit
 import HealthKit
+import OSLog
 
 @MainActor @Observable final class WatchRemoteStore: NSObject, WCSessionDelegate, UNUserNotificationCenterDelegate {
     var healthReport: HealthWorkoutReport?
@@ -19,13 +20,16 @@ import HealthKit
     var reachable = false
     private(set) var reconnecting = false
     var sending = false
-    var coolingDown = false
     var error: String?
     var notificationStatus: UNAuthorizationStatus = .notDetermined
     private(set) var pending: WatchTrainingCommand?
     @ObservationIgnored private var reminderKey = ""
     @ObservationIgnored private var timeout: Task<Void, Never>?
     @ObservationIgnored private var reminderTask: Task<Void, Never>?
+    @ObservationIgnored private var foregroundReminderTask: Task<Void, Never>?
+    @ObservationIgnored private var foregroundReminder = WatchForegroundRestReminder()
+    @ObservationIgnored private var foregroundActive = false
+    private static let reminderLog = Logger(subsystem: "me.itwl.opengym.watchkitapp", category: "RestReminder")
     @ObservationIgnored private var connectionTask: Task<Void, Never>?
     @ObservationIgnored private var connectionID: UUID?
     @ObservationIgnored private var preview = false
@@ -35,23 +39,25 @@ import HealthKit
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("-remote-preview") {
             preview = true
-            snapshot = WatchTrainingSnapshot(sessionID: "preview", exercise: "杠铃卧推", exercisePosition: "动作 1 / 5",
-                nextSet: WatchTrainingSet(entry: 0, index: 1, label: "第 2 / 4 组", weight: "40 kg", detail: "10 次"),
-                restEnd: Date().addingTimeInterval(75), restEntry: 0, restExercise: "杠铃卧推", message: "预览")
+            snapshot = WatchTrainingSnapshot(sessionID: "preview", exercise: L10n.text("BARBELL_BENCH_PRESS" /* 杠铃卧推 */), exercisePosition: L10n.text("EXERCISE_COUNT_OF_COUNT" /* 第 {0}/{1} 个动作 */, 2, 6),
+                nextSet: WatchTrainingSet(entry: 0, index: 1, label: L10n.text("SET_TWO_OF_FOUR" /* 第 2/4 组 */), weight: "40 kg", detail: L10n.text("ONEZERO_REPS" /* 10 次 */)),
+                restEnd: Date().addingTimeInterval(75), restEntry: 0, restExercise: L10n.text("BARBELL_BENCH_PRESS" /* 杠铃卧推 */), message: L10n.text("PREVIEW" /* 预览 */))
             reachable = true
             notificationStatus = .authorized
             healthReport = HealthWorkoutReport(id: ":preview", state: .running, activeCalories: 128, totalCalories: 156, heartRate: 124)
+            if ProcessInfo.processInfo.arguments.contains("-preview-short-rest") { snapshot.restEnd = Date().addingTimeInterval(12) }
             if ProcessInfo.processInfo.arguments.contains("-preview-training") { snapshot.restEnd = nil }
+            if ProcessInfo.processInfo.arguments.contains("-preview-protected") { snapshot.actionReadyAt = TrainingActionTiming.deadline(after: Date()) }
             if ProcessInfo.processInfo.arguments.contains("-preview-disconnected") { reachable = false }
             if ProcessInfo.processInfo.arguments.contains("-preview-long-text") {
-                snapshot.exercise = "坐姿单臂哑铃肩上推举（交替训练）"
-                snapshot.nextSet?.label = "第 12 / 12 组 · 右侧 · 热身"
-                snapshot.nextSet?.detail = "12 次 · Rest-pause 3 小组"
+                snapshot.exercise = L10n.text("SEATED_SINGLE_ARM_DUMBBELL_SHOULDER_PRESS_ALTERNATING" /* 坐姿单臂哑铃肩上推举（交替训练） */)
+                snapshot.nextSet?.label = L10n.text("SET_ONETWO_OF_ONETWO_RIGHT_WARM_UP" /* 第 12/12 组 · 右侧 · 热身 */)
+                snapshot.nextSet?.detail = L10n.text("ONETWO_REPS_THREE_REST_PAUSE_MINI_SETS" /* 12 次 · 3 个休息暂停小组 */)
             }
             return
         }
         #endif
-        if let data = UserDefaults.standard.data(forKey: "remote.snapshot"), let cached = try? JSONDecoder().decode(WatchTrainingSnapshot.self, from: data) { snapshot = cached }
+        if let data = UserDefaults.standard.data(forKey: "remote.snapshot"), let cached = try? JSONDecoder().decode(WatchTrainingSnapshot.self, from: data) { snapshot = cached; if let language = cached.language { L10n.setLanguage(language) } }
         if let data = UserDefaults.standard.data(forKey: "remote.pending") { pending = try? JSONDecoder().decode(WatchTrainingCommand.self, from: data) }
     }
     func start() {
@@ -96,6 +102,51 @@ import HealthKit
             self.finishConnection()
         }
     }
+    func setForegroundActive(_ active: Bool) {
+        guard !preview else { return }
+        foregroundActive = active
+        scheduleForegroundReminder()
+        if active {
+            clearDeliveredRestNotifications()
+            refresh()
+        }
+    }
+
+    private func clearDeliveredRestNotifications() {
+        // Include the companion's notification when it was mirrored onto the watch.
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["opengym.rest", "opengym.workout.rest"])
+    }
+
+    private func scheduleForegroundReminder() {
+        foregroundReminderTask?.cancel()
+        foregroundReminderTask = nil
+        guard let end = foregroundReminder.update(snapshot, active: foregroundActive, now: Date()),
+              let key = foregroundReminder.key else { return }
+        foregroundReminderTask = Task { [weak self] in
+            do { try await Task.sleep(for: .seconds(max(0, end.timeIntervalSinceNow))) }
+            catch { return }
+            guard !Task.isCancelled else { return }
+            self?.deliverForegroundReminder(key: key)
+        }
+    }
+
+    private func deliverForegroundReminder(key: String) {
+        guard foregroundActive, WKApplication.shared().applicationState == .active,
+              foregroundReminder.consume(key: key, now: Date()) else { return }
+        let delay = max(0, -(foregroundReminder.deadline?.timeIntervalSinceNow ?? 0))
+        Self.reminderLog.info("Foreground rest haptic, delay_seconds=\(delay, privacy: .public)")
+        WKInterfaceDevice.current().play(.notification)
+        // Wait for a possible in-flight add before clearing the fallback. A newer rest
+        // must retain its notification even if it arrives while this task is suspended.
+        let scheduled = reminderTask
+        Task { [weak self] in
+            await scheduled?.value
+            guard let self, self.foregroundReminder.key == key, self.foregroundReminder.didAlert else { return }
+            let center = UNUserNotificationCenter.current()
+            center.removePendingNotificationRequests(withIdentifiers: ["opengym.rest"])
+            self.clearDeliveredRestNotifications()
+        }
+    }
     private func finishConnection() {
         connectionTask?.cancel(); connectionTask = nil; connectionID = nil; reconnecting = false
     }
@@ -103,21 +154,31 @@ import HealthKit
         snapshot.primaryAction(reachable: reachable, reconnecting: reconnecting,
             hasPending: pending != nil, sending: sending, at: date)
     }
-    func isDisabled(_ action: WatchTrainingAction) -> Bool {
+    func isDisabled(_ action: WatchTrainingAction, includeProtection: Bool = true) -> Bool {
         if action == .connect { return reconnecting }
         if !reachable || reconnecting { return true }
+        if includeProtection && snapshot.actionTiming.isProtected(at: Date()) { return true }
         switch action {
         case .sending, .finished: return true
         case .retry: return sending
-        case .endRest: return coolingDown || snapshot.restEntry == nil
-        case .complete: return coolingDown || snapshot.nextSet?.blockedReason != nil
-        case .next: return coolingDown
+        case .endRest: return snapshot.restEntry == nil
+        case .complete: return snapshot.nextSet?.blockedReason != nil
+        case .next: return false
         case .connect: return false
         }
     }
     func performPrimaryAction() {
         let action = primaryAction()
         guard !isDisabled(action) else { return }
+        #if DEBUG
+        if preview {
+            if action == .endRest { snapshot.restEnd = nil }
+            else if action == .complete { snapshot.restEnd = Date().addingTimeInterval(12) }
+            else { return }
+            snapshot.actionReadyAt = TrainingActionTiming.deadline(after: Date())
+            return
+        }
+        #endif
         switch action {
         case .connect: refresh()
         case .retry: retry()
@@ -135,11 +196,11 @@ import HealthKit
         await reminderTask?.value
     }
     func complete() {
-        guard pending == nil, !coolingDown, !snapshot.isResting(), let sessionID = snapshot.sessionID, let row = snapshot.nextSet, row.blockedReason == nil else { return }
+        guard pending == nil, !snapshot.actionTiming.isProtected(at: Date()), snapshot.restEnd == nil, let sessionID = snapshot.sessionID, let row = snapshot.nextSet, row.blockedReason == nil else { return }
         send(WatchTrainingCommand(account: snapshot.account, sessionID: sessionID, revision: snapshot.revision, action: "complete", entry: row.entry, index: row.index, side: row.side))
     }
     func endRest() {
-        guard pending == nil, !coolingDown, snapshot.isResting(),
+        guard pending == nil, !snapshot.actionTiming.isProtected(at: Date()), snapshot.restEnd != nil,
               let sessionID = snapshot.sessionID, let entry = snapshot.restEntry else { return }
         send(WatchTrainingCommand(account: snapshot.account, sessionID: sessionID, revision: snapshot.revision, action: "skipRest", entry: entry))
     }
@@ -159,7 +220,7 @@ import HealthKit
         timeout = Task { [weak self] in
             try? await Task.sleep(for: .seconds(12))
             guard !Task.isCancelled, self?.pending?.id == command.id else { return }
-            self?.sending = false; self?.error = "尚未收到手机确认，可重试确认。"
+            self?.sending = false; self?.error = L10n.text("YOUR_PHONE_HAS_NOT_CONFIRMED_YET_YOU_CAN_RETRY_CONFIRMATION" /* 尚未收到手机确认，可重试确认。 */)
             self?.reachable = false; self?.refresh()
         }
         WCSession.default.sendMessage(command.payload, replyHandler: { [weak self] message in
@@ -167,7 +228,7 @@ import HealthKit
         }, errorHandler: { [weak self] _ in
             Task { @MainActor in
                 guard self?.pending?.id == command.id else { return }
-                self?.sending = false; self?.error = "尚未收到手机确认，可重试确认。"
+                self?.sending = false; self?.error = L10n.text("YOUR_PHONE_HAS_NOT_CONFIRMED_YET_YOU_CAN_RETRY_CONFIRMATION" /* 尚未收到手机确认，可重试确认。 */)
                 self?.reachable = false; self?.refresh()
             }
         })
@@ -183,18 +244,20 @@ import HealthKit
             }
         }
         if let incoming = WatchTrainingSnapshot.decode(message), incoming.generatedAt >= snapshot.generatedAt {
+            if let language = incoming.language { L10n.setLanguage(language) }
             snapshot = incoming
             UserDefaults.standard.set(try? JSONEncoder().encode(incoming), forKey: "remote.snapshot")
             if let pending, incoming.acknowledged.contains(pending.id) { clearPending(); error = nil; acknowledge() }
             else if let pending, incoming.sessionID != pending.sessionID || incoming.account != pending.account {
-                clearPending(); error = "训练已变更，已更新为手机上的记录。"
+                clearPending(); error = L10n.text("THE_WORKOUT_CHANGED_UPDATED_TO_MATCH_YOUR_PHONE" /* 训练已变更，已更新为手机上的记录。 */)
             }
             scheduleReminder()
+            scheduleForegroundReminder()
         }
         if let id = message["commandID"] as? String, id == pending?.id {
             let accepted = message["accepted"] as? Bool == true
             clearPending()
-            error = accepted ? nil : message["error"] as? String ?? "请核对手机上的训练。"
+            error = accepted ? nil : message["error"] as? String ?? L10n.text("CHECK_THE_WORKOUT_ON_YOUR_PHONE" /* 请核对手机上的训练。 */)
             if accepted { acknowledge() }
         }
     }
@@ -205,7 +268,7 @@ import HealthKit
             defer { authorizingHealth = false }
             do {
                 try await HealthWorkoutAccess.authorize(healthStore)
-                healthStatus = "已授权，等待手机训练同步"
+                healthStatus = L10n.text("ACCESS_ALLOWED_WAITING_FOR_WORKOUT_SYNC_FROM_IPHONE" /* 已授权，等待手机训练同步 */)
                 healthRecorder.accept([]); refresh()
             } catch { healthStatus = error.localizedDescription }
         }
@@ -217,10 +280,10 @@ import HealthKit
         if report.id == expected || healthReport == nil || healthReport?.id == report.id {
             healthReport = report
             switch report.state {
-            case .running: healthStatus = "正在记录运动"
-            case .saved: healthStatus = "运动已保存；训练组请在手机提交"
-            case .discarded: healthStatus = "运动记录已取消"
-            case .failed: healthStatus = report.message ?? "运动同步失败，请重试"
+            case .running: healthStatus = L10n.text("RECORDING_ACTIVITY" /* 正在记录运动 */)
+            case .saved: healthStatus = L10n.text("ACTIVITY_SAVED_SUBMIT_YOUR_SETS_ON_IPHONE" /* 运动已保存；训练组请在手机提交 */)
+            case .discarded: healthStatus = L10n.text("ACTIVITY_RECORDING_CANCELLED" /* 本次运动记录已取消 */)
+            case .failed: healthStatus = report.message ?? L10n.text("ACTIVITY_SYNC_FAILED_TRY_AGAIN" /* 运动同步失败，请重试 */)
             }
         }
         guard WCSession.default.activationState == .activated else { return }
@@ -238,8 +301,6 @@ import HealthKit
     }
     private func acknowledge() {
         WKInterfaceDevice.current().play(.success)
-        coolingDown = true
-        Task { try? await Task.sleep(for: .milliseconds(750)); coolingDown = false }
     }
     private func clearPending() {
         pending = nil; sending = false; timeout?.cancel()
@@ -248,13 +309,13 @@ import HealthKit
     func enableReminder() {
         Task {
             do { _ = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) }
-            catch { self.error = "无法开启提醒，请稍后重试。" }
+            catch { self.error = L10n.text("COULD_NOT_ENABLE_REMINDERS_TRY_AGAIN_LATER" /* 无法开启提醒，请稍后重试。 */) }
             notificationStatus = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
             reminderKey = ""; scheduleReminder()
         }
     }
     private func scheduleReminder() {
-        let key = "\(snapshot.sessionID ?? "")|\(snapshot.restEnd?.timeIntervalSince1970 ?? 0)"
+        let key = snapshot.restReminderKey ?? ""
         guard key != reminderKey else { return }
         reminderKey = key
         let previous = reminderTask, current = snapshot
@@ -268,19 +329,26 @@ import HealthKit
             center.removeDeliveredNotifications(withIdentifiers: ["opengym.rest"])
             guard let end = current.restEnd, end.timeIntervalSinceNow > 0, current.sessionID != nil else { return }
             let content = UNMutableNotificationContent()
-            content.title = "休息结束"
-            content.body = current.restExercise.isEmpty ? "准备开始下一组" : "\(current.restExercise) · 准备开始下一组"
+            content.title = L10n.text("REST_COMPLETE" /* 休息结束 */)
+            content.body = current.restExercise.isEmpty ? L10n.text("READY_FOR_YOUR_NEXT_SET" /* 准备开始下一组 */) : L10n.text("COUNT_READY_FOR_YOUR_NEXT_SET" /* {0} · 准备开始下一组 */, current.restExercise)
             content.sound = .default
+            content.userInfo = ["restKey": key]
             let request = UNNotificationRequest(identifier: "opengym.rest", content: content,
                 trigger: UNTimeIntervalNotificationTrigger(timeInterval: max(1, end.timeIntervalSinceNow), repeats: false))
             do { try await center.add(request) }
-            catch { self.error = "休息提醒未能设置，请留意倒计时。" }
+            catch { self.error = L10n.text("COULD_NOT_SET_A_REST_REMINDER_KEEP_AN_EYE_ON_THE_COUNTDOWN" /* 休息提醒未能设置，请留意倒计时。 */) }
         }
     }
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let isRest = notification.request.identifier == "opengym.rest"
+            || notification.request.content.userInfo["openGymWorkout"] as? Bool == true
+        guard isRest else { completionHandler([.banner]); return }
+        let key = notification.request.content.userInfo["restKey"] as? String
+        // Foreground rests never create a banner/list entry, including a late phone mirror.
+        center.removeDeliveredNotifications(withIdentifiers: [notification.request.identifier])
+        completionHandler([])
         Task { @MainActor in
-            WKInterfaceDevice.current().play(.notification)
-            completionHandler([.banner])
+            if let key { self.deliverForegroundReminder(key: key) }
         }
     }
     nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {

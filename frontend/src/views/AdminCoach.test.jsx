@@ -681,11 +681,11 @@ describe('AdminCoach — what the card refuses to show', () => {
       ],
     })
     await mount()
-    expect(host.textContent).toContain('just now')
-    expect(host.textContent).toContain('added 3 d ago')
+    expect(host.textContent).toContain('now')
+    expect(host.textContent).toContain('added 3 days ago')
     const rows = [...host.querySelectorAll('.adm-log-row')].map(r => r.textContent)
-    expect(rows[0]).toContain('5 min ago')
-    expect(rows[1]).toContain('3 h ago')
+    expect(rows[0]).toContain('5 minutes ago')
+    expect(rows[1]).toContain('3 hours ago')
     expect(rows[1]).not.toContain(' s')    // ms: 0 must not print "0 s"
 
     mocks.routes['/api/admin/coach'] = status({ lastSuccess: null })

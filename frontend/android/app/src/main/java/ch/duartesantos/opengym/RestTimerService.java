@@ -21,11 +21,11 @@ public class RestTimerService extends Service {
     private long pausedLeft;
     private boolean paused;
     private boolean running;
-    private String pauseLabel = "Pause";
-    private String resumeLabel = "Resume";
-    private String minusLabel = "\u2212 15s";
-    private String plusLabel = "+ 15s";
-    private String skipLabel = "Skip";
+    private String pauseLabel;
+    private String resumeLabel;
+    private String minusLabel;
+    private String plusLabel;
+    private String skipLabel;
     private int accent = 0xFF30D158;
     private int ink = 0xFF000000;
     private PowerManager.WakeLock cpu;
@@ -43,6 +43,17 @@ public class RestTimerService extends Service {
             handler.postDelayed(this, ((left - 1) % 1000) + 1);
         }
     };
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        // JSON 生成的系统语言文案；网页传入的账号语言文案会在启动倒计时时覆盖。
+        pauseLabel = getString(R.string.localized_pause);
+        resumeLabel = getString(R.string.localized_resume);
+        minusLabel = getString(R.string.localized_rest_minus);
+        plusLabel = getString(R.string.localized_rest_plus);
+        skipLabel = getString(R.string.localized_skip);
+    }
 
     @Override
     public IBinder onBind(Intent intent) {

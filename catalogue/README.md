@@ -13,7 +13,7 @@ files, so a fix merged here is in the next release for everyone.
 |---|---|
 | `exercises/<id>.json` | One exercise in English: name, body part, equipment, muscles, description, steps |
 | `i18n/<lang>.json` | Translations: `{ "<id>": { "name", "description", "instructions" } }` |
-| `media/still/<id>.webp`, `media/clip/<id>.mp4` | The picture and animation (180 px). Licensed, not editable, see below |
+| `media/thumbnails/<id>.webp`, `media/clip/<id>.mp4` | The picture and animation (180 px). Licensed, not editable, see below |
 | `browse/` | Generated overview pages. Don't edit, they are rebuilt |
 
 The id is the exercise's permanent number. Workouts, routines and records store it, so **an id is

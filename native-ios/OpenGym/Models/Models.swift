@@ -2,18 +2,34 @@ import Foundation
 
 struct Exercise: Codable, Identifiable, Hashable {
     let id: String
-    let name: String
+    private let translatedName: String
+    var name: String { L10n.language == "en" && !english.isEmpty ? english : translatedName }
     let english: String
+    let thumbnailAsset: String?
     let bodyPart: String
     let equipment: String
     let target: String
     let category: String
-    let instructions: [String]
+    private let translatedInstructions: [String]
+    let englishInstructions: [String]?
+    var instructions: [String] { L10n.language == "en" ? (englishInstructions ?? translatedInstructions) : translatedInstructions }
     let description: String
+    enum CodingKeys: String, CodingKey {
+        case id, translatedName = "name", english, thumbnailAsset, bodyPart, equipment, target, category
+        case translatedInstructions = "instructions", englishInstructions, description
+    }
+    init(id: String, name: String, english: String, bodyPart: String, equipment: String,
+         target: String, category: String, instructions: [String], description: String,
+         englishInstructions: [String]? = nil, thumbnailAsset: String? = nil) {
+        self.id = id; self.translatedName = name; self.english = english; self.thumbnailAsset = thumbnailAsset
+        self.bodyPart = bodyPart; self.equipment = equipment; self.target = target
+        self.category = category; self.translatedInstructions = instructions
+        self.description = description; self.englishInstructions = englishInstructions
+    }
     var bodyLabel: String { Vocabulary.label(bodyPart) }
     var equipmentLabel: String { Vocabulary.label(equipment) }
     var targetLabel: String { Vocabulary.label(target) }
-    var searchText: String { "\(name) \(english) \(bodyLabel) \(targetLabel)" }
+    var searchText: String { "\(translatedName) \(english) \(bodyLabel) \(targetLabel)" }
 
     /// Keep imported gym suffixes out of the training title and copied name.
     var titleParts: (primary: String, secondary: String) {
@@ -51,14 +67,14 @@ struct Exercise: Codable, Identifiable, Hashable {
 }
 
 enum Vocabulary {
-    static let words = ["back":"背部", "cardio":"有氧", "chest":"胸部", "full body":"全身", "lower arms":"前臂", "lower legs":"小腿", "neck":"颈部", "shoulders":"肩部", "upper arms":"上臂", "upper legs":"大腿", "waist":"腰腹", "body weight":"自重", "dumbbell":"哑铃", "cable":"绳索", "barbell":"杠铃", "leverage machine":"杠杆器械", "band":"弹力带", "kettlebell":"壶铃", "smith machine":"史密斯机", "weighted":"负重", "assisted":"辅助", "resistance band":"阻力带", "lats":"背阔肌", "pectorals":"胸肌", "abs":"腹肌", "quads":"股四头肌", "glutes":"臀肌", "hamstrings":"腘绳肌", "biceps":"肱二头肌", "triceps":"肱三头肌", "delts":"三角肌", "calves":"小腿", "forearms":"前臂", "spine":"竖脊肌", "traps":"斜方肌", "cardiovascular system":"心肺", "strength":"力量", "calisthenics":"自重训练", "stretching":"拉伸", "mobility":"灵活性", "plyometrics":"增强式训练", "yoga":"瑜伽", "pilates":"普拉提", "olympic weightlifting":"奥林匹克举重", "isometric":"等长训练", "bosu ball":"波速球", "elliptical machine":"椭圆机", "ez barbell":"曲杆杠铃", "hammer":"锤", "landmine":"地雷管", "macebell":"锤铃", "medicine ball":"药球", "olympic barbell":"奥杆", "roller":"滚轴", "rope":"绳", "sandbag":"沙袋", "skierg machine":"滑雪机", "sled machine":"雪橇", "stability ball":"健身球", "stationary bike":"动感单车", "stepmill machine":"爬楼机", "suspension trainer":"悬挂训练带", "tire":"轮胎", "trap bar":"六角杠", "upper body ergometer":"上肢功率车", "weight plate":"杠铃片", "wheel roller":"健腹轮"]
+    static var words: [String: String] { ["back":L10n.text("BACK" /* 背部 */), "cardio":L10n.text("CARDIO_A" /* 有氧 */), "chest":L10n.text("CHEST" /* 胸部 */), "full body":L10n.text("FULL_BODY_A" /* 全身 */), "lower arms":L10n.text("LOWER_ARMS" /* 前臂 */), "lower legs":L10n.text("LOWER_LEGS" /* 小腿 */), "neck":L10n.text("NECK" /* 颈部 */), "shoulders":L10n.text("SHOULDERS" /* 肩部 */), "upper arms":L10n.text("UPPER_ARMS" /* 上臂 */), "upper legs":L10n.text("UPPER_LEGS" /* 大腿 */), "waist":L10n.text("WAIST" /* 腰腹 */), "body weight":L10n.text("BODY_WEIGHT_A" /* 自重 */), "dumbbell":L10n.text("DUMBBELL" /* 哑铃 */), "cable":L10n.text("CABLE" /* 绳索 */), "barbell":L10n.text("BARBELL" /* 杠铃 */), "leverage machine":L10n.text("LEVERAGE_MACHINE" /* 杠杆器械 */), "band":L10n.text("BAND" /* 弹力带 */), "kettlebell":L10n.text("KETTLEBELL" /* 壶铃 */), "smith machine":L10n.text("SMITH_MACHINE" /* 史密斯机 */), "weighted":L10n.text("WEIGHTED" /* 负重 */), "assisted":L10n.text("ASSISTED" /* 辅助 */), "resistance band":L10n.text("RESISTANCE_BAND" /* 阻力带 */), "lats":L10n.text("LATS" /* 背阔肌 */), "pectorals":L10n.text("PECTORALS" /* 胸肌 */), "abs":L10n.text("ABS" /* 腹肌 */), "quads":L10n.text("QUADS" /* 股四头肌 */), "glutes":L10n.text("GLUTES" /* 臀肌 */), "hamstrings":L10n.text("HAMSTRINGS" /* 腘绳肌 */), "biceps":L10n.text("BICEPS" /* 肱二头肌 */), "triceps":L10n.text("TRICEPS" /* 肱三头肌 */), "delts":L10n.text("DELTS" /* 三角肌 */), "calves":L10n.text("CALVES" /* 小腿肌 */), "forearms":L10n.text("FOREARMS" /* 前臂 */), "spine":L10n.text("SPINE" /* 脊柱 */), "traps":L10n.text("TRAPS" /* 斜方肌 */), "cardiovascular system":L10n.text("CARDIOVASCULAR_SYSTEM" /* 心血管系统 */), "strength":L10n.text("STRENGTH_A" /* 力量 */), "calisthenics":L10n.text("CALISTHENICS" /* 自重训练 */), "stretching":L10n.text("STRETCHING" /* 拉伸 */), "mobility":L10n.text("MOBILITY" /* 灵活性 */), "plyometrics":L10n.text("PLYOMETRICS" /* 增强式训练 */), "yoga":L10n.text("YOGA" /* 瑜伽 */), "pilates":L10n.text("PILATES" /* 普拉提 */), "olympic weightlifting":L10n.text("OLYMPIC" /* 奥林匹克举重 */), "isometric":L10n.text("ISOMETRIC" /* 等长训练 */), "bosu ball":L10n.text("BOSU_BALL" /* 波速球 */), "elliptical machine":L10n.text("ELLIPTICAL_MACHINE" /* 椭圆机 */), "ez barbell":L10n.text("EZ_BARBELL" /* 曲杆杠铃 */), "hammer":L10n.text("HAMMER" /* 锤 */), "landmine":L10n.text("LANDMINE" /* 地雷管 */), "macebell":L10n.text("MACEBELL" /* 锤铃 */), "medicine ball":L10n.text("MEDICINE_BALL" /* 药球 */), "olympic barbell":L10n.text("OLYMPIC_BARBELL" /* 奥杆 */), "roller":L10n.text("ROLLER" /* 滚轴 */), "rope":L10n.text("ROPE" /* 绳 */), "sandbag":L10n.text("SANDBAG" /* 沙袋 */), "skierg machine":L10n.text("SKIERG_MACHINE" /* 滑雪机 */), "sled machine":L10n.text("SLED_MACHINE" /* 雪橇 */), "stability ball":L10n.text("STABILITY_BALL" /* 健身球 */), "stationary bike":L10n.text("STATIONARY_BIKE" /* 动感单车 */), "stepmill machine":L10n.text("STEPMILL_MACHINE" /* 爬楼机 */), "suspension trainer":L10n.text("SUSPENSION_TRAINER" /* 悬挂训练带 */), "tire":L10n.text("TIRE" /* 轮胎 */), "trap bar":L10n.text("TRAP_BAR" /* 六角杠 */), "upper body ergometer":L10n.text("UPPER_BODY_ERGOMETER" /* 上肢功率车 */), "weight plate":L10n.text("WEIGHT_PLATE" /* 杠铃片 */), "wheel roller":L10n.text("WHEEL_ROLLER" /* 健腹轮 */)] }
     static func label(_ key: String) -> String { words[key] ?? key.capitalized }
 }
 
 struct Routine: Identifiable {
     var raw: [String: Any]
     var id: String { raw["id"] as? String ?? "" }
-    var name: String { raw["name"] as? String ?? "训练计划" }
+    var name: String { raw["name"] as? String ?? L10n.text("ROUTINES" /* 训练计划 */) }
     var exercises: [[String: Any]] { raw["ex"] as? [[String: Any]] ?? [] }
 }
 

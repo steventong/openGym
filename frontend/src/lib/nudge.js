@@ -33,30 +33,30 @@ const EVENING = 20 * 60, LATEST = 21 * 60 + 30, AFTER_REMINDER = 120
 
 export const NUDGE_COPY = {
   friendly: {
-    title: 'Everything okay?',
+    title: "EVERYTHING_OKAY" /* 一切还好吗？ */,
     lines: [
-      '{0} is still waiting. What’s up?',
-      'No {0} today? Even a short session tomorrow counts.',
-      'Rough day? {0} will keep. Tomorrow is a fresh start.',
-      'Hey, {0} didn’t happen today. All good?',
+      "COUNT_IS_STILL_WAITING_WHAT_S_UP" /* {0}还在等你。怎么了？ */,
+      "NO_COUNT_TODAY_EVEN_A_SHORT_SESSION_TOMORROW_COUNTS" /* 今天没练{0}？明天哪怕练一小会儿也算数。 */,
+      "ROUGH_DAY_COUNT_WILL_KEEP_TOMORROW_IS_A_FRESH_START" /* 今天不顺？{0}可以等。明天重新开始。 */,
+      "HEY_COUNT_DIDN_T_HAPPEN_TODAY_ALL_GOOD" /* 嘿，今天的{0}没练成。一切都好吗？ */,
     ],
   },
   guilt: {
-    title: 'I miss you',
+    title: "I_MISS_YOU" /* 我想你了 */,
     lines: [
-      '{0} waited by the door all evening. For you.',
-      'The barbell asked about you today. I didn’t know what to say.',
-      'Was it something I said? {0} misses you.',
-      'I saved you a spot on the bench. It’s still empty.',
+      "COUNT_WAITED_BY_THE_DOOR_ALL_EVENING_FOR_YOU" /* {0}在门口等了你一整晚。就等你。 */,
+      "THE_BARBELL_ASKED_ABOUT_YOU_TODAY_I_DIDN_T_KNOW_WHAT_TO" /* 杠铃今天问起你了。我不知道该怎么说。 */,
+      "WAS_IT_SOMETHING_I_SAID_COUNT_MISSES_YOU" /* 是我说错什么了吗？{0}想你了。 */,
+      "I_SAVED_YOU_A_SPOT_ON_THE_BENCH_IT_S_STILL_EMPTY" /* 我在卧推凳上给你留了位置。现在还空着。 */,
     ],
   },
   drill: {
-    title: 'Attention, recruit!',
+    title: "ATTENTION_RECRUIT" /* 立正，新兵！ */,
     lines: [
-      'Your gains are packing their bags. {0} tomorrow, no excuses!',
-      '{0} doesn’t do itself, recruit. Move it!',
-      'Excuses don’t lift weights. Report for {0} tomorrow!',
-      'Your muscles filed a missing-person report. Show up for {0}!',
+      "YOUR_GAINS_ARE_PACKING_THEIR_BAGS_COUNT_TOMORROW_NO_EXCUSES" /* 你的增肌成果正在收拾行李。明天{0}，不许找借口！ */,
+      "COUNT_DOESN_T_DO_ITSELF_RECRUIT_MOVE_IT" /* {0}不会自己完成，新兵。动起来！ */,
+      "EXCUSES_DON_T_LIFT_WEIGHTS_REPORT_FOR_COUNT_TOMORROW" /* 借口举不起重量。明天准时报到练{0}！ */,
+      "YOUR_MUSCLES_FILED_A_MISSING_PERSON_REPORT_SHOW_UP_FOR_COUNT" /* 你的肌肉已经报了失踪。马上来练{0}！ */,
     ],
   },
 }

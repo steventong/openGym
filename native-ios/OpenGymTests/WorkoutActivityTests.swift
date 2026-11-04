@@ -1,4 +1,5 @@
 import XCTest
+import ActivityKit
 @testable import OpenGym
 
 @MainActor final class WorkoutActivityTests: XCTestCase {
@@ -14,12 +15,77 @@ import XCTest
     }
     override func tearDown() async throws { store = nil; try? FileManager.default.removeItem(at: root) }
 
+    func testRestoredActivityDoesNotStartWithExpiredProtectionAsStaleDate() throws {
+        let now = Date()
+        var state = try XCTUnwrap(store.workoutActivityState())
+        for deadline in [now.addingTimeInterval(-3600), now] {
+            state.actionReadyAt = deadline
+            let content = WorkoutActivityCoordinator.content(for: state, now: now)
+            XCTAssertNil(content.staleDate)
+            XCTAssertEqual(content.state, state)
+        }
+        state.actionReadyAt = now.addingTimeInterval(5)
+        XCTAssertEqual(WorkoutActivityCoordinator.content(for: state, now: now).staleDate, state.actionReadyAt)
+    }
+
+    func testExpiredActivityMetadataRefreshesEvenWhenWorkoutHasNotChanged() throws {
+        let now = Date()
+        var state = try XCTUnwrap(store.workoutActivityState())
+        state.actionReadyAt = now.addingTimeInterval(-60)
+        let stale = ActivityContent(state: state, staleDate: state.actionReadyAt, relevanceScore: 1)
+        let current = WorkoutActivityCoordinator.content(for: state, now: now)
+        XCTAssertEqual(stale.state, current.state)
+        XCTAssertTrue(WorkoutActivityCoordinator.needsUpdate(stale, to: current))
+        XCTAssertFalse(WorkoutActivityCoordinator.needsUpdate(current, to: current))
+    }
+
+    // Opt-in integration probe: exercises the actual WidgetKit renderer, which
+    // in-process SwiftUI layout tests cannot validate. Use only on a QA simulator.
+    func testSystemRendererAfterCompletingSet() async throws {
+        #if targetEnvironment(simulator)
+        guard UserDefaults.standard.bool(forKey: "OpenGymActivityRendererQA") else {
+            throw XCTSkip("Enable OpenGymActivityRendererQA on the QA simulator to capture system rendering.")
+        }
+        // The host app's unrelated empty store must not end the probe activity
+        // when the tester backgrounds the app to inspect the Dynamic Island.
+        let runtime = WorkoutActivityRuntime.store
+        let runtimeCoordinator = runtime.liveActivity
+        runtime.liveActivity = nil
+        defer { runtime.liveActivity = runtimeCoordinator }
+        let snapshot = store.watchSnapshot()
+        let initial = try XCTUnwrap(store.workoutActivityState())
+        let activity = try Activity.request(attributes: WorkoutActivityAttributes(account: snapshot.account,
+            sessionID: try XCTUnwrap(snapshot.sessionID)), content: ActivityContent(state: initial, staleDate: nil), pushType: nil)
+        do {
+            try await Task.sleep(for: .seconds(3))
+            XCTAssertNil(store.performActivityCommand(try XCTUnwrap(initial.command)))
+            let resting = try XCTUnwrap(store.workoutActivityState())
+            XCTAssertNotNil(resting.restEnd)
+            await activity.update(WorkoutActivityCoordinator.content(for: resting))
+            print("ACTIVITY_RENDER_QA_REST_UPDATED")
+            try await Task.sleep(for: .seconds(30))
+            XCTAssertNil(store.performActivityCommand(try XCTUnwrap(resting.restCommand)))
+            let ready = try XCTUnwrap(store.workoutActivityState())
+            await activity.update(WorkoutActivityCoordinator.content(for: ready))
+            print("ACTIVITY_RENDER_QA_READY_UPDATED")
+            try await Task.sleep(for: .seconds(20))
+            await activity.end(nil, dismissalPolicy: .immediate)
+        } catch {
+            await activity.end(nil, dismissalPolicy: .immediate)
+            throw error
+        }
+        #else
+        throw XCTSkip("System renderer probe is simulator-only.")
+        #endif
+    }
+
     func testDisplaysTrainingExerciseSetAndUsesStableSmallPayload() throws {
         let state = try XCTUnwrap(store.workoutActivityState())
         XCTAssertEqual(state.trainingName, "胸背训练")
         XCTAssertEqual(state.exercise, "杠铃卧推")
-        XCTAssertEqual(state.setLabel, "第 1 / 2 组")
-        XCTAssertEqual(state.compactSet, "1/2")
+        XCTAssertEqual(state.setLabel, "第 1/2 组")
+        XCTAssertEqual(state.compactSet, "第 1/2 组")
+        XCTAssertEqual(state.compactSet, store.watchSnapshot().nextSet?.label)
         XCTAssertEqual(state.detail, "40 kg · 10 次")
         XCTAssertEqual(state.setWeight, "40 kg")
         XCTAssertEqual(state.setDetail, "10 次")
@@ -63,7 +129,7 @@ import XCTest
 
     func testBlockedStatesHaveShortActionTitlesForOpeningTheApp() throws {
         store.localSaveError = "private save failure"
-        XCTAssertEqual(store.workoutActivityState()?.commandTitle, "保存失败")
+        XCTAssertEqual(store.workoutActivityState()?.commandTitle, L10n.text("COULD_NOT_SAVE"))
         XCTAssertNil(store.workoutActivityState()?.command)
         store.localSaveError = nil
         store.liveRowAction(entry: 0, set: 0, action: ["action": "input", "path": "both.w", "text": "", "operation": ["action": "field", "key": "w"]])
@@ -73,30 +139,30 @@ import XCTest
 
     func testCompleteStartsRestAndDuplicateNeverCompletesNextSet() throws {
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
-        XCTAssertNil(store.performActivityCommand(command))
+        XCTAssertNil(store.performReadyActivityCommand(command))
         let rest = try XCTUnwrap(store.workoutActivityState())
-        XCTAssertEqual(rest.compactSet, "2/2")
+        XCTAssertEqual(rest.compactSet, "第 2/2 组")
         XCTAssertEqual(try XCTUnwrap(rest.restEnd).timeIntervalSinceNow, 90, accuracy: 1)
         XCTAssertEqual(rest.restExercise, "杠铃卧推")
         XCTAssertNotNil(rest.restCommand)
         XCTAssertLessThan(try JSONEncoder().encode(rest).count, 4096)
-        XCTAssertNil(store.performActivityCommand(command))
+        XCTAssertNil(store.performReadyActivityCommand(command))
         XCTAssertEqual(store.draft?.completedSets, 1)
         XCTAssertEqual(store.restUntil, rest.restEnd)
     }
 
     func testSkipRestPreservesSetsAndRejectsOldTimerCommand() throws {
-        XCTAssertNil(store.performActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
+        XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
         let oldSkip = try XCTUnwrap(store.workoutActivityState()?.restCommand)
         store.adjustRest(by: 30)
         let extended = store.restUntil
-        XCTAssertNotNil(store.performActivityCommand(oldSkip))
+        XCTAssertNotNil(store.performReadyActivityCommand(oldSkip))
         XCTAssertEqual(store.restUntil, extended)
         let skip = try XCTUnwrap(store.workoutActivityState()?.restCommand)
-        XCTAssertNil(store.performActivityCommand(skip))
+        XCTAssertNil(store.performReadyActivityCommand(skip))
         XCTAssertNil(store.restUntil)
         XCTAssertEqual(store.draft?.completedSets, 1)
-        XCTAssertNotNil(store.performActivityCommand(skip))
+        XCTAssertNotNil(store.performReadyActivityCommand(skip))
         XCTAssertEqual(store.draft?.completedSets, 1)
     }
 
@@ -107,10 +173,10 @@ import XCTest
         XCTAssertEqual(command, store.workoutActivityState()?.command)
         store.restUntil = nil
         XCTAssertEqual(command, store.workoutActivityState()?.command)
-        XCTAssertNil(store.performActivityCommand(command))
+        XCTAssertNil(store.performReadyActivityCommand(command))
         XCTAssertEqual(store.draft?.completedSets, 1)
         let end = store.restUntil
-        XCTAssertNil(store.performActivityCommand(command))
+        XCTAssertNil(store.performReadyActivityCommand(command))
         XCTAssertEqual(store.draft?.completedSets, 1)
         XCTAssertEqual(store.restUntil, end)
     }
@@ -119,11 +185,11 @@ import XCTest
         store.startRest(entry: 0, seconds: 90)
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
         let skip = try XCTUnwrap(store.workoutActivityState()?.restCommand)
-        XCTAssertNil(store.performActivityCommand(skip))
+        XCTAssertNil(store.performReadyActivityCommand(skip))
         let restored = GymStore(userID: "activity-test", storage: LocalTrainingStorage(root: root))
         restored.state = store.state
         restored.restoreDraft()
-        XCTAssertNil(restored.performActivityCommand(command))
+        XCTAssertNil(restored.performReadyActivityCommand(command))
         XCTAssertEqual(restored.draft?.completedSets, 1)
     }
 
@@ -132,23 +198,24 @@ import XCTest
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
         store.adjustRest(by: 30)
         store.liveRowAction(entry: 0, set: 0, action: ["action": "field", "key": "w", "value": 45])
-        XCTAssertNotNil(store.performActivityCommand(command))
+        XCTAssertNotNil(store.performReadyActivityCommand(command))
         let edited = try XCTUnwrap(store.workoutActivityState()?.command)
         store.startWorkTimer(entry: 0, set: 0)
-        XCTAssertNotNil(store.performActivityCommand(edited))
+        XCTAssertNotNil(store.performReadyActivityCommand(edited))
         XCTAssertEqual(store.draft?.completedSets, 0)
     }
 
     func testUndoOffersANewCommandWhileOldDuplicateStaysHarmless() throws {
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
-        XCTAssertNil(store.performActivityCommand(command))
+        XCTAssertNil(store.performReadyActivityCommand(command))
         store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"])
         XCTAssertEqual(store.draft?.completedSets, 0)
         let retry = try XCTUnwrap(store.workoutActivityState()?.command)
         XCTAssertNotEqual(command, retry)
-        XCTAssertNil(store.performActivityCommand(command))
+        XCTAssertNil(store.performReadyActivityCommand(command))
         XCTAssertEqual(store.draft?.completedSets, 0)
-        XCTAssertNil(store.performActivityCommand(retry))
+        XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.restCommand)))
+        XCTAssertNil(store.performReadyActivityCommand(retry))
         XCTAssertEqual(store.draft?.completedSets, 1)
     }
 
@@ -159,10 +226,10 @@ import XCTest
             action: "complete", entry: 0, index: 0)
         let encoded = try JSONEncoder().encode(legacy).base64EncodedString()
         store.startRest(entry: 0, seconds: 90)
-        XCTAssertNotNil(store.performActivityCommand(encoded))
+        XCTAssertNotNil(store.performReadyActivityCommand(encoded))
         XCTAssertEqual(store.draft?.completedSets, 0)
         store.restUntil = nil
-        XCTAssertNil(store.performActivityCommand(encoded))
+        XCTAssertNil(store.performReadyActivityCommand(encoded))
         XCTAssertEqual(store.draft?.completedSets, 1)
     }
 
@@ -171,10 +238,10 @@ import XCTest
         let restored = GymStore(userID: "activity-test", storage: LocalTrainingStorage(root: root))
         restored.state = store.state
         restored.restoreDraft()
-        XCTAssertNil(restored.performActivityCommand(command))
+        XCTAssertNil(restored.performReadyActivityCommand(command))
         let again = GymStore(userID: "activity-test", storage: LocalTrainingStorage(root: root))
         again.restoreDraft()
-        XCTAssertNil(again.performActivityCommand(command))
+        XCTAssertNil(again.performReadyActivityCommand(command))
         XCTAssertEqual(again.draft?.completedSets, 1)
         XCTAssertEqual(again.restUntil, restored.restUntil)
     }
@@ -182,13 +249,13 @@ import XCTest
     func testStaleCommandsCannotCompleteEditedReorderedOrDifferentAccountSets() throws {
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
         store.liveRowAction(entry: 0, set: 0, action: ["action": "field", "key": "w", "value": 45])
-        XCTAssertNotNil(store.performActivityCommand(command))
+        XCTAssertNotNil(store.performReadyActivityCommand(command))
         let edited = try XCTUnwrap(store.workoutActivityState()?.command)
         store.copyLiveSet(entry: 0, set: 0)
-        XCTAssertNotNil(store.performActivityCommand(edited))
+        XCTAssertNotNil(store.performReadyActivityCommand(edited))
         let copied = try XCTUnwrap(store.workoutActivityState()?.command)
         store.userID = "other"
-        XCTAssertNotNil(store.performActivityCommand(copied))
+        XCTAssertNotNil(store.performReadyActivityCommand(copied))
         XCTAssertEqual(store.draft?.completedSets, 0)
     }
 
@@ -196,11 +263,11 @@ import XCTest
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
         store.syncing = true
         XCTAssertNil(store.workoutActivityState()?.command)
-        XCTAssertNotNil(store.performActivityCommand(command))
+        XCTAssertNotNil(store.performReadyActivityCommand(command))
         store.syncing = false
         store.localSaveError = "test write failure"
         XCTAssertNil(store.workoutActivityState()?.command)
-        XCTAssertNotNil(store.performActivityCommand(command))
+        XCTAssertNotNil(store.performReadyActivityCommand(command))
         store.localSaveError = nil
         store.liveRowAction(entry: 0, set: 0, action: ["action": "input", "path": "both.w", "text": "", "operation": ["action": "field", "key": "w"]])
         XCTAssertNil(store.workoutActivityState()?.command)
@@ -215,10 +282,10 @@ import XCTest
         let side: [String: Any] = ["w": 10, "r": 8, "done": false]
         store.replaceLiveRow(entry: 0, set: 0, row: ["kind": "side", "sides": ["L": side, "R": side], "done": false])
         XCTAssertTrue(try XCTUnwrap(store.workoutActivityState()?.setLabel).contains("左侧"))
-        XCTAssertNil(store.performActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
+        XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
         XCTAssertNil(store.restUntil)
         XCTAssertTrue(try XCTUnwrap(store.workoutActivityState()?.setLabel).contains("右侧"))
-        XCTAssertNil(store.performActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
+        XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
         XCTAssertNotNil(store.restUntil)
     }
 
@@ -228,17 +295,18 @@ import XCTest
             entries.append(["id": "custom-bench", "sets": [["w": 20, "r": 8, "done": false]]])
             raw["entries"] = entries
         }
-        XCTAssertNil(store.performActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
+        XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
+        XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.restCommand)))
         let lastSet = try XCTUnwrap(store.workoutActivityState()?.command)
-        XCTAssertNil(store.performActivityCommand(lastSet))
+        XCTAssertNil(store.performReadyActivityCommand(lastSet))
         XCTAssertEqual(store.workoutActivityState()?.commandTitle, "完成本组")
         XCTAssertEqual(store.watchSnapshot().nextSet?.entry, 1)
-        XCTAssertEqual(store.workoutActivityState()?.setLabel, "第 1 / 1 组")
+        XCTAssertEqual(store.workoutActivityState()?.setLabel, "第 1/1 组")
         XCTAssertNil(store.restUntil)
-        XCTAssertNil(store.performActivityCommand(lastSet))
+        XCTAssertNil(store.performReadyActivityCommand(lastSet))
         XCTAssertEqual(store.draft?.completedSets, 2)
         XCTAssertEqual(store.watchSnapshot().nextSet?.entry, 1)
-        XCTAssertNil(store.performActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
+        XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
         XCTAssertNil(store.workoutActivityState()?.command)
         XCTAssertEqual(store.workoutActivityState()?.commandTitle, "打开App")
         XCTAssertTrue(try XCTUnwrap(store.workoutActivityState()?.message).contains("保存"))
@@ -249,16 +317,16 @@ import XCTest
         store.startRest(entry: 0, seconds: 90)
         store.deleteCurrentWorkout()
         XCTAssertNil(store.workoutActivityState())
-        XCTAssertNotNil(store.performActivityCommand(command))
+        XCTAssertNotNil(store.performReadyActivityCommand(command))
         XCTAssertNil(store.restUntil)
     }
 
     func testMalformedCommandsAndUnknownActionsCannotMutate() throws {
-        XCTAssertNotNil(store.performActivityCommand("invalid"))
+        XCTAssertNotNil(store.performReadyActivityCommand("invalid"))
         let encoded = try XCTUnwrap(store.workoutActivityState()?.command)
         var command = try JSONDecoder().decode(WatchTrainingCommand.self, from: XCTUnwrap(Data(base64Encoded: encoded)))
         command.action = "delete"
-        XCTAssertNotNil(store.performActivityCommand(try JSONEncoder().encode(command).base64EncodedString()))
+        XCTAssertNotNil(store.performReadyActivityCommand(try JSONEncoder().encode(command).base64EncodedString()))
         XCTAssertEqual(store.draft?.completedSets, 0)
     }
 
@@ -266,8 +334,8 @@ import XCTest
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
         var records: [WorkoutActivityDiagnostics.Record] = []
         WorkoutActivityDiagnostics.$observer.withValue({ records.append($0) }) {
-            XCTAssertNil(store.performActivityCommand(command))
-            XCTAssertNil(store.performActivityCommand(command))
+            XCTAssertNil(store.performReadyActivityCommand(command))
+            XCTAssertNil(store.performReadyActivityCommand(command))
         }
         let starts = records.filter { $0.event == "activity.command.begin" }
         XCTAssertEqual(starts.count, 2)
@@ -288,15 +356,15 @@ import XCTest
         var records: [WorkoutActivityDiagnostics.Record] = []
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
         WorkoutActivityDiagnostics.$observer.withValue({ records.append($0) }) {
-            XCTAssertNotNil(store.performActivityCommand("not-base64"))
+            XCTAssertNotNil(store.performReadyActivityCommand("not-base64"))
             store.syncing = true
-            XCTAssertNotNil(store.performActivityCommand(command))
+            XCTAssertNotNil(store.performReadyActivityCommand(command))
             store.syncing = false
             store.localSaveError = "private error text"
-            XCTAssertNotNil(store.performActivityCommand(command))
+            XCTAssertNotNil(store.performReadyActivityCommand(command))
             store.localSaveError = nil
             store.liveRowAction(entry: 0, set: 0, action: ["action": "field", "key": "w", "value": 45])
-            XCTAssertNotNil(store.performActivityCommand(command))
+            XCTAssertNotNil(store.performReadyActivityCommand(command))
         }
         XCTAssertTrue(records.contains { $0.event == "activity.command.rejected" && $0.fields["reason"] == "invalid_payload" })
         XCTAssertEqual(records.filter { $0.event == "remote.command.end" }.map { $0.fields["outcome"] }, ["syncing", "save_error", "revision_mismatch"])
@@ -305,7 +373,7 @@ import XCTest
         skip.entry = 1
         let payload = try JSONEncoder().encode(skip).base64EncodedString()
         WorkoutActivityDiagnostics.$observer.withValue({ records.append($0) }) {
-            XCTAssertNotNil(store.performActivityCommand(payload))
+            XCTAssertNotNil(store.performReadyActivityCommand(payload))
         }
         XCTAssertTrue(records.contains { $0.event == "activity.command.rejected" && $0.fields["reason"] == "rest_owner_mismatch" })
         XCTAssertEqual(store.draft?.completedSets, 0)
@@ -318,12 +386,18 @@ import XCTest
         try Data("blocked".utf8).write(to: root)
         var records: [WorkoutActivityDiagnostics.Record] = []
         WorkoutActivityDiagnostics.$observer.withValue({ records.append($0) }) {
-            XCTAssertNotNil(store.performActivityCommand(command))
+            XCTAssertNotNil(store.performReadyActivityCommand(command))
         }
         let failure = try XCTUnwrap(records.first { $0.event == "draft.save.failed" })
         XCTAssertNotNil(failure.fields["error_code"])
         XCTAssertNotNil(failure.fields["error_domain"])
         XCTAssertFalse(failure.fields.values.contains { $0.contains(root.path) })
         XCTAssertTrue(records.contains { $0.event == "remote.command.end" && $0.fields["outcome"] == "save_failed" && $0.fields["accepted"] == "false" })
+    }
+}
+
+private extension GymStore {
+    func performReadyActivityCommand(_ command: String) -> String? {
+        performActivityCommand(command, now: max(Date(), trainingActionReadyAt ?? .distantPast))
     }
 }

@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "front-plank-with-arm-and-leg-lift-form-check-female.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

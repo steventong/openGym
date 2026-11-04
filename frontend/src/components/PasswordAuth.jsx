@@ -47,24 +47,24 @@ function fmtIn(sec) {
 // English message (api/openapi.yaml, Error.code); an answer without one is shown as it came.
 export function passwordError(e) {
   const code = e?.data?.code
-  if (e?.status === 429 || code === 'locked') return t('Too many attempts. Try again {0}.', fmtIn(e?.data?.retryAfter || 60))
+  if (e?.status === 429 || code === 'locked') return t("TOO_MANY_ATTEMPTS_TRY_AGAIN_COUNT" /* 尝试次数过多。请{0}再试。 */, fmtIn(e?.data?.retryAfter || 60))
   switch (code) {
-    case 'bad-credentials': return t('Wrong name, e-mail or password.')
-    case 'too-short': return t('Use at least {0} characters.', MIN_PASSWORD)
-    case 'too-long': return t('That password is too long.')
-    case 'too-common': return t('That password is too easy to guess. Try a longer one, or a few random words strung together.')
-    case 'name-taken': return t('Another profile already signs in with this name.')
-    case 'email-invalid': return t('That is not an e-mail address.')
-    case 'email-taken': return t('Another profile already uses this e-mail address.')
-    case 'invite': return t('That invite code is not valid.')
-    case 'current-required': case 'current-wrong': return t('Your current password is not right.')
-    case 'passkey': case 'passkey-required': return t('Your passkey could not be confirmed.')
-    case 'last-way-in': return t('This password is the only way into your profile, so it cannot be removed.')
-    case 'reset-invalid': return t('That reset code is wrong or has expired. Ask your admin for a new one.')
-    case 'disabled': return t('This account has been disabled.')
-    case 'busy': return t('The server is busy. Try again in a moment.')
+    case 'bad-credentials': return t("WRONG_NAME_E_MAIL_OR_PASSWORD" /* 名字、邮箱或密码错误。 */)
+    case 'too-short': return t("USE_AT_LEAST_COUNT_CHARACTERS" /* 至少使用 {0} 个字符。 */, MIN_PASSWORD)
+    case 'too-long': return t("THAT_PASSWORD_IS_TOO_LONG" /* 这个密码太长了。 */)
+    case 'too-common': return t("THAT_PASSWORD_IS_TOO_EASY_TO_GUESS_TRY_A_LONGER_ONE_OR" /* 这个密码太容易被猜到了。试试更长的密码，或者几个随机的词连在一起。 */)
+    case 'name-taken': return t("ANOTHER_PROFILE_ALREADY_SIGNS_IN_WITH_THIS_NAME" /* 已有另一个档案用这个名字登录。 */)
+    case 'email-invalid': return t("THAT_IS_NOT_AN_E_MAIL_ADDRESS" /* 这不是邮箱地址。 */)
+    case 'email-taken': return t("ANOTHER_PROFILE_ALREADY_USES_THIS_E_MAIL_ADDRESS" /* 已有另一个档案在使用这个邮箱地址。 */)
+    case 'invite': return t("THAT_INVITE_CODE_IS_NOT_VALID" /* 这个邀请码无效。 */)
+    case 'current-required': case 'current-wrong': return t("YOUR_CURRENT_PASSWORD_IS_NOT_RIGHT" /* 你当前的密码不对。 */)
+    case 'passkey': case 'passkey-required': return t("YOUR_PASSKEY_COULD_NOT_BE_CONFIRMED" /* 无法确认你的通行密钥。 */)
+    case 'last-way-in': return t("THIS_PASSWORD_IS_THE_ONLY_WAY_INTO_YOUR_PROFILE_SO_IT_CANNOT" /* 这个密码是进入你档案的唯一方式，因此不能移除。 */)
+    case 'reset-invalid': return t("THAT_RESET_CODE_IS_WRONG_OR_HAS_EXPIRED_ASK_YOUR_ADMIN_FOR" /* 这个重置码错误或已过期。请向管理员要一个新的。 */)
+    case 'disabled': return t("THIS_ACCOUNT_HAS_BEEN_DISABLED" /* 此账户已被停用。 */)
+    case 'busy': return t("THE_SERVER_IS_BUSY_TRY_AGAIN_IN_A_MOMENT" /* 服务器繁忙。请稍后再试。 */)
   }
-  return e?.message || t('Sign-in failed')
+  return e?.message || t("SIGN_IN_FAILED" /* 登录失败 */)
 }
 // A passkey prompt the person closed is their answer, not an error worth a line in red.
 const dismissed = e => e?.name === 'NotAllowedError' || e?.name === 'AbortError'
@@ -76,7 +76,7 @@ async function signedIn(u, close) {
   st.setUser(u, { adopt: true })
   close()
   await st.adoptProfile(askAddDeviceData)
-  toast(t('Welcome back, {0}', u.name))
+  toast(t("WELCOME_BACK_COUNT" /* 欢迎回来，{0} */, u.name))
 }
 
 const field = { autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false }
@@ -101,12 +101,12 @@ export function PasswordSignInSheet({ close, onPasskey }) {
     ev.preventDefault()
     if (busy) return
     const n = name.trim()
-    const bad = !n ? t('Enter your name or e-mail.')
-      : !reset && !pw ? t('Enter your password.')
-      : reset && !code.trim() ? t('Enter the reset code.')
-      : reset && length(next) < MIN_PASSWORD ? t('Use at least {0} characters.', MIN_PASSWORD)
+    const bad = !n ? t("ENTER_YOUR_NAME_OR_E_MAIL" /* 请输入你的名字或邮箱。 */)
+      : !reset && !pw ? t("ENTER_YOUR_PASSWORD" /* 请输入你的密码。 */)
+      : reset && !code.trim() ? t("ENTER_THE_RESET_CODE" /* 请输入重置码。 */)
+      : reset && length(next) < MIN_PASSWORD ? t("USE_AT_LEAST_COUNT_CHARACTERS" /* 至少使用 {0} 个字符。 */, MIN_PASSWORD)
       // A typo here is only found at the next sign-in, and fixing it takes another code.
-      : reset && next !== again ? t('The two passwords are not the same.')
+      : reset && next !== again ? t("THE_TWO_PASSWORDS_ARE_NOT_THE_SAME" /* 两次输入的密码不一致。 */)
       : null
     if (bad) { setErr(bad); return }
     setBusy(true); setErr(null)
@@ -115,38 +115,38 @@ export function PasswordSignInSheet({ close, onPasskey }) {
     finally { setBusy(false) }
   }
   return <>
-    <h3>{reset ? t('Reset your password') : t('Sign in with password')}</h3>
+    <h3>{reset ? t("RESET_YOUR_PASSWORD" /* 重置你的密码 */) : t("SIGN_IN_WITH_PASSWORD" /* 用密码登录 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>{reset
-      ? t('Enter the code your admin gave you and choose a new password. It signs you out everywhere else.')
-      : t('Use your profile name (or the e-mail you added to it) and your password.')}</div>
+      ? t("ENTER_THE_CODE_YOUR_ADMIN_GAVE_YOU_AND_CHOOSE_A_NEW_PASSWORD" /* 输入管理员给你的代码，并设置新密码。你在其他所有地方都会被退出登录。 */)
+      : t("USE_YOUR_PROFILE_NAME_OR_THE_E_MAIL_YOU_ADDED_TO_IT" /* 使用你的档案名字（或你为它添加的邮箱）和你的密码。 */)}</div>
     <form onSubmit={submit} noValidate>
       {/* One field for both: the server looks an entry with an "@" up as an e-mail first. Not
           type="email", which would refuse a plain name. */}
-      <input ref={nameRef} className="input" name="username" autoComplete="username" placeholder={t('Name or e-mail')} maxLength={254}
+      <input ref={nameRef} className="input" name="username" autoComplete="username" placeholder={t("NAME_OR_E_MAIL" /* 名字或邮箱 */)} maxLength={254}
         value={name} onChange={e => setName(e.target.value)} {...field} />
       <div style={{ height: 10 }} />
       {reset ? <>
-        <input className="input" name="reset-code" autoComplete="one-time-code" placeholder={t('Reset code')} maxLength={20}
+        <input className="input" name="reset-code" autoComplete="one-time-code" placeholder={t("RESET_CODE" /* 重置码 */)} maxLength={20}
           value={code} onChange={e => setCode(e.target.value.toUpperCase())} {...field} style={codeStyle} />
         <div style={{ height: 10 }} />
-        <input className="input" type="password" name="new-password" autoComplete="new-password" placeholder={t('New password')}
+        <input className="input" type="password" name="new-password" autoComplete="new-password" placeholder={t("NEW_PASSWORD" /* 新密码 */)}
           value={next} onChange={e => setNext(e.target.value)} />
         <div style={{ height: 10 }} />
-        <input className="input" type="password" name="new-password-again" autoComplete="new-password" placeholder={t('Repeat the password')}
+        <input className="input" type="password" name="new-password-again" autoComplete="new-password" placeholder={t("REPEAT_THE_PASSWORD" /* 再次输入密码 */)}
           value={again} onChange={e => setAgain(e.target.value)} />
-        <div className="dim small" style={{ marginTop: 6 }}>{t('At least {0} characters. A few unrelated words make a good one.', MIN_PASSWORD)}</div>
-      </> : <input className="input" type="password" name="password" autoComplete="current-password" placeholder={t('Password')}
+        <div className="dim small" style={{ marginTop: 6 }}>{t("AT_LEAST_COUNT_CHARACTERS_A_FEW_UNRELATED_WORDS_MAKE_A_GOOD_ONE" /* 至少 {0} 个字符。几个互不相关的词就是一个好密码。 */, MIN_PASSWORD)}</div>
+      </> : <input className="input" type="password" name="password" autoComplete="current-password" placeholder={t("PASSWORD" /* 密码 */)}
         value={pw} onChange={e => setPw(e.target.value)} />}
       {err && <div className="small" role="alert" style={errStyle}>{err}</div>}
       <div style={{ height: 12 }} />
-      <Button type="submit" variant="primary" disabled={busy}>{reset ? t('Set password & sign in') : t('Sign in')}</Button>
+      <Button type="submit" variant="primary" disabled={busy}>{reset ? t("SET_PASSWORD_SIGN_IN" /* 设置密码并登录 */) : t("SIGN_IN" /* 登录 */)}</Button>
     </form>
     <div style={{ height: 8 }} />
     <Button type="button" variant="ghost" className="dim" onClick={() => { setErr(null); setMode(reset ? 'signin' : 'reset') }}>
-      {reset ? t('Sign in with password') : t('Have a reset code from your admin?')}</Button>
+      {reset ? t("SIGN_IN_WITH_PASSWORD" /* 用密码登录 */) : t("HAVE_A_RESET_CODE_FROM_YOUR_ADMIN" /* 有管理员给的重置码？ */)}</Button>
     {onPasskey && !reset && webauthnOK() && <>
       <div style={{ height: 8 }} />
-      <Button type="button" icon="fingerprint" onClick={() => { close(); onPasskey() }}>{t('Sign in with passkey')}</Button>
+      <Button type="button" icon="fingerprint" onClick={() => { close(); onPasskey() }}>{t("SIGN_IN_WITH_PASSKEY" /* 用通行密钥登录 */)}</Button>
     </>}
   </>
 }
@@ -165,11 +165,11 @@ export function PasswordRegisterForm({ close, inviteOnly, name, setName, code, s
     if (busy) return
     const n = name.trim()
     const mail = email.trim()
-    const bad = !n ? t('Enter a name')
-      : mail && !looksLikeEmail(mail) ? t('That is not an e-mail address.')
-      : inviteOnly && !code.trim() ? t('An invite code is required')
-      : length(pw) < MIN_PASSWORD ? t('Use at least {0} characters.', MIN_PASSWORD)
-      : pw !== again ? t('The two passwords are not the same.')
+    const bad = !n ? t("ENTER_A_NAME" /* 请输入名字 */)
+      : mail && !looksLikeEmail(mail) ? t("THAT_IS_NOT_AN_E_MAIL_ADDRESS" /* 这不是邮箱地址。 */)
+      : inviteOnly && !code.trim() ? t("AN_INVITE_CODE_IS_REQUIRED" /* 需要邀请码 */)
+      : length(pw) < MIN_PASSWORD ? t("USE_AT_LEAST_COUNT_CHARACTERS" /* 至少使用 {0} 个字符。 */, MIN_PASSWORD)
+      : pw !== again ? t("THE_TWO_PASSWORDS_ARE_NOT_THE_SAME" /* 两次输入的密码不一致。 */)
       : null
     if (bad) { setErr(bad); return }
     setBusy(true); setErr(null)
@@ -177,34 +177,34 @@ export function PasswordRegisterForm({ close, inviteOnly, name, setName, code, s
       const u = await passwordRegister(n, pw, code.trim(), mail)
       const st = useStore.getState()
       st.setUser(u); close()
-      if (hasData(useStore.getState().S)) { await st.pushState(); toast(t('Profile created, and this device’s data moved into it')) }
-      else { await st.pullState(); toast(t('Welcome, {0}', u.name)) }
+      if (hasData(useStore.getState().S)) { await st.pushState(); toast(t("PROFILE_CREATED_AND_THIS_DEVICE_S_DATA_MOVED_INTO_IT" /* 档案已创建，本设备的数据已转入 */)) }
+      else { await st.pullState(); toast(t("WELCOME_COUNT" /* 欢迎，{0} */, u.name)) }
     } catch (e) { setErr(passwordError(e)) }
     finally { setBusy(false) }
   }
   return <form onSubmit={submit} noValidate>
-    <input className="input" name="username" autoComplete="username" placeholder={t('Your name')} maxLength={40}
+    <input className="input" name="username" autoComplete="username" placeholder={t("YOUR_NAME" /* 你的名字 */)} maxLength={40}
       value={name} onChange={e => setName(e.target.value)} {...field} />
     <div style={{ height: 10 }} />
-    <input className="input" type="email" name="email" autoComplete="email" inputMode="email" placeholder={t('E-mail (optional)')} maxLength={254}
+    <input className="input" type="email" name="email" autoComplete="email" inputMode="email" placeholder={t("E_MAIL_OPTIONAL" /* 邮箱（可选） */)} maxLength={254}
       value={email} onChange={e => setEmail(e.target.value)} {...field} />
-    <div className="dim small" style={{ marginTop: 6 }}>{t('Lets you sign in with it instead of your name. Nothing is ever sent to it.')}</div>
+    <div className="dim small" style={{ marginTop: 6 }}>{t("LETS_YOU_SIGN_IN_WITH_IT_INSTEAD_OF_YOUR_NAME_NOTHING_IS" /* 可以用它代替名字登录。不会向它发送任何邮件。 */)}</div>
     {inviteOnly && <>
       <div style={{ height: 10 }} />
-      <input className="input" placeholder={t('Invite code')} maxLength={40} value={code}
+      <input className="input" placeholder={t("INVITE_CODE" /* 邀请码 */)} maxLength={40} value={code}
         onChange={e => setCode(e.target.value.toUpperCase())} style={codeStyle} />
-      <div className="dim small" style={{ marginTop: 6 }}>{t('This app is invite-only. Enter the code you were given.')}</div>
+      <div className="dim small" style={{ marginTop: 6 }}>{t("THIS_APP_IS_INVITE_ONLY_ENTER_THE_CODE_YOU_WERE_GIVEN" /* 此应用仅限邀请。请输入你收到的邀请码。 */)}</div>
     </>}
     <div style={{ height: 10 }} />
-    <input className="input" type="password" name="new-password" autoComplete="new-password" placeholder={t('Password')}
+    <input className="input" type="password" name="new-password" autoComplete="new-password" placeholder={t("PASSWORD" /* 密码 */)}
       value={pw} onChange={e => setPw(e.target.value)} />
     <div style={{ height: 10 }} />
-    <input className="input" type="password" name="new-password-again" autoComplete="new-password" placeholder={t('Repeat the password')}
+    <input className="input" type="password" name="new-password-again" autoComplete="new-password" placeholder={t("REPEAT_THE_PASSWORD" /* 再次输入密码 */)}
       value={again} onChange={e => setAgain(e.target.value)} />
-    <div className="dim small" style={{ marginTop: 6 }}>{t('At least {0} characters. A few unrelated words make a good one.', MIN_PASSWORD)}</div>
+    <div className="dim small" style={{ marginTop: 6 }}>{t("AT_LEAST_COUNT_CHARACTERS_A_FEW_UNRELATED_WORDS_MAKE_A_GOOD_ONE" /* 至少 {0} 个字符。几个互不相关的词就是一个好密码。 */, MIN_PASSWORD)}</div>
     {err && <div className="small" role="alert" style={errStyle}>{err}</div>}
     <div style={{ height: 12 }} />
-    <Button type="submit" variant="primary" disabled={busy}>{t('Create profile')}</Button>
+    <Button type="submit" variant="primary" disabled={busy}>{t("CREATE_PROFILE" /* 创建档案 */)}</Button>
   </form>
 }
 
@@ -214,8 +214,8 @@ function PasswordRegisterSheet({ close }) {
   const [name, setName] = useState('')
   const [code, setCode] = useState('')
   return <>
-    <h3>{t('Create your profile')}</h3>
-    <div className="muted small" style={{ marginBottom: 14 }}>{t('Pick a name and a password. You sign in with both.')}</div>
+    <h3>{t("CREATE_YOUR_PROFILE" /* 创建你的档案 */)}</h3>
+    <div className="muted small" style={{ marginBottom: 14 }}>{t("PICK_A_NAME_AND_A_PASSWORD_YOU_SIGN_IN_WITH_BOTH" /* 选择一个名字和一个密码。你用两者一起登录。 */)}</div>
     <PasswordRegisterForm close={close} inviteOnly={!!config?.invite_only} name={name} setName={setName} code={code} setCode={setCode} />
   </>
 }
@@ -264,27 +264,27 @@ export function ProveOwner({ passkey, password, onProof, explain = passwordError
   const withPasskey = !!passkey && webauthnOK()
   const withPassword = ev => {
     ev.preventDefault()
-    if (!pw) { setErr(t('Enter your password.')); return }
+    if (!pw) { setErr(t("ENTER_YOUR_PASSWORD" /* 请输入你的密码。 */)); return }
     run(async () => ({ current: pw }))
   }
   // A removal's buttons are red whichever proof carries it: each of them removes.
   const main = danger ? 'danger' : 'primary'
   return <>
-    {withPasskey && <Button variant={main} icon="fingerprint" disabled={busy} onClick={() => run(signal => passkeyAssertion({ signal }))}>{t('Confirm with a passkey')}</Button>}
+    {withPasskey && <Button variant={main} icon="fingerprint" disabled={busy} onClick={() => run(signal => passkeyAssertion({ signal }))}>{t("CONFIRM_WITH_A_PASSKEY" /* 用通行密钥确认 */)}</Button>}
     {password && <form onSubmit={withPassword} noValidate>
-      {withPasskey && <div className="dim small" style={{ margin: '14px 0 8px', textAlign: 'center' }}>{t('or with your password')}</div>}
+      {withPasskey && <div className="dim small" style={{ margin: '14px 0 8px', textAlign: 'center' }}>{t("OR_WITH_YOUR_PASSWORD" /* 或使用你的密码 */)}</div>}
       {/* Tells a password manager which account the password belongs to. */}
       <input type="text" name="username" autoComplete="username" value={name} readOnly hidden />
-      <input className="input" type="password" name="current-password" autoComplete="current-password" placeholder={t('Current password')}
+      <input className="input" type="password" name="current-password" autoComplete="current-password" placeholder={t("CURRENT_PASSWORD" /* 当前密码 */)}
         value={pw} onChange={e => setPw(e.target.value)} />
       <div style={{ height: 10 }} />
-      <Button type="submit" variant={withPasskey && !danger ? 'plain' : main} disabled={busy}>{submitText || t('Continue')}</Button>
+      <Button type="submit" variant={withPasskey && !danger ? 'plain' : main} disabled={busy}>{submitText || t("CONTINUE" /* 继续 */)}</Button>
     </form>}
     {/* A profile with no passkey whose password no longer counts — the instance switched
         passwords off — has nothing left to answer with (docs/SELF_HOSTING.md). */}
     {!withPasskey && !password && <div className="dim small">{passkey
-      ? t('This browser cannot confirm with your passkey. Do this on a device that holds one.')
-      : t('This profile has no passkey, and this server does not take passwords, so nothing here can confirm that it is you. Ask your admin.')}</div>}
+      ? t("THIS_BROWSER_CANNOT_CONFIRM_WITH_YOUR_PASSKEY_DO_THIS_ON_A_DEVICE" /* 此浏览器无法用你的通行密钥确认。请在保存了通行密钥的设备上操作。 */)
+      : t("THIS_PROFILE_HAS_NO_PASSKEY_AND_THIS_SERVER_DOES_NOT_TAKE_PASSWORDS" /* 此档案没有通行密钥，而此服务器不接受密码，所以这里无法确认是你本人。请联系管理员。 */)}</div>}
     {err && <div className="small" role="alert" style={errStyle}>{err}</div>}
   </>
 }
@@ -318,11 +318,11 @@ export function PasswordRow({ version = 0 }) {
   // Nothing here could set a first password without a passkey ceremony.
   if (!st.set && (!webauthnOK() || !st.passkeys)) return null
   const blocked = !st.set && st.nameTaken
-  const subtitle = blocked ? t('Another profile already signs in with this name.')
-    : st.set ? t('Set · sign in as “{0}”', st.name)
-    : t('Not set. Handy for signing in where passkeys don’t work.')
+  const subtitle = blocked ? t("ANOTHER_PROFILE_ALREADY_SIGNS_IN_WITH_THIS_NAME" /* 已有另一个档案用这个名字登录。 */)
+    : st.set ? t("SET_SIGN_IN_AS_COUNT" /* 已设置 · 以“{0}”登录 */, st.name)
+    : t("NOT_SET_HANDY_FOR_SIGNING_IN_WHERE_PASSKEYS_DON_T_WORK" /* 未设置。在通行密钥用不了的地方登录时很方便。 */)
   return <>
-    <Row icon="key" iconTint="var(--orange)" title={t('Password')} subtitle={subtitle} accessory={blocked ? 'none' : 'chevron'}
+    <Row icon="key" iconTint="var(--orange)" title={t("PASSWORD" /* 密码 */)} subtitle={subtitle} accessory={blocked ? 'none' : 'chevron'}
       onClick={blocked ? undefined : () => ui().openSheet(close => <PasswordSheet status={st} close={close} done={load} />)} />
     {/* The server only signs in by an address that belongs to a profile with a password, so
         without one the row is left out; one already saved stays reachable to change or remove. */}
@@ -338,9 +338,9 @@ export function PasswordSheet({ status, close, done }) {
   const [err, setErr] = useState(null)
   const save = async withPasskey => {
     if (busy) return
-    const bad = !withPasskey && !current ? t('Enter your password.')
-      : length(next) < MIN_PASSWORD ? t('Use at least {0} characters.', MIN_PASSWORD)
-      : next !== again ? t('The two passwords are not the same.')
+    const bad = !withPasskey && !current ? t("ENTER_YOUR_PASSWORD" /* 请输入你的密码。 */)
+      : length(next) < MIN_PASSWORD ? t("USE_AT_LEAST_COUNT_CHARACTERS" /* 至少使用 {0} 个字符。 */, MIN_PASSWORD)
+      : next !== again ? t("THE_TWO_PASSWORDS_ARE_NOT_THE_SAME" /* 两次输入的密码不一致。 */)
       : null
     if (bad) { setErr(bad); return }
     setBusy(true); setErr(null)
@@ -348,41 +348,41 @@ export function PasswordSheet({ status, close, done }) {
       const proof = withPasskey ? await passkeyAssertion() : { current }
       await api('/api/account/password', { method: 'POST', body: JSON.stringify({ next, ...proof }) })
       close(); done()
-      toast(t('Password saved. You’re now signed out everywhere else.'))
+      toast(t("PASSWORD_SAVED_YOU_RE_NOW_SIGNED_OUT_EVERYWHERE_ELSE" /* 密码已保存。你已在其他所有地方退出登录。 */))
     } catch (e) { if (!dismissed(e)) setErr(passwordError(e)) }
     finally { setBusy(false) }
   }
   const remove = () => ui().openSheet(c => <RemovePasswordSheet status={status} close={c} done={() => { close(); done() }} />)
   return <>
-    <h3>{status.set ? t('Change password') : t('Set a password')}</h3>
+    <h3>{status.set ? t("CHANGE_PASSWORD" /* 更改密码 */) : t("SET_A_PASSWORD" /* 设置密码 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
-      {t('Sign in as “{0}” with it on devices where passkeys do not work. Saving signs you out everywhere else, and paired phones have to be paired again.', status.name)}
+      {t("SIGN_IN_AS_COUNT_WITH_IT_ON_DEVICES_WHERE_PASSKEYS_DO_NOT" /* 在通行密钥无法使用的设备上，用它以“{0}”登录。保存后你将在其他所有地方退出登录，已配对的手机需要重新配对。 */, status.name)}
     </div>
     <form onSubmit={ev => { ev.preventDefault(); save(!status.set) }} noValidate>
       {/* Tells a password manager which account the new password belongs to. */}
       <input type="text" name="username" autoComplete="username" value={status.name} readOnly hidden />
       {status.set && <>
-        <input className="input" type="password" name="current-password" autoComplete="current-password" placeholder={t('Current password')}
+        <input className="input" type="password" name="current-password" autoComplete="current-password" placeholder={t("CURRENT_PASSWORD" /* 当前密码 */)}
           value={current} onChange={e => setCurrent(e.target.value)} />
         <div style={{ height: 10 }} />
       </>}
-      <input className="input" type="password" name="new-password" autoComplete="new-password" placeholder={t('New password')}
+      <input className="input" type="password" name="new-password" autoComplete="new-password" placeholder={t("NEW_PASSWORD" /* 新密码 */)}
         value={next} onChange={e => setNext(e.target.value)} />
       <div style={{ height: 10 }} />
-      <input className="input" type="password" name="new-password-again" autoComplete="new-password" placeholder={t('Repeat the password')}
+      <input className="input" type="password" name="new-password-again" autoComplete="new-password" placeholder={t("REPEAT_THE_PASSWORD" /* 再次输入密码 */)}
         value={again} onChange={e => setAgain(e.target.value)} />
-      <div className="dim small" style={{ marginTop: 6 }}>{t('At least {0} characters. A few unrelated words make a good one.', MIN_PASSWORD)}</div>
+      <div className="dim small" style={{ marginTop: 6 }}>{t("AT_LEAST_COUNT_CHARACTERS_A_FEW_UNRELATED_WORDS_MAKE_A_GOOD_ONE" /* 至少 {0} 个字符。几个互不相关的词就是一个好密码。 */, MIN_PASSWORD)}</div>
       {err && <div className="small" role="alert" style={errStyle}>{err}</div>}
       <div style={{ height: 12 }} />
-      <Button type="submit" variant="primary" disabled={busy}>{status.set ? t('Save') : t('Confirm with passkey & save')}</Button>
+      <Button type="submit" variant="primary" disabled={busy}>{status.set ? t("SAVE" /* 保存 */) : t("CONFIRM_WITH_PASSKEY_SAVE" /* 用通行密钥确认并保存 */)}</Button>
     </form>
     {status.set && status.passkeys > 0 && webauthnOK() && <>
       <div style={{ height: 8 }} />
-      <Button type="button" variant="ghost" className="dim" disabled={busy} onClick={() => save(true)}>{t('Forgot it? Confirm with your passkey instead')}</Button>
+      <Button type="button" variant="ghost" className="dim" disabled={busy} onClick={() => save(true)}>{t("FORGOT_IT_CONFIRM_WITH_YOUR_PASSKEY_INSTEAD" /* 忘记了？改用你的通行密钥确认 */)}</Button>
     </>}
     {status.set && status.passkeys > 0 && <>
       <div style={{ height: 8 }} />
-      <button type="button" className="btn danger" disabled={busy} onClick={remove}>{t('Remove password')}</button>
+      <button type="button" className="btn danger" disabled={busy} onClick={remove}>{t("REMOVE_PASSWORD" /* 移除密码 */)}</button>
     </>}
   </>
 }
@@ -396,15 +396,15 @@ function RemovePasswordSheet({ status, close, done }) {
   const remove = async proof => {
     await api('/api/account/password', { method: 'DELETE', body: JSON.stringify(proof) })
     close(); done()
-    toast(t('Password removed'))
+    toast(t("PASSWORD_REMOVED" /* 密码已移除 */))
   }
   return <>
-    <h3>{t('Remove your password?')}</h3>
-    <div className="muted small" style={{ marginBottom: 6 }}>{t('Only your passkeys sign in to this profile afterwards.')}</div>
-    <div className="dim small" style={{ marginBottom: 14 }}>{t('First confirm that it is you.')}</div>
-    <ProveOwner passkey={status.passkeys > 0} password danger submitText={t('Remove')} onProof={remove} />
+    <h3>{t("REMOVE_YOUR_PASSWORD" /* 移除你的密码？ */)}</h3>
+    <div className="muted small" style={{ marginBottom: 6 }}>{t("ONLY_YOUR_PASSKEYS_SIGN_IN_TO_THIS_PROFILE_AFTERWARDS" /* 之后只能用你的通行密钥登录此档案。 */)}</div>
+    <div className="dim small" style={{ marginBottom: 14 }}>{t("FIRST_CONFIRM_THAT_IT_IS_YOU" /* 请先确认是你本人。 */)}</div>
+    <ProveOwner passkey={status.passkeys > 0} password danger submitText={t("REMOVE" /* 移除 */)} onProof={remove} />
     <div style={{ height: 8 }} />
-    <Button type="button" variant="ghost" className="dim" onClick={close}>{t('Cancel')}</Button>
+    <Button type="button" variant="ghost" className="dim" onClick={close}>{t("CANCEL" /* 取消 */)}</Button>
   </>
 }
 
@@ -416,10 +416,10 @@ function RemovePasswordSheet({ status, close, done }) {
    the proof a password does (ProveOwner): a copied session must not choose how the owner signs
    in. `status` is GET /api/account/password, whose `email` only the owner ever gets. */
 export function EmailRow({ status, done }) {
-  const subtitle = status.email && !status.set ? t('“{0}” is saved, but signs in only once this profile has a password.', status.email)
-    : status.email ? t('Sign in with “{0}” instead of your name', status.email)
-    : t('Not set. Lets you sign in with an e-mail instead of your name.')
-  return <Row icon="envelope" iconTint="var(--blue)" title={t('Sign-in e-mail')} subtitle={subtitle} accessory="chevron"
+  const subtitle = status.email && !status.set ? t("COUNT_IS_SAVED_BUT_SIGNS_IN_ONLY_ONCE_THIS_PROFILE_HAS_A" /* “{0}”已保存，但只有此个人资料设置了密码后才能用它登录。 */, status.email)
+    : status.email ? t("SIGN_IN_WITH_COUNT_INSTEAD_OF_YOUR_NAME" /* 用“{0}”代替名字登录 */, status.email)
+    : t("NOT_SET_LETS_YOU_SIGN_IN_WITH_AN_E_MAIL_INSTEAD_OF" /* 未设置。设置后可以用邮箱代替名字登录。 */)
+  return <Row icon="envelope" iconTint="var(--blue)" title={t("SIGN_IN_E_MAIL" /* 登录邮箱 */)} subtitle={subtitle} accessory="chevron"
     onClick={() => ui().openSheet(close => <EmailSheet status={status} close={close} done={done} />)} />
 }
 
@@ -433,8 +433,8 @@ export function EmailSheet({ status, close, done }) {
   const clean = email.trim()
   const next = ev => {
     ev.preventDefault()
-    const bad = !clean || !looksLikeEmail(clean) ? t('That is not an e-mail address.')
-      : foldEmail(clean) === status.email ? t('That is already your sign-in e-mail.')
+    const bad = !clean || !looksLikeEmail(clean) ? t("THAT_IS_NOT_AN_E_MAIL_ADDRESS" /* 这不是邮箱地址。 */)
+      : foldEmail(clean) === status.email ? t("THAT_IS_ALREADY_YOUR_SIGN_IN_E_MAIL" /* 这已经是你的登录邮箱。 */)
       : null
     if (bad) { setErr(bad); return }
     setErr(null); setStep('confirm')
@@ -442,32 +442,32 @@ export function EmailSheet({ status, close, done }) {
   const save = async proof => {
     await api('/api/account/email', { method: 'POST', body: JSON.stringify({ email: clean, ...proof }) })
     close(); done()
-    toast(t('E-mail saved'))
+    toast(t("E_MAIL_SAVED" /* 邮箱已保存 */))
   }
   const remove = () => ui().openSheet(c => <RemoveEmailSheet status={status} close={c} done={() => { close(); done() }} />)
   return <>
-    <h3>{status.email ? t('Change sign-in e-mail') : t('Add a sign-in e-mail')}</h3>
+    <h3>{status.email ? t("CHANGE_SIGN_IN_E_MAIL" /* 更改登录邮箱 */) : t("ADD_A_SIGN_IN_E_MAIL" /* 添加登录邮箱 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
-      {t('Type it at “Sign in with password” instead of your profile name. We never send anything to it; a forgotten password is still reset by your admin.')}
+      {t("TYPE_IT_AT_SIGN_IN_WITH_PASSWORD_INSTEAD_OF_YOUR_PROFILE_NAME" /* 在“用密码登录”中用它代替档案名字。我们不会向它发送任何邮件；忘记密码仍由管理员重置。 */)}
     </div>
     {step === 'edit' ? <>
       <form onSubmit={next} noValidate>
-        <input className="input" type="email" name="email" autoComplete="email" inputMode="email" placeholder={t('E-mail address')} maxLength={254}
+        <input className="input" type="email" name="email" autoComplete="email" inputMode="email" placeholder={t("E_MAIL_ADDRESS" /* 邮箱地址 */)} maxLength={254}
           value={email} onChange={e => setEmail(e.target.value)} {...field} />
         {err && <div className="small" role="alert" style={errStyle}>{err}</div>}
         <div style={{ height: 12 }} />
-        <Button type="submit" variant="primary">{t('Continue')}</Button>
+        <Button type="submit" variant="primary">{t("CONTINUE" /* 继续 */)}</Button>
       </form>
       {status.email && <>
         <div style={{ height: 8 }} />
-        <button type="button" className="btn danger" onClick={remove}>{t('Remove e-mail')}</button>
+        <button type="button" className="btn danger" onClick={remove}>{t("REMOVE_E_MAIL" /* 移除邮箱 */)}</button>
       </>}
     </> : <>
       <div className="small" style={{ marginBottom: 6, fontWeight: 600, overflowWrap: 'anywhere' }}>{clean}</div>
-      <div className="dim small" style={{ marginBottom: 14 }}>{t('First confirm that it is you.')}</div>
-      <ProveOwner passkey={status.passkeys > 0} password={!!status.set} submitText={t('Save')} onProof={save} />
+      <div className="dim small" style={{ marginBottom: 14 }}>{t("FIRST_CONFIRM_THAT_IT_IS_YOU" /* 请先确认是你本人。 */)}</div>
+      <ProveOwner passkey={status.passkeys > 0} password={!!status.set} submitText={t("SAVE" /* 保存 */)} onProof={save} />
       <div style={{ height: 8 }} />
-      <Button type="button" variant="ghost" className="dim" onClick={() => setStep('edit')}>{t('Back')}</Button>
+      <Button type="button" variant="ghost" className="dim" onClick={() => setStep('edit')}>{t("BACK_A" /* 返回 */)}</Button>
     </>}
   </>
 }
@@ -476,14 +476,14 @@ function RemoveEmailSheet({ status, close, done }) {
   const remove = async proof => {
     await api('/api/account/email', { method: 'DELETE', body: JSON.stringify(proof) })
     close(); done()
-    toast(t('E-mail removed'))
+    toast(t("E_MAIL_REMOVED" /* 邮箱已移除 */))
   }
   return <>
-    <h3>{t('Remove your sign-in e-mail?')}</h3>
-    <div className="muted small" style={{ marginBottom: 6 }}>{t('Afterwards you sign in with your profile name only.')}</div>
-    <div className="dim small" style={{ marginBottom: 14 }}>{t('First confirm that it is you.')}</div>
-    <ProveOwner passkey={status.passkeys > 0} password={!!status.set} danger submitText={t('Remove')} onProof={remove} />
+    <h3>{t("REMOVE_YOUR_SIGN_IN_E_MAIL" /* 移除你的登录邮箱？ */)}</h3>
+    <div className="muted small" style={{ marginBottom: 6 }}>{t("AFTERWARDS_YOU_SIGN_IN_WITH_YOUR_PROFILE_NAME_ONLY" /* 之后你只能用档案名字登录。 */)}</div>
+    <div className="dim small" style={{ marginBottom: 14 }}>{t("FIRST_CONFIRM_THAT_IT_IS_YOU" /* 请先确认是你本人。 */)}</div>
+    <ProveOwner passkey={status.passkeys > 0} password={!!status.set} danger submitText={t("REMOVE" /* 移除 */)} onProof={remove} />
     <div style={{ height: 8 }} />
-    <Button type="button" variant="ghost" className="dim" onClick={close}>{t('Cancel')}</Button>
+    <Button type="button" variant="ghost" className="dim" onClick={close}>{t("CANCEL" /* 取消 */)}</Button>
   </>
 }

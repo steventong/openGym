@@ -221,10 +221,10 @@ export default function DurationWheel({ value, onChange, min = 0, max = REST_MAX
     <div className={'dw ' + className} data-nodrag="" dir="ltr">
       <span className="dw-band" aria-hidden="true" />
       <WheelColumn count={maxM + 1} index={m} nonce={nonce} step={5} rowRef={mRow}
-        onPick={i => pick(i, live.current.s)} label={t('Minutes')} unit={t('min')} valueText={text}
+        onPick={i => pick(i, live.current.s)} label={t("MINUTES" /* 分钟 */)} unit={t("MIN" /* 分钟 */)} valueText={text}
         disabledAt={i => i * 60 > max || (i + 1) * 60 - 1 < min} />
       <WheelColumn count={60} index={s} nonce={nonce} step={10} format={pad2} rowRef={sRow}
-        onPick={i => pick(live.current.m, i)} label={t('Seconds')} unit={t('sec')} valueText={text}
+        onPick={i => pick(live.current.m, i)} label={t("SECONDS" /* 秒数 */)} unit={t("SEC" /* 秒 */)} valueText={text}
         disabledAt={i => m * 60 + i > max || m * 60 + i < min} />
     </div>
   )
@@ -240,7 +240,7 @@ function DurationSheet({ title, value, min, max, off, footer, onDone, close }) {
     <div className="dw-read" aria-hidden="true">{fmtDuration(v, { off })}</div>
     <DurationWheel value={v} onChange={setV} min={min} max={max} off={off} readRef={read} />
     {footer && <p className="dim small dw-foot">{footer}</p>}
-    <Button variant="primary" onClick={() => { const now = read.current ? read.current() : v; close(); onDone(now) }}>{t('Done')}</Button>
+    <Button variant="primary" onClick={() => { const now = read.current ? read.current() : v; close(); onDone(now) }}>{t("DONE" /* 完成 */)}</Button>
     <div style={{ height: 8 }} />
   </>
 }

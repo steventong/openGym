@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "band-standing-on-bosu-ball-single-leg-abduction.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -9,7 +9,7 @@ Reads <archive>/work/index.json (built from the pack's file names) and the white
 ZIPs under <archive>/original/gif-white/, and writes to <archive>/build/:
 
     web/<id>.mp4     180 px loop  -> the Docker image (licence Part A: 180x180 max outside apps)
-    still/<id>.webp  180 px still -> the Docker image and catalogue/media/ in the repository
+    thumbnails/<id>.webp  180 px still -> the Docker image and catalogue/media/ in the repository
     app/<id>.mp4     360 px loop  -> the Android package only (licence Part B)
 
 Quality: the 180 px loop is near-lossless (x264 crf 14, PSNR ~53 dB against the source GIF), the
@@ -35,7 +35,7 @@ def encode(job):
     gv, out = row['gv'], os.path.join(root, os.environ.get('MEDIA_BUILD', 'build'))
     targets = {
         'web': os.path.join(out, 'web', gv + '.mp4'),
-        'still': os.path.join(out, 'still', gv + '.webp'),
+        'thumbnails': os.path.join(out, 'thumbnails', gv + '.webp'),
         'app': os.path.join(out, 'app', gv + '.mp4'),
     }
     if all(os.path.exists(p) for p in targets.values()):
@@ -58,10 +58,10 @@ def encode(job):
             vf = f'scale={WEB_PX}:{WEB_PX}:force_original_aspect_ratio=decrease,pad={WEB_PX}:{WEB_PX}:(ow-iw)/2:(oh-ih)/2:white'
             ffmpeg(['-i', src_small, '-vf', vf, *mp4, '-crf', '14', targets['web'] + '.part.mp4'])
             os.replace(targets['web'] + '.part.mp4', targets['web'])
-        if not os.path.exists(targets['still']):
+        if not os.path.exists(targets['thumbnails']):
             vf = f'scale={WEB_PX}:{WEB_PX}:force_original_aspect_ratio=decrease'
-            ffmpeg(['-i', src_small, '-vf', vf, '-frames:v', '1', '-c:v', 'libwebp', '-lossless', '1', '-compression_level', '6', targets['still'] + '.part.webp'])
-            os.replace(targets['still'] + '.part.webp', targets['still'])
+            ffmpeg(['-i', src_small, '-vf', vf, '-frames:v', '1', '-c:v', 'libwebp', '-lossless', '1', '-compression_level', '6', targets['thumbnails'] + '.part.webp'])
+            os.replace(targets['thumbnails'] + '.part.webp', targets['thumbnails'])
         if not os.path.exists(targets['app']):
             vf = f'scale={APP_PX}:{APP_PX}:force_original_aspect_ratio=decrease,pad={APP_PX}:{APP_PX}:(ow-iw)/2:(oh-ih)/2:white'
             ffmpeg(['-i', src_big, '-vf', vf, *mp4, '-crf', '22', targets['app'] + '.part.mp4'])
@@ -79,7 +79,7 @@ def main():
     rows = json.load(open(os.path.join(root, 'work', 'index.json')))
     if only:
         rows = [r for r in rows if r['gv'] in only]
-    for d in ('web', 'still', 'app', 'tmp'):
+    for d in ('web', 'thumbnails', 'app', 'tmp'):
         os.makedirs(os.path.join(root, os.environ.get('MEDIA_BUILD', 'build'), d), exist_ok=True)
     done = failed = 0
     with ProcessPoolExecutor(jobs) as pool:

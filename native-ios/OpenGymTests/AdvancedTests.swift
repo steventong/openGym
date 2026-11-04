@@ -70,7 +70,7 @@ import AVFoundation
             return TrainingExerciseEditor(
                 showingOptions: .constant(false), entries: [entry], names: ["卧推"], selected: .constant(0),
                 rows: rows, unit: "kg", previous: "", note: .constant(""), identifier: "identity",
-                showDetails: {}, addSet: {}, copySet: { _ in }, removeSet: { _ in }, editSet: { _, _ in }
+                showDetails: {}, addSet: {}, copySet: { _ in }, removeSet: { _ in }, editSet: { _, _ in }, exerciseActions: { EmptyView() }
             ) { EmptyView() }.environment(store)
         }
         let controller = UIHostingController(rootView: view(["a", "b", "c"]))
@@ -162,7 +162,7 @@ import AVFoundation
                         rows: [TrainingEditorRow(id: "0", raw: row)], unit: "kg", previous: "上次 20 kg × 8",
                         note: .constant(""), identifier: "layout-test", restUntil: restUntil,
                         startRest: { _, _ in }, showDetails: {}, addSet: {}, copySet: { _ in },
-                        removeSet: { _ in }, editSet: { _, _ in }
+                        removeSet: { _ in }, editSet: { _, _ in }, exerciseActions: { EmptyView() }
                     ) { EmptyView() }
                         .environment(store).environment(\.dynamicTypeSize, textSize)
                         .preferredColorScheme(.dark).tint(GymTheme.green)
@@ -455,5 +455,85 @@ extension AdvancedTests {
         XCTAssertTrue(RecordPatch.equal(entries[0]["sets"], (original["entries"] as! [[String: Any]])[0]["sets"]))
         let unpaired = try WebRules.shared.call("manageTrainingExercises", payload: ["active": paired, "action": "unpair", "index": 0]) as! [String: Any]
         XCTAssertTrue((unpaired["entries"] as! [[String: Any]]).allSatisfy { $0["sg"] == nil })
+    }
+}
+
+
+extension AdvancedTests {
+    func testLivePendingWeightFlushesBeforeCopyAndSurvivesRestore() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let storage = LocalTrainingStorage(root: root)
+        let store = GymStore(userID: "buffered-live", storage: storage)
+        store.draft = try TrainingDraft.fromWeb(begin(state([["id": "0289", "sets": 2, "weight": 20]])), unit: "kg")
+        let field = UUID()
+        for text in ["4", "42", "42.", "42.5"] {
+            store.liveInputBuffer.stage(field) {
+                XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "input", "path": "both.w", "text": text, "operation": ["action": "field", "key": "w"]]))
+            }
+        }
+        let before = GymStore(userID: "buffered-live", storage: storage)
+        before.restoreDraft()
+        XCTAssertEqual(number((before.draft?.rawEntries[0]["sets"] as? [[String: Any]])?[0]["w"]), 20)
+        store.copyLiveSet(entry: 0, set: 0)
+        let restored = GymStore(userID: "buffered-live", storage: storage)
+        restored.restoreDraft()
+        let rows = try XCTUnwrap(restored.draft?.rawEntries[0]["sets"] as? [[String: Any]])
+        XCTAssertEqual(rows.count, 3)
+        XCTAssertEqual(rows.map { number($0["w"]) }, [42.5, 42.5, 42.5])
+        XCTAssertFalse(store.liveInputBuffer.hasPending)
+    }
+
+    func testLivePendingInvalidInputBlocksCompletionAndBackgroundSaveKeepsIt() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let storage = LocalTrainingStorage(root: root)
+        let store = GymStore(userID: "buffered-invalid", storage: storage)
+        store.draft = try TrainingDraft.fromWeb(begin(state([["id": "0289", "sets": 1, "weight": 20]])), unit: "kg")
+        store.liveInputBuffer.stage(UUID()) {
+            XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "input", "path": "both.w", "text": "", "operation": ["action": "field", "key": "w"]]))
+        }
+        XCTAssertFalse(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
+        XCTAssertEqual(store.draft?.completedSets, 0)
+        store.liveInputBuffer.stage(UUID()) { store.setLiveNote(entry: 0, text: "最后输入") }
+        XCTAssertTrue(store.persistDraft())
+        let restored = GymStore(userID: "buffered-invalid", storage: storage)
+        restored.restoreDraft()
+        XCTAssertEqual(restored.draft?.rawEntries[0]["note"] as? String, "最后输入")
+        let row = try XCTUnwrap((restored.draft?.rawEntries[0]["sets"] as? [[String: Any]])?.first)
+        XCTAssertEqual((row[TrainingInput.key] as? [String: String])?["both.w"], "")
+        XCTAssertThrowsError(try TrainingInput.validate(row))
+    }
+
+    func testLiveTimerUsesPendingDurationBeforeStarting() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = GymStore(userID: "buffered-timer", storage: LocalTrainingStorage(root: root))
+        store.draft = try TrainingDraft.fromWeb(begin(state([["id": "0289", "mode": "time", "sets": 1, "sec": 30]])), unit: "kg")
+        store.liveInputBuffer.stage(UUID()) {
+            XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "input", "path": "both.sec", "text": "75", "operation": ["action": "field", "key": "sec"]]))
+        }
+        store.startWorkTimer(entry: 0, set: 0)
+        XCTAssertEqual(number(store.workTimer?["planned"]), 75)
+    }
+}
+
+
+extension AdvancedTests {
+    func testReplacingLiveSessionCannotApplyOldPendingInputToNewSession() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = GymStore(userID: "buffered-replacement", storage: LocalTrainingStorage(root: root))
+        let source = state([["id": "0289", "sets": 1]])
+        store.draft = try TrainingDraft.fromWeb(begin(source, id: "first"), unit: "kg")
+        var cancelled = false
+        store.liveInputBuffer.stage(UUID(), cancel: { cancelled = true }) {
+            store.changeActive { $0["name"] = "old pending title" }
+        }
+        store.draft = try TrainingDraft.fromWeb(begin(source, id: "second"), unit: "kg")
+        store.liveInputBuffer.commitAll()
+        XCTAssertTrue(cancelled)
+        XCTAssertEqual(store.draft?.id, "second")
+        XCTAssertEqual(store.draft?.name, "A")
     }
 }

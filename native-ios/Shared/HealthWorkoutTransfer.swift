@@ -9,6 +9,8 @@ struct HealthWorkoutRequest: Codable, Equatable, Identifiable {
     var end: Date?
     var owner: Owner
     var phase: Phase = .running
+    // Optional so queued requests from earlier app versions remain readable.
+    var title: String?
     var isValid: Bool {
         !id.isEmpty && start.timeIntervalSince1970.isFinite &&
         (phase == .running ? end == nil : end.map { $0 >= start && $0.timeIntervalSince1970.isFinite } == true)

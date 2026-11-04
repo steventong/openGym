@@ -20,7 +20,7 @@ const catalogueMedia = {
   name: 'opengym-catalogue-media',
   configureServer(server) {
     if (media) return
-    const dirs = { '/exercise-media/still/': ['still', '.webp'], '/exercise-media/clip/': ['clip', '.mp4'] }
+    const dirs = { '/exercise-media/still/': ['thumbnails', '.webp'], '/exercise-media/clip/': ['clip', '.mp4'] }
     const root = resolve(fileURLToPath(new URL('.', import.meta.url)), '../catalogue/media')
     server.middlewares.use((req, res, next) => {
       const prefix = Object.keys(dirs).find(p => req.url.startsWith(p))

@@ -21,7 +21,7 @@ const workRowsForMode = (entry = {}, mode = 'reps') => {
 // React. i18n.js is the Vite half — import.meta.glob over the locale packs, useSyncExternalStore
 // for the hook — and it re-exports this very `t` from core, so nothing changes here except what
 // gets dragged along behind it.
-import { t } from './i18n-core.js'
+import { t , translateValue } from './i18n-core.js'
 import { queueNext, pinState, queueLiveOn } from './queue.js'
 import { isPyramid, pyramidLabel, pyramidTargetAt, pyramidWeightAt, PYRAMID_MAX } from './pyramid.js'
 
@@ -138,7 +138,7 @@ const effortTail = s => {
 // entry or a workout entry); passing an id alone keeps the old body-part behaviour.
 // `speedUnit` is the profile's (lib/speed.js speedUnitOf); without one a cardio set reads km/h.
 const EXPLICIT_MODES = new Set(['reps', 'time', 'cardio'])
-export function setLabel(id, s, cfg, speedUnit) {
+export function setLabel(id, s, cfg, speedUnit, { showZeroWeight = false } = {}) {
   // The id is the caller's when the config does not carry one: a freestyle target is built
   // without it, and modeOf would then fall back to 'reps' and print a run as "0×0".
   const c = cfg ? { ...cfg, id: cfg.id ?? id } : { id }
@@ -151,10 +151,10 @@ export function setLabel(id, s, cfg, speedUnit) {
   // to the volume those same sets still count. A set with reps and nothing cardio was a rep set.
   if (!EXPLICIT_MODES.has(cfg?.mode) && mode !== 'reps' && s.r > 0 && !(s.min > 0 || s.speed > 0 || s.sec > 0)) mode = 'reps'
   // A treadmill grade rides along when the set has one (lib/incline.js); a flat set reads as it did.
-  if (mode === 'cardio') return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}` + (hasIncline(s) ? ' · ' + t('{0}% incline', fmtNum(Number(s.incline))) : '')
+  if (mode === 'cardio') return `${s.min || 0} min @ ${fmtSpeed(s.speed || 0, speedUnit)}` + (hasIncline(s) ? ' · ' + t("COUNT_INCLINE" /* 坡度 {0}% */, fmtNum(Number(s.incline))) : '')
   // A set taken to failure carries its "F" behind the numbers, the mark lifting logs use for it;
   // the history, the text export and the set menu all read it from here.
-  const fail = isFailureSet(s) ? ' ' + t('F') : ''
+  const fail = isFailureSet(s) ? ' ' + t("LABEL_F" /* 术语：F */) : ''
   if (mode === 'time') return fmtSec(s.sec) + (s.w > 0 ? ` · ${fmtNum(s.w)}` : '') + fail
   const bw = isBw(c)
   // A dumbbell weight that says what it means (lib/dumbbells.js, issue #474) says it here too:
@@ -162,9 +162,9 @@ export function setLabel(id, s, cfg, speedUnit) {
   // of added weight, since the number is no longer the whole load on its own. As entered, and a
   // one-arm exercise (one bell, so both meanings are the same number), read as they always did.
   const meaning = !bw && bellsIn(c) === 2 ? dbLoadOf(c.dbLoad) : null
-  const load = (w, reps) => (bw ? (w > 0 ? `+${fmtNum(w)} × ` : '') + reps
-    : meaning === 'each' ? `${t('{0} each', fmtNum(w || 0))} × ${reps}`
-      : meaning === 'total' ? `${t('{0} total', fmtNum(w || 0))} × ${reps}`
+  const load = (w, reps) => (bw ? (w > 0 ? `+${fmtNum(w)} × ` : showZeroWeight ? '0 × ' : '') + reps
+    : meaning === 'each' ? `${t("COUNT_EACH" /* 每只 {0} */, fmtNum(w || 0))} × ${reps}`
+      : meaning === 'total' ? `${t("COUNT_TOTAL" /* 共 {0} */, fmtNum(w || 0))} × ${reps}`
         : `${fmtNum(w || 0)}×${reps}`)
   // A rest-pause set's reps read as its bursts, "60×10+4+2", the way the protocol is written
   // down. The row's own `r` is the total either way; a planned set's bursts already add up to it
@@ -197,7 +197,7 @@ export function setLabel(id, s, cfg, speedUnit) {
     const partial = s.sides.L.done !== s.sides.R.done
     return ['L', 'R'].map(key => {
       const side = s.sides[key]
-      return `${t(key)} ${partial && !side.done ? '–' : oneSide(side) + effortTail(side)}`
+      return `${translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(key)} ${partial && !side.done ? '–' : oneSide(side) + effortTail(side)}`
     }).join(' · ') + fail
   }
   // Bodyweight reads as what you did — "12", or "+10 × 12" once there is a belt involved —
@@ -246,9 +246,9 @@ export function exLine(cfg, unit, speedUnit) {
   if (mode === 'cardio') return `${n} × ${cfg.min || 20} min @ ${fmtSpeed(cfg.speed || 8, speedUnit)}`
   // A timed hold has no rep count to spell a split out of ("8/side" below) — "per side" says it
   // happens twice, once each side (buildWorkSets), rather than trying to divide a duration.
-  if (mode === 'time') return `${setsRepsOf(cfg)}${load}${isPerSide(cfg) ? ' · ' + t('per side') : ''}`
+  if (mode === 'time') return `${setsRepsOf(cfg)}${load}${isPerSide(cfg) ? ' · ' + t("PER_SIDE_A" /* 每侧 */) : ''}`
   // This is the line with room for it, so the split is spelled out: "3 × 16 · 8/side".
-  const split = isPerSide(cfg) ? ' · ' + t('{0}/side', repsOf(cfg, v => fmtNum(sideReps(v)))) : ''
+  const split = isPerSide(cfg) ? ' · ' + t("COUNT_SIDE" /* {0}/侧 */, repsOf(cfg, v => fmtNum(sideReps(v)))) : ''
   return `${setsRepsOf(cfg)}${load}${split}`
 }
 
@@ -385,7 +385,7 @@ function lastEntryIn(S, exId, rid) {
     // none — modeOf() falls back to the body part for them, which is what they were.
     if (done.length) {
       const slot = entryRoutineId(w, en)
-      return { d: w.d, sets: done, target: en.target || null, ...(slot ? { rid: slot } : {}), ...(en.planned ? { planned: en.planned } : {}) }
+      return { d: w.d, sets: done, target: en.target || null, ...(typeof en.note === 'string' && en.note.trim() ? { note: en.note.trim() } : {}), ...(slot ? { rid: slot } : {}), ...(en.planned ? { planned: en.planned } : {}) }
     }
   }
   return null

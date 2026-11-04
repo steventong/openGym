@@ -12,6 +12,7 @@ struct RestNotificationPermission {
     func permission() async -> RestNotificationPermission
     func authorize() async throws
     func add(_ request: UNNotificationRequest) async throws
+    func clearDelivered()
     func cancel()
 }
 
@@ -23,9 +24,12 @@ struct RestNotificationPermission {
     }
     func authorize() async throws { _ = try await center.requestAuthorization(options: [.alert, .sound]) }
     func add(_ request: UNNotificationRequest) async throws { try await center.add(request) }
+    func clearDelivered() {
+        center.removeDeliveredNotifications(withIdentifiers: [RestNotifications.reminderID])
+    }
     func cancel() {
         center.removePendingNotificationRequests(withIdentifiers: [RestNotifications.reminderID])
-        center.removeDeliveredNotifications(withIdentifiers: [RestNotifications.reminderID])
+        clearDelivered()
     }
 }
 
@@ -55,14 +59,16 @@ struct RestNotificationPermission {
 
     var status: String {
         if let issue { return issue }
-        if !enabled { return "已关闭休息结束提醒。" }
+        if !enabled { return L10n.text("REST_END_REMINDERS_ARE_OFF" /* 已关闭休息结束提醒。 */) }
         switch permission.authorization {
-        case .notDetermined: return "尚未授权，请允许通知以接收休息结束提醒。"
-        case .denied: return "系统通知已关闭，请前往系统设置允许通知。"
-        case .provisional: return "当前为静默通知，请前往系统设置开启横幅和声音。"
-        default: return permission.alerts ? "每次休息结束时发送通知，前台、后台和锁屏均可提醒。" : "系统横幅提醒已关闭，请前往系统设置开启。"
+        case .notDetermined: return L10n.text("ALLOW_NOTIFICATIONS_TO_RECEIVE_REST_END_REMINDERS" /* 尚未授权，请允许通知以接收休息结束提醒。 */)
+        case .denied: return L10n.text("NOTIFICATIONS_ARE_BLOCKED_ALLOW_THEM_IN_SYSTEM_SETTINGS" /* 系统通知已关闭，请前往系统设置允许通知。 */)
+        case .provisional: return L10n.text("NOTIFICATIONS_ARE_CURRENTLY_SILENT_ENABLE_BANNERS_AND_SOUND_IN_SYSTEM_SETTINGS" /* 当前为静默通知，请前往系统设置开启横幅和声音。 */)
+        default: return permission.alerts ? L10n.text("NOTIFICATIONS_APPEAR_IN_THE_BACKGROUND_AND_ON_THE_LOCK_SCREEN_AND_ARE" /* 后台和锁屏时发送通知；打开 App 自动清除，App 内仅声音提醒。 */) : L10n.text("NOTIFICATION_BANNERS_ARE_OFF_ENABLE_THEM_IN_SYSTEM_SETTINGS" /* 系统横幅提醒已关闭，请前往系统设置开启。 */)
         }
     }
+
+    func clearDelivered() { center.clearDelivered() }
 
     func setEnabled(_ value: Bool) async {
         issue = nil
@@ -104,6 +110,7 @@ struct RestNotificationPermission {
     }
 
     private func reconcile(traces: [String]) async {
+        if foreground() { clearDelivered() }
         let started = ContinuousClock.now
         WorkoutActivityDiagnostics.record("reminder.reconcile.begin", ["enabled": String(enabled)], traces: traces)
         defer { WorkoutActivityDiagnostics.record("reminder.reconcile.end", ["elapsed_ms": WorkoutActivityDiagnostics.elapsed(started)], traces: traces) }
@@ -121,7 +128,7 @@ struct RestNotificationPermission {
                 WorkoutActivityDiagnostics.record("reminder.authorization.end", traces: traces)
             } catch {
                 WorkoutActivityDiagnostics.record("reminder.authorization.failed", WorkoutActivityDiagnostics.errorFields(error), traces: traces, failure: true)
-                issue = "通知授权失败：\(error.localizedDescription)"
+                issue = L10n.text("COULD_NOT_REQUEST_NOTIFICATION_ACCESS_COUNT" /* 通知授权失败：{0} */, error.localizedDescription)
             }
             busy = false
             permission = await center.permission()
@@ -143,10 +150,10 @@ struct RestNotificationPermission {
             return
         }
         let content = UNMutableNotificationContent()
-        content.title = "休息结束"
+        content.title = L10n.text("REST_COMPLETE" /* 休息结束 */)
         let snapshot = store.watchSnapshot()
         let exercise = snapshot.restExercise.isEmpty ? snapshot.exercise : snapshot.restExercise
-        content.body = "\(store.draft?.name ?? "训练") · \(exercise)。准备好后继续下一组。"
+        content.body = L10n.text("COUNT_COUNT_START_THE_NEXT_SET_WHEN_YOU_RE_READY" /* {0} · {1}。准备好后开始下一组。 */, store.draft?.name ?? L10n.text("WORKOUT" /* 训练 */), exercise)
         content.sound = .default
         content.userInfo = ["openGymWorkout": true, "restKey": key]
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, end.timeIntervalSinceNow), repeats: false)
@@ -161,7 +168,7 @@ struct RestNotificationPermission {
             WorkoutActivityDiagnostics.record("reminder.schedule.end", traces: traces)
         } catch {
             WorkoutActivityDiagnostics.record("reminder.schedule.failed", WorkoutActivityDiagnostics.errorFields(error), traces: traces, failure: true)
-            issue = "休息提醒安排失败：\(error.localizedDescription)"
+            issue = L10n.text("COULD_NOT_SCHEDULE_REST_REMINDER_COUNT" /* 休息提醒安排失败：{0} */, error.localizedDescription)
         }
     }
 }

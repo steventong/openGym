@@ -2,6 +2,7 @@ import SwiftUI
 struct LibraryView: View {
     @Environment(GymStore.self) private var store
     @State private var query = ""
+    @State private var searchReset = 0
     @State private var bodyPart = ""
     @State private var equipment = ""
     @State private var grid = false
@@ -26,37 +27,37 @@ struct LibraryView: View {
             VStack(alignment:.leading,spacing:18) {
                 HStack(alignment:.top) {
                     VStack(alignment:.leading,spacing:6) {
-                        Text("动作库").font(.system(size:34,weight:.bold))
-                        Text("\(store.exercises.count) 个动作").font(.subheadline).foregroundStyle(GymTheme.muted)
+                        Text(L10n.text("EXERCISES" /* 动作库 */)).font(.system(size:34,weight:.bold))
+                        Text(L10n.text("COUNT_EXERCISES" /* {0} 个动作 */, store.exercises.count)).font(.subheadline).foregroundStyle(GymTheme.muted)
                     }
                     Spacer()
-                    if let error = store.catalogueError { StatusDetailButton(title: "加载失败", message: error, warning: true) }
+                    if let error = store.catalogueError { StatusDetailButton(title: L10n.text("COULD_NOT_LOAD" /* 无法加载 */), message: error, warning: true) }
                 }
                 HStack(spacing:10) {
                     HStack {
                         Image(systemName:"magnifyingglass").foregroundStyle(GymTheme.muted)
-                        TextField("搜索动作、肌群…",text:$query).font(.system(size:15)).autocorrectionDisabled().accessibilityIdentifier("exercise-search")
-                        if !query.isEmpty { Button { query = "" } label: { Image(systemName:"xmark.circle.fill").foregroundStyle(.gray) }.accessibilityLabel("清除搜索") }
-                    }.padding(14).background(Color(white:0.16),in:RoundedRectangle(cornerRadius:14))
-                    Button { grid.toggle() } label: { Image(systemName:grid ? "list.bullet" : "square.grid.2x2").frame(width:48,height:48).background(GymTheme.card,in:RoundedRectangle(cornerRadius:14)) }.accessibilityLabel(grid ? "列表视图" : "卡片视图")
+                        CommittedSearchField(L10n.text("SEARCH_EXERCISES_MUSCLES" /* 搜索动作、肌群… */),text:$query, resetToken: searchReset).submitLabel(.search).onSubmit { GymKeyboard.dismiss() }.textFieldStyle(.plain).font(.system(size:15)).autocorrectionDisabled().accessibilityIdentifier("exercise-search")
+                        if !query.isEmpty { Button { searchReset += 1; query = "" } label: { Image(systemName:"xmark.circle.fill").foregroundStyle(.gray) }.accessibilityLabel(L10n.text("CLEAR_SEARCH" /* 清除搜索 */)) }
+                    }.padding(.horizontal,14).frame(height:48).background(Color(white:0.16),in:RoundedRectangle(cornerRadius:14))
+                    Button { grid.toggle() } label: { Image(systemName:grid ? "list.bullet" : "square.grid.2x2").frame(width:48,height:48).background(GymTheme.card,in:RoundedRectangle(cornerRadius:14)) }.accessibilityLabel(grid ? L10n.text("LIST_VIEW" /* 列表视图 */) : L10n.text("CARD_VIEW" /* 卡片视图 */))
                 }
                 ScrollView(.horizontal,showsIndicators:false) {
-                    HStack(spacing:8) { ForEach(bodyParts,id:\.self) { item in Pill(title:item.isEmpty ? "全部" : Vocabulary.label(item),selected:bodyPart == item) { bodyPart = item; equipment = "" } } }
+                    HStack(spacing:8) { ForEach(bodyParts,id:\.self) { item in Pill(title:item.isEmpty ? L10n.text("ALL" /* 全部 */) : Vocabulary.label(item),selected:bodyPart == item) { bodyPart = item; equipment = "" } } }
                 }
                 ScrollView(.horizontal,showsIndicators:false) {
-                    HStack(spacing:8) { ForEach(equipments,id:\.self) { item in Pill(title:item.isEmpty ? "所有器械" : Vocabulary.label(item),selected:equipment == item) { equipment = item } } }
+                    HStack(spacing:8) { ForEach(equipments,id:\.self) { item in Pill(title:item.isEmpty ? L10n.text("ANY_EQUIPMENT" /* 所有器械 */) : Vocabulary.label(item),selected:equipment == item) { equipment = item } } }
                 }
                 HStack {
-                    Pill(title:"收藏",selected:favouritesOnly) { favouritesOnly.toggle();limit = 60 }
-                    Pill(title:"练过",selected:trainedOnly) { trainedOnly.toggle();limit = 60 }
-                    Pill(title:"自定义",selected:customOnly) { customOnly.toggle();limit = 60 }
+                    Pill(title:L10n.text("FAVOURITES" /* 收藏 */),selected:favouritesOnly) { favouritesOnly.toggle();limit = 60 }
+                    Pill(title:L10n.text("PREVIOUSLY_TRAINED" /* 练过 */),selected:trainedOnly) { trainedOnly.toggle();limit = 60 }
+                    Pill(title:L10n.text("CUSTOM" /* 自定义 */),selected:customOnly) { customOnly.toggle();limit = 60 }
                     Spacer()
-                    Button { createCustom = true } label: { Label("创建",systemImage:"plus") }.accessibilityIdentifier("create-custom-exercise")
+                    Button { createCustom = true } label: { Label(L10n.text("CREATE" /* 创建 */),systemImage:"plus") }.accessibilityIdentifier("create-custom-exercise")
                 }
-                HStack { Text(query.isEmpty && bodyPart.isEmpty && equipment.isEmpty && !favouritesOnly && !trainedOnly && !customOnly ? "探索动作" : "找到 \(results.count) 个动作").font(.caption).foregroundStyle(GymTheme.muted); Spacer(); Label("动作库",systemImage:"checkmark.seal").font(.caption2).foregroundStyle(GymTheme.muted) }
+                HStack { Text(query.isEmpty && bodyPart.isEmpty && equipment.isEmpty && !favouritesOnly && !trainedOnly && !customOnly ? L10n.text("EXPLORE_EXERCISES" /* 探索动作 */) : L10n.text("COUNT_EXERCISES_FOUND" /* 找到 {0} 个动作 */, results.count)).font(.caption).foregroundStyle(GymTheme.muted); Spacer(); Label(L10n.text("EXERCISES" /* 动作库 */),systemImage:"checkmark.seal").font(.caption2).foregroundStyle(GymTheme.muted) }
                 if results.isEmpty {
-                    EmptyCard(icon:"magnifyingglass",title:"没有找到动作")
-                    Button("清除搜索与筛选") { query = ""; bodyPart = ""; equipment = ""; favouritesOnly = false; trainedOnly = false; customOnly = false }
+                    EmptyCard(icon:"magnifyingglass",title:L10n.text("NO_EXERCISES_FOUND" /* 没有找到动作 */))
+                    Button(L10n.text("CLEAR_SEARCH_AND_FILTERS" /* 清除搜索与筛选 */)) { searchReset += 1; query = ""; bodyPart = ""; equipment = ""; favouritesOnly = false; trainedOnly = false; customOnly = false }
                         .frame(maxWidth: .infinity, minHeight: 44)
                 }
                 LazyVGrid(columns:grid ? [GridItem(.flexible()),GridItem(.flexible())] : [GridItem(.flexible())],spacing:10) {
@@ -70,7 +71,7 @@ struct LibraryView: View {
                                 }.frame(maxWidth:.infinity,alignment:.leading).padding(12).background(GymTheme.card,in:RoundedRectangle(cornerRadius:16))
                             } else { ExerciseRow(exercise:exercise) }
                         }.buttonStyle(.plain).accessibilityIdentifier("exercise-\(exercise.id)")
-                            .contextMenu { Button(store.favouriteIDs.contains(exercise.id) ? "取消收藏":"收藏") { Task { _ = await store.setFavourite(exercise.id,enabled:!store.favouriteIDs.contains(exercise.id)) } } }
+                            .contextMenu { Button(store.favouriteIDs.contains(exercise.id) ? L10n.text("REMOVE_FROM_FAVOURITES" /* 取消收藏 */):L10n.text("FAVOURITES" /* 收藏 */)) { Task { _ = await store.setFavourite(exercise.id,enabled:!store.favouriteIDs.contains(exercise.id)) } } }
                     }
                     if results.count > limit { ExercisePageTrigger(limit: $limit, total: results.count).id(limit) }
                 }

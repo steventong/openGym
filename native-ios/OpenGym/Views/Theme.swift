@@ -1,4 +1,11 @@
 import SwiftUI
+import UIKit
+
+enum GymKeyboard {
+    @MainActor static func dismiss() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
 
 enum GymTheme {
     static let green = Color(red:0.39, green:0.80, blue:0.35)
@@ -7,15 +14,42 @@ enum GymTheme {
     static let muted = Color(white:0.54)
 }
 extension View {
+    func stableInputLine(height: CGFloat = 24) -> some View {
+        modifier(StableInputLine(height: height))
+    }
+    /// Number and decimal pads have no return key, so provide a native keyboard toolbar.
+    /// Install once on the containing screen, not on each repeated input row.
+    func keyboardDismissToolbar() -> some View {
+        toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button(L10n.text("FOLD_AWAY" /* 收起 */), action: GymKeyboard.dismiss)
+                    .accessibilityIdentifier("dismiss-keyboard")
+            }
+        }
+    }
     func gymCard() -> some View { padding(18).background(GymTheme.card,in:RoundedRectangle(cornerRadius:20)) }
-    func operationAlert(_ issue: Binding<String?>, title: String = "操作未完成") -> some View {
+    func operationAlert(_ issue: Binding<String?>, title: String = L10n.text("COULD_NOT_COMPLETE_ACTION" /* 操作未完成 */)) -> some View {
         alert(title, isPresented: Binding(get: { issue.wrappedValue != nil }, set: { if !$0 { issue.wrappedValue = nil } })) {
-            Button("好", role: .cancel) {}
+            Button(L10n.text("OK" /* 好 */), role: .cancel) {}
         } message: { Text(issue.wrappedValue ?? "") }
     }
     func invalidInput(_ invalid: Bool) -> some View {
         overlay(RoundedRectangle(cornerRadius: 4).stroke(invalid ? Color.orange : .clear))
-            .accessibilityHint(invalid ? "输入无效，请检查" : "")
+            .accessibilityHint(invalid ? L10n.text("INVALID_INPUT_PLEASE_CHECK" /* 输入无效，请检查 */) : "")
+    }
+}
+
+/// Keep single-line input geometry independent of focus, while following Dynamic Type.
+private struct StableInputLine: ViewModifier {
+    @ScaledMetric private var height: CGFloat
+
+    init(height: CGFloat) {
+        _height = ScaledMetric(wrappedValue: height, relativeTo: .body)
+    }
+
+    func body(content: Content) -> some View {
+        content.lineLimit(1).frame(height: height)
     }
 }
 
@@ -26,8 +60,8 @@ struct ExplanationButton: View {
     @State private var showing = false
     var body: some View {
         Button { showing = true } label: { Image(systemName: "info.circle").frame(width: 28, height: 28) }
-            .buttonStyle(.borderless).accessibilityLabel("\(title)说明")
-            .alert(title, isPresented: $showing) { Button("好", role: .cancel) {} } message: { Text(message) }
+            .buttonStyle(.borderless).accessibilityLabel(L10n.text("ABOUT_COUNT" /* {0}说明 */, title))
+            .alert(title, isPresented: $showing) { Button(L10n.text("OK" /* 好 */), role: .cancel) {} } message: { Text(message) }
     }
 }
 
@@ -41,8 +75,8 @@ struct StatusDetailButton: View {
             Label(title, systemImage: warning ? "exclamationmark.circle" : "info.circle")
                 .font(.caption).lineLimit(1).minimumScaleFactor(0.8)
                 .foregroundStyle(warning ? Color.orange : GymTheme.muted)
-        }.buttonStyle(.borderless).accessibilityHint("查看详情")
-            .alert(title, isPresented: $showing) { Button("好", role: .cancel) {} } message: { Text(message) }
+        }.buttonStyle(.borderless).accessibilityHint(L10n.text("VIEW_DETAILS" /* 查看详情 */))
+            .alert(title, isPresented: $showing) { Button(L10n.text("OK" /* 好 */), role: .cancel) {} } message: { Text(message) }
     }
 }
 struct GreenButton: View {
@@ -90,11 +124,118 @@ struct ExerciseThumbnail: View {
     var size: CGFloat = 60
     var body: some View {
         Group {
-            if let url = store.mediaURL(id), let image = UIImage(contentsOfFile:url.path) {
-                Image(uiImage:image).resizable().scaledToFit().padding(3)
+            if let assetName = store.thumbnailAssetName(id) {
+                Image(assetName).resizable().scaledToFit().padding(3)
             } else {
                 Image(systemName:"dumbbell").foregroundStyle(.gray)
             }
         }.frame(width:size,height:size).background(.white,in:RoundedRectangle(cornerRadius:12)).clipShape(RoundedRectangle(cornerRadius:12))
+    }
+}
+
+
+/// Only the clean/dirty transition is observable; keystrokes stay inside the input view.
+/// Flush before actions that read or replace the form, without waiting for a focus update.
+@MainActor @Observable final class InputCommitBuffer {
+    @ObservationIgnored private var pending: [UUID: (write: () -> Void, cancel: () -> Void)] = [:]
+    private(set) var hasPending = false
+
+    func stage(_ id: UUID, cancel: @escaping () -> Void = {}, commit: @escaping () -> Void) {
+        pending[id] = (commit, cancel)
+        if !hasPending { hasPending = true }
+    }
+    func commit(_ id: UUID) {
+        let entry = pending.removeValue(forKey: id)
+        updatePending()
+        entry?.write()
+    }
+    func commitAll() {
+        let entries = Array(pending.values)
+        pending.removeAll()
+        updatePending()
+        for entry in entries { entry.write() }
+    }
+    func discardAll() {
+        let entries = Array(pending.values)
+        pending.removeAll()
+        updatePending()
+        for entry in entries { entry.cancel() }
+    }
+    private func updatePending() {
+        let next = !pending.isEmpty
+        if hasPending != next { hasPending = next }
+    }
+}
+
+private struct InputCommitBufferKey: EnvironmentKey {
+    static let defaultValue: InputCommitBuffer? = nil
+}
+extension EnvironmentValues {
+    var inputCommitBuffer: InputCommitBuffer? {
+        get { self[InputCommitBufferKey.self] }
+        set { self[InputCommitBufferKey.self] = newValue }
+    }
+}
+
+private struct BufferedInput<Value: Equatable, Content: View>: View {
+    @Binding var value: Value
+    @ViewBuilder let content: (Binding<Value>) -> Content
+    @Environment(\.inputCommitBuffer) private var buffer
+    @State private var draft: Value?
+    @State private var id = UUID()
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        content(Binding(get: { draft ?? value }, set: { next in
+            guard let buffer else { value = next; return }
+            draft = next
+            buffer.stage(id, cancel: { draft = nil }) {
+                draft = nil
+                if next != value { value = next }
+            }
+        }))
+        .focused($focused)
+        .onChange(of: focused) { _, isFocused in
+            if !isFocused { buffer?.commit(id) }
+        }
+        .onSubmit { buffer?.commit(id) }
+        .onDisappear { buffer?.commit(id) }
+    }
+}
+
+struct BufferedTextField: View {
+    let title: String
+    @Binding var text: String
+    var axis: Axis
+    init(_ title: String, text: Binding<String>, axis: Axis = .horizontal) {
+        self.title = title; _text = text; self.axis = axis
+    }
+    var body: some View {
+        BufferedInput(value: $text) { TextField(title, text: $0, axis: axis) }
+    }
+}
+
+/// Keep native locale-aware numeric formatting, but write the parsed value on blur.
+struct BufferedNumberField: View {
+    let title: String
+    @Binding var value: Double
+    init(_ title: String, value: Binding<Double>) { self.title = title; _value = value }
+    var body: some View {
+        BufferedInput(value: $value) { TextField(title, value: $0, format: .number) }
+    }
+}
+
+/// Search runs on Return or blur. Its buffer is independent of any enclosing edit form.
+struct CommittedSearchField: View {
+    let title: String
+    @Binding var text: String
+    let resetToken: Int
+    @State private var buffer = InputCommitBuffer()
+    init(_ title: String, text: Binding<String>, resetToken: Int = 0) { self.title = title; _text = text; self.resetToken = resetToken }
+    var body: some View {
+        BufferedTextField(title, text: $text)
+            .environment(\.inputCommitBuffer, buffer)
+            .onChange(of: resetToken) { _, _ in buffer.discardAll() }
+            .onChange(of: text) { _, _ in buffer.discardAll() }
     }
 }

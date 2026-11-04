@@ -189,9 +189,10 @@ describe('Stepper', () => {
 
   it('names controls for their field when requested', () => {
     const onChange = vi.fn()
-    act(() => root.render(<Host initial={10} step={1} onChange={onChange} ariaLabel="load" />))
-    expect(host.querySelector('button[aria-label="Decrease load"]')).toBeTruthy()
-    expect(host.querySelector('button[aria-label="Increase load"]')).toBeTruthy()
+    act(() => root.render(<Host initial={10} step={1} onChange={onChange} label="Load" ariaLabel="load" />))
+    expect(host.querySelector('[role="group"][aria-label="Load"]')).toBeTruthy()
+    expect(host.querySelector('[data-stepper="load"] button[aria-label="Decrease"]')).toBeTruthy()
+    expect(host.querySelector('[data-stepper="load"] button[aria-label="Increase"]')).toBeTruthy()
   })
 
   it('uses the caller step rule', () => {

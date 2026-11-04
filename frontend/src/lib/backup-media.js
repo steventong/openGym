@@ -90,9 +90,9 @@ const notBackup = () => Object.assign(new Error('not an openGym backup'), { code
  * a developer ('not-zip', a JSON.parse complaint) and used to be toasted as they were.
  */
 export function backupImportError(e) {
-  if (e?.code === 'compressed') return t('That zip was repacked. Import the original backup file.')
-  if (e?.code === 'not-backup' || e?.code === 'not-zip' || e?.code === 'encrypted' || e instanceof SyntaxError) return t('That file isn’t an openGym backup.')
-  return t('Couldn’t read that file.')
+  if (e?.code === 'compressed') return t("THAT_ZIP_WAS_REPACKED_IMPORT_THE_ORIGINAL_BACKUP_FILE" /* 这个 zip 被重新打包过。请导入原始备份文件。 */)
+  if (e?.code === 'not-backup' || e?.code === 'not-zip' || e?.code === 'encrypted' || e instanceof SyntaxError) return t("THAT_FILE_ISN_T_AN_OPENGYM_BACKUP" /* 这个文件不是 openGym 备份。 */)
+  return t("COULDN_T_READ_THAT_FILE" /* 无法读取这个文件。 */)
 }
 
 /**

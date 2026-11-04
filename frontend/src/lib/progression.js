@@ -34,20 +34,20 @@ export const POLICIES_FOR = {
 }
 
 export const POLICY_NAME = {
-  off: 'No automatic progression',
-  linear: 'Linear progression',
-  greyskull: 'Greyskull LP',
-  double: 'Double progression',
-  triple: 'Triple progression',
-  time: 'Add time'
+  off: "NO_AUTOMATIC_PROGRESSION" /* 不自动进阶 */,
+  linear: "LINEAR_PROGRESSION" /* 线性进阶 */,
+  greyskull: "GREYSKULL_LP" /* 术语：Greyskull LP */,
+  double: "DOUBLE_PROGRESSION" /* 双重进阶 */,
+  triple: "TRIPLE_PROGRESSION" /* 三重进阶 */,
+  time: "ADD_TIME" /* 增加时间 */
 }
 export const POLICY_DESC = {
-  off: 'Targets stay where you set them.',
-  linear: 'Hit every rep in every set and the weight goes up. Repeated misses trigger a deload.',
-  greyskull: 'Two straight sets plus a final set taken to failure. Beat the target on that set and the weight goes up (twice as much if you double the reps). One failure resets 10 %.',
-  double: 'Work up through a rep range at the same weight. Reach the top of the range in every set and the weight goes up, reps back to the bottom.',
-  triple: 'Reps climb to the top of the range, then a set is added, up to your most sets. All of them at the top and the weight goes up, back to your first sets and reps.',
-  time: 'Hold every set for the full duration and the target goes up.'
+  off: "TARGETS_STAY_WHERE_YOU_SET_THEM" /* 目标保持你设定的样子。 */,
+  linear: "HIT_EVERY_REP_IN_EVERY_SET_AND_THE_WEIGHT_GOES_UP_REPEATED" /* 每组都完成全部次数，重量就上调。反复未完成则触发减载。 */,
+  greyskull: "TWO_STRAIGHT_SETS_PLUS_A_FINAL_SET_TAKEN_TO_FAILURE_BEAT_THE" /* 两组常规组，再加最后一组做到力竭。最后一组超过目标就加重（次数翻倍则加倍）。失败一次回落 10 %。 */,
+  double: "WORK_UP_THROUGH_A_REP_RANGE_AT_THE_SAME_WEIGHT_REACH_THE" /* 在同一重量下把次数从下限做到上限。每组都做到上限就加重，次数回到下限。 */,
+  triple: "REPS_CLIMB_TO_THE_TOP_OF_THE_RANGE_THEN_A_SET_IS" /* 次数先升到区间上限，然后加一组，直到你设定的最多组数。全部到顶后加重量，回到最初的组数和次数。 */,
+  time: "HOLD_EVERY_SET_FOR_THE_FULL_DURATION_AND_THE_TARGET_GOES_UP" /* 每组都保持满时长，目标就上调。 */
 }
 
 // The Epley target is a soft objective mapped onto the exercise's real load grid. Keep the

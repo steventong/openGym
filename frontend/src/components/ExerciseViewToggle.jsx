@@ -9,6 +9,6 @@ import Icon from './Icon.jsx'
 export default function ExerciseViewToggle() {
   const cards = useStore(s => s.S.exerciseView === 'cards')
   const update = useStore(s => s.update)
-  return <button className={'iconbtn ex-view-btn' + (cards ? ' on' : '')} aria-label={t('Cards')} aria-pressed={cards}
+  return <button className={'iconbtn ex-view-btn' + (cards ? ' on' : '')} aria-label={t("CARDS" /* 卡片 */)} aria-pressed={cards}
     onClick={() => update(s => { s.exerciseView = cards ? 'list' : 'cards' })}><Icon name="grid" /></button>
 }

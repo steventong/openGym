@@ -36,6 +36,18 @@ import UIKit
 
     init(store: GymStore) { self.store = store }
 
+    static func content(for state: WorkoutActivityAttributes.ContentState, now: Date = Date()) -> ActivityContent<WorkoutActivityAttributes.ContentState> {
+        // The protection deadline requests one system redraw. Once it has
+        // passed it must not mark a restored, otherwise current workout stale.
+        let staleDate = state.actionReadyAt.flatMap { $0 > now ? $0 : nil }
+        return ActivityContent(state: state, staleDate: staleDate, relevanceScore: 1)
+    }
+
+    static func needsUpdate(_ current: ActivityContent<WorkoutActivityAttributes.ContentState>,
+                            to next: ActivityContent<WorkoutActivityAttributes.ContentState>) -> Bool {
+        current.state != next.state || current.staleDate != next.staleDate || current.relevanceScore != next.relevanceScore
+    }
+
     func publish() {
         if let trace = WorkoutActivityDiagnostics.traceID { pendingTraces.insert(trace) }
         if WorkoutActivityDiagnostics.traceID != nil {
@@ -96,14 +108,14 @@ import UIKit
             }
         }
         if let attributes, let state {
-            let content = ActivityContent(state: state, staleDate: state.restEnd, relevanceScore: 1)
+            let content = Self.content(for: state)
             let matches = Activity<WorkoutActivityAttributes>.activities.filter {
                 $0.attributes.sessionID == attributes.sessionID && $0.attributes.account == attributes.account &&
                 ($0.activityState == .active || $0.activityState == .stale)
             }
             if let activity = matches.first {
                 let activityID = WorkoutActivityDiagnostics.fingerprint(activity.id)
-                if activity.content.state != state {
+                if Self.needsUpdate(activity.content, to: content) {
                     let updateStarted = ContinuousClock.now
                     WorkoutActivityDiagnostics.record("activity.update.begin", ["activity": activityID, "state": String(describing: activity.activityState)], traces: traces)
                     await activity.update(content)
@@ -127,11 +139,11 @@ import UIKit
                         store.liveActivityIssue = nil
                     } catch {
                         WorkoutActivityDiagnostics.record("activity.request.failed", WorkoutActivityDiagnostics.errorFields(error), traces: traces, failure: true)
-                        store.liveActivityIssue = "实时活动暂未启动，回到 App 后会重试。"
+                        store.liveActivityIssue = L10n.text("LIVE_ACTIVITY_HAS_NOT_STARTED_IT_WILL_RETRY_WHEN_YOU_RETURN_TO" /* 实时活动暂未启动，回到 App 后会重试。 */)
                     }
                 } else {
                     WorkoutActivityDiagnostics.record("activity.request.skipped", ["reason": "activities_disabled"], traces: traces)
-                    store.liveActivityIssue = "实时活动未开启，可在系统设置中允许 openGym 的实时活动。"
+                    store.liveActivityIssue = L10n.text("LIVE_ACTIVITIES_ARE_OFF_ENABLE_THEM_FOR_OPENGYM_IN_SYSTEM_SETTINGS" /* 实时活动未开启，可在系统设置中允许 openGym 的实时活动。 */)
                 }
             } else {
                 WorkoutActivityDiagnostics.record("activity.request.skipped", ["reason": "no_matching_activity_in_background"], traces: traces)

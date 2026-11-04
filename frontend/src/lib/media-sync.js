@@ -143,7 +143,7 @@ export function createMediaSync(deps = {}) {
     const refuse = async h => {
       await d.media.markRejected(h)
       rejected++
-      if (!rejectTold.has(h)) { rejectTold.add(h); d.toast(t('The server refused the file as too large.')) }
+      if (!rejectTold.has(h)) { rejectTold.add(h); d.toast(t("THE_SERVER_REFUSED_THE_FILE_AS_TOO_LARGE" /* 服务器因文件过大而拒绝了它。 */)) }
     }
     for (const h of missing) {
       const rec = await d.media.get(h)
@@ -167,7 +167,7 @@ export function createMediaSync(deps = {}) {
         if (code === 'media-quota') {
           if (!quotaTold) {
             quotaTold = true
-            d.toast(t('Your photo and video space on the server is full ({0} of {1} MB).', fmtMB(Number(e.data?.usedMB) || 0), fmtMB(Number(e.data?.quotaMB) || 0)))
+            d.toast(t("YOUR_PHOTO_AND_VIDEO_SPACE_ON_THE_SERVER_IS_FULL_COUNT_OF" /* 你在服务器上的照片和视频空间已满（{0} / {1} MB）。 */, fmtMB(Number(e.data?.usedMB) || 0), fmtMB(Number(e.data?.quotaMB) || 0)))
           }
           stopped = true
           break
@@ -183,9 +183,9 @@ export function createMediaSync(deps = {}) {
           if (!rejectTold.has(h)) {
             rejectTold.add(h)
             d.toast(code === 'media-type' || code === 'media-invalid'
-              ? t('That file type isn’t supported. Use a photo, a GIF, or an MP4, MOV or WebM video.')
-              : code === 'media-too-long' ? t('That video is too long. Max {0} seconds.', Number(e.data?.maxSec) || 60)
-                : t('The server refused the file as too large.'))
+              ? t("THAT_FILE_TYPE_ISN_T_SUPPORTED_USE_A_PHOTO_A_GIF_OR" /* 不支持该文件类型。请使用照片、GIF，或 MP4、MOV、WebM 视频。 */)
+              : code === 'media-too-long' ? t("THAT_VIDEO_IS_TOO_LONG_MAX_COUNT_SECONDS" /* 视频太长了。最长 {0} 秒。 */, Number(e.data?.maxSec) || 60)
+                : t("THE_SERVER_REFUSED_THE_FILE_AS_TOO_LARGE" /* 服务器因文件过大而拒绝了它。 */))
           }
           continue
         }

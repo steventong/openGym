@@ -5,12 +5,12 @@ enum APIError: LocalizedError {
     case invalidServer, response(Int, String), invalidResponse, signIn, busy
     var errorDescription: String? {
         switch self {
-        case .invalidServer: return "请输入有效的服务地址。远程服务需要 HTTPS；本机支持 http://localhost:8080。"
-        case .response(401, _), .signIn: return "请先在设置中配对账号，或重新配对已过期的连接。"
-        case let .response(409, message): return message == "conflict" ? "其他设备正在修改数据，请稍后重试。你的训练草稿仍保留在本机。" : message
+        case .invalidServer: return L10n.text("ENTER_A_VALID_SERVER_ADDRESS_REMOTE_SERVERS_REQUIRE_HTTPS_LOCAL_ACCESS_SUPPORTS" /* 请输入有效的服务地址。远程服务需要 HTTPS；本机支持 http://localhost:8080。 */)
+        case .response(401, _), .signIn: return L10n.text("PAIR_YOUR_ACCOUNT_IN_SETTINGS_OR_PAIR_AGAIN_IF_YOUR_CONNECTION_HAS" /* 请先在设置中配对账号，或重新配对已过期的连接。 */)
+        case let .response(409, message): return message == "conflict" ? L10n.text("ANOTHER_DEVICE_IS_UPDATING_YOUR_DATA_TRY_AGAIN_SHORTLY_YOUR_WORKOUT_DRAFT" /* 其他设备正在修改数据，请稍后重试。你的训练草稿仍保留在本机。 */) : message
         case let .response(_, message): return message
-        case .invalidResponse: return "服务器返回了无法识别的数据。"
-        case .busy: return "正在同步，请稍后重试。"
+        case .invalidResponse: return L10n.text("THE_SERVER_RETURNED_DATA_THAT_COULD_NOT_BE_READ" /* 服务器返回了无法识别的数据。 */)
+        case .busy: return L10n.text("SYNC_IN_PROGRESS_TRY_AGAIN_SHORTLY" /* 正在同步，请稍后重试。 */)
         }
     }
 }
@@ -69,8 +69,8 @@ enum CredentialStore {
         let status = SecItemUpdate(query as CFDictionary, values as CFDictionary)
         if status == errSecItemNotFound {
             var add = query; values.forEach { add[$0] = $1 }
-            guard SecItemAdd(add as CFDictionary, nil) == errSecSuccess else { throw APIError.response(0, "无法安全保存登录信息。") }
-        } else if status != errSecSuccess { throw APIError.response(0, "无法更新登录信息（Keychain \(status)）。") }
+            guard SecItemAdd(add as CFDictionary, nil) == errSecSuccess else { throw APIError.response(0, L10n.text("COULD_NOT_STORE_LOGIN_DETAILS_SECURELY" /* 无法安全保存登录信息。 */)) }
+        } else if status != errSecSuccess { throw APIError.response(0, L10n.text("COULD_NOT_UPDATE_LOGIN_DETAILS_KEYCHAIN_COUNT" /* 无法更新登录信息（Keychain {0}）。 */, status)) }
     }
     static func read(for server: String) -> String? {
         let query: [String: Any] = [kSecClass as String:kSecClassGenericPassword, kSecAttrService as String:"openGym.native", kSecAttrAccount as String:server, kSecReturnData as String:true, kSecMatchLimit as String:kSecMatchLimitOne]

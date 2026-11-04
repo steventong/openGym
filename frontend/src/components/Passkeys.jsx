@@ -35,20 +35,20 @@ const when = iso => {
   try { return d.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short', ...year }) }
   catch { return '' }
 }
-const label = (p, i) => p.name || t('Passkey {0}', i + 1)
+const label = (p, i) => p.name || t("PASSKEY_COUNT" /* 通行密钥 {0} */, i + 1)
 // "Added 3 Sep 2026 · Last used 22 Sep 2026" — a passkey from before either was recorded has none.
-const meta = p => [p.created && t('Added {0}', when(p.created)), p.lastUsed && t('Last used {0}', when(p.lastUsed))].filter(Boolean).join(' · ')
+const meta = p => [p.created && t("ADDED_COUNT" /* 添加于 {0} */, when(p.created)), p.lastUsed && t("LAST_USED_COUNT" /* 上次使用于 {0} */, when(p.lastUsed))].filter(Boolean).join(' · ')
 
 // The server's refusal in the UI language. The proof codes are the password sheet's; the rest
 // are this feature's own (api/openapi.yaml, tag passkeys).
 export function passkeyError(e) {
   // The authenticator already holds one of this profile's passkeys (excludeCredentials).
-  if (e?.name === 'InvalidStateError') return t('This device already has a passkey for this profile.')
+  if (e?.name === 'InvalidStateError') return t("THIS_DEVICE_ALREADY_HAS_A_PASSKEY_FOR_THIS_PROFILE" /* 此设备已有该档案的通行密钥。 */)
   switch (e?.data?.code) {
-    case 'last-way-in': return t('It is your only way in, so it cannot be removed until there is another.')
-    case 'passkey-limit': return t('This profile already has as many passkeys as it can hold.')
-    case 'credential-exists': return t('This passkey already belongs to a profile.')
-    case 'link-invalid': return t('That code is wrong, already used or expired. Make a new one on your other device.')
+    case 'last-way-in': return t("IT_IS_YOUR_ONLY_WAY_IN_SO_IT_CANNOT_BE_REMOVED_UNTIL" /* 这是你唯一的登录方式，在有其他方式之前不能移除。 */)
+    case 'passkey-limit': return t("THIS_PROFILE_ALREADY_HAS_AS_MANY_PASSKEYS_AS_IT_CAN_HOLD" /* 此档案的通行密钥数量已达上限。 */)
+    case 'credential-exists': return t("THIS_PASSKEY_ALREADY_BELONGS_TO_A_PROFILE" /* 此通行密钥已属于某个档案。 */)
+    case 'link-invalid': return t("THAT_CODE_IS_WRONG_ALREADY_USED_OR_EXPIRED_MAKE_A_NEW_ONE" /* 代码错误、已被使用或已过期。请在你的另一台设备上生成新的代码。 */)
   }
   return passwordError(e)
 }
@@ -73,38 +73,38 @@ export function usePasskeys(on) {
 export function PasskeysRow({ state, changed }) {
   if (!state) return null
   const n = state.passkeys.length
-  return <Row icon="fingerprint" iconTint="var(--acc)" title={t('Passkeys')} accessory="chevron"
-    subtitle={n === 0 ? t('None yet. Add one and sign in without your password.') : tn('1 passkey', '{0} passkeys', n)}
+  return <Row icon="fingerprint" iconTint="var(--acc)" title={t("PASSKEYS" /* 通行密钥 */)} accessory="chevron"
+    subtitle={n === 0 ? t("NONE_YET_ADD_ONE_AND_SIGN_IN_WITHOUT_YOUR_PASSWORD" /* 还没有。添加一个，就能不用密码登录。 */) : tn("ONE_PASSKEY" /* 1 个通行密钥 */, "COUNT_PASSKEYS" /* {0} 个通行密钥 */, n)}
     onClick={() => ui().openSheet(close => <PasskeysSheet close={close} changed={changed} />)} />
 }
 
 export function DeviceLinkRow({ state }) {
   if (!state) return null
-  return <Row icon="qr" iconTint="var(--blue)" title={t('Add another device')} accessory="chevron"
-    subtitle={t('A one-time code lets your phone or another computer sign in with a passkey of its own.')}
+  return <Row icon="qr" iconTint="var(--blue)" title={t("ADD_ANOTHER_DEVICE" /* 添加其他设备 */)} accessory="chevron"
+    subtitle={t("A_ONE_TIME_CODE_LETS_YOUR_PHONE_OR_ANOTHER_COMPUTER_SIGN_IN" /* 一次性代码可让你的手机或其他电脑用自己的通行密钥登录。 */)}
     onClick={() => ui().openSheet(close => <DeviceLinkSheet close={close} />)} />
 }
 
 export function PasskeysSheet({ close, changed }) {
   const { st, set } = usePasskeys(true)
   const done = r => { set(listOf(r) || st); changed?.() }
-  if (!st) return <><h3>{t('Passkeys')}</h3><div className="muted small">…</div></>
+  if (!st) return <><h3>{t("PASSKEYS" /* 通行密钥 */)}</h3><div className="muted small">…</div></>
   const edit = (p, i) => ui().openSheet(c => <PasskeySheet passkey={p} title={label(p, i)} state={st} close={c} done={done} />)
   const add = () => ui().openSheet(c => <AddPasskeySheet state={st} close={c} done={done} />)
   return <>
-    <h3>{t('Passkeys')}</h3>
+    <h3>{t("PASSKEYS" /* 通行密钥 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
-      {t('Each one signs in to this profile from the device or password manager that keeps it. Tap one to rename or remove it.')}
+      {t("EACH_ONE_SIGNS_IN_TO_THIS_PROFILE_FROM_THE_DEVICE_OR_PASSWORD" /* 每个通行密钥都能从保存它的设备或密码管理器登录此档案。点按一个即可重命名或移除。 */)}
     </div>
     {st.passkeys.length > 0 && <div className="sect-b">
       {st.passkeys.map((p, i) => <Row key={p.id} icon="fingerprint" iconTint="var(--grey)" title={label(p, i)} subtitle={meta(p) || null}
         accessory="chevron" onClick={() => edit(p, i)} />)}
     </div>}
     {st.passkeys.length === 1 && st.lastWayIn && <div className="dim small" style={{ marginTop: 8 }}>
-      {t('It is your only way in, so it cannot be removed until there is another.')}</div>}
+      {t("IT_IS_YOUR_ONLY_WAY_IN_SO_IT_CANNOT_BE_REMOVED_UNTIL" /* 这是你唯一的登录方式，在有其他方式之前不能移除。 */)}</div>}
     <div style={{ height: 14 }} />
-    {webauthnOK() && <><Button variant="primary" icon="plus" onClick={add}>{t('Add a passkey')}</Button><div style={{ height: 8 }} /></>}
-    <Button onClick={close}>{t('Done')}</Button>
+    {webauthnOK() && <><Button variant="primary" icon="plus" onClick={add}>{t("ADD_A_PASSKEY" /* 添加通行密钥 */)}</Button><div style={{ height: 8 }} /></>}
+    <Button onClick={close}>{t("DONE" /* 完成 */)}</Button>
   </>
 }
 
@@ -127,15 +127,15 @@ function PasskeySheet({ passkey, title, state, close, done }) {
     <h3>{title}</h3>
     {info && <div className="muted small" style={{ marginBottom: 14 }}>{info}</div>}
     <form onSubmit={save} noValidate>
-      <input className="input" placeholder={t('Name, e.g. Work laptop')} maxLength={40} value={name} onChange={e => setName(e.target.value)} />
+      <input className="input" placeholder={t("NAME_E_G_WORK_LAPTOP" /* 名称，例如：工作笔记本 */)} maxLength={40} value={name} onChange={e => setName(e.target.value)} />
       {err && <div className="small" role="alert" style={errStyle}>{err}</div>}
       <div style={{ height: 12 }} />
-      <Button type="submit" variant="primary" disabled={busy}>{t('Save')}</Button>
+      <Button type="submit" variant="primary" disabled={busy}>{t("SAVE" /* 保存 */)}</Button>
     </form>
     <div style={{ height: 8 }} />
     {state.lastWayIn
-      ? <div className="dim small">{t('It is your only way in, so it cannot be removed until there is another.')}</div>
-      : <button type="button" className="btn danger" disabled={busy} onClick={remove}>{t('Remove passkey')}</button>}
+      ? <div className="dim small">{t("IT_IS_YOUR_ONLY_WAY_IN_SO_IT_CANNOT_BE_REMOVED_UNTIL" /* 这是你唯一的登录方式，在有其他方式之前不能移除。 */)}</div>
+      : <button type="button" className="btn danger" disabled={busy} onClick={remove}>{t("REMOVE_PASSKEY" /* 移除通行密钥 */)}</button>}
   </>
 }
 
@@ -148,18 +148,18 @@ function RemovePasskeySheet({ passkey, title, state, close, done }) {
   const remove = async proof => {
     const r = await api('/api/account/passkeys?id=' + encodeURIComponent(passkey.id), { method: 'DELETE', body: JSON.stringify(proof) })
     close(); done(r)
-    toast(t('Passkey removed'))
+    toast(t("PASSKEY_REMOVED" /* 已移除通行密钥 */))
   }
   return <>
-    <h3>{t('Remove this passkey?')}</h3>
+    <h3>{t("REMOVE_THIS_PASSKEY" /* 移除这个通行密钥？ */)}</h3>
     <div className="small" style={{ fontWeight: 600, marginBottom: 6 }}>{title}</div>
     <div className="muted small" style={{ marginBottom: 6 }}>
-      {t('It can no longer sign in to this profile. A device already signed in with it stays signed in. If it was lost, use Sign out everywhere.')}
+      {t("IT_CAN_NO_LONGER_SIGN_IN_TO_THIS_PROFILE_A_DEVICE_ALREADY" /* 它将无法再登录此档案。已用它登录的设备会保持登录。如果设备丢失，请使用“在所有设备上退出登录”。 */)}
     </div>
-    <div className="dim small" style={{ marginBottom: 14 }}>{t('First confirm that it is you.')}</div>
-    <ProveOwner passkey password={state.password} explain={passkeyError} danger submitText={t('Remove')} onProof={remove} />
+    <div className="dim small" style={{ marginBottom: 14 }}>{t("FIRST_CONFIRM_THAT_IT_IS_YOU" /* 请先确认是你本人。 */)}</div>
+    <ProveOwner passkey password={state.password} explain={passkeyError} danger submitText={t("REMOVE" /* 移除 */)} onProof={remove} />
     <div style={{ height: 8 }} />
-    <Button type="button" variant="ghost" className="dim" onClick={close}>{t('Cancel')}</Button>
+    <Button type="button" variant="ghost" className="dim" onClick={close}>{t("CANCEL" /* 取消 */)}</Button>
   </>
 }
 
@@ -181,7 +181,7 @@ function AddPasskeySheet({ state, close, done }) {
       const credential = await createPasskey(ready.options)
       done(await post('/api/account/passkeys/verify', { cid: ready.cid, credential, name }))
       close()
-      toast(t('Passkey added'))
+      toast(t("PASSKEY_ADDED" /* 已添加通行密钥 */))
     } catch (e) {
       if (dismissed(e)) return
       setErr(passkeyError(e))
@@ -190,13 +190,13 @@ function AddPasskeySheet({ state, close, done }) {
     } finally { setBusy(false) }
   }
   return <>
-    <h3>{t('Add a passkey')}</h3>
+    <h3>{t("ADD_A_PASSKEY" /* 添加通行密钥 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>{ready
-      ? t('Confirmed. Now create the new passkey; your browser will ask where to keep it.')
-      : t('For this device, a security key, a password manager, or your phone through the browser’s own QR code. First confirm that it is you.')}</div>
-    <input className="input" placeholder={t('Name, e.g. Work laptop')} maxLength={40} value={name} onChange={e => setName(e.target.value)} />
+      ? t("CONFIRMED_NOW_CREATE_THE_NEW_PASSKEY_YOUR_BROWSER_WILL_ASK_WHERE_TO" /* 已确认。现在创建新的通行密钥，浏览器会问你要把它存在哪里。 */)
+      : t("FOR_THIS_DEVICE_A_SECURITY_KEY_A_PASSWORD_MANAGER_OR_YOUR_PHONE" /* 用于此设备、安全密钥、密码管理器，或通过浏览器自带的二维码使用你的手机。请先确认是你本人。 */)}</div>
+    <input className="input" placeholder={t("NAME_E_G_WORK_LAPTOP" /* 名称，例如：工作笔记本 */)} maxLength={40} value={name} onChange={e => setName(e.target.value)} />
     <div style={{ height: 12 }} />
-    {ready ? <Button variant="primary" icon="plus" disabled={busy} onClick={create}>{t('Create passkey')}</Button>
+    {ready ? <Button variant="primary" icon="plus" disabled={busy} onClick={create}>{t("CREATE_PASSKEY" /* 创建通行密钥 */)}</Button>
       : <ProveOwner passkey={state.passkeys.length > 0} password={state.password} explain={passkeyError}
         onProof={async proof => setReady(await post('/api/account/passkeys/options', proof))} />}
     {err && <div className="small" role="alert" style={errStyle}>{err}</div>}
@@ -217,30 +217,30 @@ export function DeviceLinkSheet({ close }) {
     return () => clearTimeout(timer)
   }, [link])
   const url = link ? deviceLinkUrl(link.code) : ''
-  const copy = async () => { if (await copyText(url)) toast(t('Copied')) }
+  const copy = async () => { if (await copyText(url)) toast(t("COPIED" /* 已复制 */)) }
   return <>
-    <h3>{t('Add another device')}</h3>
+    <h3>{t("ADD_ANOTHER_DEVICE" /* 添加其他设备 */)}</h3>
     {!st ? <div className="muted small">…</div> : !link ? <>
       <div className="muted small" style={{ marginBottom: 14 }}>
-        {t('You get a code that lets your phone or another computer create a passkey for this profile. First confirm that it is you.')}
+        {t("YOU_GET_A_CODE_THAT_LETS_YOUR_PHONE_OR_ANOTHER_COMPUTER_CREATE" /* 你会得到一个代码，你的手机或其他电脑可以用它为此档案创建通行密钥。请先确认是你本人。 */)}
       </div>
       <ProveOwner passkey={st.passkeys.length > 0} password={st.password} explain={passkeyError}
         onProof={async proof => setLink(await post('/api/account/device-link', proof))} />
     </> : expired ? <>
-      <div className="muted small" style={{ marginBottom: 14 }}>{t('This code has expired.')}</div>
-      <Button variant="primary" onClick={() => setLink(null)}>{t('Make a new code')}</Button>
+      <div className="muted small" style={{ marginBottom: 14 }}>{t("THIS_CODE_HAS_EXPIRED" /* 此代码已过期。 */)}</div>
+      <Button variant="primary" onClick={() => setLink(null)}>{t("MAKE_A_NEW_CODE" /* 生成新代码 */)}</Button>
     </> : <>
       <div className="muted small" style={{ marginBottom: 14 }}>
-        {t('Scan this with the other device, or open openGym there and enter the code on the sign-in screen. It works once, for {0} minutes.', LINK_MINUTES)}
+        {t("SCAN_THIS_WITH_THE_OTHER_DEVICE_OR_OPEN_OPENGYM_THERE_AND_ENTER" /* 用另一台设备扫描，或在那台设备上打开 openGym，在登录界面输入代码。仅可使用一次，{0} 分钟内有效。 */, LINK_MINUTES)}
       </div>
       <div className="ci-qr-plate" style={{ width: 'fit-content', margin: '0 auto 14px' }}><QrCanvas value={url} size={200} /></div>
       {/* Read out or typed character by character: left to right in every language. */}
       <div className="card" dir="ltr" style={{ textAlign: 'center', fontSize: 24, fontWeight: 700, letterSpacing: '.12em', padding: '14px 0' }}>{link.code}</div>
       <div style={{ height: 12 }} />
-      <Button icon="copy" onClick={copy}>{t('Copy link')}</Button>
+      <Button icon="copy" onClick={copy}>{t("COPY_LINK" /* 复制链接 */)}</Button>
     </>}
     <div style={{ height: 8 }} />
-    <Button variant="ghost" onClick={close}>{t('Done')}</Button>
+    <Button variant="ghost" onClick={close}>{t("DONE" /* 完成 */)}</Button>
   </>
 }
 
@@ -283,7 +283,7 @@ export function DeviceLinkRedeemSheet({ close }) {
     ev.preventDefault()
     if (busy) return
     const c = code.trim()
-    if (!c) { setErr(t('Enter the code from your other device.')); return }
+    if (!c) { setErr(t("ENTER_THE_CODE_FROM_YOUR_OTHER_DEVICE" /* 输入你另一台设备上的代码。 */)); return }
     setBusy(true); setErr(null)
     let spent = false
     try {
@@ -298,12 +298,12 @@ export function DeviceLinkRedeemSheet({ close }) {
       // before it is answered (adoptProfile).
       st.setUser(r.user, same ? undefined : { adopt: { alwaysAsk: true } })
       close()
-      if (same) { toast(t('Passkey added')); return }
+      if (same) { toast(t("PASSKEY_ADDED" /* 已添加通行密钥 */)); return }
       // Signed in by now whatever happens next: a pull that fails is the sync banner's to say
       // (adoptProfile records it), not a reason to hide that this device got in.
       await st.adoptProfile(askAddDeviceData, { alwaysAsk: true }).catch(() => {})
       // Not "Welcome back": this may be the first time this person has seen that profile.
-      toast(t('Signed in as {0}', r.user.name))
+      toast(t("SIGNED_IN_AS_COUNT" /* 已登录为 {0} */, r.user.name))
     } catch (e) {
       if (!dismissed(e)) setErr(passkeyError(e))
       // Answered by the server, the challenge is gone; the next try asks for a new one.
@@ -311,31 +311,31 @@ export function DeviceLinkRedeemSheet({ close }) {
     } finally { setBusy(false) }
   }
   if (!webauthnOK()) return <>
-    <h3>{t('Add this device')}</h3>
-    <div className="muted small">{t('This browser cannot create passkeys, so it cannot be added with a code. Open the link in a browser that can.')}</div>
+    <h3>{t("ADD_THIS_DEVICE" /* 添加此设备 */)}</h3>
+    <div className="muted small">{t("THIS_BROWSER_CANNOT_CREATE_PASSKEYS_SO_IT_CANNOT_BE_ADDED_WITH_A" /* 此浏览器无法创建通行密钥，因此不能通过代码添加。请在能创建通行密钥的浏览器中打开此链接。 */)}</div>
     <div style={{ height: 12 }} />
-    <Button onClick={close}>{t('Done')}</Button>
+    <Button onClick={close}>{t("DONE" /* 完成 */)}</Button>
   </>
   const joining = info && info.code === code.trim() ? info : null
   const elsewhere = joining && joining.id !== user?.id
   return <>
-    <h3>{t('Add this device')}</h3>
+    <h3>{t("ADD_THIS_DEVICE" /* 添加此设备 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>{joining
-      ? t('Create a passkey on this device for the profile “{0}”. It signs you in here from now on.', joining.name)
-      : t('Enter the code your other device shows under Settings → Account → Add another device. This device then gets a passkey of its own.')}</div>
+      ? t("CREATE_A_PASSKEY_ON_THIS_DEVICE_FOR_THE_PROFILE_COUNT_IT_SIGNS" /* 在此设备上为档案“{0}”创建通行密钥。从现在起，你在这里用它登录。 */, joining.name)
+      : t("ENTER_THE_CODE_YOUR_OTHER_DEVICE_SHOWS_UNDER_SETTINGS_ACCOUNT_ADD_ANOTHER" /* 输入你另一台设备在“设置 → 账号 → 添加其他设备”中显示的代码。之后此设备会有自己的通行密钥。 */)}</div>
     {elsewhere && <div className="card small" style={{ textAlign: 'start', marginBottom: 14 }}>
       {user && <div style={{ marginBottom: 8 }}>{user.name === joining.name
-        ? t('This code is for a different profile that is also called “{0}”, not the one this browser is signed in as. Adding it there signs yours out here.', joining.name)
-        : t('This browser is signed in as “{0}”. Adding it to “{1}” signs “{0}” out here.', user.name, joining.name)}</div>}
-      <div>{t('Only continue if this code comes from a device of your own. This browser is then signed in to “{0}”, and what you log here goes to that profile.', joining.name)}</div>
+        ? t("THIS_CODE_IS_FOR_A_DIFFERENT_PROFILE_THAT_IS_ALSO_CALLED_COUNT" /* 这个代码属于另一个同样名为“{0}”的档案，而不是此浏览器当前登录的那个。将浏览器添加到那里，会让你的档案在这里退出登录。 */, joining.name)
+        : t("THIS_BROWSER_IS_SIGNED_IN_AS_COUNT_ADDING_IT_TO_COUNT_SIGNS" /* 此浏览器已以“{0}”登录。将它添加到“{1}”会让“{0}”在这里退出登录。 */, user.name, joining.name)}</div>}
+      <div>{t("ONLY_CONTINUE_IF_THIS_CODE_COMES_FROM_A_DEVICE_OF_YOUR_OWN" /* 只有当这个代码来自你自己的设备时才继续。之后此浏览器将登录到“{0}”，你在这里记录的内容都会进入该档案。 */, joining.name)}</div>
     </div>}
     <form onSubmit={submit} noValidate>
-      <input ref={ref} className="input" name="device-code" autoComplete="one-time-code" placeholder={t('Code from your other device')} maxLength={20}
+      <input ref={ref} className="input" name="device-code" autoComplete="one-time-code" placeholder={t("CODE_FROM_YOUR_OTHER_DEVICE" /* 来自你另一台设备的代码 */)} maxLength={20}
         value={code} onChange={e => setCode(e.target.value.toUpperCase())} autoCapitalize="characters" autoCorrect="off" spellCheck={false}
         dir="ltr" style={{ letterSpacing: '.14em', fontWeight: 600, textAlign: 'center' }} />
       {err && <div className="small" role="alert" style={errStyle}>{err}</div>}
       <div style={{ height: 12 }} />
-      <Button type="submit" variant="primary" disabled={busy}>{t('Create passkey')}</Button>
+      <Button type="submit" variant="primary" disabled={busy}>{t("CREATE_PASSKEY" /* 创建通行密钥 */)}</Button>
     </form>
   </>
 }

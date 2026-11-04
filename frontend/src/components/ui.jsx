@@ -88,7 +88,7 @@ export const SearchField = forwardRef(function SearchField({ value, onChange, on
       <Icon name="magnifier" className="lead" />
       <input ref={ref} className="field" value={value} onChange={onChange} {...rest} />
       {!!value && (
-        <button className="clear" onClick={onClear} aria-label={t('Clear')}>
+        <button className="clear" onClick={onClear} aria-label={t("CLEAR" /* 清除 */)}>
           <Icon name="xmark" />
         </button>
       )}
@@ -181,13 +181,13 @@ export function Stepper({ value, step = 1, min = 0, max = Infinity, onChange, de
     onClick: () => click(dir),
   })
   const inner = (
-    <div className={'stp ' + className}>
-      <button {...holdProps(-1)} aria-label={ariaLabel ? `Decrease ${ariaLabel}` : t('Decrease')} disabled={disabled}><Icon name="minus" /></button>
+    <div className={'stp ' + className} role="group" aria-label={label} data-stepper={ariaLabel}>
+      <button {...holdProps(-1)} aria-label={t("DECREASE" /* 减少 */)} disabled={disabled}><Icon name="minus" /></button>
       <span className="val" onBlur={() => { const v = +value || 0; if (clamp(v) !== v) onChange(clamp(v)) }}>
         <NumberField value={value} decimal={decimal} onChange={onChange} disabled={disabled} aria-invalid={invalid ? 'true' : undefined} />
         {unit && <i>{unit}</i>}
       </span>
-      <button {...holdProps(1)} aria-label={ariaLabel ? `Increase ${ariaLabel}` : t('Increase')} disabled={disabled}><Icon name="plus" /></button>
+      <button {...holdProps(1)} aria-label={t("INCREASE" /* 增加 */)} disabled={disabled}><Icon name="plus" /></button>
     </div>
   )
   if (!label) return inner
@@ -476,7 +476,7 @@ function MultiSelectSheet({ values, options, onToggle, title, doneLabel, close }
         })}
       </div>
       <div style={{ height: 8 }} />
-      <Button variant="primary" onClick={close}>{doneLabel || 'Done'}</Button>
+      <Button variant="primary" onClick={close}>{doneLabel || t("DONE" /* 完成 */)}</Button>
     </>
   )
 }

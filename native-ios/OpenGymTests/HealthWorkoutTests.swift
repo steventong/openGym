@@ -1,4 +1,5 @@
 import XCTest
+import HealthKit
 @testable import OpenGym
 
 @MainActor final class HealthWorkoutTests: XCTestCase {
@@ -34,6 +35,34 @@ import XCTest
         ledger.receive(HealthWorkoutReport(id: end.id, state: .saved))
         XCTAssertTrue(ledger.pending.isEmpty)
         XCTAssertFalse(ledger.merge(request()))
+    }
+    func testWorkoutTitleSurvivesWatchTransferAndJournalWithLegacyFallback() throws {
+        var named = request()
+        named.title = "胸背训练 A"
+        XCTAssertEqual(HealthWorkoutWire.requests(from: HealthWorkoutWire.requests([named])), [named])
+        let journal = HealthWorkoutJournal(name: "titles", root: root)
+        var ledger = HealthWorkoutLedger(); ledger.merge(named)
+        try journal.write(ledger)
+        let restored = try XCTUnwrap(try journal.read().requests[named.id])
+        XCTAssertEqual(HealthWorkoutAccess.metadata(restored)[HKMetadataKeyWorkoutBrandName] as? String, named.title)
+        var legacy = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(named)) as? [String: Any])
+        legacy.removeValue(forKey: "title")
+        let decoded = try JSONDecoder().decode(HealthWorkoutRequest.self, from: JSONSerialization.data(withJSONObject: legacy))
+        XCTAssertNil(decoded.title)
+        XCTAssertEqual(HealthWorkoutAccess.metadata(decoded)[HKMetadataKeyWorkoutBrandName] as? String, "openGym")
+    }
+    func testFinishCapturesRenamedTrainingAndRetryKeepsItsTitle() throws {
+        let (store, journal, id) = try fixture()
+        store.changeActive { $0["name"] = "腿部训练 B" }
+        let draft = try XCTUnwrap(store.draft)
+        XCTAssertTrue(store.workoutHealth.finish(draft, at: Date()))
+        let finished = try XCTUnwrap(try journal.read().requests[id])
+        XCTAssertEqual(finished.title, draft.name)
+        XCTAssertEqual(finished.title, "腿部训练 B")
+        XCTAssertEqual(HealthWorkoutAccess.metadata(finished)[HKMetadataKeyWorkoutBrandName] as? String, draft.name)
+        store.changeActive { $0["name"] = "之后修改" }
+        XCTAssertTrue(store.workoutHealth.finish(try XCTUnwrap(store.draft), at: Date()))
+        XCTAssertEqual(try journal.read().requests[id], finished)
     }
     func testOwnerAndFirstEndAreStableAcrossRetryAndConflictingCancel() {
         var ledger = HealthWorkoutLedger(), end = request()
@@ -140,6 +169,7 @@ import XCTest
         let restored = WorkoutHealthSync(store: store, journal: journal, dispatch: { dispatched = $0 })
         restored.retry()
         XCTAssertEqual(dispatched.first?.phase, .finished)
+        XCTAssertEqual(dispatched.first?.title, store.draft?.name)
         XCTAssertEqual(try journal.read().requests[id]?.end?.timeIntervalSince1970 ?? 0, end.timeIntervalSince1970, accuracy: 0.001)
     }
     func testDeletingDraftPersistsDiscardBeforeClearingLocalTraining() throws {

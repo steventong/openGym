@@ -1,3 +1,4 @@
+import { t } from '../../../frontend/src/lib/i18n-core.js';
 import { cascadeWeight } from '../../../frontend/src/lib/history.js';
 import { loadKindFor, baseWeightFor, inventoryFor, rowLoad, ownsPlates } from '../../../frontend/src/lib/plates.js';
 import { registerCustom } from '../../../frontend/src/lib/exercises.js';
@@ -5,9 +6,9 @@ import { registerCustom } from '../../../frontend/src/lib/exercises.js';
 export function cascadeNativeWeight(input) {
   const { sets, index, side, target = {} } = JSON.parse(input);
   const row = sets[index];
-  if (!row) throw Error('训练组不存在。');
+  if (!row) throw Error(t("RULE_SET_MISSING" /* 训练组不存在。 */));
   const source = side ? row.sides?.[side] : row;
-  if (!source) throw Error('训练侧不存在。');
+  if (!source) throw Error(t("RULE_SIDE_MISSING" /* 训练侧不存在。 */));
   source.weightOrigin = 'manual';
   // Literal incomplete input is a manual exception too. Never overwrite hidden unfinished text.
   for (let i = index + 1; i < sets.length; i++) {

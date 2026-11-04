@@ -25,7 +25,7 @@ def activity_file(project, relative)
   group.files.find { |f| f.path == name } || group.new_file(name)
 end
 
-{app => ['OpenGym/**/*.swift', 'Shared/LiveActivity/*.swift'], widget => ['OpenGymWidgets/*.swift', 'Shared/LiveActivity/*.swift'],
+{app => ['OpenGym/**/*.swift', 'Shared/LiveActivity/*.swift', 'Shared/TrainingAction*.swift'], widget => ['OpenGymWidgets/*.swift', 'Shared/LiveActivity/*.swift', 'Shared/TrainingAction*.swift'],
  project.targets.find { |t| t.name == 'OpenGymTests' } => ['OpenGymTests/*.swift']}.each do |target, patterns|
   patterns.each do |pattern|
     Dir.glob(File.join(root, pattern)).sort.each do |path|

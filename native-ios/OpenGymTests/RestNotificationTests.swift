@@ -9,8 +9,10 @@ import UserNotifications
     private var defaults: UserDefaults!
     private var suite: String!
     private var root: URL!
+    private var foreground = false
 
     override func setUp() async throws {
+        foreground = false
         suite = UUID().uuidString
         defaults = UserDefaults(suiteName: suite)
         root = FileManager.default.temporaryDirectory.appendingPathComponent(suite)
@@ -19,7 +21,7 @@ import UserNotifications
         store.draft = try TrainingDraft.fromWeb(["id": "session", "name": "训练", "start": 1000, "cur": 0,
             "entries": [["id": "bench", "sets": [["w": 40, "r": 10, "done": false], ["w": 40, "r": 10, "done": false]]]]], unit: "kg")
         center = FakeRestNotificationCenter()
-        notifications = RestNotifications(store: store, center: center, defaults: defaults, foreground: { false })
+        notifications = RestNotifications(store: store, center: center, defaults: defaults, foreground: { [weak self] in self?.foreground ?? false })
         store.restNotifications = notifications
     }
 
@@ -137,6 +139,36 @@ import UserNotifications
         XCTAssertNil(center.request)
     }
 
+    func testOpeningAppClearsDeliveredWithoutCancellingUpcomingRest() async throws {
+        store.startRest(entry: 0, seconds: 90)
+        await notifications.flush()
+        let pending = try XCTUnwrap(center.request)
+        let cancellations = center.cancelCount
+        center.delivered = true
+        notifications.clearDelivered()
+        XCTAssertFalse(center.delivered)
+        XCTAssertEqual(center.request?.identifier, pending.identifier)
+        foreground = true
+        await notifications.flush()
+        XCTAssertEqual(center.cancelCount, cancellations)
+        XCTAssertEqual(center.addCount, 1, "Opening the app must not reschedule the deadline")
+        XCTAssertNotNil(center.request, "A future rest still needs its background fallback")
+    }
+
+    func testExpiredNotificationStaysInBackgroundAndClearsInForeground() async {
+        store.restUntil = Date().addingTimeInterval(-10)
+        center.delivered = true
+        await notifications.flush()
+        XCTAssertTrue(center.delivered)
+        foreground = true
+        await notifications.flush()
+        XCTAssertFalse(center.delivered)
+        XCTAssertEqual(center.addCount, 0)
+        center.delivered = true
+        await notifications.flush()
+        XCTAssertFalse(center.delivered, "Foreground updates also remove delivered reminders")
+    }
+
     func testSchedulingFailureIsVisibleAndRetried() async {
         store.startRest(entry: 0, seconds: 90)
         center.failAdd = true
@@ -172,6 +204,7 @@ import UserNotifications
     var addCount = 0
     var cancelCount = 0
     var authorizeCount = 0
+    var delivered = false
     var failAdd = false
     var onAuthorize: (() -> Void)?
     var onAdd: (() -> Void)?
@@ -189,5 +222,6 @@ import UserNotifications
         await Task.yield()
         self.request = request
     }
-    func cancel() { cancelCount += 1; request = nil }
+    func clearDelivered() { delivered = false }
+    func cancel() { cancelCount += 1; request = nil; clearDelivered() }
 }

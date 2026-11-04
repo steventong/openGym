@@ -9,9 +9,9 @@ struct WorkoutPersonalActions:View {
         return (try? store.personalInfo("workoutText",["workout":record.raw,"names":names]))?["text"] as? String ?? ""
     }
     var body:some View {
-        ShareLink(item:summary) {Label("分享",systemImage:"square.and.arrow.up")}
+        ShareLink(item:summary) {Label(L10n.text("SHARE" /* 分享 */),systemImage:"square.and.arrow.up")}
             .accessibilityIdentifier("share-history")
-        Button(role:.destructive,action:delete) {Label("删除",systemImage:"trash")}
+        Button(role:.destructive,action:delete) {Label(L10n.text("DELETE" /* 删除 */),systemImage:"trash")}
             .accessibilityIdentifier("delete-history")
     }
 }

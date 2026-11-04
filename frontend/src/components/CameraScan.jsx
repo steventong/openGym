@@ -49,12 +49,12 @@ export default function CameraScan({ onFound, onCancel }) {
   }, [onFound])
 
   return <>
-    <h3>{t('Scan')}</h3>
+    <h3>{t("SCAN" /* 扫描 */)}</h3>
     {error
       ? <div className="muted small" style={{ marginBottom: 16, lineHeight: 1.5 }}>
           {error === 'denied'
-            ? t('Camera access was denied. Allow it in your browser and try again.')
-            : t('No camera available here. Import a photo or type the code instead.')}
+            ? t("CAMERA_ACCESS_WAS_DENIED_ALLOW_IT_IN_YOUR_BROWSER_AND_TRY_AGAIN" /* 摄像头访问被拒绝。请在浏览器中允许后重试。 */)
+            : t("NO_CAMERA_AVAILABLE_HERE_IMPORT_A_PHOTO_OR_TYPE_THE_CODE_INSTEAD" /* 此处无法使用摄像头。请导入照片或手动输入代码。 */)}
         </div>
       : <>
           <div className="cam-wrap">
@@ -62,8 +62,8 @@ export default function CameraScan({ onFound, onCancel }) {
             <video ref={videoRef} playsInline muted autoPlay />
             <div className="cam-frame" aria-hidden="true" />
           </div>
-          <div className="muted small" style={{ textAlign: 'center', margin: '12px 0 16px' }}>{t('Point the camera at the QR code')}</div>
+          <div className="muted small" style={{ textAlign: 'center', margin: '12px 0 16px' }}>{t("POINT_THE_CAMERA_AT_THE_QR_CODE" /* 将摄像头对准二维码 */)}</div>
         </>}
-    <Button variant="tinted" onClick={onCancel}>{t('Cancel')}</Button>
+    <Button variant="tinted" onClick={onCancel}>{t("CANCEL" /* 取消 */)}</Button>
   </>
 }

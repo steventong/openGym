@@ -9,7 +9,7 @@
 //
 // Like the demo build, MOBILE is replaced at build time, so all of this folds away in
 // web bundles; the Capacitor plugins are only ever imported behind it.
-import { t, tn } from './i18n-core.js'
+import { t, tn , translateValue } from './i18n-core.js'
 import { isoOf, todayISO } from './format.js'
 import { effectiveRoutineIds } from './history.js'
 import { NUDGE_COPY, lineIndex, nudgeFor, nudgeMinute, toneOf } from './nudge.js'
@@ -116,14 +116,14 @@ export function buildReminderNotifications(S, now = new Date()) {
     // so it is reminded every day (the app re-syncs these after every workout and on open).
     const dayRoutines = effectiveRoutineIds(state, iso, iso).map(id => routines.find(x => x.id === id)).filter(Boolean)
     if (!dayRoutines.length) continue
-    const label = dayRoutines.length <= 2 ? dayRoutines.map(r => r.name).join(' + ') : tn('{0} routine', '{0} routines', dayRoutines.length)
+    const label = dayRoutines.length <= 2 ? dayRoutines.map(r => r.name).join(' + ') : tn("COUNT_ROUTINE" /* {0} 个训练计划 */, "COUNT_ROUTINES" /* {0} 个训练计划 */, dayRoutines.length)
     const at = new Date(day)
     at.setHours(hour, minute, 0, 0)
     if (at <= now) continue
     notifications.push({
       id: REMINDER_ID_BASE + offset,
-      title: t('Workout day'),
-      body: t('{0} is on the plan today. Let’s go!', label),
+      title: t("WORKOUT_DAY" /* 训练日 */),
+      body: t("COUNT_IS_ON_THE_PLAN_TODAY_LET_S_GO" /* 今天的计划是{0}。冲吧！ */, label),
       schedule: { at, allowWhileIdle: true },
     })
   }
@@ -155,14 +155,14 @@ export function buildNudgeNotifications(S, now = new Date()) {
     const ids = nudgeFor(S, iso)
     if (!ids) continue
     const names = ids.map(id => routines.find(x => x.id === id)?.name).filter(Boolean)
-    const label = names.length && names.length <= 2 ? names.join(' + ') : tn('{0} routine', '{0} routines', ids.length)
+    const label = names.length && names.length <= 2 ? names.join(' + ') : tn("COUNT_ROUTINE" /* {0} 个训练计划 */, "COUNT_ROUTINES" /* {0} 个训练计划 */, ids.length)
     const when = new Date(day)
     when.setHours(Math.floor(at / 60), at % 60, 0, 0)
     if (when <= now) continue
     notifications.push({
       id: NUDGE_ID_BASE + offset,
-      title: t(copy.title),
-      body: t(copy.lines[lineIndex(iso, copy.lines.length)], label),
+      title: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(copy.title),
+      body: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(copy.lines[lineIndex(iso, copy.lines.length)], label),
       schedule: { at: when, allowWhileIdle: true },
     })
   }

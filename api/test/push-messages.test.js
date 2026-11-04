@@ -25,3 +25,9 @@ test('keeps the existing English copy as the fallback', () => {
   assert.equal(dayReminderPush('unknown', null).title, 'Workout planned today');
   assert.equal(testPush(undefined).body, 'Test notification ✅ This is what alerts look like.');
 });
+
+test('Chinese rest and workout notifications come from the shared copy', () => {
+  assert.deepEqual(restTimerPush('zh'), { title: '休息结束', body: '准备好后开始下一组。', tag: 'rest-timer' });
+  assert.equal(dayReminderPush('zh', { name: '上肢 A', emoji: '💪' }).title, '💪 今天训练：上肢 A');
+  assert.match(testPush('zh').body, /测试通知/);
+});

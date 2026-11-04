@@ -2,21 +2,33 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>CFBundleURLTypes</key>
-	<array><dict>
-		<key>CFBundleURLName</key><string>me.itwl.opengym.workout</string>
-		<key>CFBundleURLSchemes</key><array><string>opengym</string></array>
-	</dict></array>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>me.itwl.opengym.workout</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>opengym</string>
+			</array>
+		</dict>
+	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSHealthShareUsageDescription</key>
-	<string>读取体重用于体重趋势并同步到你的 openGym 账号；读取训练、心率、活动与静息能量用于显示运动记录和热量（kcal），运动健康指标仅保存在设备与 Apple 健康中。</string>
+	<string>Read body weight to chart your progress and sync it to your openGym account. Read workouts, heart rate, active and resting energy to show activity and calories (kcal). Health metrics stay on your devices and in Apple Health.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>将你在 openGym 开始和结束的训练及系统生成的活动能量保存到 Apple 健康，并在健身 App 中显示。</string>
+	<string>Save workouts you start and finish in openGym, along with activity energy recorded by the system, to Apple Health and show them in the Fitness app.</string>
 </dict>
 </plist>

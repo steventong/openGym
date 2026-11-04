@@ -113,7 +113,7 @@ describe('StructuralBalance view', () => {
   it('picking a role\'s own default exercise does not mark it custom', () => {
     const host = render()
     const row = host.querySelector('[data-role-id="inclineBench"]')
-    act(() => [...row.querySelectorAll('button')].find(b => b.textContent.includes('Change exercise')).click())
+    act(() => [...row.querySelectorAll('button')].find(b => b.textContent.includes('Swap exercise')).click())
     const picker = useUI.getState().sheets.at(-1)
     act(() => picker.render(picker.close).props.onPick({ id: '0047' })) // barbell incline bench press, the role's default
     const after = host.querySelector('[data-role-id="inclineBench"]')
@@ -170,13 +170,13 @@ describe('StructuralBalance view', () => {
   it('changing a role\'s exercise via the picker saves an override and marks it custom', () => {
     const host = render()
     const row = host.querySelector('[data-role-id="inclineBench"]')
-    const changeBtn = [...row.querySelectorAll('button')].find(b => b.textContent.includes('Change exercise'))
+    const changeBtn = [...row.querySelectorAll('button')].find(b => b.textContent.includes('Swap exercise'))
     act(() => changeBtn.click())
 
     const picker = useUI.getState().sheets.at(-1)
     expect(picker).toBeTruthy()
     const pickerView = picker.render(picker.close)
-    expect(pickerView.props.title).toBe('Change exercise')   // not the picker's own "Add exercise"
+    expect(pickerView.props.title).toBe('Swap exercise')   // not the picker's own "Add exercise"
     act(() => pickerView.props.onPick({ id: '0043' })) // barbell full squat — deliberately not in inclineBench's whitelist
 
     const chosen = useStore.getState().S.balanceOverrides['poliquin:inclineBench']

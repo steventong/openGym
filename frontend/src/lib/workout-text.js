@@ -18,7 +18,7 @@ export function workoutText(w, { unit, nameOf, speedUnit }) {
   const facts = [
     ...durPart((w.end || 0) - (w.start || 0)),
     fmtVol(w.vol ?? workoutVolume(w), unit),
-    ...(w.bw ? [t('Body weight') + ' ' + fmtNum(w.bw) + ' ' + unit] : []),
+    ...(w.bw ? [t("BODY_WEIGHT" /* 体重 */) + ' ' + fmtNum(w.bw) + ' ' + unit] : []),
   ]
   const blocks = [[[w.name, fmtDate(w.d, true, true)].filter(Boolean).join(' · '), facts.join(' · ')].join('\n')]
   // Work sets only: the text is what you trained, the work the volume above counts. Warm-ups are
@@ -38,7 +38,7 @@ export function workoutText(w, { unit, nameOf, speedUnit }) {
   for (const group of sessionSections(entries).flatMap(section => section.units)) {
     const members = group.map(i => lines(entries[i])).filter(Boolean)
     if (!members.length) continue
-    blocks.push([...(members.length > 1 ? [t('Superset')] : []), ...members.flat()].join('\n'))
+    blocks.push([...(members.length > 1 ? [t("SUPERSET" /* 超级组 */)] : []), ...members.flat()].join('\n'))
   }
   if (w.note) blocks.push(w.note)
   return blocks.join('\n\n')

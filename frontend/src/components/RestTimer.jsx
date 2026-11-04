@@ -18,8 +18,8 @@ export function adjustRestSheet() {
   if (!tm) return
   const opened = tm.ready ? 0 : Math.min(tm.left, REST_MAX)
   durationSheet({
-    title: t('Time left'), value: opened, max: REST_MAX, off: t('Skip'),
-    footer: t('Scroll to 0:00 to end the rest now.'),
+    title: t("TIME_LEFT" /* 剩余时间 */), value: opened, max: REST_MAX, off: t("END_REST" /* 结束休息 */),
+    footer: t("SCROLL_TO_ZERO_ZEROZERO_TO_END_THE_REST_NOW" /* 滚到 0:00 可立即结束休息。 */),
     onDone: v => applyRestLeft(v, opened),
   })
 }
@@ -81,7 +81,9 @@ export default function RestTimer() {
   const { addRest, stopRest, pauseRest, resumeRest, finishWorkEarly, stopWork } = useUI()
   const on = work || timer
   const actsRef = useRef(null)
-  const skipFits = useSkipFits(actsRef, [!!timer && !work, t('Skip'), t('Dismiss')])
+  const skipLabel = timer?.kind === 'switch' ? t("SKIP" /* 跳过 */) : t("END_REST" /* 结束休息 */)
+  const dismissLabel = timer?.kind === 'switch' ? t("DISMISS" /* 忽略 */) : t("END_REST" /* 结束休息 */)
+  const skipFits = useSkipFits(actsRef, [!!timer && !work, skipLabel, dismissLabel])
   // The page keeps room at its bottom for the bar (index.css body.resting), so the last set and
   // the Finish button can scroll clear of it.
   useEffect(() => {
@@ -99,8 +101,8 @@ export default function RestTimer() {
         {work.label && <span className="lbl">{work.label}</span>}
       </div>
       <div className="acts">
-        <Button size="sm" onClick={stopWork}>{t('Cancel')}</Button>
-        <Button size="sm" variant="primary" icon="check" onClick={finishWorkEarly}>{t('Done')}</Button>
+        <Button size="sm" onClick={stopWork}>{t("CANCEL" /* 取消 */)}</Button>
+        <Button size="sm" variant="primary" icon="check" onClick={finishWorkEarly}>{t("FINISH_EARLY_A" /* 提前完成 */)}</Button>
       </div>
     </div>
   )
@@ -111,30 +113,30 @@ export default function RestTimer() {
   // (both labels share one cell, one of them hidden), and the clock keeps room for the other of
   // its two faces (data-alt, a hidden line in index.css): the row never reflows when the rest
   // turns Ready, so a thumb on +15 never lands on −15.
-  const label = timer.kind === 'switch' ? t('Switch sides') : timer.paused ? t('Paused') : t('Rest')
+  const label = timer.kind === 'switch' ? t("SWITCH_SIDES" /* 换边 */) : timer.paused ? t("PAUSED" /* 已暂停 */) : t("REST_BETWEEN_SETS" /* 组间休息 */)
   return (
     <div id="timer" className={'rest' + (timer.paused ? ' paused' : '') + (timer.kind === 'switch' ? ' switch' : '') + (timer.ready ? ' ready' : '')}>
       <div className="bar" aria-hidden="true"><i style={{ width: pct + '%' }} /></div>
       <button type="button" className="tclock" onClick={adjustRestSheet}
-        aria-label={(timer.ready ? t('Ready') : clock(timer.left)) + '. ' + t('Change the time left')}>
-        <span className="t" role={timer.ready ? 'status' : undefined} data-alt={timer.ready ? '0:00' : t('Ready')}>{timer.ready ? t('Ready') : clock(timer.left)}</span>
+        aria-label={(timer.ready ? t("READY" /* 准备好 */) : clock(timer.left)) + '. ' + t("CHANGE_THE_TIME_LEFT" /* 调整剩余时间 */)}>
+        <span className="t" role={timer.ready ? 'status' : undefined} data-alt={timer.ready ? '0:00' : t("READY" /* 准备好 */)}>{timer.ready ? t("READY" /* 准备好 */) : clock(timer.left)}</span>
         <span className="lbl">{label}<Icon name="chevronDown" /></span>
       </button>
       <div className="acts" ref={actsRef}>
-        <Button size="sm" className="adj" icon="minus" onClick={() => addRest(-15)}>15s</Button>
-        <Button size="sm" className="adj" icon="plus" disabled={!timer.ready && timer.left >= REST_MAX} onClick={() => addRest(15)}>15s</Button>
+        <Button size="sm" className="adj" icon="minus" onClick={() => addRest(-15)}>{t("REST_FIFTEEN_SECONDS" /* 十五秒 */)}</Button>
+        <Button size="sm" className="adj" icon="plus" disabled={!timer.ready && timer.left >= REST_MAX} onClick={() => addRest(15)}>{t("REST_FIFTEEN_SECONDS" /* 十五秒 */)}</Button>
         {timer.ready
           ? <Button size="sm" className="pause-slot" icon="pause" disabled tabIndex={-1} aria-hidden="true" />
           : <Button size="sm" className="pause" icon={timer.paused ? 'play' : 'pause'}
-            aria-label={t(timer.paused ? 'Resume' : 'Pause')} aria-pressed={!!timer.paused}
+            aria-label={t(timer.paused ? "RESUME" /* 继续 */ : "PAUSE" /* 暂停 */)} aria-pressed={!!timer.paused}
             onClick={timer.paused ? resumeRest : pauseRest} />}
         <button type="button" className={'btn primary sm skip' + (skipFits ? '' : ' icon-only')} onClick={stopRest}
-          aria-label={skipFits ? undefined : t(timer.ready ? 'Dismiss' : 'Skip')}>
+          aria-label={skipFits ? undefined : (timer.ready ? dismissLabel : skipLabel)}>
           {skipFits
-            ? <span><span className="on">{t(timer.ready ? 'Dismiss' : 'Skip')}</span>
-              <span className="off" aria-hidden="true">{t(timer.ready ? 'Skip' : 'Dismiss')}</span></span>
+            ? <span><span className="on">{(timer.ready ? dismissLabel : skipLabel)}</span>
+              <span className="off" aria-hidden="true">{(timer.ready ? skipLabel : dismissLabel)}</span></span>
             : <Icon name={timer.ready ? 'xmark' : 'skipForward'} />}
-          <span className="skip-probe" aria-hidden="true"><span>{t('Skip')}</span><span>{t('Dismiss')}</span></span>
+          <span className="skip-probe" aria-hidden="true"><span>{skipLabel}</span><span>{dismissLabel}</span></span>
         </button>
       </div>
     </div>

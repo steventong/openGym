@@ -16,7 +16,7 @@ import { t } from '../lib/i18n.js'
 // moves the page under your thumb, and it scrolls sideways on its own (the .chips strip rules in
 // index.css), never the page.
 // Functions, so each word is a literal t() call the string checks can see.
-const STATE_WORD = { done: () => t('Finished'), partial: () => t('Started'), todo: () => t('Not started yet') }
+const STATE_WORD = { done: () => t("FINISHED" /* 已完成 */), partial: () => t("STARTED" /* 已开始 */), todo: () => t("NOT_STARTED_YET" /* 还没开始 */) }
 
 export default function WorkoutChips({ entries, cur, onPick }) {
   const strip = useRef(null)
@@ -30,12 +30,12 @@ export default function WorkoutChips({ entries, cur, onPick }) {
     if (chip) revealChip(el, chip)
   }, [curKey, chips.length])
   if (!chips.length) return null
-  return <nav ref={strip} className="chips wchips" aria-label={t('Exercises in this workout')}>
+  return <nav ref={strip} className="chips wchips" aria-label={t("EXERCISES_IN_THIS_WORKOUT" /* 本次训练的动作 */)}>
     {chips.map(c => {
       const names = c.unit.map(idx => exerciseNameText(exOr(entries[idx].id))).join(' + ')
       const label = c.unit.length > 1
-        ? t('Superset {0}: {1} ({2})', c.n, names, STATE_WORD[c.state]())
-        : t('Exercise {0}: {1} ({2})', c.n, names, STATE_WORD[c.state]())
+        ? t("SUPERSET_COUNT_COUNT_COUNT" /* 超级组 {0}：{1}（{2}） */, c.n, names, STATE_WORD[c.state]())
+        : t("EXERCISE_COUNT_COUNT_COUNT" /* 动作 {0}：{1}（{2}） */, c.n, names, STATE_WORD[c.state]())
       return <button key={c.key} type="button" className={'wchip ' + c.state + (c.current ? ' cur' : '')}
         data-unit-key={c.key} aria-current={c.current ? 'step' : undefined} aria-label={label} title={names}
         onClick={() => onPick(c)}>

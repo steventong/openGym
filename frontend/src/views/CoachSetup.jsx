@@ -24,7 +24,7 @@ import Icon from '../components/Icon.jsx'
 import { Section, Row, Button, TextField } from '../components/ui.jsx'
 
 // Literal t() calls, so check-source-strings sees the three lines; t(s) over a list of keys hid them.
-const STEPS = () => [t('Loading the exercise catalogue…'), t('Checking the endpoint…'), t('Ready')]
+const STEPS = () => [t("LOADING_THE_EXERCISE_CATALOGUE" /* 正在加载动作库… */), t("CHECKING_THE_ENDPOINT" /* 正在检查端点… */), t("READY" /* 准备好 */)]
 
 // The phone calls the provider through CapacitorHttp, native networking that obeys the
 // platform's cleartext rule, and Android refuses unencrypted http:// from apps
@@ -33,7 +33,7 @@ const STEPS = () => [t('Loading the exercise catalogue…'), t('Checking the end
 // refused up front with the two ways that work: HTTPS in front of the model, or the server's
 // Coach, which has no such rule and reaches http:// on its own network.
 const isCleartext = url => /^http:\/\//i.test(String(url || '').trim())
-const cleartextRefused = () => t('Android blocks unencrypted http:// connections from apps, so this phone can only reach an https:// endpoint. Put HTTPS in front of it (Tailscale or a reverse proxy), or choose “Use my self-hosted openGym”: your server can reach an http:// model on its own network.')
+const cleartextRefused = () => t("ANDROID_BLOCKS_UNENCRYPTED_HTTP_CONNECTIONS_FROM_APPS_SO_THIS_PHONE_CAN_ONLY" /* Android 会阻止应用发起未加密的 http:// 连接，所以这部手机只能连接 https:// 端点。请在它前面加一层 HTTPS（Tailscale 或反向代理），或选择“使用我自托管的 op */)
 
 export default function CoachSetup() {
   const nav = useNavigate()
@@ -68,7 +68,7 @@ export default function CoachSetup() {
   const useServer = async () => {
     if (!user) return openSheet(close => <ConnectSheet close={close} />)
     await setCoachLocal({ mode: 'server' })
-    toast(t('The Coach is on'))
+    toast(t("THE_COACH_IS_ON" /* 教练已开启 */))
     nav('/coach')
   }
 
@@ -78,21 +78,21 @@ export default function CoachSetup() {
     if (!v.ok) return toast(v.error)
     // An empty field passes the validator on purpose: for a provider with a fixed endpoint,
     // empty means the default. This one has no default, so empty is nowhere to call.
-    if (meta.baseUrl && !meta.defaultBase && !v.value) return toast(t('Enter the endpoint URL'))
+    if (meta.baseUrl && !meta.defaultBase && !v.value) return toast(t("ENTER_THE_ENDPOINT_URL" /* 请输入端点 URL */))
     if (isCleartext(v.value)) return toast(cleartextRefused())
-    if (!meta.keyOptional && !key.trim() && !hasKey) return toast(t('Enter your API key'))
+    if (!meta.keyOptional && !key.trim() && !hasKey) return toast(t("ENTER_YOUR_API_KEY" /* 请输入你的 API 密钥 */))
     setBusy(true); setStep(0)
     try {
       const local = await import('../lib/coach-local.js')
       setStep(1)
       const k = key.trim() || await getApiKey()
       const r = await local.localModels({ provider, baseUrl: v.value }, k)
-      if (!r.ok) { setStep(-1); toast(t('Could not reach the provider: {0}', r.error)); return }
+      if (!r.ok) { setStep(-1); toast(t("COULD_NOT_REACH_THE_PROVIDER_COUNT" /* 无法连接到提供商：{0} */, r.error)); return }
       setModels(r.models)
       setStep(2)
       if (!model && meta.defaultModel && r.models.includes(meta.defaultModel)) setModel(meta.defaultModel)
     } catch (e) {
-      setStep(-1); toast(e.message || t('Could not connect'))
+      setStep(-1); toast(e.message || t("COULD_NOT_CONNECT" /* 无法连接 */))
     } finally { setBusy(false) }
   }
 
@@ -102,9 +102,9 @@ export default function CoachSetup() {
     // saved, "The Coach is on", and the phone pointed at nothing.
     const v = validateBaseUrl(meta.baseUrl ? baseUrl : '')
     if (!v.ok) return toast(v.error)
-    if (meta.baseUrl && !meta.defaultBase && !v.value) return toast(t('Enter the endpoint URL'))
+    if (meta.baseUrl && !meta.defaultBase && !v.value) return toast(t("ENTER_THE_ENDPOINT_URL" /* 请输入端点 URL */))
     const chosen = model || meta.defaultModel
-    if (!chosen) return toast(t('Pick a model'))
+    if (!chosen) return toast(t("PICK_A_MODEL" /* 选择一个模型 */))
     // The endpoint can still be edited after the models were listed.
     if (isCleartext(v.value)) return toast(cleartextRefused())
     setBusy(true)
@@ -114,10 +114,10 @@ export default function CoachSetup() {
       // Either way the user hears what happened instead of watching a greyed-out button (#42).
       await setCoachLocal({ mode: 'byok', provider, model: chosen, baseUrl: meta.baseUrl ? v.value : null })
       if (key.trim()) { await setApiKey(key.trim()); setHasKey(true); setKey('') }
-      toast(t('The Coach is on'))
+      toast(t("THE_COACH_IS_ON" /* 教练已开启 */))
       nav('/coach')
     } catch (e) {
-      toast(e?.message || t('Could not connect'))
+      toast(e?.message || t("COULD_NOT_CONNECT" /* 无法连接 */))
     } finally { setBusy(false) }
   }
 
@@ -127,41 +127,41 @@ export default function CoachSetup() {
     const local = await import('../lib/coach-local.js').catch(() => null)
     if (local) await local.localForget()
     setChoice(null)
-    toast(t('The Coach is off'))
+    toast(t("THE_COACH_IS_OFF" /* 教练已关闭 */))
   }
 
-  const current = coachLocal?.mode === 'server' ? t('Runs on your openGym server')
-    : coachLocal?.mode === 'byok' ? t('Runs on this phone with your own API key')
-    : t('Off. Choose how the Coach should run.')
+  const current = coachLocal?.mode === 'server' ? t("RUNS_ON_YOUR_OPENGYM_SERVER" /* 在你的 openGym 服务器上运行 */)
+    : coachLocal?.mode === 'byok' ? t("RUNS_ON_THIS_PHONE_WITH_YOUR_OWN_API_KEY" /* 在此手机上使用你自己的 API 密钥运行 */)
+    : t("OFF_CHOOSE_HOW_THE_COACH_SHOULD_RUN" /* 已关闭。选择教练的运行方式。 */)
 
   return <div className="narrow">
     <div className="hdr">
-      <button className="iconbtn" onClick={() => nav('/settings')} aria-label={t('Back')}><Icon name="chevronLeft" /></button>
-      <div style={{ flex: 1, marginInlineStart: 10 }}><h1>{t('AI Coach')}</h1></div>
+      <button className="iconbtn" onClick={() => nav('/settings')} aria-label={t("BACK_A" /* 返回 */)}><Icon name="chevronLeft" /></button>
+      <div style={{ flex: 1, marginInlineStart: 10 }}><h1>{t("AI_COACH" /* AI 教练 */)}</h1></div>
     </div>
 
-    <Section title={t('How should the Coach run?')} footer={current}>
-      <Row icon="rocket" iconTint="var(--indigo)" title={t('Use my self-hosted openGym')}
-        subtitle={user ? (serverHasCoach ? t('Your server runs the Coach with whatever provider its admin set up. Nothing new leaves this phone beyond what already syncs.') : config == null ? t('Loading…') : t('Your server has no Coach enabled. Ask its admin, or bring your own key below.')) : t('Connect to my server')}
+    <Section title={t("HOW_SHOULD_THE_COACH_RUN" /* 教练应如何运行？ */)} footer={current}>
+      <Row icon="rocket" iconTint="var(--indigo)" title={t("USE_MY_SELF_HOSTED_OPENGYM" /* 使用我自托管的 openGym */)}
+        subtitle={user ? (serverHasCoach ? t("YOUR_SERVER_RUNS_THE_COACH_WITH_WHATEVER_PROVIDER_ITS_ADMIN_SET_UP" /* 你的服务器使用管理员设置的提供商运行教练。除了已同步的内容外，此手机不会发送任何新数据。 */) : config == null ? t("LOADING" /* 加载中… */) : t("YOUR_SERVER_HAS_NO_COACH_ENABLED_ASK_ITS_ADMIN_OR_BRING_YOUR" /* 你的服务器没有启用教练。请联系管理员，或在下方使用你自己的密钥。 */)) : t("CONNECT_TO_MY_SERVER" /* 连接到我的服务器 */)}
         accessory="chevron" onClick={() => { if (!user || serverHasCoach) useServer(); else setChoice('server') }} />
-      <Row icon="key" iconTint="var(--acc)" title={t('Bring my own API key')}
-        subtitle={t('This phone calls the provider directly with your key. Every request is charged to your account.')}
+      <Row icon="key" iconTint="var(--acc)" title={t("BRING_MY_OWN_API_KEY" /* 使用我自己的 API 密钥 */)}
+        subtitle={t("THIS_PHONE_CALLS_THE_PROVIDER_DIRECTLY_WITH_YOUR_KEY_EVERY_REQUEST_IS" /* 此手机使用你的密钥直接调用提供商。每个请求都会计入你的账户。 */)}
         accessory="chevron" onClick={() => setChoice('byok')} />
     </Section>
 
     {choice === 'server' && !serverHasCoach && <div className="card">
-      <div className="muted small">{t('Your server has no Coach enabled. Ask its admin, or bring your own key below.')}</div>
+      <div className="muted small">{t("YOUR_SERVER_HAS_NO_COACH_ENABLED_ASK_ITS_ADMIN_OR_BRING_YOUR" /* 你的服务器没有启用教练。请联系管理员，或在下方使用你自己的密钥。 */)}</div>
     </div>}
 
     {choice === 'byok' && <>
-      <Section title={t('Provider')}>
+      <Section title={t("PROVIDER" /* 提供商 */)}>
         <div className="row" style={{ flexWrap: 'wrap', gap: 7, padding: '8px 12px' }}>
           {HTTP_PROVIDER_IDS.map(id => <button key={id} className={'chip' + (id === provider ? ' on' : '')} disabled={busy}
             onClick={() => setProvider(id)}>{HTTP_PROVIDERS[id].label}</button>)}
         </div>
       </Section>
 
-      {meta.baseUrl && <Section title={t('Endpoint')}
+      {meta.baseUrl && <Section title={t("ENDPOINT" /* 端点 */)}
         footer={isCleartext(baseUrl) ? <span style={{ color: 'var(--red)' }}>{cleartextRefused()}</span> : null}>
         <div style={{ padding: '8px 12px' }}>
           <TextField value={baseUrl} placeholder="https://ollama.example.com" inputMode="url" autoCapitalize="none" autoCorrect="off"
@@ -169,21 +169,21 @@ export default function CoachSetup() {
         </div>
       </Section>}
 
-      <Section title={t('API key')} footer={t('The key is stored in this phone’s secure storage and never leaves it except to call the provider.')}>
+      <Section title={t("API_KEY" /* API 密钥 */)} footer={t("THE_KEY_IS_STORED_IN_THIS_PHONE_S_SECURE_STORAGE_AND_NEVER" /* 密钥保存在此手机的安全存储中，除调用提供商外不会离开手机。 */)}>
         <div style={{ padding: '8px 12px' }}>
-          <TextField value={key} type="password" placeholder={hasKey ? '••••••••  ' + t('(saved)') : (meta.keyPlaceholder || 'sk-…')} autoCapitalize="none" autoCorrect="off"
+          <TextField value={key} type="password" placeholder={hasKey ? '••••••••  ' + t("SAVED_A" /* （已保存） */) : (meta.keyPlaceholder || 'sk-…')} autoCapitalize="none" autoCorrect="off"
             onChange={e => setKey(e.target.value)} />
         </div>
       </Section>
 
-      <Section title={t('What leaves this phone')}>
+      <Section title={t("WHAT_LEAVES_THIS_PHONE" /* 哪些数据会离开此手机 */)}>
         {DATA_CATEGORIES.map(k => {
           const [title, sub] = CATEGORY_TEXT[k]?.() || [k, '']
           return <Row key={k} icon="check" iconTint="var(--acc)" title={title} subtitle={sub} />
         })}
       </Section>
       <p className="sect-f" style={{ marginTop: -18, marginBottom: 22, lineHeight: 1.5 }}>
-        {t('Each request goes straight to {0} with your key. Nobody else sees it, and you pay for it.', host || meta.label)}
+        {t("EACH_REQUEST_GOES_STRAIGHT_TO_COUNT_WITH_YOUR_KEY_NOBODY_ELSE_SEES" /* 每个请求都会用你的密钥直接发送到 {0}。其他人看不到，费用由你承担。 */, host || meta.label)}
       </p>
 
       {step >= 0 && <div className="card">
@@ -193,10 +193,10 @@ export default function CoachSetup() {
         </div>)}
       </div>}
 
-      {models && <Section title={t('Model')}>
+      {models && <Section title={t("MODEL" /* 模型 */)}>
         <div style={{ padding: '8px 12px' }}>
           <select className="input" value={model} disabled={busy} onChange={e => setModel(e.target.value)} style={{ width: '100%' }}>
-            <option value="">{meta.defaultModel ? `(${meta.defaultModel})` : t('Pick a model')}</option>
+            <option value="">{meta.defaultModel ? `(${meta.defaultModel})` : t("PICK_A_MODEL" /* 选择一个模型 */)}</option>
             {models.map(m => <option key={m} value={m}>{m}</option>)}
           </select>
         </div>
@@ -204,14 +204,14 @@ export default function CoachSetup() {
 
       <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
         {!models
-          ? <Button variant="primary" icon="sparkles" disabled={busy} onClick={prepare}>{t('List models')}</Button>
-          : <Button variant="primary" icon="check" disabled={busy} onClick={save}>{t('Save and use the Coach')}</Button>}
-        {models && <Button disabled={busy} onClick={prepare}>{t('List models')}</Button>}
+          ? <Button variant="primary" icon="sparkles" disabled={busy} onClick={prepare}>{t("LIST_MODELS" /* 列出模型 */)}</Button>
+          : <Button variant="primary" icon="check" disabled={busy} onClick={save}>{t("SAVE_AND_USE_THE_COACH" /* 保存并使用教练 */)}</Button>}
+        {models && <Button disabled={busy} onClick={prepare}>{t("LIST_MODELS" /* 列出模型 */)}</Button>}
       </div>
     </>}
 
-    {coachLocal?.mode && coachLocal.mode !== 'off' && <Section title={t('Controls')}>
-      <Row icon="signOut" iconTint="var(--red)" title={t('Turn the Coach off on this phone')} danger onClick={turnOff} />
+    {coachLocal?.mode && coachLocal.mode !== 'off' && <Section title={t("CONTROLS" /* 控制 */)}>
+      <Row icon="signOut" iconTint="var(--red)" title={t("TURN_THE_COACH_OFF_ON_THIS_PHONE" /* 在此手机上关闭教练 */)} danger onClick={turnOff} />
     </Section>}
   </div>
 }

@@ -8,6 +8,18 @@ extension TrainingDraft {
         }], legacy: true)
     }
     var rawEntries: [[String:Any]] { activeJSON["entries"] as? [[String:Any]] ?? [] }
+    var allSetsCompleted: Bool {
+        let entries = rawEntries
+        return !entries.isEmpty && entries.allSatisfy { entry in
+            let rows = entry["sets"] as? [[String: Any]] ?? []
+            return !rows.isEmpty && rows.allSatisfy { row in
+                if let sides = row["sides"] as? [String: [String: Any]] {
+                    return sides["L"]?["done"] as? Bool == true && sides["R"]?["done"] as? Bool == true
+                }
+                return row["done"] as? Bool == true
+            }
+        }
+    }
     mutating func setActive(_ raw:[String:Any]) throws {
         webData = try JSONSerialization.data(withJSONObject: identified(raw, legacy: false))
         if let updated = raw["name"] as? String { name = updated }
@@ -47,7 +59,7 @@ extension TrainingDraft {
         return raw
     }
     static func fromWeb(_ raw:[String:Any],unit:String) throws -> TrainingDraft {
-        var draft = TrainingDraft(routineID:raw["routineId"] as? String,name:raw["name"] as? String ?? "训练",start:Date(timeIntervalSince1970:number(raw["start"])/1000),entries:[],unit:unit,routineIDs:raw["routineIds"] as? [String])
+        var draft = TrainingDraft(routineID:raw["routineId"] as? String,name:raw["name"] as? String ?? L10n.text("WORKOUT" /* 训练 */),start:Date(timeIntervalSince1970:number(raw["start"])/1000),entries:[],unit:unit,routineIDs:raw["routineIds"] as? [String])
         draft.id = raw["id"] as? String ?? UUID().uuidString;try draft.setActive(raw);return draft
     }
 }

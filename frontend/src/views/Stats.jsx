@@ -5,7 +5,7 @@ import { EXIDX, matchExercise, betterWeight, isAssisted } from '../lib/exercises
 import { lastBW, streakWeeks, setLabel, modeOf, effortOf, entriesForExercise, metricEntriesForExercise, metricModeForEntry, bestWeightForEntry, completedRepsOf, workoutDay, workoutAt } from '../lib/history.js'
 import { fmtNum, fmtDate, fmtVol, todayISO, isoOf, weekKey, weekStartOf, exerciseNameText } from '../lib/format.js'
 import { speedUnitOf, speedLabel, toSpeed } from '../lib/speed.js'
-import { t, exerciseNameFor, exerciseNameClass, getLang } from '../lib/i18n.js'
+import { t, exerciseNameFor, exerciseNameClass, getLang , translateValue } from '../lib/i18n.js'
 import { bwSheet, goalSheet, calendarSheet, dayOverrideSheet, workoutDetailSheet, exerciseHistorySheet, WorkoutRow, bwDeltaColor, weighInsSheet } from '../sheets.jsx'
 import LineChart from '../components/LineChart.jsx'
 import Heatmap from '../components/Heatmap.jsx'
@@ -33,7 +33,7 @@ const SET_COLORS = ['var(--blue)', 'var(--green)', 'var(--orange)', 'var(--purpl
 
 // The date range buttons under Body weight, and since issue #511 under Exercise progress too.
 // In days, 0 = everything; a function because the labels follow the current language.
-const rangeOptions = () => [{ value: 30, label: '1M' }, { value: 90, label: '3M' }, { value: 365, label: '1Y' }, { value: 0, label: t('All') }]
+const rangeOptions = () => [{ value: 30, label: '1M' }, { value: 90, label: '3M' }, { value: 365, label: '1Y' }, { value: 0, label: t("ALL" /* 全部 */) }]
 // Where a range starts, in ms. Worked out once per pick rather than from each render's clock, so
 // the memoised chart arrays below keep their identity (LineChart drops its hover on a new one).
 const rangeStart = days => (days ? Date.now() - days * 86400000 : 0)
@@ -93,23 +93,23 @@ export function weeksSinceTraining(now, lastTrained) {
 }
 
 function FatigueLegend() {
-  return <div className="hm-legend hm-fatigue" aria-label={t('Fatigue')}>
-    <span>{t('Fatigued')}</span><div className="hm-c l4" />
-    <span>{t('Recovering')}</span><div className="hm-c l2" />
-    <span>{t('Ready')}</span><div className="hm-c l0" />
+  return <div className="hm-legend hm-fatigue" aria-label={t("FATIGUE" /* 疲劳 */)}>
+    <span>{t("FATIGUED" /* 已疲劳 */)}</span><div className="hm-c l4" />
+    <span>{t("RECOVERING" /* 恢复中 */)}</span><div className="hm-c l2" />
+    <span>{t("READY" /* 准备好 */)}</span><div className="hm-c l0" />
   </div>
 }
 
 function StrengthLegend() {
-  return <div className="hm-legend hm-strength" aria-label={t('Strength')}>
-    <span>1 <span className="dim">{t('full')}</span></span><div className="hm-c l4" /><div className="hm-c l3" /><div className="hm-c l2" />
-    <div className="hm-c l1" /><div className="hm-c l0" /><span>{fmtNum(STRENGTH_FLOOR)} <span className="dim">{t('floor')}</span></span>
+  return <div className="hm-legend hm-strength" aria-label={t("STRENGTH" /* 力量 */)}>
+    <span>1 <span className="dim">{t("FULL_A" /* 完全 */)}</span></span><div className="hm-c l4" /><div className="hm-c l3" /><div className="hm-c l2" />
+    <div className="hm-c l1" /><div className="hm-c l0" /><span>{fmtNum(STRENGTH_FLOOR)} <span className="dim">{t("FLOOR" /* 下限 */)}</span></span>
   </div>
 }
 
 function fatigueLabel(value) {
   const state = fatigueStateOf(value)
-  return t(state === 'ready' ? 'Ready' : state === 'recovering' ? 'Recovering' : 'Fatigued')
+  return t(state === 'ready' ? "READY" /* 准备好 */ : state === 'recovering' ? "RECOVERING" /* 恢复中 */ : "FATIGUED" /* 已疲劳 */)
 }
 
 // The user's own last registered bodyweight, in kg: the body-mass part of a bodyweight
@@ -138,9 +138,9 @@ function MuscleBalance({ S }) {
   const muscleExercises = useMemo(() => (sel ? strengthExerciseRowsForMuscle(S, now, sel) : []), [S, now, sel, lang])
   const lastTrained = useMemo(() => latestMuscleTraining(workouts), [workouts])
   const strengthHint = slug => {
-    if (lastTrained[slug] == null) return t('not trained')
+    if (lastTrained[slug] == null) return t("NOT_TRAINED" /* 未训练 */)
     const weeks = weeksSinceTraining(now, lastTrained[slug])
-    return t('Weeks since training: {0}', weeks)
+    return t("WEEKS_SINCE_TRAINING_COUNT" /* 上次训练：{0}周前 */, weeks)
   }
   const toggleSel = m => setSel(s => (s === m ? null : m))
   const ws = weekStartOf(S)
@@ -178,43 +178,43 @@ function MuscleBalance({ S }) {
     const target = Math.round((planned[muscle] || 0) * 10) / 10
     const percentage = target > 0 ? Math.round(completed / target * 100) : null
     const fill = target > 0 ? Math.round(Math.min(completed / target, 1) * 100) : completed > 0 ? 100 : 0
-    const completedSets = t('{0} sets', fmtNum(completed))
-    const plannedSets = t('{0} sets', fmtNum(target))
+    const completedSets = t("COUNT_SETS" /* {0} 组 */, fmtNum(completed))
+    const plannedSets = t("COUNT_SETS" /* {0} 组 */, fmtNum(target))
     return <div className="mrow" data-muscle-volume={muscle} key={muscle}>
-      <span className="nm">{sel === muscle ? <b>{t(MUSCLE_NAME[muscle])}</b> : t(MUSCLE_NAME[muscle])}</span>
+      <span className="nm">{sel === muscle ? <b>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[muscle])}</b> : translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[muscle])}</span>
       <span className="bar"><i style={{ width: fill + '%' }} /></span>
       <span className="v" style={{ textAlign: 'end' }}
-        aria-label={`${t('Completed')} ${completedSets} · ${t('Planned')} ${plannedSets}`}>
+        aria-label={`${t("COMPLETED" /* 已完成 */)} ${completedSets} · ${t("PLANNED" /* 已计划 */)} ${plannedSets}`}>
         {fmtNum(completed)}/{fmtNum(target)}{percentage == null ? '' : ` · ${percentage}%`}
       </span>
     </div>
   })
   const completionSummary = <>
     {missed.length > 0 && <>
-      <h4 className="sec" style={{ marginTop: 12 }}>{on ? t('No hard sets in this period') : t('Not trained in this period')}</h4>
-      <div className="mchips">{missed.map(m => <span key={m} className="mchip miss">{t(MUSCLE_NAME[m])}</span>)}</div>
+      <h4 className="sec" style={{ marginTop: 12 }}>{on ? t("NO_HARD_SETS_IN_THIS_PERIOD" /* 此期间没有硬组 */) : t("NOT_TRAINED_IN_THIS_PERIOD" /* 此期间未训练 */)}</h4>
+      <div className="mchips">{missed.map(m => <span key={m} className="mchip miss">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[m])}</span>)}</div>
     </>}
     {!missed.length && worked.length > 0 &&
       <div className="muted small" style={{ marginTop: 10 }}>{on
-        ? t('Every muscle group got at least one hard set in this period.')
-        : t('Every muscle group got some work in this period.')}</div>}
+        ? t("EVERY_MUSCLE_GROUP_GOT_AT_LEAST_ONE_HARD_SET_IN_THIS_PERIOD" /* 此期间每个肌群都至少练了一个硬组。 */)
+        : t("EVERY_MUSCLE_GROUP_GOT_SOME_WORK_IN_THIS_PERIOD" /* 此期间每个肌群都得到了训练。 */)}</div>}
   </>
   const weeklyToggle = rowCount => weekly && !sel && rowCount > 4 && <>
     <div style={{ height: 8 }} />
     <Button className="weekly-volume-toggle" trailingIcon="chevronDown" aria-expanded={weeklyExpanded}
       onClick={() => setWeeklyExpanded(expanded => !expanded)}>
-      {t(weeklyExpanded ? 'Show less' : 'Show more')}
+      {t(weeklyExpanded ? "SHOW_LESS" /* 显示更少 */ : "SHOW_MORE" /* 显示更多 */)}
     </Button>
   </>
   const completedRows = <>
     {sel && <div className="mrow" data-muscle-volume={sel} style={{ borderTop: 'var(--hair) solid var(--sep)', marginTop: 4, paddingTop: 10 }}>
-      <span className="nm"><b>{t(MUSCLE_NAME[sel])}</b></span>
-      <span className="v">{sets(sel) ? t('{0} sets', sets(sel)) : on ? t('no hard sets') : t('not trained')}</span>
+      <span className="nm"><b>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[sel])}</b></span>
+      <span className="v">{sets(sel) ? t("COUNT_SETS" /* {0} 组 */, sets(sel)) : on ? t("NO_HARD_SETS" /* 没有硬组 */) : t("NOT_TRAINED" /* 未训练 */)}</span>
     </div>}
     {!sel && completedMuscles.map(m => <div key={m} className="mrow" data-muscle-volume={m}>
-      <span className="nm">{t(MUSCLE_NAME[m])}</span>
+      <span className="nm">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[m])}</span>
       <span className="bar"><i style={{ width: Math.round(load[m] / max * 100) + '%', background: on ? 'var(--yellow)' : undefined }} /></span>
-      <span className="v">{t('{0} sets', sets(m))}</span>
+      <span className="v">{t("COUNT_SETS" /* {0} 组 */, sets(m))}</span>
     </div>)}
     {weeklyToggle(worked.length)}
     {completionSummary}
@@ -222,49 +222,49 @@ function MuscleBalance({ S }) {
 
   return <div className="card">
     <Segmented className="seg-range" value={view} onChange={setView}
-      options={[{ value: 'balance', label: t('Muscle balance') }, { value: 'fatigue', label: t('Fatigue') }, { value: 'strength', label: t('Strength') }]} />
+      options={[{ value: 'balance', label: t("MUSCLE_BALANCE" /* 肌肉平衡 */) }, { value: 'fatigue', label: t("FATIGUE" /* 疲劳 */) }, { value: 'strength', label: t("STRENGTH" /* 力量 */) }]} />
     {view === 'balance' ? <>
       <div className="row between" style={{ marginBottom: 8 }}>
-        <h2 style={{ margin: 0 }}>{t('Muscle balance')} <span className="dim" style={{ textTransform: 'none', letterSpacing: 0 }}>· {on ? t('by hard sets') : t('by sets worked')}</span></h2>
+        <h2 style={{ margin: 0 }}>{t("MUSCLE_BALANCE" /* 肌肉平衡 */)} <span className="dim" style={{ textTransform: 'none', letterSpacing: 0 }}>· {on ? t("BY_HARD_SETS" /* 按硬组 */) : t("BY_SETS_WORKED" /* 按训练组数 */)}</span></h2>
         {!weekly && rated && <Button size="sm" icon="gauge" style={on ? { color: 'var(--yellow)' } : undefined}
-          onClick={() => { setHard(h => !h); setSel(null) }}>{on ? t('Hard') : t('All')}</Button>}
+          onClick={() => { setHard(h => !h); setSel(null) }}>{on ? t("HARD" /* 硬组 */) : t("ALL" /* 全部 */)}</Button>}
       </div>
       <Segmented className="seg-range" value={win} onChange={v => { setWin(v); setSel(null); setWeeklyExpanded(false) }}
-        options={[{ value: 7, label: t('Week') }, { value: 30, label: '30d' }, { value: 90, label: '90d' }, { value: 0, label: t('All') }]} />
+        options={[{ value: 7, label: t("WEEK" /* 本周 */) }, { value: 30, label: '30d' }, { value: 90, label: '90d' }, { value: 0, label: t("ALL" /* 全部 */) }]} />
       {weekly ? <div data-weekly-volume-comparison data-week={selectedWeek}>
         <div className="row between" style={{ margin: '10px 0 6px' }}>
-          <button className="iconbtn sm" aria-label={t('Previous week')} onClick={() => { setWeekOffset(offset => offset - 1); setSel(null); setWeeklyExpanded(false) }}><Icon name="chevronLeft" /></button>
-          <span className="small" style={{ fontWeight: 600 }}>{t('Week of {0}', fmtDate(selectedWeek))}</span>
-          <button className="iconbtn sm" aria-label={t('Next week')} disabled={weekOffset === 0}
+          <button className="iconbtn sm" aria-label={t("PREVIOUS_WEEK" /* 上一周 */)} onClick={() => { setWeekOffset(offset => offset - 1); setSel(null); setWeeklyExpanded(false) }}><Icon name="chevronLeft" /></button>
+          <span className="small" style={{ fontWeight: 600 }}>{t("WEEK_OF_COUNT" /* {0} 起的一周 */, fmtDate(selectedWeek))}</span>
+          <button className="iconbtn sm" aria-label={t("NEXT_WEEK" /* 下一周 */)} disabled={weekOffset === 0}
             onClick={() => { setWeekOffset(offset => Math.min(0, offset + 1)); setSel(null); setWeeklyExpanded(false) }}><Icon name="chevronRight" /></button>
         </div>
         <BodyMap className="tappable" load={load} body={S.body} selected={sel} onMuscle={toggleSel} />
         <BodyMapLegend />
         {weekOffset === 0
-          ? comparisonRows.length ? <>{comparisonRows}{weeklyToggle(comparisonMuscles.length)}{completionSummary}</> : <div className="muted small">{t('No workouts in this period yet.')}</div>
-          : inWin.length ? completedRows : <div className="muted small">{t('No workouts in this period yet.')}</div>}
+          ? comparisonRows.length ? <>{comparisonRows}{weeklyToggle(comparisonMuscles.length)}{completionSummary}</> : <div className="muted small">{t("NO_WORKOUTS_IN_THIS_PERIOD_YET" /* 此期间还没有训练。 */)}</div>
+          : inWin.length ? completedRows : <div className="muted small">{t("NO_WORKOUTS_IN_THIS_PERIOD_YET" /* 此期间还没有训练。 */)}</div>}
       </div> : inWin.length ? <>
         <BodyMap className="tappable" load={load} body={S.body} selected={sel}
           onMuscle={toggleSel} />
         <BodyMapLegend />
         {completedRows}
-      </> : <div className="muted small">{t('No workouts in this period yet.')}</div>}
+      </> : <div className="muted small">{t("NO_WORKOUTS_IN_THIS_PERIOD_YET" /* 此期间还没有训练。 */)}</div>}
     </> : view === 'fatigue' ? <>
-      <h2>{t('Fatigue')}</h2>
+      <h2>{t("FATIGUE" /* 疲劳 */)}</h2>
       <BodyMap className="tappable hm-fatigue" load={fatigue} thresholds={FATIGUE_LEVELS} body={S.body} selected={sel} onMuscle={toggleSel} />
       <FatigueLegend />
-      <div className="muted small" style={{ marginTop: 10 }}>{t('Fatigue shows how recently each muscle was trained. High means rest.')}</div>
+      <div className="muted small" style={{ marginTop: 10 }}>{t("FATIGUE_SHOWS_HOW_RECENTLY_EACH_MUSCLE_WAS_TRAINED_HIGH_MEANS_REST" /* 疲劳度显示每个肌群最近一次训练距今多久。数值越高，越需要休息。 */)}</div>
       {sel && <div className="mrow" style={{ borderTop: 'var(--hair) solid var(--sep)', marginTop: 4, paddingTop: 10 }}>
-        <span className="nm"><b>{t(MUSCLE_NAME[sel])}</b></span>
+        <span className="nm"><b>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[sel])}</b></span>
         <span className="v">{fatigueLabel(fatigue[sel])}</span>
       </div>}
     </> : <>
-      <h2>{t('Strength')}</h2>
+      <h2>{t("STRENGTH" /* 力量 */)}</h2>
       <BodyMap className="tappable hm-strength" load={strength} thresholds={STRENGTH_LEVELS} body={S.body} selected={sel} onMuscle={toggleSel} />
       <StrengthLegend />
-      <div className="muted small" style={{ marginTop: 10 }}>{t('Strength shows retained muscle strength. Train again to reset it.')}</div>
+      <div className="muted small" style={{ marginTop: 10 }}>{t("STRENGTH_SHOWS_RETAINED_MUSCLE_STRENGTH_TRAIN_AGAIN_TO_RESET_IT" /* 力量显示肌肉力量保留了多少。再次训练即可重置。 */)}</div>
       {sel && <>
-        <h4 className="sec" style={{ marginTop: 14 }}>{t('Exercises')} · {t(MUSCLE_NAME[sel])}</h4>
+        <h4 className="sec" style={{ marginTop: 14 }}>{t("EXERCISES" /* 动作库 */)} · {translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[sel])}</h4>
         {/* A row quotes the exercise's estimated 1RM, so a tap opens the exercise history
             sheet — the curve behind that number plus the last sessions set by set. */}
         {muscleExercises.length ? muscleExercises.map(row => (
@@ -273,19 +273,19 @@ function MuscleBalance({ S }) {
               <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 <span className={EXIDX[row.id] ? exerciseNameClass(EXIDX[row.id]) : undefined}>{row.name}</span>
                 {row.primary === sel
-                  ? <span className="dim" style={{ fontSize: 11, marginInlineStart: 6 }}>{t('primary')}</span>
-                  : <span className="dim" style={{ fontSize: 11, marginInlineStart: 6 }}>{t('secondary')}</span>}
+                  ? <span className="dim" style={{ fontSize: 11, marginInlineStart: 6 }}>{t("PRIMARY" /* 主要 */)}</span>
+                  : <span className="dim" style={{ fontSize: 11, marginInlineStart: 6 }}>{t("SECONDARY" /* 次要 */)}</span>}
               </span>
-              <span className="small dim" style={{ display: 'block', fontWeight: 400 }}>{t('Est. 1RM')}: {fmtNum(row.est)} {S.unit} · {fmtDate(row.estDate, true)}</span>
+              <span className="small dim" style={{ display: 'block', fontWeight: 400 }}>{t("EST_ONE_REP_MAX" /* 估算 1RM */)}: {fmtNum(row.est)} {S.unit} · {fmtDate(row.estDate, true)}</span>
             </span>
             {/* Filled by width, like the bars around it, rather than a 'to right' gradient: a block
                 starts at the inline start, so in right-to-left it fills from the right. */}
             <span className="bar" style={{ alignSelf: 'center' }}><i style={{ width: Math.round(row.decay * 100) + '%' }} /></span>
             <span className="v" style={{ alignSelf: 'center' }}>{fmtNum(row.current)} {S.unit}<span className="dim"> · {Math.round(row.decay * 100)}%</span></span>
           </div>
-        )) : <div className="muted small">{t('No exercises with an estimated 1RM yet.')}</div>}
+        )) : <div className="muted small">{t("NO_EXERCISES_WITH_AN_ESTIMATED_ONE_REP_MAX_YET" /* 暂无估算1RM的动作。 */)}</div>}
       </>}
-      {!sel && <div className="muted small" style={{ marginTop: 10 }}>{t('Tap a muscle to see its exercises.')}</div>}
+      {!sel && <div className="muted small" style={{ marginTop: 10 }}>{t("TAP_A_MUSCLE_TO_SEE_ITS_EXERCISES" /* 点击肌肉查看其动作。 */)}</div>}
       {/* Detrained muscles: the bar is retained strength, the value says how long ago the
           muscle was last trained. Sets in the last 90 days ride along only when there are
           any — a muscle is on this list precisely because it has not been trained lately, so
@@ -293,10 +293,10 @@ function MuscleBalance({ S }) {
       {detrained.map(slug => {
         const sets90 = Math.round((vol90[slug] || 0) * 10) / 10
         return <div key={slug} className="mrow">
-          <span className="nm">{t(MUSCLE_NAME[slug])}</span>
+          <span className="nm">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[slug])}</span>
           <span className="bar"><i style={{ width: Math.round(strength[slug] * 100) + '%' }} /></span>
           <span className="v" style={{ textAlign: 'end' }}>
-            {sets90 ? t('{0} sets', fmtNum(sets90)) : strengthHint(slug)}
+            {sets90 ? t("COUNT_SETS" /* {0} 组 */, fmtNum(sets90)) : strengthHint(slug)}
             {sets90 ? <span className="dim small" style={{ display: 'block', fontWeight: 400 }}>{strengthHint(slug)}</span> : null}
           </span>
         </div>
@@ -335,43 +335,43 @@ function EffortCard({ S }) {
   const maxBin = Math.max(1, ...hist.map(b => b.n))
   // The week's set count rides along in the tooltip, because the pair is the reading:
   // volume up with effort up is fatigue piling up, volume up with effort flat is adaptation.
-  const pts = weeks.map(w => ({ t: w.t, y: toScale(kind, w.rir), note: t('{0} sets', w.sets) }))
+  const pts = weeks.map(w => ({ t: w.t, y: toScale(kind, w.rir), note: t("COUNT_SETS" /* {0} 组 */, w.sets) }))
   // Bins run hardest-first in both scales: RIR 0 and RPE 10 are the same set.
   const binLabel = b => kind === 'rpe' ? (b.tail ? '≤ 6' : String(10 - b.rir)) : (b.tail ? b.rir + '+' : String(b.rir))
 
   return <div className="card">
-    <h2>{t('Effort')} <span className="dim" style={{ textTransform: 'none', letterSpacing: 0 }}>· {t('how close to failure')}{estimated ? ' · ' + t('estimated') : ''}</span></h2>
+    <h2>{t("EFFORT" /* 用力程度 */)} <span className="dim" style={{ textTransform: 'none', letterSpacing: 0 }}>· {t("HOW_CLOSE_TO_FAILURE" /* 距离力竭的程度 */)}{estimated ? ' · ' + t("ESTIMATED" /* 估算 */) : ''}</span></h2>
     <Segmented className="seg-range" value={win} onChange={setWin}
-      options={[{ value: 30, label: '30d' }, { value: 90, label: '90d' }, { value: 365, label: '1Y' }, { value: 0, label: t('All') }]} />
-    {sum.rated === 0 && sum.est === 0 ? <div className="muted small">{t('No rated sets in this period.')}</div> : <>
+      options={[{ value: 30, label: '30d' }, { value: 90, label: '90d' }, { value: 365, label: '1Y' }, { value: 0, label: t("ALL" /* 全部 */) }]} />
+    {sum.rated === 0 && sum.est === 0 ? <div className="muted small">{t("NO_RATED_SETS_IN_THIS_PERIOD" /* 此期间没有已评分的组。 */)}</div> : <>
       <div className="row between" style={{ alignItems: 'flex-end', gap: 12 }}>
         <div>
           <div className="stat-v">{sum.avg == null ? '–' : fmtNum(toScale(kind, sum.avg)) + ' ' + hd}</div>
-          <div className="small dim">{t('average effort')}</div>
+          <div className="small dim">{t("AVERAGE_EFFORT" /* 平均强度 */)}</div>
         </div>
         <div style={{ textAlign: 'end' }}>
           <div className="stat-v" style={{ color: 'var(--yellow)' }}>{sum.hardPct == null ? '–' : Math.round(sum.hardPct * 100) + '%'}</div>
-          <div className="small dim">{t('at {0} {1} or harder', hd, fmtNum(toScale(kind, HARD_RIR)))}</div>
+          <div className="small dim">{t("AT_COUNT_COUNT_OR_HARDER" /* {0} {1} 或更硬 */, hd, fmtNum(toScale(kind, HARD_RIR)))}</div>
         </div>
       </div>
       <div className="small dim" style={{ marginTop: 8 }}>{estimated
-        ? t('{0} rated · {1} estimated of {2} sets', sum.rated, sum.est, sum.done)
-        : t('{0} of {1} finished sets rated', sum.rated, sum.done)}</div>
+        ? t("COUNT_RATED_COUNT_ESTIMATED_OF_COUNT_SETS" /* {0} 组已评分 · {1} 组为估算，共 {2} 组 */, sum.rated, sum.est, sum.done)
+        : t("COUNT_OF_COUNT_FINISHED_SETS_RATED" /* {1} 个已完成组中有 {0} 个已评分 */, sum.rated, sum.done)}</div>
       {effortOf(S) === 'none' && <div className="small" style={{ color: 'var(--yellow)', marginTop: 4 }}>
-        {t('Effort per set is off. Turn it on in Settings → Workout to keep rating.')}
+        {t("EFFORT_PER_SET_IS_OFF_TURN_IT_ON_IN_SETTINGS_WORKOUT_TO" /* 每组强度已关闭。在 设置 → 训练 中打开即可继续评分。 */)}
       </div>}
       {pts.length > 1 && <>
-        <h4 className="sec" style={{ marginTop: 12 }}>{t('Week by week')}</h4>
+        <h4 className="sec" style={{ marginTop: 12 }}>{t("WEEK_BY_WEEK" /* 逐周变化 */)}</h4>
         <div className="chart"><LineChart points={pts} h={140} unit={hd} color="var(--yellow)" invert={kind === 'rir'} /></div>
       </>}
-      <h4 className="sec" style={{ marginTop: 12 }}>{t('Where the sets land')}</h4>
+      <h4 className="sec" style={{ marginTop: 12 }}>{t("WHERE_THE_SETS_LAND" /* 组都落在哪里 */)}</h4>
       {hist.map(b => <div key={b.rir} className="mrow">
         <span className="nm">{hd} {binLabel(b)}</span>
         <span className="bar"><i style={{ width: Math.round(b.n / maxBin * 100) + '%', background: b.rir <= HARD_RIR ? 'var(--yellow)' : 'var(--label-3)' }} /></span>
         <span className="v">{b.n ? b.n + ' · ' + Math.round(b.pct * 100) + '%' : '–'}</span>
       </div>)}
       <div className="small dim" style={{ marginTop: 8 }}>
-        {t('Most working sets belong close to failure, not at it. Half at the floor and half at the top still average out to a healthy-looking middle.')}
+        {t("MOST_WORKING_SETS_BELONG_CLOSE_TO_FAILURE_NOT_AT_IT_HALF_AT" /* 大多数工作组应该接近力竭，而不是真的力竭。一半在最底、一半在最顶，平均下来照样看着很健康。 */)}
       </div>
     </>}
   </div>
@@ -389,17 +389,17 @@ export function WeeklyPlanVolume({ S }) {
   const shown = all ? muscles : muscles.slice(0, PLAN_VOLUME_ROWS)
   const max = muscles.length ? load[muscles[0]] : 0
   return <div className="card" id="weekly-volume" data-weekly-muscle-volume>
-    <h2 style={{ marginBottom: 2 }}>{t('Weekly muscle volume')}</h2>
-    <div className="muted small" style={{ marginBottom: 10 }}>{t('Planned sets per week, from your plan.')}</div>
+    <h2 style={{ marginBottom: 2 }}>{t("WEEKLY_MUSCLE_VOLUME" /* 每周肌群训练量 */)}</h2>
+    <div className="muted small" style={{ marginBottom: 10 }}>{t("PLANNED_SETS_PER_WEEK_FROM_YOUR_PLAN" /* 按你的计划，每周计划的组数。 */)}</div>
     {muscles.length ? shown.map(muscle => <div className="mrow" key={muscle}>
-      <span className="nm">{t(MUSCLE_NAME[muscle])}</span>
+      <span className="nm">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[muscle])}</span>
       <span className="bar"><i style={{ width: Math.round(load[muscle] / max * 100) + '%' }} /></span>
-      <span className="v">{t('{0} sets', fmtNum(Math.round(load[muscle] * 10) / 10))}</span>
-    </div>) : <div className="muted small">{t('No muscle volume planned.')}</div>}
+      <span className="v">{t("COUNT_SETS" /* {0} 组 */, fmtNum(Math.round(load[muscle] * 10) / 10))}</span>
+    </div>) : <div className="muted small">{t("NO_MUSCLE_VOLUME_PLANNED" /* 尚未安排肌群训练。 */)}</div>}
     {muscles.length > PLAN_VOLUME_ROWS && <>
       <div style={{ height: 8 }} />
       <Button className="weekly-plan-toggle" trailingIcon={all ? 'chevronUp' : 'chevronDown'} aria-expanded={all}
-        onClick={() => setAll(v => !v)}>{t(all ? 'Show less' : 'Show more')}</Button>
+        onClick={() => setAll(v => !v)}>{t(all ? "SHOW_LESS" /* 显示更少 */ : "SHOW_MORE" /* 显示更多 */)}</Button>
     </>}
   </div>
 }
@@ -496,7 +496,7 @@ export default function Stats() {
       // picker label went blank and the exercise sorted to the bottom as if it had no history.
       if (mode === 'reps') {
         const reps = Math.max(0, ...rows.map(completedRepsOf))
-        if (reps > 0) return { mx: reps, unit: t('reps') }
+        if (reps > 0) return { mx: reps, unit: t("REPS_A" /* 次 */) }
       }
     }
     return { mx: 0, unit: S.unit }
@@ -529,7 +529,7 @@ export default function Stats() {
   const repsOnly = curEx && curMode === 'reps' && !workouts.some(w =>
     entriesForExercise(w, curEx).some(en => bestWeightForEntry(en) > 0))
   const metric = s => curCardio ? toSpeed(s.speed || 0, speedUnit) : curTimed ? (s.sec || 0) : (s.w || 0)
-  const exUnit = curCardio ? speedLabel(speedUnit) : curTimed ? 's' : repsOnly ? t('reps') : S.unit
+  const exUnit = curCardio ? speedLabel(speedUnit) : curTimed ? 's' : repsOnly ? t("REPS_A" /* 次 */) : S.unit
   let exPts = [], exList = [], exBest = 0
   if (curEx) {
     workouts.forEach(w => {
@@ -626,26 +626,26 @@ export default function Stats() {
   const chartPts = onSets ? perSetChart.anchors : onMax ? maxChartPts : onEff ? effPts : onE1 ? e1ChartPts : topPts
   // A line needs two workouts. A range that holds fewer says so, instead of a lone dot or an empty box.
   const rangeTooShort = exRange !== 0 && chartPts.length < 2
-  const exOpts = [{ value: 'top', label: t('Top set') }]
-  if (perSet) exOpts.push({ value: 'sets', label: t('Per set') })
-  if (showE1) exOpts.push({ value: 'e1rm', label: t('Est. 1RM') })
-  if (showEff) exOpts.push({ value: 'effort', label: t('Effort') })
-  if (showMax) exOpts.push({ value: 'max', label: t('Max reps') })
+  const exOpts = [{ value: 'top', label: t("TOP_SET" /* 最佳组 */) }]
+  if (perSet) exOpts.push({ value: 'sets', label: t("PER_SET" /* 每组 */) })
+  if (showE1) exOpts.push({ value: 'e1rm', label: t("EST_ONE_REP_MAX" /* 估算 1RM */) })
+  if (showEff) exOpts.push({ value: 'effort', label: t("EFFORT" /* 用力程度 */) })
+  if (showMax) exOpts.push({ value: 'max', label: t("MAX_REPS" /* 力竭次数 */) })
 
   return <>
-    <div className="hdr"><div><h1>{t('Stats')}</h1><div className="sub">{t('Progress & history')}</div></div>
-      <button className="iconbtn" onClick={() => nav('/history')} aria-label={t('History')}><Icon name="history" /></button></div>
+    <div className="hdr"><div><h1>{t("STATS" /* 统计 */)}</h1><div className="sub">{t("PROGRESS_HISTORY" /* 进度与历史 */)}</div></div>
+      <button className="iconbtn" onClick={() => nav('/history')} aria-label={t("HISTORY" /* 历史 */)}><Icon name="history" /></button></div>
 
     <div className="tiles">
-      <div className="tile"><div className="l"><Icon name="dumbbell" />{t('Workouts')}</div><div className="v">{workouts.length}</div></div>
-      <div className="tile"><div className="l"><Icon name="calendar" />{t('This month')}</div><div className="v">{monthW}</div></div>
-      <div className="tile"><div className="l"><Icon name="flame" />{t('Week streak')}</div><div className="v">{streakWeeks(S)}</div></div>
-      <div className="tile"><div className="l"><Icon name="scale" />{t('Weight 30d')}</div><div className="v" style={{ fontSize: 22, color: bwDelta30 === null ? 'inherit' : bwDeltaColor(bwDelta30, (lastBW(S) || {}).w || 0) }}>{bwDelta30 === null ? '–' : (bwDelta30 > 0 ? '+' : '') + fmtNum(bwDelta30) + ' ' + S.unit}</div></div>
+      <div className="tile"><div className="l"><Icon name="dumbbell" />{t("WORKOUTS" /* 训练次数 */)}</div><div className="v">{workouts.length}</div></div>
+      <div className="tile"><div className="l"><Icon name="calendar" />{t("THIS_MONTH" /* 本月 */)}</div><div className="v">{monthW}</div></div>
+      <div className="tile"><div className="l"><Icon name="flame" />{t("WEEK_STREAK" /* 连续周数 */)}</div><div className="v">{streakWeeks(S)}</div></div>
+      <div className="tile"><div className="l"><Icon name="scale" />{t("WEIGHT_THREEZEROD" /* 体重 30 天 */)}</div><div className="v" style={{ fontSize: 22, color: bwDelta30 === null ? 'inherit' : bwDeltaColor(bwDelta30, (lastBW(S) || {}).w || 0) }}>{bwDelta30 === null ? '–' : (bwDelta30 > 0 ? '+' : '') + fmtNum(bwDelta30) + ' ' + S.unit}</div></div>
 
     </div>
 
     <div className="card">
-      <h2>{t('Activity (last 12 months)')}</h2>
+      <h2>{t("ACTIVITY_LAST_ONETWO_MONTHS" /* 活动（近 12 个月） */)}</h2>
       <Heatmap
         S={S}
         metric={S.heatmapMetric === 'vol' ? 'vol' : 'time'}
@@ -657,31 +657,31 @@ export default function Stats() {
     {(workouts.length > 0 || Object.keys(loadOfWeeklyPlan(S)).length > 0) && <MuscleBalance S={S} />}
     {S.routines.length > 0 && <WeeklyPlanVolume S={S} />}
     {workouts.length > 0 && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
-      <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Structural balance')}</h2>
-        <div className="muted small" style={{ marginTop: 4 }}>{t('See which lift is holding back the rest.')}</div></div>
-      <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/structural-balance')}>{t('Open')}</Button>
+      <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t("STRUCTURAL_BALANCE" /* 结构平衡 */)}</h2>
+        <div className="muted small" style={{ marginTop: 4 }}>{t("SEE_WHICH_LIFT_IS_HOLDING_BACK_THE_REST" /* 看看哪个动作拖了其他动作的后腿。 */)}</div></div>
+      <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/structural-balance')}>{t("OPEN" /* 打开 */)}</Button>
     </div>}
     {workouts.length > 0 && <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
-      <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Progress photos')}</h2>
-        <div className="muted small" style={{ marginTop: 4 }}>{t('Every photo you kept with a workout, lined up by date. Plus a before/after slider.')}</div></div>
-      <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/progress-photos')}>{t('Open')}</Button>
+      <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t("PROGRESS_PHOTOS" /* 进度照片 */)}</h2>
+        <div className="muted small" style={{ marginTop: 4 }}>{t("EVERY_PHOTO_YOU_KEPT_WITH_A_WORKOUT_LINED_UP_BY_DATE_PLUS" /* 你随训练保存的每张照片，按日期排好。还有前后对比滑块。 */)}</div></div>
+      <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/progress-photos')}>{t("OPEN" /* 打开 */)}</Button>
     </div>}
     <div className="card row between" style={{ alignItems: 'center', gap: 12 }}>
-      <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t('Body measurements')}</h2>
+      <div style={{ minWidth: 0 }}><h2 style={{ margin: 0 }}>{t("BODY_MEASUREMENTS" /* 身体围度 */)}</h2>
         <div className="muted small" style={{ marginTop: 4 }}>{(S.measurements || []).length
-          ? t('Last check-in {0}', fmtDate(S.measurements[S.measurements.length - 1].d, true))
-          : t('Waist, arms, body fat and anything else you measure, each with its own curve.')}</div></div>
-      <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/measurements')}>{t('Open')}</Button>
+          ? t("LAST_CHECK_IN_COUNT" /* 上次记录 {0} */, fmtDate(S.measurements[S.measurements.length - 1].d, true))
+          : t("WAIST_ARMS_BODY_FAT_AND_ANYTHING_ELSE_YOU_MEASURE_EACH_WITH_ITS" /* 腰围、手臂、体脂，以及你测量的其他部位，每项都有自己的曲线。 */)}</div></div>
+      <Button size="sm" variant="tinted" trailingIcon="chevronRight" style={{ flexShrink: 0 }} onClick={() => nav('/measurements')}>{t("OPEN" /* 打开 */)}</Button>
     </div>
     {(hasEffort(S) || hasEstimableEffort(S)) && <EffortCard S={S} />}
 
     <div className="cols">
       <div className="card">
         <div className="row between bw-head" style={{ marginBottom: 8 }}>
-          <h2 style={{ margin: 0 }}>{t('Body weight')}</h2>
+          <h2 style={{ margin: 0 }}>{t("BODY_WEIGHT" /* 体重 */)}</h2>
           <div className="row" style={{ gap: 8 }}>
-            <Button size="sm" icon="target" style={S.targetW ? { color: 'var(--yellow)' } : undefined} onClick={goalSheet}>{S.targetW ? fmtNum(S.targetW) : t('Goal')}</Button>
-            <Button size="sm" icon="plus" onClick={() => bwSheet()}>{t('Log')}</Button>
+            <Button size="sm" icon="target" style={S.targetW ? { color: 'var(--yellow)' } : undefined} onClick={goalSheet}>{S.targetW ? fmtNum(S.targetW) : t("GOAL" /* 目标 */)}</Button>
+            <Button size="sm" icon="plus" onClick={() => bwSheet()}>{t("LOG" /* 记录 */)}</Button>
           </div>
         </div>
         <Segmented className="seg-range" value={range} onChange={setRange}
@@ -689,20 +689,20 @@ export default function Stats() {
         <div className="chart"><LineChart points={bwPts} h={160} unit={S.unit} goal={S.targetW} /></div>
         {/* every weigh-in, week by week with its average (Discord 'Weight') */}
         {S.bodyweight.length > 0 && <div className="row" style={{ justifyContent: 'flex-end', marginTop: 4 }}>
-          <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={weighInsSheet}>{t('All weigh-ins')}</Button>
+          <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={weighInsSheet}>{t("ALL_WEIGH_INS" /* 全部称重记录 */)}</Button>
         </div>}
       </div>
 
       <div className="card">
-        <h2>{t('Exercise progress')}</h2>
+        <h2>{t("EXERCISE_PROGRESS" /* 动作进步 */)}</h2>
         {exHist.length ? <>
           <div className="sect-b" style={{ marginBottom: 10 }}>
-            <SelectRow title={t('Exercise')} sheetTitle={t('Exercise progress')} value={curEx} onChange={setExId} stackedValue
+            <SelectRow title={t("EXERCISE" /* 动作 */)} sheetTitle={t("EXERCISE_PROGRESS" /* 动作进步 */)} value={curEx} onChange={setExId} stackedValue
               options={exHist.map(id => ({ value: id, label: (EXIDX[id] ? exerciseNameText(EXIDX[id]) : nameOf(id)) + (exCurrent[id].mx ? ' · ' + fmtNum(exCurrent[id].mx) + ' ' + exCurrent[id].unit : '') }))}
               search={{
-                placeholder: t('Search…'),
-                label: t('Search…'),
-                emptyLabel: t('No match'),
+                placeholder: t("SEARCH" /* 搜索… */),
+                label: t("SEARCH" /* 搜索… */),
+                emptyLabel: t("NO_MATCH" /* 没有匹配 */),
                 match: (option, query) => matchExercise(matcherOf(option.value), query),
               }} />
           </div>
@@ -710,45 +710,45 @@ export default function Stats() {
           <Segmented className="seg-range" value={exRange} onChange={setExRange} options={rangeOptions()} />
           <div className="chart">
             {rangeTooShort
-              ? <div className="empty small">{t('Fewer than two workouts in this period. Pick a longer one.')}</div>
+              ? <div className="empty small">{t("FEWER_THAN_TWO_WORKOUTS_IN_THIS_PERIOD_PICK_A_LONGER_ONE" /* 此期间的训练少于两次，请选择更长的期间。 */)}</div>
               : onSets
-              ? <LineChart points={perSetChart.anchors} series={perSetChart.series} h={150} unit={perSet.metric === 'reps' ? t('reps') : S.unit} />
+              ? <LineChart points={perSetChart.anchors} series={perSetChart.series} h={150} unit={perSet.metric === 'reps' ? t("REPS_A" /* 次 */) : S.unit} />
               : onMax
-              ? <LineChart points={maxChartPts} h={150} unit={t('reps')} color="var(--blue)" />
+              ? <LineChart points={maxChartPts} h={150} unit={t("REPS_A" /* 次 */)} color="var(--blue)" />
               : onEff
               ? <LineChart points={effPts} h={150} unit={hd} color="var(--yellow)" invert={kind === 'rir'} />
               : <LineChart points={chartPts} h={150} unit={exUnit} color="var(--blue)" />}
           </div>
           {onSets && !rangeTooShort && <div className="row small" style={{ gap: 12, flexWrap: 'wrap', marginTop: 6 }}>
             {perSetChart.ns.map(n => <span key={n} className="row" style={{ gap: 5, alignItems: 'center' }}>
-              <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: 4, background: SET_COLORS[n - 1] }} />{t('Set {0}', n)}
+              <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: 4, background: SET_COLORS[n - 1] }} />{t("SET_COUNT" /* 第 {0} 组 */, n)}
             </span>)}
           </div>}
           <div style={{ marginTop: 8 }}>{exList.map((p, i) => <div key={i} className="row between small" style={{ padding: '6px 0', borderBottom: 'var(--hair) solid var(--sep)' }}>
             <span className="muted">{fmtDate(p.d, true)}</span><span>{p.sets.map(s => setLabel(curEx, s, p.target, speedUnit)).join('  ')}</span></div>)}</div>
           <div className="small dim" style={{ marginTop: 8 }}>
-            {onSets ? (perSet.metric === 'reps' ? t('Reps in each working set, one line per set number') : t('Estimated 1RM of each working set, one line per set number')) : onMax ? <>{t('Most reps in a Max set per workout')} · {t('Best:')}{' '}<b className="accent">{maxBest} {t('reps')}</b></> : onEff ? t('Average effort per workout') : onE1 ? t('Estimated 1RM per workout') : curCardio ? t('Top speed per workout') : curTimed ? t('Longest hold per workout') : repsOnly ? t('Most reps in a set per workout') : t('Best set weight per workout')}
-            {onEff || onMax || onSets ? '' : <> · {t('Best:')}{' '}<b className="accent">{fmtNum(onE1 ? e1Best.est : exBest)} {onE1 ? S.unit : exUnit}</b></>}
+            {onSets ? (perSet.metric === 'reps' ? t("REPS_IN_EACH_WORKING_SET_ONE_LINE_PER_SET_NUMBER" /* 每个工作组的次数，每个组号一条线 */) : t("ESTIMATED_ONE_REP_MAX_OF_EACH_WORKING_SET_ONE_LINE_PER_SET" /* 每个工作组的估算 1RM，每个组号一条线 */)) : onMax ? <>{t("MOST_REPS_IN_A_MAX_SET_PER_WORKOUT" /* 每次训练中力竭组的最多次数 */)} · {t("BEST" /* 最佳： */)}{' '}<b className="accent">{maxBest} {t("REPS_A" /* 次 */)}</b></> : onEff ? t("AVERAGE_EFFORT_PER_WORKOUT" /* 每次训练的平均强度 */) : onE1 ? t("ESTIMATED_ONE_REP_MAX_PER_WORKOUT" /* 每次训练的估算 1RM */) : curCardio ? t("TOP_SPEED_PER_WORKOUT" /* 每次训练最高速度 */) : curTimed ? t("LONGEST_HOLD_PER_WORKOUT" /* 每次训练的最长保持时间 */) : repsOnly ? t("MOST_REPS_IN_A_SET_PER_WORKOUT" /* 每次训练单组最多次数 */) : t("BEST_SET_WEIGHT_PER_WORKOUT" /* 每次训练最佳组重量 */)}
+            {onEff || onMax || onSets ? '' : <> · {t("BEST" /* 最佳： */)}{' '}<b className="accent">{fmtNum(onE1 ? e1Best.est : exBest)} {onE1 ? S.unit : exUnit}</b></>}
           </div>
           {onSets && (perSet.drop || perSet.hidden > 0) && <div className="small dim" style={{ marginTop: 4 }}>
-            {perSet.drop && t('Where you most often drop off: set {0} ({1} of {2} workouts)', perSet.drop.n, perSet.drop.count, perSet.drop.of)}
+            {perSet.drop && t("WHERE_YOU_MOST_OFTEN_DROP_OFF_SET_COUNT_COUNT_OF_COUNT_WORKOUTS" /* 最常掉的组：第 {0} 组（{2} 次训练中 {1} 次） */, perSet.drop.n, perSet.drop.count, perSet.drop.of)}
             {perSet.drop && perSet.hidden > 0 ? ' · ' : ''}
-            {perSet.hidden > 0 && t('Only the first {0} sets are drawn.', perSet.ns.length)}
+            {perSet.hidden > 0 && t("ONLY_THE_FIRST_COUNT_SETS_ARE_DRAWN" /* 只绘制前 {0} 组。 */, perSet.ns.length)}
           </div>}
           {onE1 && <div className="small dim" style={{ marginTop: 4 }}>
-            {t('Best estimate from {0} on {1}. An estimate, not a tested max.', fmtNum(e1Best.w) + ' ' + S.unit + ' × ' + e1Best.r, fmtDate(e1Best.d, true))}
+            {t("BEST_ESTIMATE_FROM_COUNT_ON_COUNT_AN_ESTIMATE_NOT_A_TESTED_MAX" /* 基于 {1} 的 {0} 得出的最佳预估。这是推算值，不是实测极限。 */, fmtNum(e1Best.w) + ' ' + S.unit + ' × ' + e1Best.r, fmtDate(e1Best.d, true))}
           </div>}
           {!onEff && !onE1 && !onMax && !onSets && showEff && <div className="small dim" style={{ marginTop: 4 }}>
-            {t('A fuller dot means less left in the tank. The same weight at a lower {0} is progress the line alone doesn’t show.', hd)}
+            {t("A_FULLER_DOT_MEANS_LESS_LEFT_IN_THE_TANK_THE_SAME_WEIGHT" /* 点越实，说明油箱里剩得越少。同样的重量配上更低的 {0}，是光看曲线看不出来的进步。 */, hd)}
           </div>}
-        </> : <div className="muted small">{t('Finish your first workout and your progress curves will show up here.')}</div>}
+        </> : <div className="muted small">{t("FINISH_YOUR_FIRST_WORKOUT_AND_YOUR_PROGRESS_CURVES_WILL_SHOW_UP_HERE" /* 完成第一次训练，你的进度曲线就会出现在这里。 */)}</div>}
       </div>
     </div>
 
     {workouts.length > 0 && <>
       <div className="row between" style={{ marginBottom: 10 }}>
-        <h4 className="sec" style={{ margin: 0 }}>{t('Recent workouts')}</h4>
-        <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={() => nav('/history')}>{t('All')} {workouts.length}</Button>
+        <h4 className="sec" style={{ margin: 0 }}>{t("RECENT_WORKOUTS" /* 最近训练 */)}</h4>
+        <Button size="sm" variant="ghost" trailingIcon="chevronRight" onClick={() => nav('/history')}>{t("ALL" /* 全部 */)} {workouts.length}</Button>
       </div>
       <div className="list">{[...workouts].reverse().slice(0, 6).map(w => <WorkoutRow key={w.id} w={w} onClick={() => workoutDetailSheet(w)} />)}</div>
     </>}

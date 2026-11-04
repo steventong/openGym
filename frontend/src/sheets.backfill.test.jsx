@@ -45,7 +45,7 @@ describe('log a past workout', () => {
     useStore.setState(s => ({ S: { ...s.S, active: { id: 'a', entries: [] } } }))
     logPastWorkoutSheet()
     expect(useUI.getState().sheets).toHaveLength(0)
-    expect(toast).toHaveBeenCalledWith('Finish the current workout first.')
+    expect(toast).toHaveBeenCalledWith('Finish your current workout first')
   })
 
   it('asks what to do when the day already has a workout', () => {

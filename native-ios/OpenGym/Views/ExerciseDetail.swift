@@ -58,9 +58,12 @@ final class ExerciseAudioSession: Sendable {
     private var currentItemObservation: NSKeyValueObservation?
     private var startTask: Task<Void, Never>?
     private static let logger = Logger(subsystem:"me.itwl.opengym",category:"ExercisePlayback")
-    func load(_ url: URL) {
+    func reset() {
         observation = nil; currentItemObservation = nil
         stop(); player.removeAllItems(); looper = nil; ready = false; failed = false; playing = true
+    }
+    func load(_ url: URL) {
+        reset()
         let item = AVPlayerItem(url:url)
         currentItemObservation = player.observe(\.currentItem,options:[.initial,.new]) { [weak self] player, _ in
             let current = player.currentItem
@@ -144,6 +147,7 @@ struct ExerciseDetail: View {
     @Environment(\.scenePhase) private var scenePhase
     let exercise: Exercise
     @State private var playback = LoopPlayback()
+    @State private var videoAttempt = 0
     @State private var weight = 20.0
     @State private var reps = 10
     @State private var choosePlan = false
@@ -168,27 +172,27 @@ struct ExerciseDetail: View {
                             copyFeedbackID = UUID()
                         } label: {
                             detailActionIcon(copiedName ? "checkmark" : "doc.on.doc")
-                        }.accessibilityLabel(copiedName ? "已复制动作名称" : "复制动作名称")
+                        }.accessibilityLabel(copiedName ? L10n.text("EXERCISE_NAME_COPIED" /* 已复制动作名称 */) : L10n.text("COPY_EXERCISE_NAME" /* 复制动作名称 */))
                             .accessibilityIdentifier("copy-exercise-name")
                         Button { dismiss() } label: { detailActionIcon("xmark") }
-                            .accessibilityLabel("关闭动作详情")
+                            .accessibilityLabel(L10n.text("CLOSE_EXERCISE_DETAILS" /* 关闭动作详情 */))
                     }.buttonStyle(.plain).fixedSize()
                 }
-                if store.mediaURL(exercise.id, video: true) != nil {
+                if store.thumbnailAssetName(exercise.id) != nil {
                   ZStack(alignment:.bottomTrailing) {
                     PlayerSurface(player:playback.player).frame(height:260).background(.white)
                     if !playback.ready && !playback.failed {
-                        ProgressView().tint(.gray).accessibilityLabel("正在加载视频")
+                        ProgressView().tint(.gray).accessibilityLabel(L10n.text("LOADING_VIDEO" /* 正在加载视频 */))
                             .foregroundStyle(.black).frame(maxWidth:.infinity,maxHeight:.infinity)
                     }
                     if playback.failed {
-                        VStack(spacing:12) { Image(systemName:"exclamationmark.triangle").accessibilityLabel("视频播放失败"); Button("重试") { loadVideo() } }.padding().foregroundStyle(.black).frame(maxWidth:.infinity,maxHeight:.infinity).background(.white)
+                        VStack(spacing:12) { Image(systemName:"exclamationmark.triangle").accessibilityLabel(L10n.text("COULD_NOT_PLAY_VIDEO" /* 视频播放失败 */)); Button(L10n.text("TRY_AGAIN" /* 重试 */)) { videoAttempt += 1 } }.padding().foregroundStyle(.black).frame(maxWidth:.infinity,maxHeight:.infinity).background(.white)
                     } else {
                         Button { playback.toggle() } label: {
-                            Label(playback.playing ? "点按暂停" : "继续播放",systemImage:playback.playing ? "pause.fill" : "play.fill").font(.system(size:11,weight:.medium)).padding(9).foregroundStyle(.white).background(.black.opacity(0.4),in:Capsule())
+                            Label(playback.playing ? L10n.text("TAP_TO_PAUSE" /* 点按暂停 */) : L10n.text("RESUME_PLAYBACK" /* 继续播放 */),systemImage:playback.playing ? "pause.fill" : "play.fill").font(.system(size:11,weight:.medium)).padding(9).foregroundStyle(.white).background(.black.opacity(0.4),in:Capsule())
                         }.padding(12).accessibilityIdentifier("animation-toggle").disabled(!playback.ready)
                     }
-                  }.clipShape(RoundedRectangle(cornerRadius:18)).accessibilityElement(children:.contain).accessibilityLabel("动作示范动画")
+                  }.clipShape(RoundedRectangle(cornerRadius:18)).accessibilityElement(children:.contain).accessibilityLabel(L10n.text("EXERCISE_DEMONSTRATION" /* 动作示范动画 */))
                 }
                 HStack(spacing:7) {
                     ForEach([exercise.bodyLabel,exercise.targetLabel,exercise.equipmentLabel],id:\.self) { label in
@@ -196,40 +200,40 @@ struct ExerciseDetail: View {
                     }
                 }
                 HStack {
-                    Button { Task { _ = await store.setFavourite(exercise.id,enabled:!store.favouriteIDs.contains(exercise.id)) } } label: { Label(store.favouriteIDs.contains(exercise.id) ? "已收藏":"收藏",systemImage:store.favouriteIDs.contains(exercise.id) ? "star.fill":"star") }.disabled(store.syncing)
+                    Button { Task { _ = await store.setFavourite(exercise.id,enabled:!store.favouriteIDs.contains(exercise.id)) } } label: { Label(store.favouriteIDs.contains(exercise.id) ? L10n.text("FAVOURITED" /* 已收藏 */):L10n.text("FAVOURITES" /* 收藏 */),systemImage:store.favouriteIDs.contains(exercise.id) ? "star.fill":"star") }.disabled(store.syncing)
                     Spacer()
-                    Button("训练历史与进步") { progress = true }
+                    Button(L10n.text("WORKOUT_HISTORY_AND_PROGRESS" /* 训练历史与进步 */)) { progress = true }
                 }
                 if store.customExercises.contains(where:{$0["id"] as? String == exercise.id}) {
-                    Button("编辑自定义动作") { editingCustom = true }
+                    Button(L10n.text("EDIT_CUSTOM_EXERCISE" /* 编辑自定义动作 */)) { editingCustom = true }
                 }
                 if let link = store.customExercises.first(where:{$0["id"] as? String == exercise.id})?["url"] as? String, let url = URL(string:link), ["http","https"].contains(url.scheme?.lowercased() ?? "") {
-                    Link("打开动作教学链接",destination:url)
+                    Link(L10n.text("OPEN_EXERCISE_TUTORIAL" /* 打开动作教学链接 */),destination:url)
                 }
-                GreenButton(title:saved ? "已加入计划" : "加入我的计划",icon:saved ? "checkmark" : "plus") { choosePlan = true }
+                GreenButton(title:saved ? L10n.text("ADDED_TO_ROUTINE" /* 已加入计划 */) : L10n.text("ADD_TO_MY_PLAN" /* 加入我的计划 */),icon:saved ? "checkmark" : "plus") { choosePlan = true }
                     .disabled(saved || store.syncing)
                 VStack(alignment:.leading,spacing:16) {
-                    HStack { Text("预估 1RM").font(.headline); Spacer(); Text(store.state["oneRmFormula"] as? String ?? "epley").font(.caption).foregroundStyle(GymTheme.muted) }
+                    HStack { Text(L10n.text("EST_ONE_REP_MAX" /* 估算 1RM */)).font(.headline); Spacer(); Text(store.state["oneRmFormula"] as? String ?? "epley").font(.caption).foregroundStyle(GymTheme.muted) }
                     HStack(spacing:14) {
-                        VStack(alignment:.leading,spacing:9) { Text("重量（\(store.unit)）").font(.caption).foregroundStyle(GymTheme.muted); Stepper(decimal(weight),value:$weight,in:0...1000,step:2.5) }
-                        VStack(alignment:.leading,spacing:9) { Text("次数").font(.caption).foregroundStyle(GymTheme.muted); Stepper("\(reps)",value:$reps,in:1...30) }
+                        VStack(alignment:.leading,spacing:9) { Text(L10n.text("WEIGHT_COUNT" /* 重量（{0}） */, store.unit)).font(.caption).foregroundStyle(GymTheme.muted); Stepper(decimal(weight),value:$weight,in:0...1000,step:2.5) }
+                        VStack(alignment:.leading,spacing:9) { Text(L10n.text("REPS" /* 次数 */)).font(.caption).foregroundStyle(GymTheme.muted); Stepper("\(reps)",value:$reps,in:1...30) }
                     }
                     Text(estimateText).font(.system(size:30,weight:.bold,design:.rounded)).foregroundStyle(GymTheme.green).frame(maxWidth:.infinity,alignment:.trailing)
                 }.gymCard()
                 if !exercise.description.isEmpty { Text(exercise.description).font(.system(size:15)).foregroundStyle(GymTheme.muted) }
-                if !exercise.instructions.isEmpty { SectionTitle(text:"动作要领") }
+                if !exercise.instructions.isEmpty { SectionTitle(text:L10n.text("HOW_TO" /* 动作要领 */)) }
                 ForEach(Array(exercise.instructions.enumerated()),id:\.offset) { index, text in
                     HStack(alignment:.top,spacing:12) {
                         Text(String(format:"%02d",index + 1)).font(.system(size:13,weight:.semibold,design:.monospaced)).foregroundStyle(GymTheme.green).padding(.top,2)
                         Text(text).font(.system(size:15)).foregroundStyle(.white.opacity(0.8)).lineSpacing(6)
                     }
                 }
-                Text("动作素材 © Aliaksandr Makatserchyk · Gym visual\n用于 openGym，保留原版授权。").font(.system(size:10)).foregroundStyle(GymTheme.muted).padding(.top,12)
+                Text(L10n.text("EXERCISE_MEDIA_ALIAKSANDR_MAKATSERCHYK_GYM_VISUAL_USED_IN_OPENGYM_UNDER_THE_ORIGINAL" /* 动作素材 © Aliaksandr Makatserchyk · Gym visual 用于 openGym，保留原版授权。 */)).font(.system(size:10)).foregroundStyle(GymTheme.muted).padding(.top,12)
             }.padding(22)
         }.background(GymTheme.background).presentationDragIndicator(.visible)
             .sheet(isPresented:$editingCustom) { CustomExerciseEditor(original:store.customExercises.first {$0["id"] as? String == exercise.id}) }
             .sheet(isPresented:$progress) { NavigationStack { ExerciseProgressView(initialID:exercise.id) } }
-            .task(id:exercise.id) { loadVideo() }.onDisappear { playback.stop() }
+            .task(id:"\(exercise.id)|\(store.serverURL)|\(videoAttempt)") { await loadVideo() }.onDisappear { playback.stop() }
             .task(id:copyFeedbackID) {
                 guard copiedName else { return }
                 try? await Task.sleep(for: .milliseconds(1500))
@@ -237,10 +241,10 @@ struct ExerciseDetail: View {
                 copiedName = false
             }
             .onChange(of:scenePhase) { _, phase in if phase != .active { playback.stop() } else { playback.resume() } }
-            .confirmationDialog("加入哪个计划？",isPresented:$choosePlan,titleVisibility:.visible) {
+            .confirmationDialog(L10n.text("ADD_TO_WHICH_ROUTINE" /* 加入哪个计划？ */),isPresented:$choosePlan,titleVisibility:.visible) {
                 ForEach(store.routines) { routine in Button(routine.name) { Task { saved = await store.appendExercise(exercise,to:routine.id) } } }
-                Button("新建单动作计划") { Task { saved = await store.addRoutine(name:exercise.name,exerciseIDs:[exercise.id]) } }
-                Button("取消",role:.cancel) {}
+                Button(L10n.text("CREATE_A_SINGLE_EXERCISE_ROUTINE" /* 新建单动作计划 */)) { Task { saved = await store.addRoutine(name:exercise.name,exerciseIDs:[exercise.id]) } }
+                Button(L10n.text("CANCEL" /* 取消 */),role:.cancel) {}
             }
     }
     private func detailActionIcon(_ symbol: String) -> some View {
@@ -250,13 +254,20 @@ struct ExerciseDetail: View {
             .background(.white.opacity(0.07),in:Circle())
     }
     private var estimateText:String {
-        guard let result = try? store.personalInfo("oneRM",["weight":weight,"reps":reps]), let value = result["value"] as? Double else { return "次数过高，无法可靠估算" }
+        guard let result = try? store.personalInfo("oneRM",["weight":weight,"reps":reps]), let value = result["value"] as? Double else { return L10n.text("TOO_MANY_REPS_FOR_A_RELIABLE_ESTIMATE" /* 次数过高，无法可靠估算 */) }
         return "\(decimal(value)) \(store.unit)"
     }
-    private func loadVideo() {
-        if let local = store.mediaURL(exercise.id,video:true) {
+    private func loadVideo() async {
+        playback.reset()
+        guard store.thumbnailAssetName(exercise.id) != nil else { return }
+        do {
+            let local = try await ExerciseVideoCache.shared.video(for: exercise.id, remoteURL: store.remoteVideoURL(exercise.id))
+            try Task.checkCancellation()
             playback.load(local)
             if scenePhase != .active { playback.stop() }
+        } catch {
+            guard !Task.isCancelled else { return }
+            playback.failed = true
         }
     }
 }

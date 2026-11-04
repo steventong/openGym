@@ -1,0 +1,99 @@
+{
+  "" : {
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary.dia",
+    "emit-module-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary-emit-module.dia",
+    "pch" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGymWatch/OpenGymWatchApp.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.dia",
+    "index-unit-output-path" : "/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.swiftdeps",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp~partial.swiftmodule"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGymWatch/WatchRemoteStore.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.dia",
+    "index-unit-output-path" : "/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.swiftdeps",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore~partial.swiftmodule"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/HealthWorkoutRecorder.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.dia",
+    "index-unit-output-path" : "/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.swiftdeps",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder~partial.swiftmodule"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/HealthWorkoutTransfer.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.dia",
+    "index-unit-output-path" : "/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.swiftdeps",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer~partial.swiftmodule"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/Localization.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.dia",
+    "index-unit-output-path" : "/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.swiftdeps",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization~partial.swiftmodule"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/TrainingActionComponents.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.dia",
+    "index-unit-output-path" : "/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.swiftdeps",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents~partial.swiftmodule"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/TrainingActionTiming.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.dia",
+    "index-unit-output-path" : "/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.swiftdeps",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming~partial.swiftmodule"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/WatchTraining.swift" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.dia",
+    "index-unit-output-path" : "/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.o",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.swiftdeps",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Debug-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining~partial.swiftmodule"
+  }
+}

@@ -20,6 +20,8 @@ COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm ci --ignore-scripts
 COPY api/coach/core/ /app/api/coach/core/
 COPY frontend/ ./
+COPY localization/ /app/localization/
+COPY scripts/localization/ /app/scripts/localization/
 # Which build this is, shown in the app as "1.3.8+<build>" next to the version. Without it every
 # image built between two releases calls itself the same thing, and "which build are you running?"
 # cannot be answered from the phone. Unset, the app reports package.json's version as before.
@@ -77,7 +79,10 @@ COPY --chmod=755 web/05-check-base-path.sh /docker-entrypoint.d/
 COPY --from=build /app/frontend/dist /usr/share/nginx/html
 # The exercise stills and animations, 180 px, licensed from Gym visual for openGym only: see
 # catalogue/media/NOTICE.md. They ship inside the image; nothing is downloaded at start-up.
-COPY catalogue/media/ /usr/share/nginx/html/exercise-media/
+# Preserve the public still/ URL for existing clients.
+COPY catalogue/media/thumbnails/ /usr/share/nginx/html/exercise-media/still/
+COPY catalogue/media/clip/ /usr/share/nginx/html/exercise-media/clip/
+COPY catalogue/media/NOTICE.md /usr/share/nginx/html/exercise-media/NOTICE.md
 
 # Set Default ENVs for nginx
 ENV NGINX_PORT=80

@@ -12,7 +12,7 @@ describe('buildRestAlert', () => {
       title: 'Rest’s over. Next set!',
       at: now + 90_000,
       allowWhileIdle: true,
-      countdownTitle: 'Rest',
+      countdownTitle: 'Rest between sets',
       totalMs: 90_000,
       sound: true,
       localOnly: false,

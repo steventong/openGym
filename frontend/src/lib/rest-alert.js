@@ -29,7 +29,7 @@ export function accentColors(key) {
   return { accent: argb(accent), ink: argb(ink) }
 }
 
-export function buildRestAlert({ at, title, countdownTitle, totalSec, accent, sound = true, classic = false, tone = null, vibrate = true, alarmBuzz = false, now = Date.now() } = {}) {
+export function buildRestAlert({ at, title, countdownTitle, skipTitle, totalSec, accent, sound = true, classic = false, tone = null, vibrate = true, alarmBuzz = false, now = Date.now() } = {}) {
   if (typeof at !== 'number' || !(at > now)) return null
   // Settings → Sound (#306): one of lib/sound.js REST_SOUNDS; without one, `classic` decides, as before.
   const kind = Object.hasOwn(REST_SOUNDS, tone) ? tone : classic === true ? 'classic' : 'chime'
@@ -38,13 +38,13 @@ export function buildRestAlert({ at, title, countdownTitle, totalSec, accent, so
   return {
     id: REST_ALERT_ID,
     channelId: vibrate ? REST_CHANNEL_ID : REST_QUIET_CHANNEL_ID,
-    title: title || t('Rest’s over. Next set!'),
-    countdownTitle: countdownTitle || t('Rest'),
-    pause: t('Pause'),
-    resume: t('Resume'),
-    minus: '− 15s',
-    plus: '+ 15s',
-    skip: t('Skip'),
+    title: title || t("REST_COMPLETE" /* 休息结束 */),
+    countdownTitle: countdownTitle || t("REST_BETWEEN_SETS" /* 组间休息 */),
+    pause: t("PAUSE" /* 暂停 */),
+    resume: t("RESUME" /* 继续 */),
+    minus: t("REST_MINUS_FIFTEEN" /* 减少十五秒 */),
+    plus: t("REST_PLUS_FIFTEEN" /* 增加十五秒 */),
+    skip: skipTitle || t("END_REST" /* 结束休息 */),
     accent: colors.accent,
     ink: colors.ink,
     totalMs,
@@ -95,7 +95,7 @@ const restPlugin = () => pluginP || (pluginP = (async () => {
 export function armRestAlert(at, opts = {}) {
   if (!MOBILE) return Promise.resolve(false)
   const mine = ++token
-  const alert = buildRestAlert({ at, title: opts.title, countdownTitle: opts.countdownTitle, totalSec: opts.totalSec, accent: opts.accent, sound: opts.sound, classic: opts.classic === true, tone: opts.tone, vibrate: opts.vibrate !== false, alarmBuzz: !!opts.alarmBuzz })
+  const alert = buildRestAlert({ at, title: opts.title, countdownTitle: opts.countdownTitle, skipTitle: opts.skipTitle, totalSec: opts.totalSec, accent: opts.accent, sound: opts.sound, classic: opts.classic === true, tone: opts.tone, vibrate: opts.vibrate !== false, alarmBuzz: !!opts.alarmBuzz })
   if (!alert) return Promise.resolve(false)
   // Outside the chain and never awaited: the alarm, its tone and the alarm buzz do not need the
   // notification permission, and a dialog left open while the phone is put away must not hold

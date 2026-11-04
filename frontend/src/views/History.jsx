@@ -21,12 +21,12 @@ export default function History() {
   const S = useStore(s => s.S)
   const rows = historyRows(S)
   return <>
-    <div className="hdr"><button className="iconbtn" onClick={() => nav('/stats')} aria-label={t('Stats')}><Icon name="chevronLeft" /></button>
-      <div style={{ flex: 1, marginInlineStart: 12 }}><h1>{t('History')}</h1><div className="sub">{tn('{0} workout', '{0} workouts', S.workouts.length)}</div></div></div>
-    <Button icon="plus" onClick={logPastWorkoutSheet} style={{ marginBottom: 12 }}>{t('Log a past workout')}</Button>
+    <div className="hdr"><button className="iconbtn" onClick={() => nav('/stats')} aria-label={t("STATS" /* 统计 */)}><Icon name="chevronLeft" /></button>
+      <div style={{ flex: 1, marginInlineStart: 12 }}><h1>{t("HISTORY" /* 历史 */)}</h1><div className="sub">{tn("COUNT_WORKOUT" /* {0} 次训练 */, "COUNT_WORKOUTS" /* {0} 次训练 */, S.workouts.length)}</div></div></div>
+    <Button icon="plus" onClick={logPastWorkoutSheet} style={{ marginBottom: 12 }}>{t("LOG_A_PAST_WORKOUT" /* 补记过去的训练 */)}</Button>
     {rows.length ? <div className="list">{rows.map(r => r.w
       ? <WorkoutRow key={r.w.id} w={r.w} onClick={() => workoutDetailSheet(r.w)} />
       : <DayNoteRow key={'note-' + r.d} iso={r.d} note={r.note} />)}</div>
-      : <div className="empty"><div className="ico"><Icon name="history" /></div>{t('No workouts yet. Your first one will land here.')}</div>}
+      : <div className="empty"><div className="ico"><Icon name="history" /></div>{t("NO_WORKOUTS_YET_YOUR_FIRST_ONE_WILL_LAND_HERE" /* 还没有训练。你的第一次训练会出现在这里。 */)}</div>}
   </>
 }

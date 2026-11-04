@@ -104,7 +104,7 @@ export async function localDisclosure() {
   const meta = HTTP_PROVIDERS[d.provider] || {}
   const base = d.provider ? baseUrlFor(d.provider, cfgOf(d)) : ''
   return {
-    provider: d.provider, providerLabel: meta.label || t('the configured AI provider'),
+    provider: d.provider, providerLabel: meta.label || t("THE_CONFIGURED_AI_PROVIDER" /* 已配置的 AI 提供方 */),
     categories: payloadLib.DATA_CATEGORIES, version: 1,
     // The honest difference from the self-hosted flow: it is the user's own account.
     payer: 'you', host: hostOf(base)
@@ -123,13 +123,13 @@ const hostOf = url => { try { return new URL(url).host } catch { return url || '
 /* ---------- running a job ---------- */
 
 async function start(S, kind, opts) {
-  if (job) throw Object.assign(new Error(t('The Coach is already thinking about your training.')), { status: 409, code: 'busy' })
-  if (!S?.coach?.consent?.agreedAt) throw Object.assign(new Error(t('The Coach needs your go-ahead first.')), { status: 403, code: 'consent' })
+  if (job) throw Object.assign(new Error(t("THE_COACH_IS_ALREADY_THINKING_ABOUT_YOUR_TRAINING" /* 教练已经在思考你的训练了。 */)), { status: 409, code: 'busy' })
+  if (!S?.coach?.consent?.agreedAt) throw Object.assign(new Error(t("THE_COACH_NEEDS_YOUR_GO_AHEAD_FIRST" /* 教练需要先获得你的同意。 */)), { status: 403, code: 'consent' })
   const d = await loadCoachDevice()
   const adapter = ADAPTERS[d.provider]
-  if (d.mode !== 'byok' || !adapter) throw Object.assign(new Error(t('The Coach isn’t set up on this phone.')), { status: 503, code: 'off' })
+  if (d.mode !== 'byok' || !adapter) throw Object.assign(new Error(t("THE_COACH_ISN_T_SET_UP_ON_THIS_PHONE" /* 此手机上尚未设置教练。 */)), { status: 503, code: 'off' })
   const cap = await capState()
-  if (cap.used >= cap.limit) throw Object.assign(new Error(t('The Coach is taking a breather. You’ve used today’s {0} runs on this phone.', cap.limit)), { status: 429, code: 'cap' })
+  if (cap.used >= cap.limit) throw Object.assign(new Error(t("THE_COACH_IS_TAKING_A_BREATHER_YOU_VE_USED_TODAY_S_COUNT" /* 教练正在喘口气。今天在这部手机上的 {0} 次运行已经用完了。 */, cap.limit)), { status: 429, code: 'cap' })
 
   await bumpDaily()
   job = { id: 'local-' + Date.now().toString(36), kind, state: 'running', startedAt: Date.now() }

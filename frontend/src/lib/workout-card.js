@@ -52,9 +52,9 @@ export function workoutCardModel(w, { unit, nameOf }) {
     date: day ? fmtDate(day, true, true) : '',
     // Imported history has no clock: an unknown duration is left out rather than shown as 0.
     stats: [
-      ...(ms >= 60000 ? [{ label: t('Duration'), value: fmtDur(ms) }] : []),
-      { label: t('Sets'), value: fmtNum(sets) },
-      { label: t('Volume'), value: fmtVol(w.vol ?? workoutVolume(w), unit) },
+      ...(ms >= 60000 ? [{ label: t("DURATION" /* 时长 */), value: fmtDur(ms) }] : []),
+      { label: t("SETS" /* 组数 */), value: fmtNum(sets) },
+      { label: t("VOLUME" /* 训练量 */), value: fmtVol(w.vol ?? workoutVolume(w), unit) },
     ],
     records: records.map(r => r.name),
     levels: MUSCLES.some(m => levels[m] > 0) ? levels : null,
@@ -149,8 +149,8 @@ export function layoutWorkoutCard(model, { measure, rtl = false, width = CARD_WI
     y += viewH + 32
     const sw = 26
     const swGap = 8
-    const less = t('Less')
-    const more = t('More')
+    const less = t("LESS" /* 更少 */)
+    const more = t("MORE" /* 更多 */)
     const labelGap = 16
     const total = measure(less, 400, 28) + labelGap + 5 * sw + 4 * swGap + labelGap + measure(more, 400, 28)
     let x = (width - total) / 2
@@ -172,7 +172,7 @@ export function layoutWorkoutCard(model, { measure, rtl = false, width = CARD_WI
 
   if (model.records.length) {
     y += 52
-    text(t('New personal records'), 34, 600, 'acc')
+    text(t("NEW_PERSONAL_RECORDS" /* 新个人纪录 */), 34, 600, 'acc')
     y += 10
     const icon = 44
     const indent = icon + 22
@@ -183,7 +183,7 @@ export function layoutWorkoutCard(model, { measure, rtl = false, width = CARD_WI
       text(line, 42, 500, 'label', start + indent * dir)
       y += 14
     }
-    if (shown.length < model.records.length) text(t('and {0} more', model.records.length - shown.length), 38, 400, 'label2', start + indent * dir)
+    if (shown.length < model.records.length) text(t("AND_COUNT_MORE" /* 以及另外 {0} 项 */, model.records.length - shown.length), 38, 400, 'label2', start + indent * dir)
   }
 
   y += 64

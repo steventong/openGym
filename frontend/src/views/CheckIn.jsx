@@ -70,10 +70,10 @@ export default function CheckIn() {
 
   return <div className="narrow">
     <div className="hdr">
-      <button className="iconbtn" onClick={() => nav('/home')} aria-label={t('Home')}><Icon name="chevronLeft" /></button>
+      <button className="iconbtn" onClick={() => nav('/home')} aria-label={t("HOME" /* 首页 */)}><Icon name="chevronLeft" /></button>
       <div style={{ flex: 1 }}>
-        <h1 style={{ fontSize: 28 }}>{t('Check in')}</h1>
-        <div className="sub">{cards.length ? t('Show this at the gym') : t('Add your gym card')}</div>
+        <h1 style={{ fontSize: 28 }}>{t("CHECK_IN" /* 签到 */)}</h1>
+        <div className="sub">{cards.length ? t("SHOW_THIS_AT_THE_GYM" /* 在健身房出示这个 */) : t("ADD_YOUR_GYM_CARD" /* 添加你的会员卡 */)}</div>
       </div>
     </div>
 
@@ -86,7 +86,7 @@ export default function CheckIn() {
       />)}
       <button className="ci-add" onClick={openAddCard}>
         <Icon name="plus" />
-        <span className="ci-add-t">{t('Add a card')}</span>
+        <span className="ci-add-t">{t("ADD_A_CARD" /* 添加卡片 */)}</span>
       </button>
     </div>
 
@@ -97,7 +97,7 @@ export default function CheckIn() {
     </div>}
 
     {!cards.length && <div className="muted small" style={{ textAlign: 'center', marginTop: 18, lineHeight: 1.5 }}>
-      {t('Import a photo of your membership card or scan it with the camera. No extra app needed at the gym, just open this screen.')}
+      {t("IMPORT_A_PHOTO_OF_YOUR_MEMBERSHIP_CARD_OR_SCAN_IT_WITH_THE" /* 导入会员卡照片，或用相机扫描。到了健身房不用另开应用，打开这个界面就行。 */)}
     </div>}
   </div>
 }
@@ -110,9 +110,9 @@ export default function CheckIn() {
 function CardFace({ card, index, count }) {
   const update = useStore(s => s.update)
   const remove = () => confirmSheet({
-    title: t('Remove this card?'),
+    title: t("REMOVE_THIS_CARD" /* 删除这张卡片？ */),
     message: card.label,
-    confirmText: t('Remove'),
+    confirmText: t("REMOVE" /* 移除 */),
     danger: true,
     onConfirm: () => update(s => {
       s.gymCards = (s.gymCards || []).filter(c => c.id !== card.id)
@@ -122,16 +122,16 @@ function CardFace({ card, index, count }) {
   const move = to => update(s => { s.gymCards = moveGymCard(s.gymCards, index, to) })
   return <div className="ci-card">
     <div className="ci-card-hd">
-      <button className="iconbtn ci-card-btn" onClick={() => openEditCard(card)} aria-label={t('Edit')}><Icon name="pencil" /></button>
+      <button className="iconbtn ci-card-btn" onClick={() => openEditCard(card)} aria-label={t("EDIT" /* 编辑 */)}><Icon name="pencil" /></button>
       <div className="ci-label">{card.label}</div>
-      <button className="iconbtn ci-card-btn" style={{ color: 'var(--red)' }} onClick={remove} aria-label={t('Remove')}><Icon name="trash" /></button>
+      <button className="iconbtn ci-card-btn" style={{ color: 'var(--red)' }} onClick={remove} aria-label={t("REMOVE" /* 移除 */)}><Icon name="trash" /></button>
     </div>
     <div className="ci-qr-plate"><QrCanvas value={card.value} size={230} /></div>
     <div className="ci-value">{card.value}</div>
     {count > 1 && <div className="ci-reorder">
-      <button className="iconbtn ci-card-btn" onClick={() => move(index - 1)} disabled={index === 0} aria-label={t('Move left')}><Icon name="chevronLeft" /></button>
+      <button className="iconbtn ci-card-btn" onClick={() => move(index - 1)} disabled={index === 0} aria-label={t("MOVE_LEFT" /* 向左移动 */)}><Icon name="chevronLeft" /></button>
       <span className="ci-pos">{index + 1} / {count}</span>
-      <button className="iconbtn ci-card-btn" onClick={() => move(index + 1)} disabled={index === count - 1} aria-label={t('Move right')}><Icon name="chevronRight" /></button>
+      <button className="iconbtn ci-card-btn" onClick={() => move(index + 1)} disabled={index === count - 1} aria-label={t("MOVE_RIGHT" /* 向右移动 */)}><Icon name="chevronRight" /></button>
     </div>}
   </div>
 }
@@ -162,32 +162,32 @@ function CardSheet({ close, card }) {
 
   const commit = () => {
     const trimmed = value.trim()
-    if (!trimmed) { toast(t('Scan or import a code first')); return }
+    if (!trimmed) { toast(t("SCAN_OR_IMPORT_A_CODE_FIRST" /* 请先扫描或导入代码 */)); return }
     const update = useStore.getState().update
     if (editing) {
       // The card can be removed on another device while this sheet is open. Checking inside the
       // mutator returned from the MUTATOR, not from here, so the sheet still said "Card updated",
       // closed, and pushed a write that changed nothing. Look first, and say what happened.
       if (!(useStore.getState().S.gymCards || []).some(x => x.id === card.id)) {
-        toast(t('That card was removed on another device'))
+        toast(t("THAT_CARD_WAS_REMOVED_ON_ANOTHER_DEVICE" /* 该卡片已在其他设备上移除 */))
         close()
         return
       }
       update(s => {
         const c = (s.gymCards || []).find(x => x.id === card.id)
         if (!c) return
-        c.label = label.trim() || t('Gym card')
+        c.label = label.trim() || t("GYM_CARD" /* 健身房卡片 */)
         c.value = trimmed
       })
-      toast(t('Card updated'))
+      toast(t("CARD_UPDATED" /* 卡片已更新 */))
     } else {
       update(s => {
         if (!Array.isArray(s.gymCards)) s.gymCards = []
         const id = uid()
-        s.gymCards.push({ id, label: label.trim() || t('Gym card'), value: trimmed, fmt: 'qrcode' })
+        s.gymCards.push({ id, label: label.trim() || t("GYM_CARD" /* 健身房卡片 */), value: trimmed, fmt: 'qrcode' })
         s.lastGymCardId = id
       })
-      toast(t('Card added'))
+      toast(t("CARD_ADDED" /* 已添加卡片 */))
     }
     close()
   }
@@ -201,7 +201,7 @@ function CardSheet({ close, card }) {
         onCancel={closeCam}
         onFound={code => {
           closeCam()
-          if (!canRenderFmt(code.fmt)) { toast(t("That's not a QR code. Only QR cards can be shown here")); return }
+          if (!canRenderFmt(code.fmt)) { toast(t("THAT_S_NOT_A_QR_CODE_ONLY_QR_CARDS_CAN_BE_SHOWN" /* 这不是二维码。此处只能显示二维码卡片 */)); return }
           setValue(code.value)
         }} />)
       return
@@ -210,7 +210,7 @@ function CardSheet({ close, card }) {
     try {
       const code = await scanCode()
       if (!code) return                       // user backed out
-      if (!canRenderFmt(code.fmt)) { toast(t("That's not a QR code. Only QR cards can be shown here")); return }
+      if (!canRenderFmt(code.fmt)) { toast(t("THAT_S_NOT_A_QR_CODE_ONLY_QR_CARDS_CAN_BE_SHOWN" /* 这不是二维码。此处只能显示二维码卡片 */)); return }
       setValue(code.value)
     } catch (e) {
       toast(scanErrorMessage(e))
@@ -224,29 +224,29 @@ function CardSheet({ close, card }) {
     setBusy(true)
     try {
       const code = await importCodeFromImage(file)
-      if (!code) { toast(t('No QR code found in that image')); return }
-      if (!canRenderFmt(code.fmt)) { toast(t("That's not a QR code. Only QR cards can be shown here")); return }
+      if (!code) { toast(t("NO_QR_CODE_FOUND_IN_THAT_IMAGE" /* 在该图片中未找到二维码 */)); return }
+      if (!canRenderFmt(code.fmt)) { toast(t("THAT_S_NOT_A_QR_CODE_ONLY_QR_CARDS_CAN_BE_SHOWN" /* 这不是二维码。此处只能显示二维码卡片 */)); return }
       setValue(code.value)
     } catch (e) {
-      toast(t('Could not read that image'))
+      toast(t("COULD_NOT_READ_THAT_IMAGE" /* 无法读取该图片 */))
     } finally { setBusy(false) }
   }
 
   return <>
-    <h3>{editing ? t('Edit card') : t('Add a card')}</h3>
-    <div className="muted small" style={{ marginBottom: 14 }}>{t('Scan it with the camera or import a photo.')}</div>
+    <h3>{editing ? t("EDIT_CARD" /* 编辑卡片 */) : t("ADD_A_CARD" /* 添加卡片 */)}</h3>
+    <div className="muted small" style={{ marginBottom: 14 }}>{t("SCAN_IT_WITH_THE_CAMERA_OR_IMPORT_A_PHOTO" /* 用相机扫描或导入照片。 */)}</div>
 
     <div className="row" style={{ gap: 8, marginBottom: 16 }}>
-      <Button variant="tinted" icon="camera" onClick={doScan} disabled={busy}>{editing ? t('Re-scan') : t('Scan')}</Button>
-      <Button variant="tinted" icon="image" onClick={() => fileRef.current?.click()} disabled={busy}>{t('Import photo')}</Button>
+      <Button variant="tinted" icon="camera" onClick={doScan} disabled={busy}>{editing ? t("RE_SCAN" /* 重新扫描 */) : t("SCAN" /* 扫描 */)}</Button>
+      <Button variant="tinted" icon="image" onClick={() => fileRef.current?.click()} disabled={busy}>{t("IMPORT_PHOTO" /* 导入照片 */)}</Button>
     </div>
 
-    <label className="sect-t">{t('Label')}</label>
-    <TextField value={label} onChange={e => setLabel(e.target.value)} placeholder={t('e.g. FitZone downtown')} style={{ marginBottom: 16 }} />
+    <label className="sect-t">{t("LABEL" /* 名称 */)}</label>
+    <TextField value={label} onChange={e => setLabel(e.target.value)} placeholder={t("E_G_FITZONE_DOWNTOWN" /* 例如 FitZone 市中心店 */)} style={{ marginBottom: 16 }} />
 
     {value.trim() && <div className="ci-qr-plate" style={{ alignSelf: 'center', marginBottom: 16 }}><QrCanvas value={value.trim()} size={150} /></div>}
 
-    <Button variant="primary" onClick={commit} disabled={busy || !value.trim()}>{editing ? t('Save card') : t('Save card')}</Button>
+    <Button variant="primary" onClick={commit} disabled={busy || !value.trim()}>{editing ? t("SAVE_CARD" /* 保存卡片 */) : t("SAVE_CARD" /* 保存卡片 */)}</Button>
 
     <input ref={fileRef} type="file" accept="image/*" hidden onChange={onFile} />
   </>
@@ -255,7 +255,7 @@ function CardSheet({ close, card }) {
 // Map the thrown reasons from lib/scan.js to something a person can act on.
 function scanErrorMessage(e) {
   const m = String(e && e.message)
-  if (m === 'permission-denied') return t('Camera permission is needed to scan. Enable it in Settings.')
-  if (m === 'unsupported') return t('Scanning is not available on this device.')
-  return t('Could not start the scanner')
+  if (m === 'permission-denied') return t("CAMERA_PERMISSION_IS_NEEDED_TO_SCAN_ENABLE_IT_IN_SETTINGS" /* 扫描需要相机权限。请在设置中开启。 */)
+  if (m === 'unsupported') return t("SCANNING_IS_NOT_AVAILABLE_ON_THIS_DEVICE" /* 此设备不支持扫描。 */)
+  return t("COULD_NOT_START_THE_SCANNER" /* 无法启动扫描器 */)
 }

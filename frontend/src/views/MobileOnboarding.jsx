@@ -40,25 +40,25 @@ export function CfAccessSheet({ close, server = '' }) {
     loadCfAccess().then(c => { if (c) { setClientId(c.clientId); setClientSecret(c.clientSecret); setHad(true); if (c.origin) setAddr(c.origin) } })
   }, [])
   const save = async (id, secret) => {
-    if (!!id.trim() !== !!secret.trim()) { useUI.getState().toast(t('Enter both the Client ID and the Client Secret')); return }
-    if (id.trim() && !origin) { useUI.getState().toast(t('Enter the address of the server this token is for')); return }
+    if (!!id.trim() !== !!secret.trim()) { useUI.getState().toast(t("ENTER_BOTH_THE_CLIENT_ID_AND_THE_CLIENT_SECRET" /* 请同时填写 Client ID 和 Client Secret */)); return }
+    if (id.trim() && !origin) { useUI.getState().toast(t("ENTER_THE_ADDRESS_OF_THE_SERVER_THIS_TOKEN_IS_FOR" /* 输入这个令牌所属服务器的地址 */)); return }
     setBusy(true)
     try {
       const saved = await saveCfAccess({ clientId: id, clientSecret: secret, server: origin })
       close()
-      useUI.getState().toast(saved ? t('Saved') : t('Removed'))
-    } catch (e) { useUI.getState().toast(e.message || t('Could not save')) }
+      useUI.getState().toast(saved ? t("SAVED" /* 已保存 */) : t("REMOVED" /* 已移除 */))
+    } catch (e) { useUI.getState().toast(e.message || t("COULD_NOT_SAVE" /* 无法保存 */)) }
     finally { setBusy(false) }
   }
   return <>
-    <h3>{t('Cloudflare Access')}</h3>
+    <h3>{t("CLOUDFLARE_ACCESS" /* 术语：Cloudflare Access */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
-      {t('Only if your server is behind Cloudflare Access: the service token this phone sends with every request to it. Kept in this phone’s secure storage.')}
+      {t("ONLY_IF_YOUR_SERVER_IS_BEHIND_CLOUDFLARE_ACCESS_THE_SERVICE_TOKEN_THIS" /* 仅当你的服务器位于 Cloudflare Access 之后才需要：这部手机会在每个请求中附带的服务令牌。保存在这部手机的安全存储中。 */)}
     </div>
-    <input className="input" placeholder={t('Server address (e.g. gym.example.com)')} value={addr} aria-label={t('Server address (e.g. gym.example.com)')}
+    <input className="input" placeholder={t("SERVER_ADDRESS_E_G_GYM_EXAMPLE_COM" /* 服务器地址（例如 gym.example.com） */)} value={addr} aria-label={t("SERVER_ADDRESS_E_G_GYM_EXAMPLE_COM" /* 服务器地址（例如 gym.example.com） */)}
       onChange={e => setAddr(e.target.value)} autoCapitalize="none" autoCorrect="off" inputMode="url" />
     {origin && <div className="dim small" role="note" style={{ marginTop: 8, lineHeight: 1.45, overflowWrap: 'anywhere' }}>
-      {t('Sent only to {0}, never to another server.', new URL(origin).host)}
+      {t("SENT_ONLY_TO_COUNT_NEVER_TO_ANOTHER_SERVER" /* 只发送到 {0}，绝不会发给其他服务器。 */, new URL(origin).host)}
     </div>}
     <div style={{ height: 10 }} />
     <input className="input" placeholder="CF-Access-Client-Id" value={clientId}
@@ -67,10 +67,10 @@ export function CfAccessSheet({ close, server = '' }) {
     <input className="input" type="password" placeholder="CF-Access-Client-Secret" value={clientSecret}
       onChange={e => setClientSecret(e.target.value)} autoCapitalize="none" autoCorrect="off" spellCheck={false} autoComplete="off" />
     <div style={{ height: 12 }} />
-    <Button variant="primary" onClick={() => save(clientId, clientSecret)} disabled={busy}>{t('Save')}</Button>
+    <Button variant="primary" onClick={() => save(clientId, clientSecret)} disabled={busy}>{t("SAVE" /* 保存 */)}</Button>
     {had && <>
       <div style={{ height: 10 }} />
-      <Button icon="trash" onClick={() => save('', '')} disabled={busy}>{t('Remove')}</Button>
+      <Button icon="trash" onClick={() => save('', '')} disabled={busy}>{t("REMOVE" /* 移除 */)}</Button>
     </>}
   </>
 }
@@ -90,33 +90,33 @@ export function ConnectSheet({ close, initialUrl = '', again = false }) {
   const codeRef = useRef(null)
   useEffect(() => { setTimeout(() => (initialUrl ? codeRef : ref).current?.focus(), 250) }, [])
   const go = async () => {
-    if (!url.trim() || !code.trim()) { useUI.getState().toast(t('Enter your server address and the code')); return }
+    if (!url.trim() || !code.trim()) { useUI.getState().toast(t("ENTER_YOUR_SERVER_ADDRESS_AND_THE_CODE" /* 输入你的服务器地址和配对码 */)); return }
     setBusy(true)
     setError('')
-    try { await connectToServer(url.trim(), code.trim(), askAddDeviceData); close(); useUI.getState().toast(t('Connected')) }
-    catch (e) { setError(e.message || t('Could not connect')) }
+    try { await connectToServer(url.trim(), code.trim(), askAddDeviceData); close(); useUI.getState().toast(t("CONNECTED" /* 已连接 */)) }
+    catch (e) { setError(e.message || t("COULD_NOT_CONNECT" /* 无法连接 */)) }
     finally { setBusy(false) }
   }
   return <>
-    <h3>{again ? t('Pair again') : t('Connect to my server')}</h3>
+    <h3>{again ? t("PAIR_AGAIN" /* 重新配对 */) : t("CONNECT_TO_MY_SERVER" /* 连接到我的服务器 */)}</h3>
     <div className="muted small" style={{ marginBottom: 14 }}>
       {again
-        ? t('Open Settings → Account → “Pair the mobile app” on your openGym site in a browser and enter the new code shown there. What this phone kept is merged into your account.')
-        : t('Open Settings → Account → “Pair the mobile app” on the openGym site you’re already signed into, then enter its address and the code shown there.')}
+        ? t("OPEN_SETTINGS_ACCOUNT_PAIR_THE_MOBILE_APP_ON_YOUR_OPENGYM_SITE_IN" /* 在浏览器中打开你的 openGym 网站的 设置 → 账号 →“配对手机应用”，然后输入那里显示的新配对码。这部手机保留的内容会合并到你的账号。 */)
+        : t("OPEN_SETTINGS_ACCOUNT_PAIR_THE_MOBILE_APP_ON_THE_OPENGYM_SITE_YOU" /* 在你已登录的 openGym 网站上，打开 设置 → 账号 →“配对手机应用”，然后输入其地址和那里显示的配对码。 */)}
     </div>
-    <input ref={ref} className="input" placeholder={t('Server address (e.g. gym.example.com)')} value={url}
+    <input ref={ref} className="input" placeholder={t("SERVER_ADDRESS_E_G_GYM_EXAMPLE_COM" /* 服务器地址（例如 gym.example.com） */)} value={url}
       onChange={e => setUrl(e.target.value)} autoCapitalize="none" autoCorrect="off" inputMode="url" />
     {plainHttp(url) && <div className="dim small" role="note" style={{ marginTop: 8, lineHeight: 1.45 }}>
-      {t('Plain http:// isn’t encrypted. Fine on your home network, but use https:// if your server is reachable from the internet.')}
+      {t("PLAIN_HTTP_ISN_T_ENCRYPTED_FINE_ON_YOUR_HOME_NETWORK_BUT_USE" /* 普通 http:// 不加密。在家庭网络里没问题，但如果你的服务器能从互联网访问，请用 https://。 */)}
     </div>}
     <div style={{ height: 10 }} />
-    <input ref={codeRef} className="input" placeholder={t('Pairing code')} maxLength={8} value={code}
+    <input ref={codeRef} className="input" placeholder={t("PAIRING_CODE" /* 配对码 */)} maxLength={8} value={code}
       onChange={e => setCode(e.target.value.toUpperCase())} style={{ letterSpacing: '.14em', fontWeight: 600, textAlign: 'center' }} />
     {error && <div className="small" role="alert" style={{ color: 'var(--red)', marginTop: 10, lineHeight: 1.45, overflowWrap: 'anywhere' }}>{error}</div>}
     <div style={{ height: 12 }} />
-    <Button variant="primary" onClick={go} disabled={busy}>{busy ? t('Connecting…') : t('Connect')}</Button>
+    <Button variant="primary" onClick={go} disabled={busy}>{busy ? t("CONNECTING" /* 连接中… */) : t("CONNECT" /* 连接 */)}</Button>
     <div style={{ height: 10 }} />
-    <Button icon="key" onClick={() => openCfAccess(normalizeServerUrl(url) || '')} disabled={busy}>{t('Cloudflare Access')}</Button>
+    <Button icon="key" onClick={() => openCfAccess(normalizeServerUrl(url) || '')} disabled={busy}>{t("CLOUDFLARE_ACCESS" /* 术语：Cloudflare Access */)}</Button>
   </>
 }
 
@@ -130,15 +130,15 @@ export default function MobileOnboarding() {
   return (
     <div className="narrow" style={wrap}>
       {head}
-      <div className="muted" style={{ marginBottom: 34 }}>{t('How do you want to use openGym?')}</div>
-      <Button variant="primary" icon="lock" onClick={() => chooseLocalMode()}>{t('Use on this device')}</Button>
+      <div className="muted" style={{ marginBottom: 34 }}>{t("HOW_DO_YOU_WANT_TO_USE_OPENGYM" /* 你想如何使用 openGym？ */)}</div>
+      <Button variant="primary" icon="lock" onClick={() => chooseLocalMode()}>{t("USE_ON_THIS_DEVICE" /* 在此设备上使用 */)}</Button>
       <div style={{ height: 10 }} />
-      <Button icon="cloud" onClick={() => useUI.getState().openSheet(close => <ConnectSheet close={close} />)}>{t('Connect to my server')}</Button>
+      <Button icon="cloud" onClick={() => useUI.getState().openSheet(close => <ConnectSheet close={close} />)}>{t("CONNECT_TO_MY_SERVER" /* 连接到我的服务器 */)}</Button>
       <div className="dim small" style={{ marginTop: 26, lineHeight: 1.5 }}>
-        {t('Local keeps everything on this phone. Connecting syncs to your own openGym server instead. You can switch later in Settings.')}
+        {t("LOCAL_KEEPS_EVERYTHING_ON_THIS_PHONE_CONNECTING_SYNCS_TO_YOUR_OWN_OPENGYM" /* 本地模式会把所有内容保留在这部手机上。连接则会改为与你自己的 openGym 服务器同步。之后可以在设置中更改。 */)}
       </div>
       <div style={{ height: 18 }} />
-      <Button icon="gear" onClick={() => openCfAccess()}>{t('Connection settings')}</Button>
+      <Button icon="gear" onClick={() => openCfAccess()}>{t("CONNECTION_SETTINGS" /* 连接设置 */)}</Button>
     </div>
   )
 }
