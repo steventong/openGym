@@ -31,7 +31,8 @@ struct WorkoutActivityContent: View {
     }
 
     private var exercisePosition: some View {
-        TrainingExercisePosition(position: state.position)
+        TrainingExercisePosition(position: state.position,
+            fontSize: 12, fontWeight: .medium, textColor: .white.opacity(0.9))
     }
 
     var body: some View {
@@ -44,7 +45,8 @@ struct WorkoutActivityContent: View {
             }
             // Older activities may only contain the combined detail string.
             TrainingSetSummary(weight: state.setWeight ?? state.detail,
-                detail: state.setWeight == nil ? "" : (state.setDetail ?? ""), label: state.setLabel)
+                detail: state.setWeight == nil ? "" : (state.setDetail ?? ""), label: state.setLabel,
+                detailFontSize: 14, detailFontWeight: .medium, detailColor: .white.opacity(0.9))
             Color.clear.frame(height: TrainingDisplayStyle.actionGap - (island ? 6 : 0)).accessibilityHidden(true)
             actionControl.accessibilityHint(state.message)
         }

@@ -21,9 +21,12 @@ struct TrainingExerciseTitle: View {
 struct TrainingExercisePosition: View {
     let position: String
     var scale: CGFloat = 1
+    var fontSize: CGFloat = 9
+    var fontWeight: Font.Weight = .regular
+    var textColor: Color = .secondary
 
     var body: some View {
-        Text(position).font(.system(size: 9 * scale)).foregroundStyle(.secondary)
+        Text(position).font(.system(size: fontSize * scale, weight: fontWeight)).foregroundStyle(textColor)
             .lineLimit(1).minimumScaleFactor(0.65)
             .fixedSize(horizontal: true, vertical: false)
     }
@@ -34,13 +37,16 @@ struct TrainingSetSummary: View {
     let detail: String
     let label: String
     var scale: CGFloat = 1
+    var detailFontSize: CGFloat = 11
+    var detailFontWeight: Font.Weight = .regular
+    var detailColor: Color = .secondary
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 4 * scale) {
             HStack(alignment: .firstTextBaseline, spacing: 5 * scale) {
                 Text(weight).font(.system(size: 23 * scale, weight: .semibold, design: .rounded))
                     .foregroundStyle(.white)
-                Text(detail).font(.system(size: 11 * scale)).foregroundStyle(.secondary)
+                Text(detail).font(.system(size: detailFontSize * scale, weight: detailFontWeight)).foregroundStyle(detailColor)
             }.lineLimit(1).minimumScaleFactor(0.65)
             Spacer(minLength: 0)
             Text(label).font(.system(size: 23 * scale, weight: .semibold, design: .rounded))
