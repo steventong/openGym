@@ -40,7 +40,7 @@ extension GymStore {
     func applyRest(entry:Int,set:Int) {
         guard let d = draft else { return }
         do {
-            let info = try WebRules.shared.call("restForCompleted",payload:["active":d.activeJSON,"entry":entry,"index":set,"state":state,"timerRunning":(restUntil ?? .distantPast) > Date()]) as! [String:Any]
+            let info = try WebRules.shared.call("restForCompleted",payload:["active":d.activeJSON,"entry":entry,"index":set,"state":state]) as! [String:Any]
             changeActive { raw in var levels = raw["nativeHighWater"] as? [String:Any] ?? [:];levels[String(entry)] = info["highWater"];raw["nativeHighWater"] = levels }
             let rows = d.rawEntries[entry]["sets"] as? [[String:Any]] ?? []
             let exerciseDone = !rows.isEmpty && rows.allSatisfy { $0["done"] as? Bool == true }
@@ -50,7 +50,6 @@ extension GymStore {
                 changeActive { raw in raw.removeValue(forKey: "nativeRest"); raw["cur"] = entry }
                 return
             }
-            if info["preserveRest"] as? Bool == true { return }
             let seconds = number(info["seconds"]); startRest(entry:entry,seconds:seconds,set:set)
             changeActive { raw in raw["cur"] = seconds > 0 ? entry : info["next"] }
         } catch { WorkoutActivityDiagnostics.failureIfTracing("rest.rules.failed", error: error); self.error = error.localizedDescription }

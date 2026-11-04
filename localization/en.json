@@ -3440,5 +3440,8 @@
   "ANDROID_REST_CHANNEL_DESCRIPTION": "Rest between sets, in the notification shade. The lock screen shows it only when notifications are allowed there.",
   "REST_MINUS_FIFTEEN": "− 15s",
   "REST_PLUS_FIFTEEN": "+ 15s",
-  "REST_FIFTEEN_SECONDS": "15s"
+  "REST_FIFTEEN_SECONDS": "15s",
+  "RELEASE_TO_SWITCH_EXERCISE": "Release to switch",
+  "KEEP_PULLING_DOWN_TO_VIEW": "Keep pulling down to view",
+  "KEEP_PULLING_UP_TO_VIEW": "Keep pulling up to view"
 }

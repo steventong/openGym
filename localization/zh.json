@@ -3440,5 +3440,8 @@
   "ANDROID_REST_CHANNEL_DESCRIPTION": "在通知栏显示组间休息倒计时。允许锁屏通知后，也会在锁屏显示。",
   "REST_MINUS_FIFTEEN": "− 15秒",
   "REST_PLUS_FIFTEEN": "+ 15秒",
-  "REST_FIFTEEN_SECONDS": "15秒"
+  "REST_FIFTEEN_SECONDS": "15秒",
+  "RELEASE_TO_SWITCH_EXERCISE": "松开切换",
+  "KEEP_PULLING_DOWN_TO_VIEW": "继续下拉查看",
+  "KEEP_PULLING_UP_TO_VIEW": "继续上拉查看"
 }

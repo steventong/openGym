@@ -359,6 +359,41 @@ import AVFoundation
         XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int,1)
         XCTAssertNil(store.restUntil)
     }
+    func testUncheckingKeepsRestAndRecheckingRestartsFullDuration() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let storage = LocalTrainingStorage(root: root)
+        let s = state([["id": "0150", "sets": 3, "reps": 8, "weight": 20, "restSec": 120]])
+        let store = GymStore(userID: "rest-recheck", storage: storage)
+        store.state = s
+        store.draft = try TrainingDraft.fromWeb(begin(s), unit: "kg")
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
+
+        // Cover a running countdown, an expired countdown, and a manually ended rest.
+        for remaining in [30.0, -10.0, 0.0] {
+            store.changeActive { raw in
+                if remaining == 0 { raw.removeValue(forKey: "nativeRest") }
+                else { raw["nativeRest"] = ["entry": 0, "set": 0, "end": Date().addingTimeInterval(remaining).timeIntervalSince1970] }
+            }
+            let previousDeadline = store.restUntil
+            XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
+            XCTAssertEqual(store.restUntil, previousDeadline, "Unchecking must leave the timer untouched")
+            XCTAssertEqual(store.watchSnapshot().restEnd, previousDeadline)
+
+            let before = Date()
+            XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
+            let deadline = try XCTUnwrap(store.restUntil)
+            XCTAssertGreaterThanOrEqual(deadline.timeIntervalSince(before), 120)
+            XCTAssertLessThanOrEqual(deadline.timeIntervalSinceNow, 120)
+            XCTAssertEqual(store.watchSnapshot().restEnd, deadline)
+            XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 0)
+            XCTAssertEqual((store.draft?.activeJSON["nativeRest"] as? [String: Any])?["set"] as? Int, 0)
+
+            let restored = GymStore(userID: "rest-recheck", storage: storage)
+            restored.restoreDraft()
+            XCTAssertEqual(restored.restUntil, deadline)
+        }
+    }
     func testFinalSetClearsRestEvenWithAnotherExerciseRemaining() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }

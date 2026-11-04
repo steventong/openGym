@@ -5,7 +5,7 @@ import {defaultConfig,modeOf,lastEntryFor,setLabel,workoutVolume,bestWeightForEn
 import {registerCustom,beatsWeight,EXIDX} from '../../../frontend/src/lib/exercises.js';
 import {normalizePyramid,flatFromPyramid,normalizePyramidRest,normalizePyramidWeight,pyramidRestFor} from '../../../frontend/src/lib/pyramid.js';
 import * as M from '../../../frontend/src/lib/workout-model.js';
-import {restSecFor,warmupRestSecFor,supersetFlowStep,nextUnfinishedUnit,restAfterSet,setProgressHighWater,restOnRecheck} from '../../../frontend/src/lib/supersetFlow.js';
+import {restSecFor,warmupRestSecFor,supersetFlowStep,nextUnfinishedUnit,restAfterSet,setProgressHighWater} from '../../../frontend/src/lib/supersetFlow.js';
 import {entryDbLoad,ownedWeightsFor,stepOwned} from '../../../frontend/src/lib/dumbbells.js';
 import {weightIncrement,stepWeight} from '../../../frontend/src/lib/progression.js';
 import {repStep,copySpanAt} from '../../../frontend/src/lib/history.js';
@@ -81,12 +81,12 @@ export function editAdvancedRow(input){
  return JSON.stringify(M.syncSideAggregate(next));
 }
 export function restForCompleted(input){
- const {active,entry,index,state,timerRunning=false}=JSON.parse(input),s=defaults(state),en=active.entries[entry],row=en.sets[index];
+ const {active,entry,index,state}=JSON.parse(input),s=defaults(state),en=active.entries[entry],row=en.sets[index];
  const units=supersetUnits(active.entries),unit=units.find(u=>u.includes(entry))||[entry];
  const unitDone=unit.every(i=>active.entries[i].sets.every(r=>r.done)), next=unitDone?nextUnfinishedUnit(active.entries,units,entry):null;
  const last=unitDone&&!next, beforeWarm=next?.some(i=>active.entries[i].sets.some(r=>M.isWarmupRow(r)&&!r.done));
  const progress=setProgressHighWater(en,active.nativeHighWater?.[entry]||0);
- if(!progress.isNew&&!restOnRecheck({timerRunning,unitDone,lastUnit:last}))return JSON.stringify({preserveRest:true,highWater:progress.highWater});
+ // Rechecking starts a fresh rest; the high-water mark only suppresses repeated navigation.
  let rest=warmupRestSecFor(en,index,restSecFor(active.entries,unit,s.restSec,{idx:entry,sec:pyramidRestFor(en.target,en.sets,index)}));
  if(M.isSideSet(row)&&!row.done)return JSON.stringify({seconds:0,next:entry});
  const partner=row.side==='L'?en.sets[index+1]:row.side==='R'?en.sets[index-1]:null;
