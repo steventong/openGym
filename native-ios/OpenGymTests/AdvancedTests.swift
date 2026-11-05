@@ -7,13 +7,13 @@ import AVFoundation
     private func pagingGeometry(_ y: CGFloat, height: CGFloat = 400, top: CGFloat = 0, bottom: CGFloat = 0) -> ScrollGeometry {
         ScrollGeometry(contentOffset: CGPoint(x: 0, y: y), contentSize: CGSize(width: 390, height: height),
             contentInsets: EdgeInsets(top: top, leading: 0, bottom: bottom, trailing: 0),
-            containerSize: CGSize(width: 390, height: 600))
+            containerSize: CGSize(width: 390, height: 600 - top - bottom))
     }
 
     func testPullRequiresReadyHintAndFingerRelease() {
         for direction: CGFloat in [-1, 1] {
-            let small = TrainingExercisePull(geometry: pagingGeometry(direction * 18))
-            let readyGeometry = pagingGeometry(direction * 40)
+            let small = TrainingExercisePull(geometry: pagingGeometry(direction * 35))
+            let readyGeometry = pagingGeometry(direction * 36)
             let ready = TrainingExercisePull(geometry: readyGeometry)
             XCTAssertEqual(direction < 0 ? small.top : small.bottom, 1)
             XCTAssertEqual(direction < 0 ? ready.top : ready.bottom, 2)
@@ -24,7 +24,7 @@ import AVFoundation
             for phase: ScrollPhase in [.idle, .decelerating] {
                 XCTAssertEqual(ready.destinationOnRelease(geometry: readyGeometry, from: .interacting, to: phase, selected: 1, count: 3), direction < 0 ? 0 : 2)
             }
-            XCTAssertNil(ready.destinationOnRelease(geometry: pagingGeometry(direction * 18), from: .interacting, to: .idle, selected: 1, count: 3),
+            XCTAssertNil(ready.destinationOnRelease(geometry: pagingGeometry(direction * 35), from: .interacting, to: .idle, selected: 1, count: 3),
                 "Pulling back before release cancels")
             for phases: (ScrollPhase, ScrollPhase) in [(.decelerating, .idle), (.animating, .idle), (.interacting, .animating)] {
                 XCTAssertNil(ready.destinationOnRelease(geometry: readyGeometry, from: phases.0, to: phases.1, selected: 1, count: 3))
@@ -34,14 +34,14 @@ import AVFoundation
 
     func testNextHintIsAlreadyVisibleWhenStartingAnotherPullAtTheBottom() {
         for (height, bottomEdge): (CGFloat, CGFloat) in [(140, 0), (1200, 600)] {
-            for distance: CGFloat in [0, 0.5, 2, 10, 23] {
+            for distance: CGFloat in [0, 0.5, 2, 10, 24, 35] {
                 let geometry = pagingGeometry(bottomEdge + distance, height: height)
                 let pull = TrainingExercisePull(geometry: geometry)
                 XCTAssertEqual(pull.bottom, 1, "Show the hint as soon as a new interaction starts at the bottom")
                 XCTAssertNil(pull.destinationOnRelease(geometry: geometry, from: .interacting, to: .idle, selected: 1, count: 3),
                     "An immediately visible hint does not arm an accidental switch")
             }
-            let readyGeometry = pagingGeometry(bottomEdge + 24, height: height)
+            let readyGeometry = pagingGeometry(bottomEdge + 36, height: height)
             let ready = TrainingExercisePull(geometry: readyGeometry)
             XCTAssertEqual(ready.bottom, 2)
             XCTAssertEqual(ready.destinationOnRelease(geometry: readyGeometry, from: .interacting, to: .idle, selected: 1, count: 3), 2)
@@ -86,6 +86,43 @@ import AVFoundation
             attachment.name = "pull-hints-\(language)"
             attachment.lifetime = .keepAlways
             add(attachment)
+        }
+    }
+
+    func testNativePagerBottomThresholdWithNavigationAndTabBars() async throws {
+        func scrollViews(_ view: UIView) -> [UIScrollView] {
+            (view as? UIScrollView).map { [$0] } ?? view.subviews.flatMap(scrollViews)
+        }
+        for selected in [1, 0] {
+            let state = NativePagerTestState()
+            state.selected = selected
+            let controller = UIHostingController(rootView: NativePagerChromeTestView(state: state))
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+            window.rootViewController = controller; window.makeKeyAndVisible()
+            defer { window.isHidden = true }
+            controller.view.frame = window.bounds
+            func settle() async throws {
+                controller.view.setNeedsLayout(); controller.view.layoutIfNeeded()
+                try await Task.sleep(for: .milliseconds(250))
+            }
+            try await settle()
+            let contentHeight: CGFloat = selected == 1 ? 1240 : 140
+            let scroll = try XCTUnwrap(scrollViews(controller.view).first { abs($0.contentSize.height - contentHeight) < 2 })
+            let insets = scroll.adjustedContentInset
+            XCTAssertGreaterThan(insets.top + insets.bottom, 0, "Exercise paging must be tested with actual bar insets")
+            let edge = max(-insets.top, scroll.contentSize.height + insets.bottom - scroll.bounds.height)
+            for distance: CGFloat in [0, 24, 35, 36] {
+                scroll.setContentOffset(CGPoint(x: 0, y: edge + distance), animated: false)
+                try await settle()
+                let geometry = try XCTUnwrap(state.geometry)
+                XCTAssertEqual(geometry.contentOffset.y, scroll.contentOffset.y, accuracy: 0.5)
+                let pull = TrainingExercisePull(geometry: geometry)
+                XCTAssertEqual(pull.bottom, distance < 36 ? 1 : 2,
+                    "The threshold must start at UIKit's actual bottom edge: selected=\(selected), distance=\(distance), edge=\(edge), actualOffset=\(scroll.contentOffset.y), geometry=\(geometry)")
+                XCTAssertEqual(pull.destinationOnRelease(geometry: geometry, from: .interacting, to: .idle,
+                    selected: selected, count: 3), distance < 36 ? nil : selected + 1)
+                XCTAssertEqual(state.selected, selected, "Programmatic scrolling must not switch exercises")
+            }
         }
     }
 
@@ -691,6 +728,28 @@ extension AdvancedTests {
 
 @MainActor @Observable private final class NativePagerTestState {
     var selected = 1
+    var geometry: ScrollGeometry?
+}
+
+private struct NativePagerChromeTestView: View {
+    let state: NativePagerTestState
+
+    var body: some View {
+        TabView {
+            Tab("Workout", systemImage: "figure.strengthtraining.traditional") {
+                NavigationStack {
+                    GeometryReader { _ in
+                        TrainingExercisePager(selected: state.selected, names: ["A", "B", "C"], select: { state.selected = $0 }) { index in
+                            Text("Exercise \(index)").frame(height: index == 1 ? 1200 : 100)
+                        }
+                        .onScrollGeometryChange(for: ScrollGeometry.self) { $0 } action: { _, value in state.geometry = value }
+                    }
+                    .navigationTitle("Workout").navigationBarTitleDisplayMode(.inline)
+                }
+            }
+            Tab("Home", systemImage: "house") { Text("Home") }
+        }
+    }
 }
 
 private struct NativePagerTestView: View {

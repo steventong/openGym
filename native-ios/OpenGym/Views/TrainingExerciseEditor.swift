@@ -242,20 +242,22 @@ struct TrainingExercisePull: Equatable {
     // Hint visibility and release confirmation are separate: the bottom hint
     // appears at the edge, while a deliberate native overscroll arms switching.
     static let threshold: CGFloat = 36
-    static let bottomThreshold: CGFloat = 24
     var top = 0
     var bottom = 0
 
     init() {}
     init(geometry: ScrollGeometry) {
         let topEdge = -geometry.contentInsets.top
-        let bottomEdge = max(topEdge, geometry.contentSize.height + geometry.contentInsets.bottom - geometry.containerSize.height)
+        // SwiftUI's containerSize already excludes the top/bottom insets, but
+        // contentOffset is still in UIScrollView coordinates. Adding the bottom
+        // inset again made users pull through both bars' heights before the threshold.
+        let bottomEdge = topEdge + max(0, geometry.contentSize.height - geometry.containerSize.height)
         func stage(_ distance: CGFloat) -> Int {
             distance >= Self.threshold ? 2 : (distance >= 6 ? 1 : 0)
         }
         top = stage(topEdge - geometry.contentOffset.y)
         let bottomDistance = geometry.contentOffset.y - bottomEdge
-        if bottomDistance >= Self.bottomThreshold {
+        if bottomDistance >= Self.threshold {
             bottom = 2
         } else if bottomDistance >= -1, geometry.contentOffset.y >= topEdge {
             bottom = 1
