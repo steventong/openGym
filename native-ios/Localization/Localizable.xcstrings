@@ -6103,24 +6103,6 @@
         }
       }
     },
-    "EXERCISE_GROUP_COUNT_OF_COUNT": {
-      "comment": "第 {0}/{1} 组动作",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Exercise %1$@/%2$@"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "第 %1$@/%2$@ 组动作"
-          }
-        }
-      }
-    },
     "EXERCISE_INFORMATION": {
       "comment": "动作信息",
       "extractionState": "manual",

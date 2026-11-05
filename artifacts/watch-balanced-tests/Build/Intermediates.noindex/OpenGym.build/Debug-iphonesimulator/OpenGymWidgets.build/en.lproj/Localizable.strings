@@ -346,8 +346,6 @@
 	<string> copy</string>
 	<key>COPY_EXERCISE_NAME</key>
 	<string>Copy exercise name</string>
-	<key>COPY_ROUTINE</key>
-	<string>Copy routine</string>
 	<key>COPY_SET</key>
 	<string>Copy set</string>
 	<key>COULD_NOT_APPLY</key>
@@ -1245,12 +1243,8 @@ Only new workouts started after enabling sync are included. Past workouts are no
 	<string>Progression rule</string>
 	<key>PROGRESS_ANALYSIS</key>
 	<string>Progress analysis</string>
-	<key>PULL_DOWN_TO_VIEW</key>
-	<string>Pull down to view</string>
 	<key>PULL_UP_BAR_A</key>
 	<string>Pull-up bar</string>
-	<key>PULL_UP_TO_VIEW</key>
-	<string>Pull up to view</string>
 	<key>PUSH_PULL_LEGS_THREE_DAYS_A_WEEK</key>
 	<string>Push / Pull / Legs · 3 days a week</string>
 	<key>PYRAMID_AND_MAX_SETS</key>
@@ -1444,9 +1438,9 @@ Only new workouts started after enabling sync are included. Past workouts are no
 	<key>SAVE_AND_SUBMIT</key>
 	<string>Save and submit</string>
 	<key>SAVE_AND_SUBMIT_WORKOUT</key>
-	<string>Save and submit workout?</string>
+	<string>Save workout?</string>
 	<key>SAVE_AND_SUBMIT_WORKOUT_A</key>
-	<string>Save and submit workout</string>
+	<string>Save workout</string>
 	<key>SAVE_ANSWERS</key>
 	<string>Save answers</string>
 	<key>SAVE_ERROR_DETAILS</key>

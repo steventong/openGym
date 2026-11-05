@@ -38,7 +38,7 @@
 		</data>
 		<key>Metadata.appintents/extract.actionsdata</key>
 		<data>
-		VjJxXE6mevQKEJtQZNyDS13K1Ug=
+		8k3fh3AvjR0I3D7tDpeLQ10FaVk=
 		</data>
 		<key>Metadata.appintents/version.json</key>
 		<data>
@@ -50,7 +50,7 @@
 		</data>
 		<key>OpenGym.debug.dylib</key>
 		<data>
-		y/4f6Gjq1eBi6hE4nJm/A9oIkgs=
+		Z97Z/gdF6VUYA47srUCxx26vYHA=
 		</data>
 		<key>PkgInfo</key>
 		<data>
@@ -66,7 +66,7 @@
 		</data>
 		<key>PlugIns/OpenGymTests.xctest/OpenGymTests</key>
 		<data>
-		ZPa9Nf3eF0IAW7QB6HChnf3P7ks=
+		6H9rlI3tC6Avc3h29Gv65nH8nZo=
 		</data>
 		<key>PlugIns/OpenGymTests.xctest/_CodeSignature/CodeResources</key>
 		<data>
@@ -78,7 +78,7 @@
 		</data>
 		<key>PlugIns/OpenGymWidgets.appex/Metadata.appintents/extract.actionsdata</key>
 		<data>
-		vkZHXKRebzyDoE71wrhocAaxqkY=
+		K1SAJDKb83tYhlsSwLx/8Caz0gU=
 		</data>
 		<key>PlugIns/OpenGymWidgets.appex/Metadata.appintents/version.json</key>
 		<data>
@@ -86,15 +86,15 @@
 		</data>
 		<key>PlugIns/OpenGymWidgets.appex/OpenGymWidgets</key>
 		<data>
-		cBwZT56U9j5i8pDswO8Mqaf78cw=
+		RBZ/dxJWc/H4JG16yqyduHo9FBY=
 		</data>
 		<key>PlugIns/OpenGymWidgets.appex/OpenGymWidgets.debug.dylib</key>
 		<data>
-		IYxP77NO9FZtwz0WJJgic/kjKtk=
+		oIRo2k3oNgsUm54QwQHrj6J78io=
 		</data>
 		<key>PlugIns/OpenGymWidgets.appex/_CodeSignature/CodeResources</key>
 		<data>
-		OCatDNfBnLgZ5J6e8Wrj7cSMBl8=
+		M/9dIMC6Gp81Pdb9/hucG+qg9IE=
 		</data>
 		<key>PlugIns/OpenGymWidgets.appex/__preview.dylib</key>
 		<data>
@@ -104,7 +104,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			r7ZXyiOxfJlVhniYZTlazWkSCjg=
+			bJvrGcbK1FUTJ0ZfxCIPsRk5R3M=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -113,7 +113,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			O4BTN5kXqWOXvTbJ1ENk1eXU9pw=
+			Tkdd5RFkU0/NNbmhDPHoK+gjnYA=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -132,11 +132,11 @@
 		</data>
 		<key>Watch/OpenGymWatch.app/OpenGymWatch</key>
 		<data>
-		+QhpxS09fQAd+rW0HQhQEoX3tp0=
+		hW47Mw1P+XPdKubf94K3fRdAGlc=
 		</data>
 		<key>Watch/OpenGymWatch.app/OpenGymWatch.debug.dylib</key>
 		<data>
-		rJkRl56uc8WAkQAm3+IdE7l4c5E=
+		viXhBIZNPxsDwBEBYO0VJfWGycw=
 		</data>
 		<key>Watch/OpenGymWatch.app/PkgInfo</key>
 		<data>
@@ -144,7 +144,7 @@
 		</data>
 		<key>Watch/OpenGymWatch.app/_CodeSignature/CodeResources</key>
 		<data>
-		suZImcA5TQUqH9b5nrOhbnw5Wa8=
+		A6fYQfkiVGjSZOt5ISc6l0oLn44=
 		</data>
 		<key>Watch/OpenGymWatch.app/__preview.dylib</key>
 		<data>
@@ -163,7 +163,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			r7ZXyiOxfJlVhniYZTlazWkSCjg=
+			bJvrGcbK1FUTJ0ZfxCIPsRk5R3M=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -181,7 +181,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			O4BTN5kXqWOXvTbJ1ENk1eXU9pw=
+			Tkdd5RFkU0/NNbmhDPHoK+gjnYA=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -207,14 +207,14 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			r7ZXyiOxfJlVhniYZTlazWkSCjg=
+			bJvrGcbK1FUTJ0ZfxCIPsRk5R3M=
 			</data>
 			<key>optional</key>
 			<true/>
 		</dict>
 		<key>web-rules.js</key>
 		<data>
-		UOZ7xOlKgkBirxRb0Tx7baAbZk0=
+		csrL6jFnbn6WM1oyj5jdF77bFFs=
 		</data>
 		<key>zh-Hans.lproj/InfoPlist.strings</key>
 		<dict>
@@ -229,7 +229,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			O4BTN5kXqWOXvTbJ1ENk1eXU9pw=
+			Tkdd5RFkU0/NNbmhDPHoK+gjnYA=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -290,7 +290,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			a2HmtK1eFjNZFwAbYtb//hqfe6FtpMBLouK3PdZlOPE=
+			Y+dmqbe1Fkb3tH5HQQsMSvIWqPZJnzWwZy+6DuwMi98=
 			</data>
 		</dict>
 		<key>Metadata.appintents/version.json</key>
@@ -311,7 +311,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			3aHtFLrhfRxytT6SR7/vuGnzsEc80GnJblsZ3R+jomE=
+			apJtY5duYvViBk2JxM7VtnP0L/ReiKxc/qXVoS0IoXE=
 			</data>
 		</dict>
 		<key>PlugIns/OpenGymTests.xctest/0289.mp4</key>
@@ -332,7 +332,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			IpM+H7b9alsm+k04zwRA6kL/EK8nsLSS+yIGWbcgIzY=
+			3WfAm1+JJ25JFNSS1GYbCP8YIBix9ra74NLgmyE7R/Y=
 			</data>
 		</dict>
 		<key>PlugIns/OpenGymTests.xctest/_CodeSignature/CodeResources</key>
@@ -353,7 +353,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ze52g1g19huMG63kT/ATeAi3/6n7H9C09jZkusvCiOk=
+			aJT+wpg8i7xtUobrpsamDYYrriF+9cKl7msRjGBeb/Y=
 			</data>
 		</dict>
 		<key>PlugIns/OpenGymWidgets.appex/Metadata.appintents/version.json</key>
@@ -367,21 +367,21 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			LUkr8g8MjGAsDmOzZv6tEY75i5Ddfs6XgshJIvMZ3ho=
+			BV6NIX90ZkHhItzzMfwQvpgs3EyuRBK4MQlVIl249BI=
 			</data>
 		</dict>
 		<key>PlugIns/OpenGymWidgets.appex/OpenGymWidgets.debug.dylib</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			uW+OpkLKlCq1xd/FfJBlLi7Eh1qg2HjjCjHT0nWn/Io=
+			L1UIdnKkovNOR6BHoqZT3lTYvmfcR4hKaA1jE6E43kk=
 			</data>
 		</dict>
 		<key>PlugIns/OpenGymWidgets.appex/_CodeSignature/CodeResources</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Uw/VeVafQwX1+keo/5DH84sMM+kQFwpLTcNJu0dv480=
+			piYbwNtUkWPNuw0BD4vDeLDNK1uwr7enoQkcdB8QW1o=
 			</data>
 		</dict>
 		<key>PlugIns/OpenGymWidgets.appex/__preview.dylib</key>
@@ -395,7 +395,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			5MUTvADrKUTa1w3dxVtZSB2D0ItGvl4N2K+rwh86Ve8=
+			IvG/xq3YcQAiaHKiNa3IMittDN62z8SOTaf/Zgkua50=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -404,7 +404,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			VZ9PxVuos3bXS5WgQYKrMmDgdsxyFpBS1K9gAdTu3qo=
+			iQn73FjX35VZVmSo4qvJkGItIUActMQXoHeDCaWEh4s=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -434,14 +434,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			jl8aqULDXhksR2g10qQHrFCnedvkM3Iiwl2LcoNlwAk=
+			Bi7WqmA/rciRriWSx/M04T3s89txzfTXvplIqYv/+YY=
 			</data>
 		</dict>
 		<key>Watch/OpenGymWatch.app/OpenGymWatch.debug.dylib</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			HAm/XqsRPrQYOXoRkIwlPkcZS4AW40JiLrsBYdENsyo=
+			A9qNoQ0aZV5go6jrIF8RsnMZc8aLIJdBQt7DbNHa8Gk=
 			</data>
 		</dict>
 		<key>Watch/OpenGymWatch.app/PkgInfo</key>
@@ -455,7 +455,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			qeM/VVFDUmUc2iEdSdHz2PVlsxuqicueWfd/pLY5Iz8=
+			ULC/iikqseDmHUsBcelMWHU9ZjPokQeQqDFpiP/cTFo=
 			</data>
 		</dict>
 		<key>Watch/OpenGymWatch.app/__preview.dylib</key>
@@ -478,7 +478,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			5MUTvADrKUTa1w3dxVtZSB2D0ItGvl4N2K+rwh86Ve8=
+			IvG/xq3YcQAiaHKiNa3IMittDN62z8SOTaf/Zgkua50=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -496,7 +496,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			VZ9PxVuos3bXS5WgQYKrMmDgdsxyFpBS1K9gAdTu3qo=
+			iQn73FjX35VZVmSo4qvJkGItIUActMQXoHeDCaWEh4s=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -528,7 +528,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			5MUTvADrKUTa1w3dxVtZSB2D0ItGvl4N2K+rwh86Ve8=
+			IvG/xq3YcQAiaHKiNa3IMittDN62z8SOTaf/Zgkua50=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -537,7 +537,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			qDgUkdnc3sSIsEDMRCU791zYqOdBZBPFj2GAHZXl4BM=
+			VkiUq/vFW01kMAPbEWmjWaYsbO4dGqAes0MNEwnNFPA=
 			</data>
 		</dict>
 		<key>zh-Hans.lproj/InfoPlist.strings</key>
@@ -553,7 +553,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			VZ9PxVuos3bXS5WgQYKrMmDgdsxyFpBS1K9gAdTu3qo=
+			iQn73FjX35VZVmSo4qvJkGItIUActMQXoHeDCaWEh4s=
 			</data>
 			<key>optional</key>
 			<true/>

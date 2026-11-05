@@ -6,14 +6,14 @@
 	<integer>13</integer>
 	<key>logs</key>
 	<dict>
-		<key>644B73A2-58B8-4FAC-B6EB-DF4887947BFA</key>
+		<key>C356C367-522B-4F68-9290-8F9D20647AD2</key>
 		<dict>
 			<key>auxiliaryLogUniqueIdentifier</key>
-			<string>A7FA60F6-8F31-4C97-9350-0CEC50746F2F</string>
+			<string>05ABA40B-753D-4D59-A3F6-BD4992308FAB</string>
 			<key>auxiliaryObservable</key>
 			<dict>
 				<key>highLevelStatus</key>
-				<string>S</string>
+				<string>W</string>
 				<key>totalNumberOfAnalyzerIssues</key>
 				<integer>0</integer>
 				<key>totalNumberOfErrors</key>
@@ -21,7 +21,7 @@
 				<key>totalNumberOfTestFailures</key>
 				<integer>0</integer>
 				<key>totalNumberOfWarnings</key>
-				<integer>0</integer>
+				<integer>5</integer>
 			</dict>
 			<key>className</key>
 			<string>IDESchemeActionsInvocationRecord</string>
@@ -30,7 +30,7 @@
 			<key>domainType</key>
 			<string>com.apple.dt.unit.cocoaUnitTest</string>
 			<key>fileName</key>
-			<string>Test-OpenGym-2026.11.05_00-52-14-+0800.xcresult</string>
+			<string>Test-OpenGym-2026.11.05_08-23-27-+0800.xcresult</string>
 			<key>hasAuxiliaryLog</key>
 			<true/>
 			<key>hasPrimaryLog</key>
@@ -38,7 +38,7 @@
 			<key>primaryObservable</key>
 			<dict>
 				<key>highLevelStatus</key>
-				<string>S</string>
+				<string>W</string>
 				<key>totalNumberOfAnalyzerIssues</key>
 				<integer>0</integer>
 				<key>totalNumberOfErrors</key>
@@ -46,7 +46,7 @@
 				<key>totalNumberOfTestFailures</key>
 				<integer>0</integer>
 				<key>totalNumberOfWarnings</key>
-				<integer>0</integer>
+				<integer>5</integer>
 			</dict>
 			<key>schemeIdentifier-containerName</key>
 			<string>OpenGym project</string>
@@ -57,13 +57,13 @@
 			<key>signature</key>
 			<string>Test OpenGym</string>
 			<key>timeStartedRecording</key>
-			<real>815503934.32717502</real>
+			<real>815531007.35881102</real>
 			<key>timeStoppedRecording</key>
-			<real>815504097.47705305</real>
+			<real>815531030.19056201</real>
 			<key>title</key>
 			<string>Test OpenGym</string>
 			<key>uniqueIdentifier</key>
-			<string>644B73A2-58B8-4FAC-B6EB-DF4887947BFA</string>
+			<string>C356C367-522B-4F68-9290-8F9D20647AD2</string>
 		</dict>
 		<key>E20598C7-BB49-4F71-8901-1CE24B79096C</key>
 		<dict>

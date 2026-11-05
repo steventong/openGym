@@ -2124,7 +2124,6 @@
   "COMPLETE_SET_COUNT_TO_EDIT_THIS_ONE": "先完成第 {0} 组才能编辑本组。",
   "DELETE_SET": "删除本组",
   "EXERCISE_COUNT_OF_COUNT": "第 {0}/{1} 个动作",
-  "EXERCISE_GROUP_COUNT_OF_COUNT": "第 {0}/{1} 组动作",
   "FOCUS": "专注",
   "LOAD": "负重",
   "LOAD_COUNT_B": "负重（{0}）",

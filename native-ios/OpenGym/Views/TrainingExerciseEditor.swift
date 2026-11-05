@@ -17,6 +17,7 @@ struct TrainingExerciseEditor<ExerciseActions: View, Accessory: View>: View {
     @Binding var note: String
     let identifier: String
     var showsEntryPosition = true
+    var allowsEntryNavigation = true
     var entryIdentity: String? = nil
     var timerRunning = false
     var restUntil: Date? = nil
@@ -37,10 +38,10 @@ struct TrainingExerciseEditor<ExerciseActions: View, Accessory: View>: View {
             if entries.indices.contains(selected) {
                 exerciseCard(entries[selected])
                     .accessibilityActions {
-                        if selected > 0 {
+                        if allowsEntryNavigation, selected > 0 {
                             Button(L10n.text("PREVIOUS_EXERCISE" /* 上一个动作 */)) { selectEntry(offset: -1) }
                         }
-                        if selected + 1 < entries.count {
+                        if allowsEntryNavigation, selected + 1 < entries.count {
                             Button(L10n.text("NEXT_EXERCISE" /* 下一个动作 */)) { selectEntry(offset: 1) }
                         }
                     }
@@ -318,7 +319,7 @@ struct ExercisePositionLabel: View {
     var body: some View {
         HStack(spacing: 2) {
             Image(systemName: "dumbbell").accessibilityHidden(true)
-            Text(L10n.text("EXERCISE_GROUP_COUNT_OF_COUNT" /* 第 {0}/{1} 组动作 */, index + 1, count))
+            Text(L10n.text("EXERCISE_COUNT_OF_COUNT" /* 第 {0}/{1} 个动作 */, index + 1, count))
         }.fixedSize().accessibilityElement(children: .combine)
     }
 }

@@ -346,8 +346,6 @@
 	<string> 副本</string>
 	<key>COPY_EXERCISE_NAME</key>
 	<string>复制动作名称</string>
-	<key>COPY_ROUTINE</key>
-	<string>复制训练计划</string>
 	<key>COPY_SET</key>
 	<string>复制本组</string>
 	<key>COULD_NOT_APPLY</key>
@@ -1245,12 +1243,8 @@
 	<string>进阶规则</string>
 	<key>PROGRESS_ANALYSIS</key>
 	<string>进步分析</string>
-	<key>PULL_DOWN_TO_VIEW</key>
-	<string>下拉查看</string>
 	<key>PULL_UP_BAR_A</key>
 	<string>单杠</string>
-	<key>PULL_UP_TO_VIEW</key>
-	<string>上拉查看</string>
 	<key>PUSH_PULL_LEGS_THREE_DAYS_A_WEEK</key>
 	<string>推 / 拉 / 腿 · 每周 3 天</string>
 	<key>PYRAMID_AND_MAX_SETS</key>
@@ -1444,9 +1438,9 @@
 	<key>SAVE_AND_SUBMIT</key>
 	<string>保存并提交</string>
 	<key>SAVE_AND_SUBMIT_WORKOUT</key>
-	<string>保存训练并提交？</string>
+	<string>保存训练？</string>
 	<key>SAVE_AND_SUBMIT_WORKOUT_A</key>
-	<string>保存训练并提交</string>
+	<string>保存训练</string>
 	<key>SAVE_ANSWERS</key>
 	<string>保存回答</string>
 	<key>SAVE_ERROR_DETAILS</key>

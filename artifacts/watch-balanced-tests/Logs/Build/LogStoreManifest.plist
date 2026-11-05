@@ -6,7 +6,7 @@
 	<integer>13</integer>
 	<key>logs</key>
 	<dict>
-		<key>A7FA60F6-8F31-4C97-9350-0CEC50746F2F</key>
+		<key>05ABA40B-753D-4D59-A3F6-BD4992308FAB</key>
 		<dict>
 			<key>className</key>
 			<string>IDECommandLineBuildLog</string>
@@ -15,13 +15,13 @@
 			<key>domainType</key>
 			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
 			<key>fileName</key>
-			<string>A7FA60F6-8F31-4C97-9350-0CEC50746F2F.xcactivitylog</string>
+			<string>05ABA40B-753D-4D59-A3F6-BD4992308FAB.xcactivitylog</string>
 			<key>hasPrimaryLog</key>
 			<true/>
 			<key>primaryObservable</key>
 			<dict>
 				<key>highLevelStatus</key>
-				<string>S</string>
+				<string>W</string>
 				<key>totalNumberOfAnalyzerIssues</key>
 				<integer>0</integer>
 				<key>totalNumberOfErrors</key>
@@ -29,7 +29,7 @@
 				<key>totalNumberOfTestFailures</key>
 				<integer>0</integer>
 				<key>totalNumberOfWarnings</key>
-				<integer>0</integer>
+				<integer>5</integer>
 			</dict>
 			<key>schemeIdentifier-containerName</key>
 			<string>OpenGym project</string>
@@ -40,13 +40,13 @@
 			<key>signature</key>
 			<string>Testing project OpenGym with scheme OpenGym</string>
 			<key>timeStartedRecording</key>
-			<real>815503934.32634795</real>
+			<real>815531007.35822499</real>
 			<key>timeStoppedRecording</key>
-			<real>815504087.73875999</real>
+			<real>815531023.81121099</real>
 			<key>title</key>
 			<string>Testing project OpenGym with scheme OpenGym</string>
 			<key>uniqueIdentifier</key>
-			<string>A7FA60F6-8F31-4C97-9350-0CEC50746F2F</string>
+			<string>05ABA40B-753D-4D59-A3F6-BD4992308FAB</string>
 		</dict>
 		<key>F2823883-656E-4988-840E-4A6DA7FB7278</key>
 		<dict>

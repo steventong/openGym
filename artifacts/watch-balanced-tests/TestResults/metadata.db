@@ -41,42 +41,42 @@
 				<key>testCompletionProtectsEndRestAcrossWatchAndActivityForExactlyFiveSeconds</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.079426050186157227</real>
+					<real>0.049028992652893066</real>
 				</dict>
 				<key>testCountdownFormattingAndProtectionShareBoundaryWithoutNegativeValues</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.023341059684753418</real>
+					<real>0.0054979324340820312</real>
 				</dict>
 				<key>testEndRestProtectsCompletionAcrossActivityAndWatchIncludingColdLaunch</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.031976938247680664</real>
+					<real>0.031017065048217773</real>
 				</dict>
 				<key>testLiveActivityContentFitsHeightBudgetAcrossStatesAndLanguages</key>
 				<dict>
 					<key>mrnet</key>
-					<real>1.0903530120849609</real>
+					<real>0.56524491310119629</real>
 				</dict>
 				<key>testNaturalExpiryKeepsEndRestActionWithoutStartingProtection</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.014042973518371582</real>
+					<real>0.016487002372741699</real>
 				</dict>
 				<key>testOlderPayloadsDecodeWithoutProtectionDeadline</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0064330101013183594</real>
+					<real>0.0050939321517944336</real>
 				</dict>
 				<key>testPhoneCheckboxBypassesTextButtonProtection</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.012977957725524902</real>
+					<real>0.014256000518798828</real>
 				</dict>
 				<key>testSharedControlProtectionExpiresButExplicitAndParentDisablingRemain</key>
 				<dict>
 					<key>mrnet</key>
-					<real>1.4868849515914917</real>
+					<real>1.6895970106124878</real>
 				</dict>
 				<key>testSystemCountdownFormatMatchesProtectionAndStopsAtZero</key>
 				<dict>
@@ -86,12 +86,12 @@
 				<key>testSystemTimerIntervalHandlesFutureAndExpiredRestWithoutInvalidRange</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0018190145492553711</real>
+					<real>0.0038579702377319336</real>
 				</dict>
 				<key>testWatchCountdownPadsSecondsWithoutTruncatingOrGoingNegative</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0016480684280395508</real>
+					<real>0.0032479763031005859</real>
 				</dict>
 			</dict>
 			<key>WatchRemoteTests</key>
@@ -99,117 +99,117 @@
 				<key>testCompletionStartsSharedRestAndDuplicateDoesNotToggleOrRestart</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.014450907707214355</real>
+					<real>0.011423945426940918</real>
 				</dict>
 				<key>testConnectionFailureReplacesEveryTrainingActionIncludingPendingRetry</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0018979310989379883</real>
+					<real>0.0029439926147460938</real>
 				</dict>
 				<key>testDeleteUndoRestoresExactInputsAndTimerButNeverOverwritesLaterChanges</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0095080137252807617</real>
+					<real>0.0079290866851806641</real>
 				</dict>
 				<key>testEndRestPreservesNextSetAndDuplicateCannotEndNewRest</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.019180059432983398</real>
+					<real>0.015954017639160156</real>
 				</dict>
 				<key>testEndRestRejectsChangedTimerWrongOwnerAndUnavailableStorage</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0089839696884155273</real>
+					<real>0.0075650215148925781</real>
 				</dict>
 				<key>testFinishedSessionAndMismatchedSetCannotBeRecorded</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.005352020263671875</real>
+					<real>0.0039949417114257812</real>
 				</dict>
 				<key>testForegroundRestAlertsAtDeadlineWithoutNotificationAndOnlyOnce</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0020810365676879883</real>
+					<real>0.0019710063934326172</real>
 				</dict>
 				<key>testForegroundRestDoesNotReplayExpiredRestOnLaunchOrResume</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0017249584197998047</real>
+					<real>0.0015679597854614258</real>
 				</dict>
 				<key>testForegroundRestKeepsArmedDeadlineAcrossSnapshotRefreshAtExpiry</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0014350414276123047</real>
+					<real>0.0016800165176391602</real>
 				</dict>
 				<key>testForegroundRestNotificationWinningRaceDoesNotDuplicateTimer</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0016160011291503906</real>
+					<real>0.0016950368881225586</real>
 				</dict>
 				<key>testForegroundRestRearmsWhenReturningBeforeDeadline</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0023369789123535156</real>
+					<real>0.0015660524368286133</real>
 				</dict>
 				<key>testForegroundRestRejectsOldDeadlineAfterExtensionSkipAndAccountChange</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0020889043807983398</real>
+					<real>0.0013930797576904297</real>
 				</dict>
 				<key>testIncompleteInputAndRunningTimerBlockWatchCompletion</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.012708902359008789</real>
+					<real>0.0090659856796264648</real>
 				</dict>
 				<key>testLastSetLoadsNextExerciseAndReplayNeverChangesSelection</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.040066957473754883</real>
+					<real>0.032941937446594238</real>
 				</dict>
 				<key>testPlateLoadingKeepsBaseAndReportsMissingOwnedPlates</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0025260448455810547</real>
+					<real>0.0020509958267211914</real>
 				</dict>
 				<key>testPrimaryActionSwitchesInPlaceAcrossRestCompletionAndPendingReply</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0022840499877929688</real>
+					<real>0.0018500089645385742</real>
 				</dict>
 				<key>testReceiptSurvivesRelaunch</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.013293981552124023</real>
+					<real>0.011329054832458496</real>
 				</dict>
 				<key>testRestStateExpiresWithoutWaitingForAnotherPhoneSnapshot</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0021229982376098633</real>
+					<real>0.0019140243530273438</real>
 				</dict>
 				<key>testSideCascadeDoesNotRewriteOppositeLimbOrWarmup</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0022809505462646484</real>
+					<real>0.0021749734878540039</real>
 				</dict>
 				<key>testSidesAdvanceIndividuallyAndRestStartsOnlyAfterBoth</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.018133044242858887</real>
+					<real>0.017875075340270996</real>
 				</dict>
 				<key>testStaleCommandCannotCompleteAfterCopyReorderOrAccountChange</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0056290626525878906</real>
+					<real>0.004758000373840332</real>
 				</dict>
 				<key>testWatchUsesEquipmentUnitsAndRoundTripsSmallVersionedPayload</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0040090084075927734</real>
+					<real>0.0026320219039916992</real>
 				</dict>
 				<key>testWeightCascadeProtectsCompletedManualAndUnfinishedInput</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0041249990463256836</real>
+					<real>0.0033409595489501953</real>
 				</dict>
 			</dict>
 			<key>WorkoutActivityTests</key>
@@ -217,122 +217,132 @@
 				<key>testBlockedInputTimerSyncAndStorageFailureCannotComplete</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.01414799690246582</real>
+					<real>0.010386943817138672</real>
 				</dict>
 				<key>testBlockedStatesHaveShortActionTitlesForOpeningTheApp</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0037330389022827148</real>
+					<real>0.0040220022201538086</real>
 				</dict>
 				<key>testColdLaunchRestoresDraftAndCommandReceipt</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.014465928077697754</real>
+					<real>0.013548016548156738</real>
 				</dict>
 				<key>testCompleteStartsRestAndDuplicateNeverCompletesNextSet</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.012783050537109375</real>
+					<real>0.012046933174133301</real>
 				</dict>
 				<key>testCompletionRemainsValidAfterRestChangesBeforeActivityRedraws</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.014816999435424805</real>
+					<real>0.016105055809020996</real>
 				</dict>
 				<key>testCompletionSurvivesColdLaunchAfterSkippingRest</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.014634966850280762</real>
+					<real>0.01323997974395752</real>
 				</dict>
 				<key>testDiagnosticsCorrelateDuplicateTapsWithoutLoggingTrainingData</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.012458920478820801</real>
+					<real>0.011728048324584961</real>
 				</dict>
 				<key>testDiagnosticsDistinguishMalformedStaleBusyAndRestOwnerRejections</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.011319994926452637</real>
+					<real>0.0095989704132080078</real>
 				</dict>
 				<key>testDiagnosticsRecordStorageErrorCodeAndFailedCompletion</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.008647918701171875</real>
+					<real>0.0078209638595581055</real>
 				</dict>
 				<key>testDisplaysTrainingExerciseSetAndUsesStableSmallPayload</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0028699636459350586</real>
+					<real>0.0023349523544311523</real>
 				</dict>
 				<key>testEndedOrDeletedWorkoutHasNoActivityOrValidCommands</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.005102992057800293</real>
+					<real>0.0056139230728149414</real>
 				</dict>
 				<key>testExpiredActivityMetadataRefreshesEvenWhenWorkoutHasNotChanged</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0048049688339233398</real>
+					<real>0.0058389902114868164</real>
 				</dict>
 				<key>testLastSetAutomaticallySelectsNextExerciseThenOffersOpenApp</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.034714937210083008</real>
+					<real>0.033922910690307617</real>
 				</dict>
 				<key>testLeftAndRightCompleteIndividuallyBeforeRestStarts</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.020756006240844727</real>
+					<real>0.018813014030456543</real>
 				</dict>
 				<key>testLegacyPayloadStillUsesStrictRevisionValidation</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.014652013778686523</real>
+					<real>0.012565016746520996</real>
 				</dict>
 				<key>testMalformedCommandsAndUnknownActionsCannotMutate</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0031709671020507812</real>
+					<real>0.0030519962310791016</real>
+				</dict>
+				<key>testManualRestWithoutCompletedSetKeepsUpcomingSummary</key>
+				<dict>
+					<key>mrnet</key>
+					<real>0.0034348964691162109</real>
 				</dict>
 				<key>testOlderActivityContentStillDecodesWithoutSummaryFields</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0021470785140991211</real>
+					<real>0.0021909475326538086</real>
 				</dict>
 				<key>testRestChangeDoesNotAllowAnEditedSetOrOldWorkTimer</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.012371063232421875</real>
+					<real>0.012248039245605469</real>
 				</dict>
 				<key>testRestoredActivityDoesNotStartWithExpiredProtectionAsStaleDate</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0020129680633544922</real>
+					<real>0.0017840862274169922</real>
 				</dict>
 				<key>testSavingUsesButtonStatusAndRestoresCommandsWithoutChangingTraining</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.0037519931793212891</real>
+					<real>0.0036679506301879883</real>
+				</dict>
+				<key>testSetSummaryAdvancesOnlyAfterEndingRestAndSurvivesRelaunch</key>
+				<dict>
+					<key>mrnet</key>
+					<real>0.023466110229492188</real>
 				</dict>
 				<key>testSkipRestPreservesSetsAndRejectsOldTimerCommand</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.015576958656311035</real>
+					<real>0.015725016593933105</real>
 				</dict>
 				<key>testStaleCommandsCannotCompleteEditedReorderedOrDifferentAccountSets</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.01047205924987793</real>
+					<real>0.010388016700744629</real>
 				</dict>
 				<key>testSystemRendererAfterCompletingSet</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.010274887084960938</real>
+					<real>0.0092799663543701172</real>
 				</dict>
 				<key>testUndoOffersANewCommandWhileOldDuplicateStaysHarmless</key>
 				<dict>
 					<key>mrnet</key>
-					<real>0.026070952415466309</real>
+					<real>0.024070024490356445</real>
 				</dict>
 			</dict>
 		</dict>

@@ -201,6 +201,52 @@ final class EditingTests:XCTestCase {
 
 
 extension EditingTests {
+    @MainActor func testHistoryEditorExpandsEveryExerciseAndEditsTheCorrectOccurrence() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = GymStore(userID: "history-list", storage: LocalTrainingStorage(root: root))
+        let entries: [[String: Any]] = [20, 30, 40].map { weight in
+            ["id": "0289", "sets": [["w": weight, "r": 8, "done": true]]]
+        }
+        let record = WorkoutRecord(raw: ["id": "history-list", "name": "History list", "start": 1_700_000_000_000.0,
+                                        "end": 1_700_001_020_000.0, "entries": entries])
+        let controller = UIHostingController(rootView: HistoryEditor(record: record, unit: "kg").environment(store))
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let window = UIWindow(windowScene: scene)
+        window.rootViewController = controller; window.makeKeyAndVisible()
+        defer { window.isHidden = true; window.rootViewController = nil }
+        func fields(in view: UIView) -> [UITextField] {
+            if let field = view as? UITextField { return [field] }
+            return view.subviews.flatMap { fields(in: $0) }
+        }
+        func weights() -> [UITextField] {
+            fields(in: controller.view).filter { ["20", "30", "40"].contains($0.text ?? "") }
+        }
+        let screenshot = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+        }
+        let screenshotURL = FileManager.default.temporaryDirectory.appendingPathComponent("history-expanded.png")
+        try screenshot.pngData()?.write(to: screenshotURL)
+        print("History editor screenshot: \(screenshotURL.path)")
+        for _ in 0..<20 where weights().count != 3 {
+            try await Task.sleep(for: .milliseconds(50))
+            controller.view.layoutIfNeeded()
+        }
+        // Even offscreen exercises exist before any scrolling or pull-to-switch.
+        XCTAssertEqual(weights().map(\.text), ["20", "30", "40"])
+        let last = try XCTUnwrap(weights().last)
+        XCTAssertTrue(last.becomeFirstResponder())
+        last.selectedTextRange = last.textRange(from: last.beginningOfDocument, to: last.endOfDocument)
+        last.insertText("45")
+        try await Task.sleep(for: .milliseconds(100))
+        last.resignFirstResponder()
+        try await Task.sleep(for: .milliseconds(100))
+        let proposed = try XCTUnwrap(store.historyEdits[record.id]?["proposed"] as? [String: Any])
+        let savedEntries = try XCTUnwrap(proposed["entries"] as? [[String: Any]])
+        let savedWeights = savedEntries.map { number(($0["sets"] as? [[String: Any]])?.first?["w"]) }
+        XCTAssertEqual(savedWeights, [20, 30, 45], "Repeated exercise IDs must retain independent edits")
+    }
+
     @MainActor func testHistoryFieldsCommitOnBlurAndFlushWithoutPerKeystrokeWrites() async throws {
         let buffer = InputCommitBuffer()
         var value = "", writes: [String] = []

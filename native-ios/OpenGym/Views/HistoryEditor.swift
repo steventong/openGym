@@ -14,7 +14,7 @@ struct HistoryEditor: View {
     @State private var deleting = false
     @State private var submitting = false
     @State private var confirmOverwrite = false
-    @State private var showExerciseNote = false
+    @State private var exerciseNoteID: UUID?
     @State private var exerciseSheet: ExerciseSheet?
     private enum ExerciseSheet: String, Identifiable {
         case add, reorder
@@ -37,27 +37,19 @@ struct HistoryEditor: View {
     }
     var body: some View {
         NavigationStack {
-            Group {
-                if form.entries.isEmpty {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20) {
-                            workoutInformation
-                            Button(L10n.text("ADD_EXERCISE" /* 添加动作 */), systemImage: "plus") { inputBuffer.commitAll(); exerciseSheet = .add }
-                                .accessibilityIdentifier("empty-history-add-exercise")
-                        }.padding(20)
-                    }.scrollDismissesKeyboard(.interactively)
-                } else {
-                    TrainingExercisePager(selected: form.selected, names: form.entries.indices.map(entryName), select: { index in
-                        inputBuffer.commitAll(); form.selected = index; persist()
-                    }) { index in
-                        VStack(alignment: .leading, spacing: 20) {
-                            workoutInformation
-                            entryCard(index)
-                        }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    workoutInformation
+                    if form.entries.isEmpty {
+                        Button(L10n.text("ADD_EXERCISE" /* 添加动作 */), systemImage: "plus") { inputBuffer.commitAll(); exerciseSheet = .add }
+                            .accessibilityIdentifier("empty-history-add-exercise")
                     }
-                }
-            }.disabled(submitting).background(GymTheme.background)
-                .onChange(of: form.selected) { _, _ in showExerciseNote = false }
+                    ForEach(Array(form.entries.enumerated()), id: \.element.id) { index, _ in
+                        entryCard(index)
+                    }
+                }.padding(20)
+            }.scrollDismissesKeyboard(.interactively)
+                .disabled(submitting).background(GymTheme.background)
                 .navigationTitle(L10n.text("EDIT_WORKOUT" /* 编辑训练 */)).navigationBarTitleDisplayMode(.inline)
                 .keyboardDismissToolbar()
                 .toolbar {
@@ -131,7 +123,7 @@ struct HistoryEditor: View {
         }.gymCard()
     }
     private func exerciseManagement(_ index: Int) -> some View {
-        ExerciseManagementControls(entries: form.entries.map(\.value), selected: index, history: true, showExerciseNote: { inputBuffer.commitAll(); form.selected = index; showExerciseNote = true }, change: manageExercise)
+        ExerciseManagementControls(entries: form.entries.map(\.value), selected: index, history: true, showExerciseNote: { inputBuffer.commitAll(); exerciseNoteID = form.entries[index].id }, change: manageExercise)
     }
     private func reorderExercises(_ order: [Int], baseline: [[String: Any]]) throws {
         inputBuffer.commitAll()
@@ -151,12 +143,15 @@ struct HistoryEditor: View {
             let entry = form.entries[i]
             let previous = store.previousExerciseReference(entry.raw, before: number(form.original["start"]), exclude: record.id)
             TrainingExerciseEditor(
-                showingOptions: Binding(get: { showExerciseNote && form.selected == i }, set: { showExerciseNote = $0 }), entries: form.entries.map(\.value), names: form.entries.indices.map(entryName),
-                selected: Binding(get: { i }, set: { inputBuffer.commitAll(); form.selected = $0; persist() }),
+                showingOptions: Binding(get: { exerciseNoteID == entry.id }, set: { showing in
+                    if showing { exerciseNoteID = entry.id }
+                    else if exerciseNoteID == entry.id { exerciseNoteID = nil }
+                }), entries: form.entries.map(\.value), names: form.entries.indices.map(entryName),
+                selected: .constant(i),
                 rows: entry.sets.map { TrainingEditorRow(id: $0.id.uuidString, raw: $0.raw) },
                 unit: form.unit, inputState: store.state.merging(["unit": form.unit]) { _, new in new }, previous: previous.text, previousNote: previous.note,
                 note: Binding(get: { form.entries[i].raw["note"] as? String ?? "" }, set: { form.entries[i].raw["note"] = $0; persist() }),
-                identifier: "history", entryIdentity: entry.id.uuidString,
+                identifier: "history", allowsEntryNavigation: false, entryIdentity: entry.id.uuidString,
                 showDetails: { inputBuffer.commitAll(); detail = store.exercise(entry.raw["id"] as? String ?? "") },
                 addSet: { addSet(entry: i) },
                 copySet: { index in
