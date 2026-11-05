@@ -9,7 +9,7 @@ watch.build_configurations.each do |c|
     'SWIFT_VERSION'=>'5.0', 'SDKROOT'=>'watchos', 'SUPPORTED_PLATFORMS'=>'watchos watchsimulator',
     'WATCHOS_DEPLOYMENT_TARGET'=>'10.0', 'TARGETED_DEVICE_FAMILY'=>'4',
     'GENERATE_INFOPLIST_FILE'=>'YES', 'INFOPLIST_FILE'=>'OpenGymWatch/Info.plist',
-    'CODE_SIGN_ENTITLEMENTS'=>'OpenGymWatch/OpenGymWatch.entitlements', 'INFOPLIST_KEY_CFBundleDisplayName'=>'openGym',
+    'CODE_SIGN_ENTITLEMENTS'=>'OpenGymWatch/OpenGymWatch.entitlements', 'INFOPLIST_KEY_CFBundleDisplayName'=>'OpenGYM',
     'INFOPLIST_KEY_WKApplication'=>'YES', 'INFOPLIST_KEY_WKCompanionAppBundleIdentifier'=>'me.itwl.opengym',
     'INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp'=>'NO', 'INFOPLIST_KEY_WKWatchOnly'=>'NO',
     'INFOPLIST_KEY_ITSAppUsesNonExemptEncryption'=>'NO', 'SKIP_INSTALL'=>'YES',

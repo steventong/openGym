@@ -868,7 +868,7 @@
 				DEVELOPMENT_TEAM = HHH7WTMLVN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OpenGymWatch/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = openGym;
+				INFOPLIST_KEY_CFBundleDisplayName = OpenGYM;
 				INFOPLIST_KEY_CFBundleLocalizations = "en zh-Hans";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_WKApplication = YES;
@@ -1179,7 +1179,7 @@
 				DEVELOPMENT_TEAM = HHH7WTMLVN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OpenGymWatch/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = openGym;
+				INFOPLIST_KEY_CFBundleDisplayName = OpenGYM;
 				INFOPLIST_KEY_CFBundleLocalizations = "en zh-Hans";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_WKApplication = YES;
