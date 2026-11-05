@@ -3447,5 +3447,10 @@
   "PREVIOUS_EXERCISE_NAMED": "上一个动作：{0}",
   "NEXT_EXERCISE_NAMED": "下一个动作：{0}",
   "REST_NOTIFICATION_TITLE": "OpenGYM 组间休息完成",
-  "REST_NOTIFICATION_NEXT_SET": "{0} 开始{1}"
+  "REST_NOTIFICATION_NEXT_SET": "{0} 开始{1}",
+  "SERVER_BACKUP_FAILED_SYNC_STOPPED": "服务器快照保存失败，已停止同步：{0}",
+  "OVERWRITE_WITH_LOCAL_EDITS": "用本机修改覆盖",
+  "BACK_UP_AND_OVERWRITE": "备份后覆盖",
+  "OVERWRITE_WORKOUT_AFTER_BACKUP": "先保存服务器快照，再以本机修改覆盖这条训练的冲突内容。其他记录保留；若此训练已删除，将重新创建。",
+  "SYNC_BACKUP_LOCATION": "每次同步前自动保存服务器快照，可在“文件”App → OpenGYM → backup 中查看。"
 }

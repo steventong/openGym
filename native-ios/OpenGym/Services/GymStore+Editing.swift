@@ -65,11 +65,11 @@ extension GymStore {
             return .none
         }
     }
-    func saveWorkout(original:[String:Any],proposed:[String:Any],expectedUnit:String) async -> Bool {
+    func saveWorkout(original:[String:Any],proposed:[String:Any],expectedUnit:String, overwrite: Bool = false) async -> Bool {
         guard keepHistoryEdit(original:original,proposed:proposed,unit:expectedUnit,submit:true) else { editError = localSaveError; return false }
-        return await submitHistoryEdit(WorkoutRecord.key(original))
+        return await submitHistoryEdit(WorkoutRecord.key(original), overwrite: overwrite)
     }
-    func submitHistoryEdit(_ key:String) async -> Bool {
+    func submitHistoryEdit(_ key:String, overwrite: Bool = false) async -> Bool {
         guard let item = historyEdits[key], let original = item["original"] as? [String:Any],
               let proposed = item["proposed"] as? [String:Any], let generation = item["generation"] as? String else { return false }
         if let fields = item["form"] as? [String:Any], let minutes = fields["minutes"] as? String, TrainingInput.value(minutes) == nil {
@@ -86,7 +86,7 @@ extension GymStore {
             let current = (source["workouts"] as? [[String:Any]] ?? []).first { WorkoutRecord.key($0) == key }
             let prior = item["priorExpected"] as? [String:Any]
             let baseline = prior != nil && RecordPatch.equal(prior,current) ? prior! : original
-            let next = try self.patchedWorkoutState(source:source,original:baseline,proposed:TrainingInput.clean(proposed) as! [String:Any],expectedUnit:item["unit"] as? String ?? "kg")
+            let next = try self.patchedWorkoutState(source:source,original:baseline,proposed:TrainingInput.clean(proposed) as! [String:Any],expectedUnit:item["unit"] as? String ?? "kg", overwrite: overwrite)
             expected = (next["workouts"] as? [[String:Any]])?.first { WorkoutRecord.key($0) == key }
             guard self.historyEdits[key]?["generation"] as? String == generation else { throw APIError.response(0,L10n.text("YOUR_LOCAL_EDITS_HAVE_CHANGED_SUBMIT_THE_LATEST_VERSION" /* 本机编辑已更新，请提交最新内容。 */)) }
             self.historyEdits[key]?["expected"] = expected
@@ -101,19 +101,22 @@ extension GymStore {
         }
         return false
     }
-    func patchedWorkoutState(source:[String:Any],original:[String:Any],proposed:[String:Any],expectedUnit:String) throws -> [String:Any] {
+    func patchedWorkoutState(source:[String:Any],original:[String:Any],proposed:[String:Any],expectedUnit:String, overwrite: Bool = false) throws -> [String:Any] {
             guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409,L10n.text("THE_WEIGHT_UNIT_CHANGED_REOPEN_THE_EDITOR" /* 重量单位已改变，请重新打开编辑器。 */)) }
             var state = source; var list = state["workouts"] as? [[String:Any]] ?? []
             let key = WorkoutRecord.key(original)
+            let missing = !list.contains(where: { WorkoutRecord.key($0) == key })
+            if missing && overwrite { list.append(original) }
             guard let i = list.firstIndex(where:{WorkoutRecord.key($0) == key}) else { throw APIError.response(404,L10n.text("THIS_WORKOUT_WAS_DELETED_SAVING_YOUR_EDITS_WILL_NOT_RECREATE_IT" /* 这条训练已被删除，你的修改不会重新创建它。 */)) }
-            var next = try RecordPatch.apply(original:original,proposed:proposed,current:list[i])
+            let previous = list[i]
+            var next = try RecordPatch.apply(original:original,proposed:proposed,current:previous,preferLocal:overwrite)
             guard !(next["name"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines).isEmpty else { throw APIError.response(0,L10n.text("ENTER_A_WORKOUT_NAME" /* 请输入训练名称。 */)) }
-            let timeChanged = !RecordPatch.equal(original["start"],proposed["start"]) || !RecordPatch.equal(original["end"],proposed["end"])
+            let timeChanged = overwrite || !RecordPatch.equal(original["start"],proposed["start"]) || !RecordPatch.equal(original["end"],proposed["end"])
             if timeChanged {
                 let start = number(next["start"]), end = number(next["end"])
                 guard start.isFinite, end.isFinite, end >= start, end-start <= 86_400_000, end <= Date().timeIntervalSince1970*1000 else { throw APIError.response(0,L10n.text("THE_END_TIME_CANNOT_BE_IN_THE_FUTURE_DURATION_MUST_BE_BETWEEN" /* 结束时间不能在未来，时长需要在 0–1440 分钟内。 */)) }
             }
-            let entriesChanged = !RecordPatch.equal(original["entries"],proposed["entries"])
+            let entriesChanged = missing || !RecordPatch.equal(previous["entries"],next["entries"])
             if entriesChanged {
                 let entries = next["entries"] as? [[String:Any]] ?? []
                 guard entries.contains(where: { ($0["sets"] as? [[String:Any]] ?? []).contains(where:rawCompleted) }) else { throw APIError.response(0,L10n.text("KEEP_AT_LEAST_ONE_COMPLETED_SET" /* 请至少保留一组已完成的训练。 */)) }
@@ -124,8 +127,8 @@ extension GymStore {
                 }
             }
             next["id"] = key // Freeze the legacy date/start identity before moving it.
-            let previous = list[i]; list[i] = next; state["workouts"] = list
-            if entriesChanged || !RecordPatch.equal(original["start"],proposed["start"]) {
+            list[i] = next; state["workouts"] = list
+            if entriesChanged || !RecordPatch.equal(previous["start"],next["start"]) {
                 let touched = Set(((previous["entries"] as? [[String:Any]] ?? []) + (next["entries"] as? [[String:Any]] ?? [])).compactMap { $0["id"] as? String })
                 guard let repaired = try WebRules.shared.call("repairHistory",payload:["state":state,"changedID":key,"touched":Array(touched),"recomputeEntries":entriesChanged,"previous":previous]) as? [String:Any] else { throw APIError.invalidResponse }
                 state = repaired

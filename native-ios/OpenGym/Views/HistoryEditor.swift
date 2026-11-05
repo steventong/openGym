@@ -13,6 +13,7 @@ struct HistoryEditor: View {
     @State private var error: String?
     @State private var deleting = false
     @State private var submitting = false
+    @State private var confirmOverwrite = false
     @State private var showExerciseNote = false
     @State private var exerciseSheet: ExerciseSheet?
     private enum ExerciseSheet: String, Identifiable {
@@ -73,6 +74,8 @@ struct HistoryEditor: View {
                                 Button(L10n.text("RETRY_LOCAL_SAVE" /* 重试本机保存 */)) { persist() }
                             }
                             Button(submitting ? L10n.text("SUBMITTING" /* 提交中 */) : L10n.text("SAVE_AND_SUBMIT" /* 保存并提交 */)) { Task { await submit() } }.accessibilityIdentifier("save-history")
+                            Button(L10n.text("OVERWRITE_WITH_LOCAL_EDITS" /* 用本机修改覆盖 */)) { persist(); confirmOverwrite = true }
+                                .accessibilityIdentifier("overwrite-history")
                             Divider()
                             WorkoutPersonalActions(record:WorkoutRecord(raw:form.proposed)) { inputBuffer.commitAll(); deleting = true }
                         } label: { Image(systemName: store.localSaveError == nil ? "ellipsis.circle" : "exclamationmark.circle")
@@ -106,6 +109,10 @@ struct HistoryEditor: View {
                     Text(L10n.text("THIS_CANNOT_BE_UNDONE_OTHER_WORKOUTS_ARE_KEPT_AND_RELATED_PERSONAL_RECORDS" /* 删除后无法撤销；其他训练保留，并重新核对相关个人纪录。有本机编辑草稿时，请先保存并提交后再删除。 */))
                 }
                 .alert(L10n.text("YOUR_INPUT_HAS_BEEN_KEPT" /* 内容已保留 */), isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) { Button(L10n.text("GOT_IT" /* 知道了 */), role: .cancel) {} } message: { Text(error ?? "") }
+                .confirmationDialog(L10n.text("OVERWRITE_WITH_LOCAL_EDITS" /* 用本机修改覆盖 */), isPresented: $confirmOverwrite, titleVisibility: .visible) {
+                    Button(L10n.text("BACK_UP_AND_OVERWRITE" /* 备份后覆盖 */), role: .destructive) { Task { await submit(overwrite: true) } }
+                        .accessibilityIdentifier("confirm-overwrite-history")
+                } message: { Text(L10n.text("OVERWRITE_WORKOUT_AFTER_BACKUP" /* 先保存服务器快照，再以本机修改覆盖这条训练的冲突内容。其他记录保留；若此训练已删除，将重新创建。 */)) }
                 .interactiveDismissDisabled(submitting || store.localSaveError != nil)
         }.tint(GymTheme.green)
             .environment(\.inputCommitBuffer, inputBuffer)
@@ -191,12 +198,12 @@ struct HistoryEditor: View {
         }
         catch { self.error = error.localizedDescription }
     }
-    private func submit() async {
+    private func submit(overwrite: Bool = false) async {
         guard !submitting, !store.syncing else { return }
         submitting = true; defer { submitting = false }
         persist()
         guard TrainingInput.value(form.minutes) != nil else { error = L10n.text("ENTER_A_VALID_DURATION_YOUR_INPUT_HAS_BEEN_KEPT" /* 请填写有效的时长，输入内容已保留。 */); return }
-        if await store.saveWorkout(original: form.original, proposed: form.proposed, expectedUnit: form.unit) { dismiss() }
+        if await store.saveWorkout(original: form.original, proposed: form.proposed, expectedUnit: form.unit, overwrite: overwrite) { dismiss() }
         else { error = store.editError ?? store.localSaveError }
     }
 }

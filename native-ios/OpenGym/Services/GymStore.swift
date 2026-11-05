@@ -158,6 +158,7 @@ import Observation
                 if userName != user["name"] as? String { userName = user["name"] as? String }
                 if changed { userID = user["id"] as? String }
                 let result = try await client.request("api/data")
+                try backupServerSnapshot(result, server: client.address.url.absoluteString)
                 let next = result["state"] as? [String: Any] ?? [:]
                 // Preserve server stamps too; only suppress a refresh when the complete document matches.
                 if !NSDictionary(dictionary:state).isEqual(to:next) { state = next }
@@ -166,6 +167,7 @@ import Observation
                 lastSync = Date(); status = L10n.text("SYNCED" /* 已同步 */)
             } else { status = L10n.text("SERVER_CONNECTED_ACCOUNT_NOT_PAIRED" /* 服务已连接 · 尚未配对账号 */) }
         } catch {
+            if let issue = localSaveIssues["serverBackup"], error.localizedDescription == issue { status = issue; self.error = issue; return }
             if case APIError.response(401, _) = error { userName = nil; status = L10n.text("PAIR_AGAIN_TO_RECONNECT" /* 需要重新配对 */) }
             else { online = false; status = L10n.text("OFFLINE_USING_LOCAL_DATA" /* 离线 · 使用本机数据 */) }
         }
@@ -186,6 +188,7 @@ import Observation
             userID = id; userName = user["name"] as? String
             state = [:]; historyEdits = [:]; restoreLocalTraining()
             let data = try await next.request("api/data")
+            try backupServerSnapshot(data, server: next.address.url.absoluteString)
             state = data["state"] as? [String: Any] ?? [:]
             online = true; lastSync = Date(); status = L10n.text("SYNCED" /* 已同步 */); showSettings = false; cacheProfile()
             healthSync.prepare()
@@ -201,6 +204,7 @@ import Observation
         do {
             for attempt in 0..<3 {
                 let current = try await client.request("api/data")
+                try backupServerSnapshot(current, server: client.address.url.absoluteString)
                 let source = current["state"] as? [String: Any] ?? ["unit":"kg", "routines":[], "workouts":[], "bodyweight":[], "week":[:]]
                 let next = try operation(source)
                 if RecordPatch.equal(source,next), verify?(source) != false { acceptSyncedState(source); cacheProfile(); return true }
@@ -405,6 +409,7 @@ extension GymStore {
         guard !loading, !syncing, !backgroundMutation else { throw APIError.busy }
         loading = true; defer { loading = false }
         let result = try await coachRequest("api/data")
+        try backupServerSnapshot(result, server: serverURL)
         guard let document = result["state"] as? [String: Any] else { throw APIError.invalidResponse }
         state = document; cacheProfile(); lastSync = Date()
     }

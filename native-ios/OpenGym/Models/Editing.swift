@@ -1,6 +1,6 @@
 import Foundation
 
-/// Three-way field patch: unrelated remote changes survive; edits to the same value are rejected.
+/// Three-way field patch: unrelated remote changes survive. Conflicts require explicit local preference.
 enum RecordPatch {
     static let metadata: Set<String> = ["_ts","_f","_u"]
     static func clean(_ value: Any) -> Any {
@@ -12,15 +12,15 @@ enum RecordPatch {
         guard let a else { return b == nil }; guard let b else { return false }
         return NSDictionary(dictionary:["v":clean(a)]).isEqual(to:["v":clean(b)])
     }
-    static func apply(original:[String:Any], proposed:[String:Any], current:[String:Any]) throws -> [String:Any] {
+    static func apply(original:[String:Any], proposed:[String:Any], current:[String:Any], preferLocal: Bool = false) throws -> [String:Any] {
         var result = current
         for key in Set(original.keys).union(proposed.keys).subtracting(metadata) {
             let old = original[key], new = proposed[key], remote = current[key]
             if equal(old,new) || equal(new,remote) { continue }
             if let old = old as? [String:Any], let new = new as? [String:Any], let remote = remote as? [String:Any] {
-                result[key] = try apply(original:old,proposed:new,current:remote)
+                result[key] = try apply(original:old,proposed:new,current:remote,preferLocal:preferLocal)
             } else {
-                guard equal(old,remote) else { throw APIError.response(409,L10n.text("THIS_ITEM_CHANGED_ON_ANOTHER_DEVICE_YOUR_LOCAL_EDITS_ARE_SAFE_COMPARE" /* 这项内容已在其他设备修改。你的本机编辑已保留，请核对两个版本后再提交。 */)) }
+                guard preferLocal || equal(old,remote) else { throw APIError.response(409,L10n.text("THIS_ITEM_CHANGED_ON_ANOTHER_DEVICE_YOUR_LOCAL_EDITS_ARE_SAFE_COMPARE" /* 这项内容已在其他设备修改。你的本机编辑已保留，请核对两个版本后再提交。 */)) }
                 result[key] = new
             }
         }

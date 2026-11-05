@@ -22,6 +22,128 @@ final class OfflineTrainingTests: XCTestCase {
         ["id":"w1","name":"原训练","d":"2026-10-20","start":1_792_476_000_000.0,"end":1_792_476_060_000.0,
          "entries":[["id":"0289","target":["mode":"reps"],"sets":[["w":15,"r":10,"done":true]]]],"prs":[],"future":"keep"]
     }
+    private func snapshots(_ storage: LocalTrainingStorage) throws -> [[String: Any]] {
+        guard let files = FileManager.default.enumerator(at: storage.backupRoot, includingPropertiesForKeys: nil) else { return [] }
+        return try files.compactMap { item in
+            guard let url = item as? URL, url.pathExtension == "json" else { return nil }
+            return try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any]
+        }
+    }
+    func testServerSnapshotsKeepExactResponseSeparateAccountsAndSameTimestamp() throws {
+        let storage = LocalTrainingStorage(root: root)
+        let response: [String: Any] = ["state": ["workouts": [workout()], "_wid": "server-write", "future": ["keep": true]], "rev": 42]
+        let now = Date(timeIntervalSince1970: 1_700_000_000.125)
+        let a = try storage.saveServerSnapshot(response, server: "https://a.invalid", user: "a", now: now)
+        let b = try storage.saveServerSnapshot(response, server: "https://a.invalid", user: "a", now: now)
+        let c = try storage.saveServerSnapshot(response, server: "https://b.invalid", user: "a", now: now)
+        let d = try storage.saveServerSnapshot(response, server: "https://a.invalid", user: "b", now: now)
+        XCTAssertNotEqual(a, b); XCTAssertNotEqual(a.deletingLastPathComponent(), c.deletingLastPathComponent())
+        XCTAssertNotEqual(a.deletingLastPathComponent(), d.deletingLastPathComponent())
+        XCTAssertTrue(a.lastPathComponent.hasPrefix("server-2023-11-14T22-13-20.125Z-"))
+        let saved = try snapshots(storage)
+        XCTAssertEqual(saved.count, 4)
+        for snapshot in saved { XCTAssertTrue(NSDictionary(dictionary: snapshot["response"] as! [String: Any]).isEqual(to: response)) }
+        XCTAssertEqual(try storage.backupRoot.resourceValues(forKeys: [.isExcludedFromBackupKey]).isExcludedFromBackup, true)
+    }
+    @MainActor func testEachConflictAttemptBacksUpBeforeOperationAndPut() async throws {
+        let s = try store(); var revision = 1, writes = 0, operations = 0
+        var server: [String: Any] = ["unit": "kg", "workouts": [], "_wid": "one", "remote": 1]
+        StubProtocol.handler = { request in
+            if request.httpMethod == "GET" { return (200, ["state": server, "rev": revision]) }
+            writes += 1
+            let copies = try self.snapshots(s.localStorage)
+            XCTAssertEqual(copies.count, writes)
+            XCTAssertTrue(copies.contains { (($0["response"] as? [String: Any])?["rev"] as? Int) == revision })
+            let body = try self.body(request)
+            XCTAssertEqual(body["baseRev"] as? Int, revision)
+            XCTAssertEqual(body["baseWid"] as? String, server["_wid"] as? String)
+            if writes == 1 { revision = 2; server["remote"] = 2; server["_wid"] = "two"; return (409, ["error": "conflict"]) }
+            server = body["state"] as! [String: Any]; return (200, ["ok": true])
+        }
+        let ok = await s.mutate { source in
+            operations += 1
+            XCTAssertEqual(try self.snapshots(s.localStorage).count, operations)
+            var next = source; next["local"] = true; return next
+        }
+        XCTAssertTrue(ok); XCTAssertEqual(writes, 2); XCTAssertEqual(server["remote"] as? Int, 2)
+        XCTAssertEqual(try snapshots(s.localStorage).count, 2)
+    }
+    @MainActor func testBackupFailurePreventsOperationAndPutThenCanRetry() async throws {
+        let s = try store()
+        try Data([1]).write(to: s.localStorage.backupRoot)
+        var writes = 0, operations = 0
+        StubProtocol.handler = { request in
+            if request.httpMethod == "PUT" { writes += 1; return (200, ["ok": true]) }
+            return (200, ["state": ["unit": "kg", "workouts": []], "rev": 1])
+        }
+        let failed = await s.mutate { source in operations += 1; var next = source; next["note"] = "local"; return next }
+        XCTAssertFalse(failed); XCTAssertEqual(writes, 0); XCTAssertEqual(operations, 0)
+        XCTAssertNotNil(s.localSaveIssues["serverBackup"])
+        try FileManager.default.removeItem(at: s.localStorage.backupRoot)
+        let retry = await s.mutate { source in var next = source; next["note"] = "local"; return next }
+        XCTAssertTrue(retry); XCTAssertEqual(writes, 1); XCTAssertNil(s.localSaveIssues["serverBackup"])
+    }
+    @MainActor func testRefreshSavesEverySnapshotBeforeReplacingCacheAndStopsOnDiskFailure() async throws {
+        let s = try store()
+        let remote: [String: Any] = ["unit": "kg", "workouts": [workout()]]
+        StubProtocol.handler = { request in
+            XCTAssertEqual(request.httpMethod, "GET")
+            switch request.url!.lastPathComponent {
+            case "health": return (200, ["ok": true])
+            case "me": return (200, ["user": ["id": "offline-test", "name": "test"]])
+            default: return (200, ["state": remote, "rev": 1])
+            }
+        }
+        await s.refresh(); await s.refresh()
+        XCTAssertEqual(try snapshots(s.localStorage).count, 2)
+        XCTAssertTrue(RecordPatch.equal(s.state, remote))
+        try FileManager.default.removeItem(at: s.localStorage.backupRoot)
+        try Data([1]).write(to: s.localStorage.backupRoot)
+        s.state = ["local": "keep"]
+        await s.refresh()
+        XCTAssertEqual(s.state["local"] as? String, "keep"); XCTAssertNotNil(s.error)
+    }
+    @MainActor func testMalformedSnapshotNeverBecomesAnEmptyProfileWrite() async throws {
+        let s = try store(); var operated = false
+        StubProtocol.handler = { request in XCTAssertEqual(request.httpMethod, "GET"); return (200, ["state": "invalid", "rev": 1]) }
+        let result = await s.mutate { source in operated = true; return source }
+        XCTAssertFalse(result); XCTAssertFalse(operated); XCTAssertEqual(try snapshots(s.localStorage).count, 0)
+    }
+    @MainActor func testExplicitOverwritePreservesOtherRecordsAndUneditedRemoteFields() async throws {
+        let s = try store(), old = workout(); var local = old, remote = old
+        local["name"] = "local title"; remote["name"] = "remote title"; remote["note"] = "remote note"
+        var other = old; other["id"] = "w2"
+        var server: [String: Any] = ["unit": "kg", "workouts": [remote, other], "future": "keep", "_wid": "latest"]
+        var writes = 0
+        StubProtocol.handler = { request in
+            if request.httpMethod == "GET" { return (200, ["state": server, "rev": 7]) }
+            XCTAssertEqual(try self.snapshots(s.localStorage).count, 1)
+            let body = try self.body(request)
+            XCTAssertEqual(body["baseRev"] as? Int, 7); XCTAssertEqual(body["baseWid"] as? String, "latest")
+            server = body["state"] as! [String: Any]; writes += 1; return (200, ["ok": true])
+        }
+        let ok = await s.saveWorkout(original: old, proposed: local, expectedUnit: "kg", overwrite: true)
+        XCTAssertTrue(ok); XCTAssertEqual(writes, 1); XCTAssertNil(s.historyEdits["w1"])
+        let records = server["workouts"] as! [[String: Any]]
+        XCTAssertEqual(records[0]["name"] as? String, "local title")
+        XCTAssertEqual(records[0]["note"] as? String, "remote note")
+        XCTAssertTrue(RecordPatch.equal(records[1], other)); XCTAssertEqual(server["future"] as? String, "keep")
+    }
+    @MainActor func testExplicitOverwriteRecreatesDeletedRecordWithSameIDAndRejectsUnitChange() async throws {
+        let s = try store(), old = workout()
+        var local = old; local["name"] = "local title"
+        var server: [String: Any] = ["unit": "kg", "workouts": [], "deleted": ["workouts": ["w1": 123]]]
+        StubProtocol.handler = { request in
+            if request.httpMethod == "GET" { return (200, ["state": server, "rev": 1]) }
+            server = try self.body(request)["state"] as! [String: Any]; return (200, ["ok": true])
+        }
+        let ok = await s.saveWorkout(original: old, proposed: local, expectedUnit: "kg", overwrite: true)
+        XCTAssertTrue(ok)
+        XCTAssertEqual((server["workouts"] as? [[String: Any]])?.map { $0["id"] as? String }, ["w1"])
+        server["unit"] = "lb"
+        let failed = await s.saveWorkout(original: old, proposed: local, expectedUnit: "kg", overwrite: true)
+        XCTAssertFalse(failed); XCTAssertNotNil(s.historyEdits["w1"])
+    }
     @MainActor func testFreestyleStartsWithoutPlansAndRestoresEmptyDraft() throws {
         let first = try store()
         first.state = ["unit": "lb", "routines": [], "bodyweight": [["w": 150]]]

@@ -3447,5 +3447,10 @@
   "PREVIOUS_EXERCISE_NAMED": "Previous exercise: {0}",
   "NEXT_EXERCISE_NAMED": "Next exercise: {0}",
   "REST_NOTIFICATION_TITLE": "OpenGYM · Rest complete",
-  "REST_NOTIFICATION_NEXT_SET": "{0} · Start {1}"
+  "REST_NOTIFICATION_NEXT_SET": "{0} · Start {1}",
+  "SERVER_BACKUP_FAILED_SYNC_STOPPED": "Could not save the server snapshot. Sync stopped: {0}",
+  "OVERWRITE_WITH_LOCAL_EDITS": "Overwrite with local edits",
+  "BACK_UP_AND_OVERWRITE": "Back up and overwrite",
+  "OVERWRITE_WORKOUT_AFTER_BACKUP": "Save a server snapshot first, then use your local edits for conflicts in this workout. Other records are kept. If this workout was deleted, it will be recreated.",
+  "SYNC_BACKUP_LOCATION": "A server snapshot is saved before every sync. Find it in Files → OpenGYM → backup."
 }

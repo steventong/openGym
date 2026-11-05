@@ -5,12 +5,37 @@ import CryptoKit
 /// a separately verified previous copy also permits recovery from a damaged latest file.
 final class LocalTrainingStorage {
     let root: URL
-    init(root: URL? = nil) {
+    let backupRoot: URL
+    init(root: URL? = nil, backupRoot: URL? = nil) {
         self.root = root ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("OpenGymOffline", isDirectory: true)
+        self.backupRoot = backupRoot ?? (root ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]).appendingPathComponent("backup", isDirectory: true)
     }
     func folder(server: String, user: String) -> URL {
         let digest = SHA256.hash(data: Data("\(server)|\(user)".utf8)).map { String(format: "%02x", $0) }.joined()
         return root.appendingPathComponent(digest, isDirectory: true)
+    }
+    /// Append-only server snapshots, isolated by server/account and readable in Files.
+    /// No pruning or restore operation: every successful pre-sync download has its own file.
+    @discardableResult func saveServerSnapshot(_ response: [String: Any], server: String, user: String, now: Date = Date()) throws -> URL {
+        guard response["state"] is [String: Any] || response["state"] is NSNull else { throw APIError.invalidResponse }
+        let format = ISO8601DateFormatter()
+        format.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let timestamp = format.string(from: now)
+        let directory = backupRoot.appendingPathComponent(folder(server: server, user: user).lastPathComponent, isDirectory: true)
+        let url = directory.appendingPathComponent("server-\(timestamp.replacingOccurrences(of: ":", with: "-"))-\(UUID().uuidString).json")
+        let snapshot: [String: Any] = ["formatVersion": 1, "savedAt": timestamp, "server": server, "user": user, "response": response]
+        let data = try JSONSerialization.data(withJSONObject: snapshot, options: [.sortedKeys])
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        // The snapshot may contain HealthKit-derived weight. Keep this archive device-local.
+        var localRoot = backupRoot, options = URLResourceValues()
+        options.isExcludedFromBackup = true
+        try localRoot.setResourceValues(options)
+        try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        let handle = try FileHandle(forWritingTo: url)
+        defer { try? handle.close() }
+        try handle.synchronize()
+        guard try Data(contentsOf: url) == data else { throw APIError.invalidResponse }
+        return url
     }
     func read(_ url: URL) throws -> [String: Any]? {
         let fm = FileManager.default, backup = url.appendingPathExtension("previous")
@@ -38,6 +63,17 @@ final class LocalTrainingStorage {
 }
 
 extension GymStore {
+    func backupServerSnapshot(_ response: [String: Any], server: String) throws {
+        guard let userID else { throw APIError.signIn }
+        do {
+            try localStorage.saveServerSnapshot(response, server: server, user: userID)
+            if localSaveIssues["serverBackup"] != nil { localSaveIssues.removeValue(forKey: "serverBackup") }
+        } catch {
+            let message = L10n.text("SERVER_BACKUP_FAILED_SYNC_STOPPED" /* 服务器快照保存失败，已停止同步：{0} */, error.localizedDescription)
+            if localSaveIssues["serverBackup"] != message { localSaveIssues["serverBackup"] = message }
+            throw APIError.response(0, message)
+        }
+    }
     var accountFolder: URL? { userID.map { localStorage.folder(server: serverURL, user: $0) } }
     var localHistoryURL: URL? { accountFolder?.appendingPathComponent("history-edits.json") }
 

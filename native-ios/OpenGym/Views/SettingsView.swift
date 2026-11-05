@@ -25,6 +25,8 @@ struct SettingsView: View {
                         Spacer()
                         Button(L10n.text("PAIR_AGAIN" /* 重新配对 */)) { confirmPairing = true }.accessibilityIdentifier("pair-again")
                     }.buttonStyle(.borderless).disabled(store.syncing)
+                    Text(L10n.text("SYNC_BACKUP_LOCATION" /* 每次同步前自动保存服务器快照，可在“文件”App → OpenGYM → backup 中查看。 */))
+                        .font(.footnote).foregroundStyle(.secondary)
                   }
                 } else {
                   Section {

@@ -1405,6 +1405,24 @@
         }
       }
     },
+    "BACK_UP_AND_OVERWRITE": {
+      "comment": "备份后覆盖",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back up and overwrite"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "备份后覆盖"
+          }
+        }
+      }
+    },
     "BALANCED_SUSTAINABLE_TRAINING": {
       "comment": "均衡、可持续的训练。",
       "extractionState": "manual",
@@ -10549,6 +10567,42 @@
         }
       }
     },
+    "OVERWRITE_WITH_LOCAL_EDITS": {
+      "comment": "用本机修改覆盖",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overwrite with local edits"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用本机修改覆盖"
+          }
+        }
+      }
+    },
+    "OVERWRITE_WORKOUT_AFTER_BACKUP": {
+      "comment": "先保存服务器快照，再以本机修改覆盖这条训练的冲突内容。其他记录保留；若此训练已删除，将重新创建。",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save a server snapshot first, then use your local edits for conflicts in this workout. Other records are kept. If this workout was deleted, it will be recreated."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "先保存服务器快照，再以本机修改覆盖这条训练的冲突内容。其他记录保留；若此训练已删除，将重新创建。"
+          }
+        }
+      }
+    },
     "PAIRING": {
       "comment": "正在配对",
       "extractionState": "manual",
@@ -13375,6 +13429,24 @@
         }
       }
     },
+    "SERVER_BACKUP_FAILED_SYNC_STOPPED": {
+      "comment": "服务器快照保存失败，已停止同步：{0}",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save the server snapshot. Sync stopped: %1$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器快照保存失败，已停止同步：%1$@"
+          }
+        }
+      }
+    },
     "SERVER_CONNECTED_ACCOUNT_NOT_PAIRED": {
       "comment": "服务已连接 · 尚未配对账号",
       "extractionState": "manual",
@@ -14559,6 +14631,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "同步到所有设备，可在教练菜单撤销。"
+          }
+        }
+      }
+    },
+    "SYNC_BACKUP_LOCATION": {
+      "comment": "每次同步前自动保存服务器快照，可在“文件”App → OpenGYM → backup 中查看。",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A server snapshot is saved before every sync. Find it in Files → OpenGYM → backup."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每次同步前自动保存服务器快照，可在“文件”App → OpenGYM → backup 中查看。"
           }
         }
       }
