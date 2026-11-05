@@ -34,9 +34,14 @@ end
     end
   end
 end
+# The extension needs its own small asset catalog; the app's catalog also contains
+# the entire exercise library and is not bundled into this target.
+assets = activity_file(project, 'OpenGymWidgets/Assets.xcassets')
+widget.resources_build_phase.add_file_reference(assets) unless widget.resources_build_phase.files_references.include?(assets)
 activity_file(project, 'OpenGymWidgets/Info.plist')
 app.add_dependency(widget) unless app.dependencies.any? { |d| d.target == widget }
-embed = app.copy_files_build_phases.find { |p| p.name == 'Embed App Extensions' } || app.new_copy_files_build_phase('Embed App Extensions')
+embed = app.copy_files_build_phases.find { |p| p.files_references.include?(widget.product_reference) } ||
+  app.copy_files_build_phases.find { |p| p.name == 'Embed App Extensions' } || app.new_copy_files_build_phase('Embed App Extensions')
 embed.dst_subfolder_spec = '13'
 file = embed.files.find { |f| f.file_ref == widget.product_reference } || embed.add_file_reference(widget.product_reference)
 file.settings = { 'ATTRIBUTES' => ['RemoveHeadersOnCopy'] }

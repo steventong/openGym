@@ -6,6 +6,11 @@ import WidgetKit
     var body: some Widget { WorkoutLiveActivity() }
 }
 struct WorkoutLiveActivity: Widget {
+    private var brandMark: some View {
+        Image("BrandMark").renderingMode(.original).resizable().scaledToFit()
+            .accessibilityHidden(true)
+    }
+
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: WorkoutActivityAttributes.self) { context in
             WorkoutActivityContent(state: context.state, systemDeadlinePassed: context.isStale)
@@ -26,19 +31,21 @@ struct WorkoutLiveActivity: Widget {
                 }
             } compactLeading: {
                 HStack(spacing: 4) {
-                    Image(systemName: context.state.restEnd == nil ? "dumbbell.fill" : "timer").frame(width: 16)
+                    brandMark.frame(width: 22, height: 16)
                     Text(context.state.exercise.isEmpty ? context.state.trainingName : context.state.exercise)
                         .font(.caption2).lineLimit(1)
                 }.foregroundStyle(.green)
             } compactTrailing: {
                 if let end = context.state.restEnd {
-                    TrainingCountdownText(end: end, presentation: .systemTimer).frame(width: 48)
+                    TrainingCountdownText(end: end, presentation: .systemTimer)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 48, alignment: .trailing)
                 } else {
                     Text(context.state.compactSet).font(.caption.monospacedDigit()).foregroundStyle(.green)
                         .lineLimit(1).minimumScaleFactor(0.8)
                 }
             } minimal: {
-                Image(systemName: context.state.restEnd == nil ? "dumbbell.fill" : "timer").foregroundStyle(.green)
+                brandMark.frame(width: 22, height: 22)
             }
             .widgetURL(URL(string: "opengym://workout"))
             .keylineTint(.green)
