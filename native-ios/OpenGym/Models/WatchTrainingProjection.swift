@@ -24,7 +24,7 @@ extension GymStore {
             if let owner = rest["entry"] as? Int, entries.indices.contains(owner) { snapshot.restExercise = watchExerciseName(entries[owner]) }
         }
         let target = entry["target"] as? [String: Any] ?? [:]
-        if let index = rows.firstIndex(where: { $0["done"] as? Bool != true }) {
+        func summary(for index: Int) -> WatchTrainingSet {
             let row = rows[index]
             let sides = row["sides"] as? [String: [String: Any]]
             let side = sides.map { $0["L"]?["done"] as? Bool == true ? "R" : "L" }
@@ -52,8 +52,17 @@ extension GymStore {
             if workTimer != nil { blocked = L10n.text("TIMER_RUNNING_FINISH_IT_ON_IPHONE" /* 动作正在计时，请在 iPhone 结束 */) }
             if syncing { blocked = L10n.text("IPHONE_IS_SAVING" /* iPhone 正在保存 */) }
             if localSaveError != nil { blocked = L10n.text("RESOLVE_THE_DRAFT_SAVE_ISSUE_ON_IPHONE" /* 请在 iPhone 处理草稿保存问题 */) }
-            snapshot.nextSet = WatchTrainingSet(entry: e, index: index, side: side, label: label,
+            return WatchTrainingSet(entry: e, index: index, side: side, label: label,
                 weight: mode == "cardio" ? L10n.text("COUNT_MIN" /* {0} 分钟 */, decimal(number(data["min"]))) : "\(weight.isEmpty ? "—" : weight) \(unit)", detail: detail, blockedReason: blocked)
+        }
+        // Keep the completed set visible until rest is explicitly ended, including at zero.
+        if let rest = draft.activeJSON["nativeRest"] as? [String: Any], snapshot.restEnd != nil,
+           rest["entry"] as? Int == e, let index = rest["set"] as? Int,
+           rows.indices.contains(index), rows[index]["done"] as? Bool == true {
+            snapshot.restSet = summary(for: index)
+        }
+        if let index = rows.firstIndex(where: { $0["done"] as? Bool != true }) {
+            snapshot.nextSet = summary(for: index)
             snapshot.message = ""
         } else {
             snapshot.nextEntry = (1..<entries.count).map { (e + $0) % entries.count }.first { index in

@@ -11,6 +11,12 @@ struct WatchTrainingSnapshot: Codable, Equatable {
     var exercise = ""
     var exercisePosition = ""
     var nextSet: WatchTrainingSet?
+    var restSet: WatchTrainingSet?
+    var displayedSet: WatchTrainingSet? { restEnd != nil ? (restSet ?? nextSet) : nextSet }
+    var setCompletionLabel: String? {
+        guard restEnd != nil, restSet != nil else { return nil }
+        return L10n.format("COMPLETED" /* 已完成 */, language: language ?? L10n.language)
+    }
     var nextEntry: Int?
     var restEnd: Date?
     var restEntry: Int?
@@ -19,6 +25,19 @@ struct WatchTrainingSnapshot: Codable, Equatable {
     var acknowledged: [String] = []
     var actionReadyAt: Date? = nil
     var actionTiming: TrainingActionTiming { .init(restEnd: restEnd, readyAt: actionReadyAt) }
+
+    var restNotificationTitle: String {
+        L10n.format("REST_NOTIFICATION_TITLE" /* OpenGYM 组间休息完成 */, language: language ?? L10n.language)
+    }
+    var restNotificationBody: String {
+        let name = restExercise.isEmpty ? exercise : restExercise
+        if let nextSet, restEntry == nil || nextSet.entry == restEntry {
+            return L10n.format("REST_NOTIFICATION_NEXT_SET" /* {0} 开始{1} */,
+                language: language ?? L10n.language, arguments: [name, nextSet.label])
+        }
+        return L10n.format("COUNT_READY_FOR_YOUR_NEXT_SET" /* {0} · 准备开始下一组 */,
+            language: language ?? L10n.language, arguments: [name])
+    }
 
     var remainingRest: TimeInterval { max(0, restEnd?.timeIntervalSinceNow ?? 0) }
     var restReminderKey: String? {

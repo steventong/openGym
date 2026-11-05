@@ -172,6 +172,7 @@ import UIKit
                         state.setWeight = "40 kg"; state.setDetail = language == "zh" ? "10 次" : "10 reps"
                         state.commandTitle = language == "zh" ? "完成本组" : "Complete set"
                         state.restEnd = phase == "ready" ? nil : now.addingTimeInterval(phase == "expired" ? -55 : 55)
+                        state.setCompletionLabel = phase == "ready" ? nil : L10n.format("COMPLETED", language: language)
                         state.restCommand = phase == "ready" ? nil : "preview-rest"
                         state.actionReadyAt = phase == "protected" ? now.addingTimeInterval(5) : nil
                         state.busyTitle = phase == "busy" ? (language == "zh" ? "正在保存" : "Saving") : nil

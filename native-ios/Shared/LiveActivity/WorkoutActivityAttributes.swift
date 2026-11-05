@@ -18,6 +18,7 @@ struct WorkoutActivityAttributes: ActivityAttributes {
         // Optional so activities created before the inline summary still decode.
         var setWeight: String? = nil
         var setDetail: String? = nil
+        var setCompletionLabel: String? = nil
         // Optional for activities created by older builds. Busy state stays inside the button.
         var busyTitle: String? = nil
         var actionReadyAt: Date? = nil

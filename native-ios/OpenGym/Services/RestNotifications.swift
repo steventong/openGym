@@ -150,10 +150,9 @@ struct RestNotificationPermission {
             return
         }
         let content = UNMutableNotificationContent()
-        content.title = L10n.text("REST_COMPLETE" /* 休息结束 */)
         let snapshot = store.watchSnapshot()
-        let exercise = snapshot.restExercise.isEmpty ? snapshot.exercise : snapshot.restExercise
-        content.body = L10n.text("COUNT_COUNT_START_THE_NEXT_SET_WHEN_YOU_RE_READY" /* {0} · {1}。准备好后开始下一组。 */, store.draft?.name ?? L10n.text("WORKOUT" /* 训练 */), exercise)
+        content.title = snapshot.restNotificationTitle
+        content.body = snapshot.restNotificationBody
         content.sound = .default
         content.userInfo = ["openGymWorkout": true, "restKey": key]
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, end.timeIntervalSinceNow), repeats: false)

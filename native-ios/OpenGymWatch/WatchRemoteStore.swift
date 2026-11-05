@@ -329,8 +329,8 @@ import OSLog
             center.removeDeliveredNotifications(withIdentifiers: ["opengym.rest"])
             guard let end = current.restEnd, end.timeIntervalSinceNow > 0, current.sessionID != nil else { return }
             let content = UNMutableNotificationContent()
-            content.title = L10n.text("REST_COMPLETE" /* 休息结束 */)
-            content.body = current.restExercise.isEmpty ? L10n.text("READY_FOR_YOUR_NEXT_SET" /* 准备开始下一组 */) : L10n.text("COUNT_READY_FOR_YOUR_NEXT_SET" /* {0} · 准备开始下一组 */, current.restExercise)
+            content.title = current.restNotificationTitle
+            content.body = current.restNotificationBody
             content.sound = .default
             content.userInfo = ["restKey": key]
             let request = UNNotificationRequest(identifier: "opengym.rest", content: content,

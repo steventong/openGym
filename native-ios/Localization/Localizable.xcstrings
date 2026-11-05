@@ -3817,24 +3817,6 @@
         }
       }
     },
-    "COUNT_COUNT_START_THE_NEXT_SET_WHEN_YOU_RE_READY": {
-      "comment": "{0} · {1}。准备好后开始下一组。",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ · %2$@. Start the next set when you're ready."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@ · %2$@。准备好后开始下一组。"
-          }
-        }
-      }
-    },
     "COUNT_DAYS_PER_WEEK": {
       "comment": "每周 {0} 天",
       "extractionState": "manual",
@@ -11287,24 +11269,6 @@
         }
       }
     },
-    "READY_FOR_YOUR_NEXT_SET": {
-      "comment": "准备好后开始下一组",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ready for the next set"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "准备好后开始下一组"
-          }
-        }
-      }
-    },
     "READY_TO_START": {
       "comment": "准备开始训练",
       "extractionState": "manual",
@@ -11899,24 +11863,6 @@
         }
       }
     },
-    "REST_COMPLETE": {
-      "comment": "休息结束",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rest complete"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "休息结束"
-          }
-        }
-      }
-    },
     "REST_DAY": {
       "comment": "休息日",
       "extractionState": "manual",
@@ -11985,6 +11931,42 @@
           "stringUnit": {
             "state": "translated",
             "value": "休息秒数（0 为默认）"
+          }
+        }
+      }
+    },
+    "REST_NOTIFICATION_NEXT_SET": {
+      "comment": "{0} 开始{1}",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · Start %2$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ 开始%2$@"
+          }
+        }
+      }
+    },
+    "REST_NOTIFICATION_TITLE": {
+      "comment": "OpenGYM 组间休息完成",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenGYM · Rest complete"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenGYM 组间休息完成"
           }
         }
       }

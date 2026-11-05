@@ -40,6 +40,7 @@ struct TrainingSetSummary: View {
     var detailFontSize: CGFloat = 11
     var detailFontWeight: Font.Weight = .regular
     var detailColor: Color = .secondary
+    var completionLabel: String? = nil
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 4 * scale) {
@@ -49,9 +50,15 @@ struct TrainingSetSummary: View {
                 Text(detail).font(.system(size: detailFontSize * scale, weight: detailFontWeight)).foregroundStyle(detailColor)
             }.lineLimit(1).minimumScaleFactor(0.65)
             Spacer(minLength: 0)
-            Text(label).font(.system(size: 23 * scale, weight: .semibold, design: .rounded))
-                .foregroundStyle(TrainingDisplayStyle.green)
-                .multilineTextAlignment(.trailing).lineLimit(1).minimumScaleFactor(0.65)
+            HStack(alignment: .firstTextBaseline, spacing: 4 * scale) {
+                if let completionLabel {
+                    Text(completionLabel)
+                        .font(.system(size: detailFontSize * scale, weight: detailFontWeight))
+                        .foregroundStyle(detailColor)
+                }
+                Text(label).font(.system(size: 23 * scale, weight: .semibold, design: .rounded))
+                    .foregroundStyle(TrainingDisplayStyle.green)
+            }.multilineTextAlignment(.trailing).lineLimit(1).minimumScaleFactor(0.65)
         }
         .padding(.horizontal, 9 * scale)
         .frame(maxWidth: .infinity)
@@ -198,7 +205,7 @@ struct TrainingActionLabel: View {
             if let restEnd {
                 HStack(alignment: .firstTextBaseline, spacing: 4 * scale) {
                     Text(L10n.format("REST_BETWEEN_SETS", language: language ?? L10n.language))
-                        .font(.system(size: 10 * scale, weight: .medium))
+                        .font(.system(size: 14 * scale, weight: .medium))
                     Spacer(minLength: 2)
                     HStack(alignment: .firstTextBaseline, spacing: 2 * scale) {
                         TrainingCountdownText(end: restEnd, minimumIntegerDigits: 3, suffix: "", presentation: countdownPresentation)

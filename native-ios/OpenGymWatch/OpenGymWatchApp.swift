@@ -73,9 +73,10 @@ struct WatchRemoteView: View {
     }
 
     private func setSummary(scale: CGFloat) -> some View {
-        TrainingSetSummary(weight: store.snapshot.nextSet?.weight ?? L10n.text("SAVE_ON_IPHONE" /* 请在 iPhone 保存 */),
-            detail: store.snapshot.nextSet?.detail ?? "",
-            label: store.snapshot.nextSet?.label ?? L10n.text("ALL_SETS_COMPLETE" /* 全部组已完成 */), scale: scale)
+        TrainingSetSummary(weight: store.snapshot.displayedSet?.weight ?? L10n.text("SAVE_ON_IPHONE" /* 请在 iPhone 保存 */),
+            detail: store.snapshot.displayedSet?.detail ?? "",
+            label: store.snapshot.displayedSet?.label ?? L10n.text("ALL_SETS_COMPLETE" /* 全部组已完成 */), scale: scale,
+            completionLabel: store.snapshot.setCompletionLabel)
             .background(.white.opacity(0.09), in: RoundedRectangle(cornerRadius: 12 * scale))
     }
 

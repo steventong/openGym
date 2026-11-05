@@ -6,8 +6,9 @@ extension GymStore {
         guard let draft, userID != nil else { return nil }
         let snapshot = watchSnapshot()
         let row = snapshot.nextSet
+        let displayedRow = snapshot.displayedSet
         let compactSet: String
-        if let row {
+        if let row = displayedRow {
             let rows = draft.rawEntries[row.entry]["sets"] as? [[String: Any]] ?? []
             let logical = rows.indices.filter { !(rows[$0]["side"] as? String == "R" && $0 > 0 && rows[$0 - 1]["side"] as? String == "L") }
             compactSet = L10n.text("SET_COUNT_OF_COUNT" /* 第 {0}/{1} 组 */, logical.filter { $0 <= row.index }.count, logical.count)
@@ -24,13 +25,13 @@ extension GymStore {
         else if row?.blockedReason != nil, !syncing { commandTitle = workTimer != nil ? L10n.text("TIMER_RUNNING" /* 正在计时 */) : L10n.text("COMPLETE_SET_DETAILS" /* 补全数据 */) }
         else { commandTitle = row != nil ? L10n.text("COMPLETE_SET" /* 完成本组 */) : (snapshot.nextEntry != nil ? L10n.text("NEXT_EXERCISE" /* 下一个动作 */) : L10n.text("OPEN_APP" /* 打开App */)) }
         return .init(trainingName: String(draft.name.prefix(80)), exercise: snapshot.exercise,
-            position: snapshot.exercisePosition, setLabel: row?.label ?? (draft.rawEntries.isEmpty ? L10n.text("ADD_AN_EXERCISE_TO_START" /* 添加动作后开始 */) : L10n.text("ALL_SETS_COMPLETE" /* 全部组已完成 */)), compactSet: compactSet,
-            detail: row.map { "\($0.weight) · \($0.detail)" } ?? "",
+            position: snapshot.exercisePosition, setLabel: displayedRow?.label ?? (draft.rawEntries.isEmpty ? L10n.text("ADD_AN_EXERCISE_TO_START" /* 添加动作后开始 */) : L10n.text("ALL_SETS_COMPLETE" /* 全部组已完成 */)), compactSet: compactSet,
+            detail: displayedRow.map { "\($0.weight) · \($0.detail)" } ?? "",
             message: row?.blockedReason ?? snapshot.message, restEnd: snapshot.restEnd,
             restExercise: snapshot.restExercise, command: command,
             commandTitle: commandTitle,
             restCommand: snapshot.restEnd != nil && available ? activityCommand(snapshot, action: "skipRest", entry: restEntry ?? 0) : nil,
-            setWeight: row?.weight, setDetail: row?.detail, busyTitle: syncing ? L10n.text("SAVING" /* 正在保存 */) : nil,
+            setWeight: displayedRow?.weight, setDetail: displayedRow?.detail, setCompletionLabel: snapshot.setCompletionLabel, busyTitle: syncing ? L10n.text("SAVING" /* 正在保存 */) : nil,
             actionReadyAt: snapshot.actionReadyAt, language: L10n.language)
     }
 

@@ -46,7 +46,7 @@ struct WorkoutActivityContent: View {
             // Older activities may only contain the combined detail string.
             TrainingSetSummary(weight: state.setWeight ?? state.detail,
                 detail: state.setWeight == nil ? "" : (state.setDetail ?? ""), label: state.setLabel,
-                detailFontSize: 14, detailFontWeight: .medium, detailColor: .white.opacity(0.9))
+                detailFontSize: 14, detailFontWeight: .medium, detailColor: .white.opacity(0.9), completionLabel: state.setCompletionLabel)
             Color.clear.frame(height: TrainingDisplayStyle.actionGap - (island ? 6 : 0)).accessibilityHidden(true)
             actionControl.accessibilityHint(state.message)
         }

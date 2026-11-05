@@ -38,7 +38,7 @@ import UserNotifications
         store.startRest(entry: 0, seconds: 90)
         await notifications.flush()
         let first = try XCTUnwrap(center.request)
-        XCTAssertEqual(first.content.title, "休息结束")
+        XCTAssertEqual(first.content.title, "OpenGYM 组间休息完成")
         XCTAssertEqual(first.content.userInfo["openGymWorkout"] as? Bool, true)
         XCTAssertNotNil(first.content.sound)
         XCTAssertFalse(try XCTUnwrap(first.trigger).repeats)
@@ -55,6 +55,20 @@ import UserNotifications
         store.startRest(entry: 0, seconds: 15)
         await notifications.flush()
         XCTAssertEqual(center.addCount, 3)
+    }
+
+    func testCompletedSetNotificationNamesUpcomingSetWhileSummaryKeepsCompletedSet() async throws {
+        store.state["customEx"] = [["id": "bench", "n": "杠铃臀腿", "bp": "legs", "eq": "barbell", "tg": "glutes"]]
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
+        await notifications.flush()
+        let content = try XCTUnwrap(center.request?.content)
+        XCTAssertEqual(content.title, "OpenGYM 组间休息完成")
+        XCTAssertEqual(content.body, "杠铃臀腿 开始第 2/2 组")
+        let snapshot = store.watchSnapshot()
+        XCTAssertEqual(snapshot.displayedSet?.label, "第 1/2 组")
+        XCTAssertEqual(snapshot.setCompletionLabel, "已完成")
+        XCTAssertEqual(snapshot.restNotificationTitle, content.title)
+        XCTAssertEqual(snapshot.restNotificationBody, content.body)
     }
 
     func testDisableCancelsAndPersistsThenEnableSchedulesCurrentRest() async {

@@ -107,10 +107,12 @@ import ActivityKit
         var raw = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(state)) as? [String: Any])
         raw.removeValue(forKey: "setWeight")
         raw.removeValue(forKey: "setDetail")
+        raw.removeValue(forKey: "setCompletionLabel")
         raw.removeValue(forKey: "busyTitle")
         let decoded = try JSONDecoder().decode(WorkoutActivityAttributes.ContentState.self, from: JSONSerialization.data(withJSONObject: raw))
         XCTAssertNil(decoded.setWeight)
         XCTAssertNil(decoded.setDetail)
+        XCTAssertNil(decoded.setCompletionLabel)
         XCTAssertNil(decoded.busyTitle)
         XCTAssertEqual(decoded.detail, "40 kg · 10 次")
         XCTAssertEqual(decoded.command, state.command)
@@ -149,7 +151,9 @@ import ActivityKit
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
         XCTAssertNil(store.performReadyActivityCommand(command))
         let rest = try XCTUnwrap(store.workoutActivityState())
-        XCTAssertEqual(rest.compactSet, "第 2/2 组")
+        XCTAssertEqual(rest.compactSet, "第 1/2 组")
+        XCTAssertEqual(rest.setLabel, "第 1/2 组")
+        XCTAssertEqual(rest.setCompletionLabel, "已完成")
         XCTAssertEqual(try XCTUnwrap(rest.restEnd).timeIntervalSinceNow, 90, accuracy: 1)
         XCTAssertEqual(rest.restExercise, "杠铃卧推")
         XCTAssertNotNil(rest.restCommand)
@@ -157,6 +161,47 @@ import ActivityKit
         XCTAssertNil(store.performReadyActivityCommand(command))
         XCTAssertEqual(store.draft?.completedSets, 1)
         XCTAssertEqual(store.restUntil, rest.restEnd)
+    }
+
+    func testSetSummaryAdvancesOnlyAfterEndingRestAndSurvivesRelaunch() throws {
+        // Different targets ensure the label and data stay on the same set.
+        store.replaceLiveRow(entry: 0, set: 1, row: ["w": 55, "r": 6, "done": false])
+        XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.command)))
+        store.restUntil = Date().addingTimeInterval(-10)
+        let restored = GymStore(userID: "activity-test", storage: LocalTrainingStorage(root: root))
+        restored.state = store.state
+        restored.restoreDraft()
+        let snapshot = restored.watchSnapshot()
+        XCTAssertEqual(snapshot.nextSet?.index, 1)
+        XCTAssertEqual(snapshot.displayedSet?.index, 0)
+        XCTAssertEqual(snapshot.setCompletionLabel, "已完成")
+        XCTAssertEqual(WatchTrainingSnapshot.decode(snapshot.payload)?.displayedSet, snapshot.displayedSet)
+        let resting = try XCTUnwrap(restored.workoutActivityState())
+        XCTAssertEqual(resting.setLabel, "第 1/2 组")
+        XCTAssertEqual(resting.setCompletionLabel, "已完成")
+        XCTAssertEqual(resting.compactSet, "第 1/2 组")
+        XCTAssertEqual(resting.setWeight, "40 kg")
+        XCTAssertEqual(resting.setDetail, "10 次")
+        XCTAssertNil(restored.performReadyActivityCommand(try XCTUnwrap(resting.restCommand)))
+        XCTAssertEqual(restored.watchSnapshot().displayedSet?.index, 1)
+        let ready = try XCTUnwrap(restored.workoutActivityState())
+        XCTAssertEqual(ready.setLabel, "第 2/2 组")
+        XCTAssertNil(ready.setCompletionLabel)
+        XCTAssertNil(restored.watchSnapshot().setCompletionLabel)
+        XCTAssertEqual(ready.compactSet, "第 2/2 组")
+        XCTAssertEqual(ready.setWeight, "55 kg")
+        XCTAssertEqual(ready.setDetail, "6 次")
+        XCTAssertNil(restored.performReadyActivityCommand(try XCTUnwrap(ready.command)))
+        XCTAssertEqual(restored.draft?.completedSets, 2)
+    }
+
+    func testManualRestWithoutCompletedSetKeepsUpcomingSummary() throws {
+        store.startRest(entry: 0, seconds: 90)
+        XCTAssertNil(store.watchSnapshot().restSet)
+        XCTAssertNil(store.watchSnapshot().setCompletionLabel)
+        XCTAssertNil(store.workoutActivityState()?.setCompletionLabel)
+        XCTAssertEqual(store.watchSnapshot().displayedSet, store.watchSnapshot().nextSet)
+        XCTAssertEqual(store.workoutActivityState()?.setLabel, "第 1/2 组")
     }
 
     func testSkipRestPreservesSetsAndRejectsOldTimerCommand() throws {

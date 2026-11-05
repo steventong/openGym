@@ -3445,5 +3445,7 @@
   "KEEP_PULLING_DOWN_TO_VIEW": "继续下拉查看",
   "KEEP_PULLING_UP_TO_VIEW": "继续上拉查看",
   "PREVIOUS_EXERCISE_NAMED": "上一个动作：{0}",
-  "NEXT_EXERCISE_NAMED": "下一个动作：{0}"
+  "NEXT_EXERCISE_NAMED": "下一个动作：{0}",
+  "REST_NOTIFICATION_TITLE": "OpenGYM 组间休息完成",
+  "REST_NOTIFICATION_NEXT_SET": "{0} 开始{1}"
 }

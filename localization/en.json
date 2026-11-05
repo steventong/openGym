@@ -3445,5 +3445,7 @@
   "KEEP_PULLING_DOWN_TO_VIEW": "Keep pulling down to view",
   "KEEP_PULLING_UP_TO_VIEW": "Keep pulling up to view",
   "PREVIOUS_EXERCISE_NAMED": "Previous exercise: {0}",
-  "NEXT_EXERCISE_NAMED": "Next exercise: {0}"
+  "NEXT_EXERCISE_NAMED": "Next exercise: {0}",
+  "REST_NOTIFICATION_TITLE": "OpenGYM · Rest complete",
+  "REST_NOTIFICATION_NEXT_SET": "{0} · Start {1}"
 }
