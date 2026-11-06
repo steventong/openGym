@@ -1,0 +1,12 @@
+{
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/WatchTraining.swift" : {
+    "abi-baseline-json" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/x86_64/OpenGymWatch.abi.json",
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/x86_64/OpenGymWatch-primary.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/x86_64/OpenGymWatch-primary.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/x86_64/OpenGymWatch-primary.dia",
+    "objc-header" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/x86_64/OpenGymWatch-Swift.h",
+    "swiftdoc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/x86_64/OpenGymWatch.swiftdoc",
+    "swiftmodule" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/x86_64/OpenGymWatch.swiftmodule",
+    "swiftsourceinfo" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/x86_64/OpenGymWatch.swiftsourceinfo"
+  }
+}

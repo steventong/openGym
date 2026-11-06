@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>读取本次训练的心率、活动与静息能量，用于显示心率、活动热量和总热量（kcal）。</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>将你在 openGym 开始和结束的训练及系统生成的活动能量保存到 Apple 健康，并在健身 App 中显示。</string>
+</dict>
+</plist>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Read heart rate, active and resting energy during this workout to display heart rate, active calories and total calories (kcal).</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Save workouts you start and finish in openGym, along with activity energy recorded by the system, to Apple Health and show them in the Fitness app.</string>
+</dict>
+</plist>

@@ -1,0 +1,66 @@
+{
+  "" : {
+    "const-values" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary.swiftconstvalues",
+    "dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary.d",
+    "diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary.dia",
+    "emit-module-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary-emit-module.dia",
+    "pch" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatch-primary.swiftdeps"
+  },
+  "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/DerivedSources/GeneratedStringSymbols_InfoPlist.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedStringSymbols_InfoPlist.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedStringSymbols_InfoPlist.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedStringSymbols_InfoPlist.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/DerivedSources/GeneratedStringSymbols_Localizable.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedStringSymbols_Localizable.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedStringSymbols_Localizable.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/GeneratedStringSymbols_Localizable.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGymWatch/OpenGymWatchApp.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/OpenGymWatchApp.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/OpenGymWatch/WatchRemoteStore.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchRemoteStore.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/HealthWorkoutRecorder.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutRecorder.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/HealthWorkoutTransfer.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/HealthWorkoutTransfer.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/Localization.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/Localization.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/TrainingActionComponents.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionComponents.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/TrainingActionTiming.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/TrainingActionTiming.o"
+  },
+  "/Users/tongwanglin/Workspace/openGym/native-ios/Shared/WatchTraining.swift" : {
+    "index-unit-output-path" : "/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.o",
+    "llvm-bc" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.bc",
+    "object" : "/Users/tongwanglin/Workspace/openGym/artifacts/watch-balanced-build/Build/Intermediates.noindex/OpenGym.build/Release-watchsimulator/OpenGymWatch.build/Objects-normal/arm64/WatchTraining.o"
+  }
+}

@@ -6,7 +6,7 @@
 	<integer>13</integer>
 	<key>logs</key>
 	<dict>
-		<key>45378ECF-BF20-4103-A87D-FE931ED1A51C</key>
+		<key>1C67E4FB-6EDE-4308-BA82-E90CC17A6165</key>
 		<dict>
 			<key>className</key>
 			<string>IDECommandLineBuildLog</string>
@@ -15,7 +15,7 @@
 			<key>domainType</key>
 			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
 			<key>fileName</key>
-			<string>45378ECF-BF20-4103-A87D-FE931ED1A51C.xcactivitylog</string>
+			<string>1C67E4FB-6EDE-4308-BA82-E90CC17A6165.xcactivitylog</string>
 			<key>hasPrimaryLog</key>
 			<true/>
 			<key>primaryObservable</key>
@@ -38,15 +38,15 @@
 			<key>schemeIdentifier-sharedScheme</key>
 			<integer>1</integer>
 			<key>signature</key>
-			<string>Building project OpenGym with scheme OpenGymWatch and configuration Debug</string>
+			<string>Building project OpenGym with scheme OpenGymWatch and configuration Release</string>
 			<key>timeStartedRecording</key>
-			<real>815499998.433182</real>
+			<real>815696340.68476796</real>
 			<key>timeStoppedRecording</key>
-			<real>815500004.01539898</real>
+			<real>815696351.32724905</real>
 			<key>title</key>
-			<string>Building project OpenGym with scheme OpenGymWatch and configuration Debug</string>
+			<string>Building project OpenGym with scheme OpenGymWatch and configuration Release</string>
 			<key>uniqueIdentifier</key>
-			<string>45378ECF-BF20-4103-A87D-FE931ED1A51C</string>
+			<string>1C67E4FB-6EDE-4308-BA82-E90CC17A6165</string>
 		</dict>
 		<key>46A37BB4-039A-4731-BD96-9ABC1926142F</key>
 		<dict>
@@ -89,48 +89,6 @@
 			<string>Building project OpenGym with scheme OpenGymWatch and configuration Debug</string>
 			<key>uniqueIdentifier</key>
 			<string>46A37BB4-039A-4731-BD96-9ABC1926142F</string>
-		</dict>
-		<key>E0775E7E-F285-4864-8694-CDE9F3EE0C5B</key>
-		<dict>
-			<key>className</key>
-			<string>IDECommandLineBuildLog</string>
-			<key>documentTypeString</key>
-			<string>&lt;nil&gt;</string>
-			<key>domainType</key>
-			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
-			<key>fileName</key>
-			<string>E0775E7E-F285-4864-8694-CDE9F3EE0C5B.xcactivitylog</string>
-			<key>hasPrimaryLog</key>
-			<true/>
-			<key>primaryObservable</key>
-			<dict>
-				<key>highLevelStatus</key>
-				<string>S</string>
-				<key>totalNumberOfAnalyzerIssues</key>
-				<integer>0</integer>
-				<key>totalNumberOfErrors</key>
-				<integer>0</integer>
-				<key>totalNumberOfTestFailures</key>
-				<integer>0</integer>
-				<key>totalNumberOfWarnings</key>
-				<integer>0</integer>
-			</dict>
-			<key>schemeIdentifier-containerName</key>
-			<string>OpenGym project</string>
-			<key>schemeIdentifier-schemeName</key>
-			<string>OpenGymWatch</string>
-			<key>schemeIdentifier-sharedScheme</key>
-			<integer>1</integer>
-			<key>signature</key>
-			<string>Building project OpenGym with scheme OpenGymWatch and configuration Debug</string>
-			<key>timeStartedRecording</key>
-			<real>815500036.43624198</real>
-			<key>timeStoppedRecording</key>
-			<real>815500039.60271299</real>
-			<key>title</key>
-			<string>Building project OpenGym with scheme OpenGymWatch and configuration Debug</string>
-			<key>uniqueIdentifier</key>
-			<string>E0775E7E-F285-4864-8694-CDE9F3EE0C5B</string>
 		</dict>
 	</dict>
 </dict>
