@@ -42,6 +42,25 @@ import XCTest
         XCTAssertFalse(reminder.consume(key: key, now: end.addingTimeInterval(5)), "Late system delivery must not vibrate again")
         XCTAssertNil(reminder.update(snapshot, active: true, now: end.addingTimeInterval(5)))
     }
+    func testWorkoutRestStillAlertsAfterLoweringWristOnlyOnce() throws {
+        let now = Date(timeIntervalSince1970: 1000), end = now.addingTimeInterval(90)
+        let snapshot = WatchTrainingSnapshot(sessionID: "s", restEnd: end)
+        let key = try XCTUnwrap(snapshot.restReminderKey)
+        var reminder = WatchForegroundRestReminder()
+        _ = reminder.update(snapshot, active: true, workoutRunning: true, now: now)
+        XCTAssertEqual(reminder.update(snapshot, active: false, workoutRunning: true, now: now.addingTimeInterval(30)), end)
+        XCTAssertTrue(reminder.consume(key: key, now: end))
+        XCTAssertFalse(reminder.consume(key: key, now: end.addingTimeInterval(1)))
+        XCTAssertNil(reminder.update(snapshot, active: true, workoutRunning: true, now: end.addingTimeInterval(2)))
+    }
+    func testBackgroundWorkoutStopDisarmsDirectRestHaptic() throws {
+        let now = Date(timeIntervalSince1970: 1000), end = now.addingTimeInterval(90)
+        let snapshot = WatchTrainingSnapshot(sessionID: "s", restEnd: end)
+        var reminder = WatchForegroundRestReminder()
+        XCTAssertEqual(reminder.update(snapshot, active: false, workoutRunning: true, now: now), end)
+        XCTAssertNil(reminder.update(snapshot, active: false, workoutRunning: false, now: now.addingTimeInterval(30)))
+        XCTAssertFalse(reminder.consume(key: try XCTUnwrap(snapshot.restReminderKey), now: end))
+    }
     func testForegroundRestNotificationWinningRaceDoesNotDuplicateTimer() throws {
         let now = Date(timeIntervalSince1970: 1000), end = now.addingTimeInterval(90)
         let snapshot = WatchTrainingSnapshot(sessionID: "s", restEnd: end)

@@ -1,6 +1,24 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "CONTINUE_TRAINING": {
+      "comment": "继续训练",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue training"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "继续训练"
+          }
+        }
+      }
+    },
     "ABDOMEN": {
       "comment": "腹围",
       "extractionState": "manual",
@@ -14078,19 +14096,19 @@
       }
     },
     "START_A_WORKOUT_ON_IPHONE": {
-      "comment": "在 iPhone 开始训练",
+      "comment": "打开手机开始训练",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Start a workout on iPhone"
+            "value": "Open your iPhone to start a workout"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在 iPhone 开始训练"
+            "value": "打开手机开始训练"
           }
         }
       }

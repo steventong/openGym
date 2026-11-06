@@ -21,8 +21,9 @@ struct WatchTrainingSnapshot: Codable, Equatable {
     var restEnd: Date?
     var restEntry: Int?
     var restExercise = ""
-    var message = L10n.text("START_A_WORKOUT_ON_IPHONE" /* 在 iPhone 开始训练 */)
+    var message = L10n.text("START_A_WORKOUT_ON_IPHONE" /* 打开手机开始训练 */)
     var acknowledged: [String] = []
+    var setStartedAt: Date? = nil
     var actionReadyAt: Date? = nil
     var actionTiming: TrainingActionTiming { .init(restEnd: restEnd, readyAt: actionReadyAt) }
 
@@ -61,21 +62,21 @@ struct WatchTrainingSnapshot: Codable, Equatable {
     }
 }
 
-/// Foreground feedback has its own deadline; system notification delivery is only a fallback.
+/// Direct feedback has its own deadline; an active workout also permits background haptics.
 struct WatchForegroundRestReminder {
     private(set) var key: String?
     private(set) var deadline: Date?
     private(set) var didAlert = false
     private var armed = false
 
-    mutating func update(_ snapshot: WatchTrainingSnapshot, active: Bool, now: Date) -> Date? {
+    mutating func update(_ snapshot: WatchTrainingSnapshot, active: Bool, workoutRunning: Bool = false, now: Date) -> Date? {
         if key != snapshot.restReminderKey {
             key = snapshot.restReminderKey
             deadline = key == nil ? nil : snapshot.restEnd
             armed = false
             didAlert = false
         }
-        if !active {
+        if !active && !workoutRunning {
             armed = false
         } else if !didAlert, let deadline, deadline > now {
             armed = true

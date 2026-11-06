@@ -10,6 +10,17 @@ extension GymStore {
         guard let draft else { return snapshot }
         snapshot.sessionID = draft.id
         snapshot.actionReadyAt = trainingActionReadyAt
+        if TrainingSetClock.identity(draft.activeJSON) != nil {
+            snapshot.setStartedAt = (draft.activeJSON["nativeSetStartedAt"] as? Double).map(Date.init(timeIntervalSince1970:))
+            // Only the untouched first set can safely use the session start in older drafts.
+            if snapshot.setStartedAt == nil, (draft.activeJSON["cur"] as? Int ?? 0) == 0,
+               !draft.rawEntries.contains(where: { entry in
+                   (entry["sets"] as? [[String: Any]] ?? []).contains { row in
+                       row["done"] as? Bool == true ||
+                       (row["sides"] as? [String: [String: Any]] ?? [:]).values.contains { $0["done"] as? Bool == true }
+                   }
+               }) { snapshot.setStartedAt = draft.start }
+        }
         snapshot.revision = Self.watchHash((try? JSONSerialization.data(withJSONObject: draft.activeJSON, options: [.sortedKeys])) ?? Data())
         snapshot.acknowledged = draft.activeJSON["nativeWatchReceipts"] as? [String] ?? []
         let entries = draft.rawEntries

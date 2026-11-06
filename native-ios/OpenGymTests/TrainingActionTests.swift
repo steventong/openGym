@@ -18,6 +18,36 @@ import UIKit
     }
     override func tearDown() async throws { store = nil; try? FileManager.default.removeItem(at: root) }
 
+    func testSetClockSurvivesEditsAndRestartsAfterRest() throws {
+        let initialStart = try XCTUnwrap(store.watchSnapshot().setStartedAt)
+        store.changeActive { $0["name"] = "Renamed" }
+        XCTAssertEqual(store.watchSnapshot().setStartedAt, initialStart)
+        store.startRest(entry: 0, seconds: 90, set: 0)
+        XCTAssertNil(store.watchSnapshot().setStartedAt)
+        store.endRestFromTextButton(at: now)
+        XCTAssertEqual(try XCTUnwrap(store.watchSnapshot().setStartedAt).timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.000001)
+        let restored = try JSONDecoder().decode(WatchTrainingSnapshot.self, from: JSONEncoder().encode(store.watchSnapshot()))
+        XCTAssertEqual(try XCTUnwrap(restored.setStartedAt).timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.000001)
+        store.changeActive { $0["name"] = "Renamed again" }
+        XCTAssertEqual(try XCTUnwrap(store.watchSnapshot().setStartedAt).timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.000001)
+    }
+
+    func testSetClockTracksNextSetAndFormatsMinutes() {
+        var before: [String: Any] = ["cur": 0, "entries": [["sets": [["done": false], ["done": false]]]], "nativeSetStartedAt": 10.0]
+        var after = before
+        after["entries"] = [["sets": [["done": true], ["done": false]]]]
+        TrainingSetClock.update(&after, previous: before, now: now)
+        XCTAssertEqual(after["nativeSetStartedAt"] as? Double, now.timeIntervalSince1970)
+        before = after
+        after["name"] = "Edited"
+        TrainingSetClock.update(&after, previous: before, now: now.addingTimeInterval(10))
+        XCTAssertEqual(after["nativeSetStartedAt"] as? Double, now.timeIntervalSince1970)
+        XCTAssertEqual(TrainingSetClock.minutesSeconds(80, roundUp: true), "1:20")
+        XCTAssertEqual(TrainingSetClock.minutesSeconds(620), "10:20")
+        XCTAssertEqual(TrainingSetClock.minutesSeconds(-1, roundUp: true), "0:00")
+        XCTAssertEqual(TrainingSetClock.minutesSeconds(0.1, roundUp: true), "0:01")
+    }
+
     private func watchCommand(_ action: String) throws -> WatchTrainingCommand {
         let state = store.watchSnapshot()
         return WatchTrainingCommand(account: state.account, sessionID: try XCTUnwrap(state.sessionID), revision: state.revision,
@@ -74,6 +104,24 @@ import UIKit
         XCTAssertTrue(store.watchSnapshot().actionTiming.isProtected(at: now))
         XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
         XCTAssertEqual(store.draft?.completedSets, 2)
+    }
+
+    func testTimedFinalSetAdvancesAndFinalExerciseStaysSelected() throws {
+        store.draft = try TrainingDraft.fromWeb(["id": "timed", "start": 1000, "cur": 0,
+            "entries": [
+                ["id": "plank", "target": ["mode": "time"], "sets": [["mode": "time", "sec": 30, "done": false]]],
+                ["id": "bench", "sets": [["w": 40, "r": 10, "done": false]]]
+            ]], unit: "kg")
+        store.startWorkTimer(entry: 0, set: 0)
+        store.finishWorkTimer()
+        XCTAssertNil(store.workTimer)
+        XCTAssertNil(store.restUntil)
+        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 1)
+
+        XCTAssertTrue(store.liveRowAction(entry: 1, set: 0, action: ["action": "toggle"]))
+        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 1)
+        XCTAssertEqual(store.draft?.allSetsCompleted, true)
+        XCTAssertNil(store.restUntil)
     }
 
     func testCountdownFormattingAndProtectionShareBoundaryWithoutNegativeValues() {

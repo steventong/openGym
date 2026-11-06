@@ -48,6 +48,8 @@ enum HealthWorkoutAccess {
     private var queued = false
     private var collectionEnded = false
     var onReport: ((HealthWorkoutReport) -> Void)?
+    var onSessionStateChange: (() -> Void)?
+    var runningSessionID: String? { session?.state == .running ? ledger.activeID : nil }
     var currentReport: HealthWorkoutReport? { ledger.activeID.flatMap { ledger.reports[$0] } }
 
     init(name: String) { journal = HealthWorkoutJournal(name: name); super.init() }
@@ -204,7 +206,9 @@ enum HealthWorkoutAccess {
     }
     nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
         Task { @MainActor [weak self] in
-            guard let self, self.session === workoutSession, let id = self.ledger.activeID,
+            guard let self, self.session === workoutSession else { return }
+            self.onSessionStateChange?()
+            guard let id = self.ledger.activeID,
                   (toState == .stopped || toState == .ended), var request = self.ledger.requests[id], request.phase == .running else { return }
             request.phase = .finished; request.end = max(request.start, date); self.accept([request])
         }

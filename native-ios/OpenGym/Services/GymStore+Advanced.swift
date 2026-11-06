@@ -3,7 +3,7 @@ extension GymStore {
     func changeActive(_ change:(inout [String:Any]) throws -> Void) {
         liveInputBuffer.commitAll()
         guard var d = draft else { return }
-        do { var raw = d.activeJSON;try change(&raw);guard !RecordPatch.equal(raw,d.activeJSON) else { return };if !RecordPatch.equal(raw["entries"],d.activeJSON["entries"]) { raw.removeValue(forKey:"nativeFinishAt") };if let undo = raw["nativeSetUndo"] as? [String: Any], !RecordPatch.equal(undo["expected"], raw["entries"]) { raw.removeValue(forKey: "nativeSetUndo") };try d.setActive(raw);draft = d } catch { WorkoutActivityDiagnostics.failureIfTracing("draft.mutation.failed", error: error); self.error = error.localizedDescription }
+        do { var raw = d.activeJSON;try change(&raw);TrainingSetClock.update(&raw, previous: d.activeJSON, now: Date());guard !RecordPatch.equal(raw,d.activeJSON) else { return };if !RecordPatch.equal(raw["entries"],d.activeJSON["entries"]) { raw.removeValue(forKey:"nativeFinishAt") };if let undo = raw["nativeSetUndo"] as? [String: Any], !RecordPatch.equal(undo["expected"], raw["entries"]) { raw.removeValue(forKey: "nativeSetUndo") };try d.setActive(raw);draft = d } catch { WorkoutActivityDiagnostics.failureIfTracing("draft.mutation.failed", error: error); self.error = error.localizedDescription }
     }
     func replaceLiveRow(entry:Int,set:Int,row:[String:Any]) {
         changeActive { raw in
@@ -46,8 +46,8 @@ extension GymStore {
             let exerciseDone = !rows.isEmpty && rows.allSatisfy { $0["done"] as? Bool == true }
             if exerciseDone {
                 // A completed exercise has no next set to rest for, including rechecked sets.
-                // Keep it visible until the user taps the next-exercise button.
-                changeActive { raw in raw.removeValue(forKey: "nativeRest"); raw["cur"] = entry }
+                // Follow the shared progression rules, including superset partners and rechecks.
+                changeActive { raw in raw.removeValue(forKey: "nativeRest"); raw["cur"] = info["next"] ?? entry }
                 return
             }
             let seconds = number(info["seconds"]); startRest(entry:entry,seconds:seconds,set:set)
@@ -64,6 +64,7 @@ extension GymStore {
     func endRestFromTextButton(at now: Date) {
         changeActive {
             $0.removeValue(forKey: "nativeRest")
+            $0["nativeSetStartedAt"] = now.timeIntervalSince1970
             $0["nativeActionReadyAt"] = TrainingActionTiming.deadline(after: now).timeIntervalSince1970
         }
     }

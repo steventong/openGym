@@ -445,7 +445,7 @@ import AVFoundation
         let row = (store.draft!.rawEntries[0]["sets"] as! [[String:Any]])[0]
         XCTAssertEqual(row["done"] as? Bool,true);XCTAssertEqual(number(row["sec"]),30);XCTAssertNil(store.workTimer)
     }
-    func testCompletedExerciseWaitsForExplicitNavigationEvenBeforeWarmup() throws {
+    func testCompletedExerciseAutomaticallyAdvancesBeforeWarmup() throws {
         let s = state([["id":"0150","sets":1,"reps":8,"weight":20], ["id":"0025","sets":1,"reps":8,"weight":30]])
         var active = begin(s)
         var entries = active["entries"] as! [[String:Any]]
@@ -454,11 +454,9 @@ import AVFoundation
         active["entries"] = entries; active["cur"] = 0
         let store = GymStore(); store.state = s; store.draft = try TrainingDraft.fromWeb(active,unit:"kg")
         store.liveRowAction(entry:0,set:0,action:["action":"toggle"])
-        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int,0)
+        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int,1)
         XCTAssertNil(store.restUntil)
         XCTAssertEqual((store.draft?.rawEntries[0]["sets"] as? [[String:Any]])?[0]["done"] as? Bool,true)
-        store.selectLiveEntry(1)
-        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int,1)
     }
     func testIncompleteSupersetStillAdvancesToPartner() throws {
         let configs:[[String:Any]] = [["id":"0150","sets":2,"reps":8,"weight":20], ["id":"0025","sets":2,"reps":8,"weight":30]]
@@ -517,7 +515,7 @@ import AVFoundation
         XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
         XCTAssertNil(store.restUntil)
         XCTAssertNil(store.watchSnapshot().restEnd)
-        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 0)
+        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 1)
 
         // Rechecking the final set must also clear an existing timer instead of preserving it.
         XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
@@ -527,6 +525,7 @@ import AVFoundation
         let restored = GymStore(userID: "rest-completion", storage: LocalTrainingStorage(root: root))
         restored.restoreDraft()
         XCTAssertNil(restored.restUntil)
+        XCTAssertEqual(restored.draft?.activeJSON["cur"] as? Int, 1)
     }
     func testSupersetRestsBetweenRoundsButNotAfterFinalRound() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)

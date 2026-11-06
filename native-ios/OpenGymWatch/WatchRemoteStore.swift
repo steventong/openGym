@@ -46,7 +46,7 @@ import OSLog
             notificationStatus = .authorized
             healthReport = HealthWorkoutReport(id: ":preview", state: .running, activeCalories: 128, totalCalories: 156, heartRate: 124)
             if ProcessInfo.processInfo.arguments.contains("-preview-short-rest") { snapshot.restEnd = Date().addingTimeInterval(12) }
-            if ProcessInfo.processInfo.arguments.contains("-preview-training") { snapshot.restEnd = nil }
+            if ProcessInfo.processInfo.arguments.contains("-preview-training") { snapshot.restEnd = nil; snapshot.setStartedAt = Date().addingTimeInterval(-620) }
             if ProcessInfo.processInfo.arguments.contains("-preview-protected") { snapshot.actionReadyAt = TrainingActionTiming.deadline(after: Date()) }
             if ProcessInfo.processInfo.arguments.contains("-preview-disconnected") { reachable = false }
             if ProcessInfo.processInfo.arguments.contains("-preview-long-text") {
@@ -62,6 +62,10 @@ import OSLog
     }
     func start() {
         guard !preview else { return }
+        healthRecorder.onSessionStateChange = { [weak self] in
+            self?.scheduleReminder()
+            self?.scheduleForegroundReminder()
+        }
         healthRecorder.onReport = { [weak self] report in self?.publishHealth(report) }
         healthRecorder.accept([])
         UNUserNotificationCenter.current().delegate = self
@@ -78,7 +82,10 @@ import OSLog
         let session = WCSession.default
         if session.activationState == .notActivated { start() }
         if !session.isReachable { reachable = false }
-        reconnecting = true
+        // A wrist raise also refreshes the snapshot. Keep an already confirmed,
+        // reachable connection usable while that refresh is in flight.
+        // Initial connections and recovery still wait for a fresh phone reply.
+        reconnecting = !reachable
         let id = UUID(); connectionID = id
         connectionTask = Task { [weak self] in
             // Give activation/transient reachability a short automatic recovery window.
@@ -117,10 +124,15 @@ import OSLog
         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["opengym.rest", "opengym.workout.rest"])
     }
 
+    private var workoutHapticsAvailable: Bool {
+        guard let sessionID = snapshot.sessionID else { return false }
+        return healthRecorder.runningSessionID == "\(snapshot.account):\(sessionID)"
+    }
+
     private func scheduleForegroundReminder() {
         foregroundReminderTask?.cancel()
         foregroundReminderTask = nil
-        guard let end = foregroundReminder.update(snapshot, active: foregroundActive, now: Date()),
+        guard let end = foregroundReminder.update(snapshot, active: foregroundActive, workoutRunning: workoutHapticsAvailable, now: Date()),
               let key = foregroundReminder.key else { return }
         foregroundReminderTask = Task { [weak self] in
             do { try await Task.sleep(for: .seconds(max(0, end.timeIntervalSinceNow))) }
@@ -131,10 +143,10 @@ import OSLog
     }
 
     private func deliverForegroundReminder(key: String) {
-        guard foregroundActive, WKApplication.shared().applicationState == .active,
+        guard (foregroundActive && WKApplication.shared().applicationState == .active) || workoutHapticsAvailable,
               foregroundReminder.consume(key: key, now: Date()) else { return }
         let delay = max(0, -(foregroundReminder.deadline?.timeIntervalSinceNow ?? 0))
-        Self.reminderLog.info("Foreground rest haptic, delay_seconds=\(delay, privacy: .public)")
+        Self.reminderLog.info("Rest completion haptic, delay_seconds=\(delay, privacy: .public)")
         WKInterfaceDevice.current().play(.notification)
         // Wait for a possible in-flight add before clearing the fallback. A newer rest
         // must retain its notification even if it arrives while this task is suspended.
@@ -155,8 +167,9 @@ import OSLog
             hasPending: pending != nil, sending: sending, at: date)
     }
     func isDisabled(_ action: WatchTrainingAction, includeProtection: Bool = true) -> Bool {
-        if action == .connect { return reconnecting }
-        if !reachable || reconnecting { return true }
+        // Refreshing is not an interaction lock; refresh() coalesces repeat requests.
+        if action == .connect { return false }
+        if !reachable { return true }
         if includeProtection && snapshot.actionTiming.isProtected(at: Date()) { return true }
         switch action {
         case .sending, .finished: return true
@@ -172,7 +185,7 @@ import OSLog
         guard !isDisabled(action) else { return }
         #if DEBUG
         if preview {
-            if action == .endRest { snapshot.restEnd = nil }
+            if action == .endRest { snapshot.restEnd = nil; snapshot.setStartedAt = Date() }
             else if action == .complete { snapshot.restEnd = Date().addingTimeInterval(12) }
             else { return }
             snapshot.actionReadyAt = TrainingActionTiming.deadline(after: Date())
@@ -286,6 +299,8 @@ import OSLog
             case .failed: healthStatus = report.message ?? L10n.text("ACTIVITY_SYNC_FAILED_TRY_AGAIN" /* 运动同步失败，请重试 */)
             }
         }
+        scheduleReminder()
+        scheduleForegroundReminder()
         guard WCSession.default.activationState == .activated else { return }
         let payload = HealthWorkoutWire.report(report)
         if WCSession.default.isReachable { WCSession.default.sendMessage(payload, replyHandler: nil, errorHandler: { _ in }) }
@@ -316,8 +331,10 @@ import OSLog
     }
     private func scheduleReminder() {
         let key = snapshot.restReminderKey ?? ""
-        guard key != reminderKey else { return }
-        reminderKey = key
+        let usesWorkoutHaptic = workoutHapticsAvailable
+        let schedulingKey = "\(key)|workout=\(usesWorkoutHaptic)"
+        guard schedulingKey != reminderKey else { return }
+        reminderKey = schedulingKey
         let previous = reminderTask, current = snapshot
         previous?.cancel()
         reminderTask = Task {
@@ -327,6 +344,8 @@ import OSLog
             let center = UNUserNotificationCenter.current()
             center.removePendingNotificationRequests(withIdentifiers: ["opengym.rest"])
             center.removeDeliveredNotifications(withIdentifiers: ["opengym.rest"])
+            // A running workout owns the haptic, avoiding a second system alert.
+            guard !usesWorkoutHaptic else { return }
             guard let end = current.restEnd, end.timeIntervalSinceNow > 0, current.sessionID != nil else { return }
             let content = UNMutableNotificationContent()
             content.title = current.restNotificationTitle
