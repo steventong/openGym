@@ -9,7 +9,7 @@ struct ExerciseManagementControls: View {
     var timerRunning = false
     var startRest: ((Int) -> Void)? = nil
     var showExerciseNote: (() -> Void)? = nil
-    var menuTitle = L10n.text("EXERCISE_MENU" /* 动作菜单 */)
+    var menuTitle = String(localized: "EXERCISE_MENU", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     var menuIcon = "ellipsis.circle"
     var menuIdentifier = "training-exercise-options"
     let change: (String, Int, Int, String?) -> Void
@@ -18,7 +18,7 @@ struct ExerciseManagementControls: View {
     @State private var pendingIndex = 0
 
     init(entries: [[String: Any]], selected: Int, history: Bool = false, timerRunning: Bool = false,
-         startRest: ((Int) -> Void)? = nil, showExerciseNote: (() -> Void)? = nil, menuTitle: String = L10n.text("EXERCISE_MENU" /* 动作菜单 */),
+         startRest: ((Int) -> Void)? = nil, showExerciseNote: (() -> Void)? = nil, menuTitle: String = String(localized: "EXERCISE_MENU", bundle: AppLanguage.bundle, locale: AppLanguage.locale),
          menuIcon: String = "ellipsis.circle", menuIdentifier: String = "training-exercise-options",
          change: @escaping (String, Int, Int, String?) -> Void) {
         self.entries = entries
@@ -36,19 +36,19 @@ struct ExerciseManagementControls: View {
     var body: some View {
         Menu {
             if entries.indices.contains(selected) {
-                Button(L10n.text("SWAP_EXERCISE" /* 更换动作 */), systemImage: "arrow.triangle.2.circlepath") { inputBuffer?.commitAll(); pendingIndex = selected; replacing = true }
-                if let showExerciseNote { Button(L10n.text("NOTES_AND_UNITS" /* 备注与单位 */), systemImage: "note.text", action: showExerciseNote).accessibilityIdentifier("exercise-note-menu") }
+                Button("SWAP_EXERCISE", systemImage: "arrow.triangle.2.circlepath") { inputBuffer?.commitAll(); pendingIndex = selected; replacing = true }
+                if let showExerciseNote { Button("NOTES_AND_UNITS", systemImage: "note.text", action: showExerciseNote).accessibilityIdentifier("exercise-note-menu") }
                 if let startRest {
                     Menu {
-                        ForEach([30, 60, 90, 120, 180, 300], id: \.self) { seconds in Button(L10n.text("COUNT_SECOND" /* {0} 秒 */, seconds)) { startRest(seconds) } }
-                    } label: { Label(L10n.text("SET_AND_START_REST" /* 设置并开始休息 */), systemImage: "timer") }.disabled(timerRunning)
+                        ForEach([30, 60, 90, 120, 180, 300], id: \.self) { seconds in Button(String(format: String(localized: "COUNT_SECOND", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: seconds))) { startRest(seconds) } }
+                    } label: { Label("SET_AND_START_REST", systemImage: "timer") }.disabled(timerRunning)
                 }
-                Section(L10n.text("SUPERSET" /* 超级组 */)) {
-                    if selected > 0 { Button(L10n.text("MAKE_SUPERSET_WITH_PREVIOUS" /* 与上一个组成超级组 */), systemImage: "link") { change("pair", selected, -1, nil) }.disabled(timerRunning) }
-                    if selected + 1 < entries.count { Button(L10n.text("MAKE_SUPERSET_WITH_NEXT" /* 与下一个组成超级组 */), systemImage: "link") { change("pair", selected, 1, nil) }.disabled(timerRunning) }
-                    if entries[selected]["sg"] != nil { Button(L10n.text("MOVE_OUT_OF_THE_SUPERSET" /* 移出超级组 */), systemImage: "minus.circle") { change("unpair", selected, 0, nil) }.disabled(timerRunning) }
+                Section("SUPERSET") {
+                    if selected > 0 { Button("MAKE_SUPERSET_WITH_PREVIOUS", systemImage: "link") { change("pair", selected, -1, nil) }.disabled(timerRunning) }
+                    if selected + 1 < entries.count { Button("MAKE_SUPERSET_WITH_NEXT", systemImage: "link") { change("pair", selected, 1, nil) }.disabled(timerRunning) }
+                    if entries[selected]["sg"] != nil { Button("MOVE_OUT_OF_THE_SUPERSET", systemImage: "minus.circle") { change("unpair", selected, 0, nil) }.disabled(timerRunning) }
                 }
-                Button(L10n.text("DELETE_EXERCISE" /* 删除动作 */), systemImage: "trash", role: .destructive) { pendingIndex = selected; confirmRemoval = true }
+                Button("DELETE_EXERCISE", systemImage: "trash", role: .destructive) { pendingIndex = selected; confirmRemoval = true }
             }
         } label: {
             Image(systemName: menuIcon).font(.title2).frame(width: 48, height: 48).contentShape(Rectangle())
@@ -60,10 +60,10 @@ struct ExerciseManagementControls: View {
                     replacing = false
                 }
             }
-            .confirmationDialog(L10n.text("REMOVE_THIS_EXERCISE" /* 删除此动作？ */), isPresented: $confirmRemoval, titleVisibility: .visible) {
-                Button(L10n.text("REMOVE_EXERCISE_AND_SETS" /* 删除动作及其组记录 */), role: .destructive) { change("remove", pendingIndex, 0, nil) }
-                Button(L10n.text("CANCEL" /* 取消 */), role: .cancel) {}
-            } message: { Text(L10n.text("THIS_EXERCISE_AND_ITS_SET_RECORDS_WILL_BE_REMOVED_FROM_THIS_WORKOUT" /* 将从本次训练移除此动作和已填写的组记录，原训练计划不受影响。 */)) }
+            .confirmationDialog("REMOVE_THIS_EXERCISE", isPresented: $confirmRemoval, titleVisibility: .visible) {
+                Button("REMOVE_EXERCISE_AND_SETS", role: .destructive) { change("remove", pendingIndex, 0, nil) }
+                Button("CANCEL", role: .cancel) {}
+            } message: { Text("THIS_EXERCISE_AND_ITS_SET_RECORDS_WILL_BE_REMOVED_FROM_THIS_WORKOUT") }
     }
 
 }
@@ -92,28 +92,28 @@ struct ExerciseOrderSheet: View {
                         HStack(spacing: 12) {
                             ExerciseThumbnail(id: entry["id"] as? String ?? "", size: 44)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(store.exercise(entry["id"] as? String ?? "")?.recordName ?? entry["id"] as? String ?? L10n.text("EXERCISE" /* 动作 */))
+                                Text(store.exercise(entry["id"] as? String ?? "")?.recordName ?? entry["id"] as? String ?? String(localized: "EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
                                 if let group = entry["sg"] as? String, !group.isEmpty {
-                                    Label(L10n.text("SUPERSET" /* 超级组 */), systemImage: "link").font(.caption).foregroundStyle(GymTheme.green)
+                                    Label("SUPERSET", systemImage: "link").font(.caption).foregroundStyle(GymTheme.green)
                                 }
                             }
                         }.accessibilityIdentifier("exercise-order-row-\(index)")
                     }.onMove { order.move(fromOffsets: $0, toOffset: $1) }
                 }
             }.environment(\.editMode, .constant(.active))
-                .navigationTitle(L10n.text("REORDER_EXERCISES" /* 调整动作顺序 */)).navigationBarTitleDisplayMode(.inline)
+                .navigationTitle("REORDER_EXERCISES").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .cancellationAction) { Button(L10n.text("CANCEL" /* 取消 */)) { dismiss() } }
-                    ToolbarItem(placement: .topBarTrailing) { ExplanationButton(title: L10n.text("SUPERSET" /* 超级组 */), message: L10n.text("SEPARATING_EXERCISES_IN_A_SUPERSET_WILL_UNGROUP_THEM" /* 调整顺序时，拆开的超级组会解除组合。 */)) }
+                    ToolbarItem(placement: .cancellationAction) { Button("CANCEL") { dismiss() } }
+                    ToolbarItem(placement: .topBarTrailing) { ExplanationButton(title: String(localized: "SUPERSET", bundle: AppLanguage.bundle, locale: AppLanguage.locale), message: String(localized: "SEPARATING_EXERCISES_IN_A_SUPERSET_WILL_UNGROUP_THEM", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button(L10n.text("SAVE" /* 保存 */)) {
+                        Button("SAVE") {
                             do { try save(order, entries); dismiss() }
                             catch { self.error = error.localizedDescription }
                         }.accessibilityIdentifier("save-exercise-order")
                     }
                 }
-                .alert(L10n.text("COULD_NOT_SAVE_EXERCISE_ORDER" /* 无法保存顺序 */), isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
-                    Button(L10n.text("GOT_IT" /* 知道了 */), role: .cancel) {}
+                .alert("COULD_NOT_SAVE_EXERCISE_ORDER", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
+                    Button("GOT_IT", role: .cancel) {}
                 } message: { Text(error ?? "") }
         }.tint(GymTheme.green).presentationDragIndicator(.visible)
     }
@@ -135,14 +135,14 @@ private struct TrainingReplacementPicker: View {
     @State private var selected: Exercise?
     @State private var confirming = false
     var body: some View {
-        ExercisePicker(title: L10n.text("SWAP_EXERCISE" /* 更换动作 */), selectionIcon: "arrow.triangle.2.circlepath") { exercise in
+        ExercisePicker(title: String(localized: "SWAP_EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale), selectionIcon: "arrow.triangle.2.circlepath") { exercise in
             guard exercise.id != currentID else { return }
             selected = exercise; confirming = true
-        }.confirmationDialog(L10n.text("REPLACE_THIS_EXERCISE" /* 更换此动作？ */), isPresented: $confirming, titleVisibility: .visible) {
-            Button(L10n.text("SWAP_EXERCISE" /* 更换动作 */)) { if let selected { replace(selected) } }
-            Button(L10n.text("CANCEL" /* 取消 */), role: .cancel) { selected = nil }
+        }.confirmationDialog("REPLACE_THIS_EXERCISE", isPresented: $confirming, titleVisibility: .visible) {
+            Button("SWAP_EXERCISE") { if let selected { replace(selected) } }
+            Button("CANCEL", role: .cancel) { selected = nil }
         } message: {
-            Text(history ? L10n.text("SET_RECORDS_WILL_BE_KEPT_UNDER_THE_NEW_EXERCISE_VOLUME_AND_PERSONAL" /* 组记录会保留，并归到新动作。提交后重新计算训练量与纪录。 */) : L10n.text("COMPLETED_SETS_OR_SIDES_STAY_IN_PLACE_WITH_THE_NEW_EXERCISE_ADDED" /* 已经完成的组或单侧会保留，新动作加入其后。未完成的动作会直接替换；仅修改本次训练。 */))
+            Text(history ? String(localized: "SET_RECORDS_WILL_BE_KEPT_UNDER_THE_NEW_EXERCISE_VOLUME_AND_PERSONAL", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "COMPLETED_SETS_OR_SIDES_STAY_IN_PLACE_WITH_THE_NEW_EXERCISE_ADDED", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
         }
     }
 }
@@ -166,7 +166,7 @@ extension GymStore {
         liveInputBuffer.commitAll()
         guard var draft, draft.id == sessionID,
               draft.rawEntries.map({ $0["nativeViewID"] as? String }) == expectedEntries.map({ $0["nativeViewID"] as? String }) else {
-            throw APIError.response(0, L10n.text("THE_EXERCISE_LIST_HAS_CHANGED_OPEN_THE_REORDER_SCREEN_AGAIN" /* 动作列表已变化，请重新打开顺序调整。 */))
+            throw APIError.response(0, String(localized: "THE_EXERCISE_LIST_HAS_CHANGED_OPEN_THE_REORDER_SCREEN_AGAIN", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
         }
         if order != Array(draft.rawEntries.indices) {
             var raw = try ExerciseOrder.apply(order, to: draft.activeJSON)
@@ -220,18 +220,18 @@ struct RoutineExerciseReplacement: View {
     @State private var error: String?
     var body: some View {
         Button { inputBuffer?.commitAll(); picking = true } label: {
-            Label(L10n.text("CHANGE" /* 更换 */), systemImage: "arrow.triangle.2.circlepath").font(.subheadline).frame(minHeight: 44)
+            Label("CHANGE", systemImage: "arrow.triangle.2.circlepath").font(.subheadline).frame(minHeight: 44)
         }.buttonStyle(.borderless).accessibilityIdentifier("replace-routine-exercise")
             .sheet(isPresented: $picking) {
-                ExercisePicker(title: L10n.text("SWAP_EXERCISE" /* 更换动作 */), selectionIcon: "arrow.triangle.2.circlepath") { exercise in
+                ExercisePicker(title: String(localized: "SWAP_EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale), selectionIcon: "arrow.triangle.2.circlepath") { exercise in
                     do {
                         guard let result = try WebRules.shared.call("replaceNativeRoutineExercise", payload: ["slot": slot, "id": exercise.id, "state": store.state, "rid": routineID]) as? [String: Any] else { throw APIError.invalidResponse }
                         slot = result; picking = false
                     } catch { self.error = error.localizedDescription; picking = false }
                 }
             }
-            .alert(L10n.text("COULD_NOT_REPLACE_EXERCISE" /* 无法更换动作 */), isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
-                Button(L10n.text("GOT_IT" /* 知道了 */), role: .cancel) {}
+            .alert("COULD_NOT_REPLACE_EXERCISE", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) {
+                Button("GOT_IT", role: .cancel) {}
             } message: { Text(error ?? "") }
     }
 }

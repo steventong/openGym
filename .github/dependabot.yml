@@ -72,9 +72,9 @@ updates:
       - dependency-name: node
         versions: ['25.x', '27.x', '29.x', '31.x', '33.x']
 
-  # Base images — web/Dockerfile (node:22-alpine build stage + nginx:alpine)
+  # Base images — deploy/web/Dockerfile (node:22-alpine build stage + nginx:alpine)
   - package-ecosystem: docker
-    directory: /web
+    directory: /deploy/web
     schedule:
       interval: monthly
     open-pull-requests-limit: 1

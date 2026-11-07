@@ -46,7 +46,7 @@ stages:
   - maintenance
 
 variables:
-  # node:22-alpine in web/Dockerfile and api/Dockerfile — CI must match production.
+  # node:22-alpine in deploy/web/Dockerfile and api/Dockerfile — CI must match production.
   NODE_IMAGE: "node:22-alpine"
   DOCKER_IMAGE: "docker:28-cli"
   DOCKER_DIND_IMAGE: "docker:28-dind"
@@ -302,7 +302,7 @@ build:images:
         DOCKERFILE: "./api/Dockerfile"
       - IMAGE: web
         CONTEXT: "."
-        DOCKERFILE: "./web/Dockerfile"
+        DOCKERFILE: "./deploy/web/Dockerfile"
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
     # buildx's docker-container driver refuses to read the daemon's TLS material straight
@@ -330,7 +330,7 @@ build:images:
         PLATFORMS="linux/amd64,linux/arm64"
         TAGS="-t $REPO:$SEMVER -t $REPO:${SEMVER%.*} -t $REPO:latest"
         # Only the arm64 leg needs emulation, and only for the api image (web's build
-        # stage is pinned to $BUILDPLATFORM on purpose — see web/Dockerfile).
+        # stage is pinned to $BUILDPLATFORM on purpose — see deploy/web/Dockerfile).
         docker run --privileged --rm tonistiigi/binfmt --install arm64
       else
         VERSION="main-$CI_COMMIT_SHORT_SHA"
@@ -472,7 +472,7 @@ build:web-check:
   stage: build
   needs: ["test:frontend"]
   script:
-    - docker build -f web/Dockerfile -t opengym-web:check .
+    - docker build -f deploy/web/Dockerfile -t opengym-web:check .
     # It serves the app shell, and the shell is this build (the Coach setup is in the bundle).
     # The master is uid 101, on port 80 — not the base image's EXPOSE 8080.
     - |
@@ -492,7 +492,7 @@ build:web-check:
       changes:
         paths:
           - "frontend/**/*"
-          - "web/**/*"
+          - "deploy/web/**/*"
           - "api/coach/core/**/*"
           - ".gitlab-ci.yml"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"

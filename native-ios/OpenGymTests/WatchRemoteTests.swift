@@ -135,14 +135,15 @@ import XCTest
         snapshot.nextEntry = nil
         XCTAssertEqual(action(), .finished)
     }
-    func testConnectionFailureReplacesEveryTrainingActionIncludingPendingRetry() {
+    func testConnectionFailurePreservesTrainingActionWithoutConnectButton() {
         var snapshot = store.watchSnapshot()
         for resting in [false, true] {
             snapshot.restEnd = resting ? Date().addingTimeInterval(90) : nil
             for pending in [false, true] {
                 for sending in [false, true] {
                     XCTAssertEqual(snapshot.primaryAction(reachable: false, reconnecting: false,
-                        hasPending: pending, sending: sending), .connect)
+                        hasPending: pending, sending: sending),
+                        pending ? (sending ? .sending : .retry) : (resting ? .endRest : .complete))
                 }
             }
             // A brief automatic recovery keeps the training action's label in place.

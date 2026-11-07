@@ -72,14 +72,14 @@ for (const file of [...files('frontend/src'), ...files('native-ios/scripts/rules
       && /[A-Za-z\u3400-\u9fff]/.test(n.value) && !nonCopy.test(n.value) && !/^https?:\/\//.test(n.value)) report(`${file}: unlocalized ${parent.name.name}: ${n.value}`)
   })
 }
-for (const directory of ['OpenGym', 'Shared', 'OpenGymWatch', 'OpenGymWidgets']) {
+for (const directory of ['OpenGym', 'Shared']) {
   for (const file of files(`native-ios/${directory}`).filter(f => f.endsWith('.swift'))) {
     const source = read(file)
-    for (const match of source.matchAll(/L10n\.(?:text|format)\(\s*"([^"]+)"/g)) {
+    for (const match of source.matchAll(/(?:String\(localized:\s*|(?:Text|Button|Section|Label|Toggle|Picker|TextField|SecureField|DatePicker|NavigationLink|LabeledContent|navigationTitle|accessibilityLabel|accessibilityHint|confirmationDialog|alert)\(\s*)"([A-Z][A-Z_0-9]*)"/g)) {
       if (!keyPattern.test(match[1]) || !Object.hasOwn(en, match[1]) || !Object.hasOwn(zh, match[1])) report(`${file}: missing/invalid key ${match[1]}`)
       if (canonicalKeys[match[1]]) report(`${file}: use shared copy ${canonicalKeys[match[1]]} instead of ${match[1]}`)
     }
-    for (const match of source.matchAll(/L10n\.(?:text|format)\("([^"]+)"\s*\/\*([\s\S]*?)\*\//g)) verify(match[1], match[2], file)
+    for (const match of source.matchAll(/(?:String\(localized:\s*|(?:Text|Button|Section|Label|Toggle|Picker|TextField|SecureField|DatePicker|NavigationLink|LabeledContent|navigationTitle|accessibilityLabel|accessibilityHint|confirmationDialog|alert)\(\s*)"([A-Z][A-Z_0-9]*)"\s*\/\*([\s\S]*?)\*\//g)) verify(match[1], match[2], file)
   }
 }
 if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1 }

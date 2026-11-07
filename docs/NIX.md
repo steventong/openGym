@@ -9,7 +9,7 @@ managed by your NixOS configuration. This document covers both.
 
 ### What the flake provides
 
-`contrib/nix/flake.nix` (inputs: `nixpkgs` pinned to the `nixos-26.05` release branch,
+`deploy/nix/flake.nix` (inputs: `nixpkgs` pinned to the `nixos-26.05` release branch,
 `flake-utils`) exposes, per supported system:
 
 | Output | What it is |
@@ -60,7 +60,7 @@ browser ── HTTPS ──▶ your web server (Caddy / nginx / …)         eve
 ## 2. Repository layout
 
 ```text
-contrib/nix/
+deploy/nix/
   flake.nix          Flake entry point — packages, apps, devShell, module alias
   flake.lock         Locked inputs
   opengym.nix        The NixOS module (options + systemd/nginx wiring)
@@ -71,18 +71,18 @@ contrib/nix/
                      release version from api/package.json
 ```
 
-Everything Nix lives under `contrib/nix/` so the flake stays out of the way of the project's own
+Everything Nix lives under `deploy/nix/` so the flake stays out of the way of the project's own
 build (Docker, CI, the Node packages). The flake reads its sources — `api/`, `frontend/`, `mcp/`,
 `catalogue/` — from the repository root two levels up, so it must be evaluated *from a checkout of
-the whole repo*, never from a sparse copy of `contrib/nix` alone.
+the whole repo*, never from a sparse copy of `deploy/nix` alone.
 
 ## 3. Building and using the packages
 
 Requirements: Nix with flakes enabled (`nix.conf`: `experimental-features = nix-command flakes`).
 
 ```bash
-# the flake lives in contrib/nix — start there (from the repo root: nix build ./contrib/nix#… )
-cd contrib/nix
+# the flake lives in deploy/nix — start there (from the repo root: nix build ./deploy/nix#… )
+cd deploy/nix
 
 nix build .#opengym-frontend         # static site + exercise media → result/share/opengym
 nix build .#opengym-api              # API → result/bin/opengym-api
@@ -220,7 +220,7 @@ word-for-word.
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     # the flake lives in a subdirectory — ?dir= points at it
-    opengym.url = "github:DuarteSantos8/openGym?dir=contrib/nix";
+    opengym.url = "github:DuarteSantos8/openGym?dir=deploy/nix";
   };
 
   outputs = { self, nixpkgs, opengym, ... }: {
@@ -236,7 +236,7 @@ word-for-word.
 ```
 
 On the GitLab mirror the same input is
-`"git+https://gitlab.com/DuarteSantos8/opengym?dir=contrib/nix"`.
+`"git+https://gitlab.com/DuarteSantos8/opengym?dir=deploy/nix"`.
 
 Then `sudo nixos-rebuild switch --flake .#myhost`.
 
@@ -244,14 +244,14 @@ Not using flakes in your NixOS config? You can also `imports` the module file di
 checkout of the repo:
 
 ```nix
-{ imports = [ "/path/to/opengym/contrib/nix/opengym.nix" ]; }
+{ imports = [ "/path/to/opengym/deploy/nix/opengym.nix" ]; }
 ```
 
 #### Package provenance
 
 When you load the module *through the flake* (`opengym.nixosModules.default`), the default
 `services.opengym.package` set is the one built by this flake — from the flake's **locked**
-`nixpkgs` input. Importing `contrib/nix/opengym.nix` directly instead falls back to building the
+`nixpkgs` input. Importing `deploy/nix/opengym.nix` directly instead falls back to building the
 packages from *your system's* nixpkgs, which may differ slightly. If you ever need a specific set,
 override `services.opengym.package` explicitly (e.g. `opengym.packages.x86_64-linux` from your flake
 inputs).

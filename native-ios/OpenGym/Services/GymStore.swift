@@ -6,7 +6,7 @@ import Observation
     var catalogueError: String?
     var state: [String: Any] = [:] {
         didSet {
-            if !RecordPatch.equal(oldValue["lang"], state["lang"]) { L10n.setLanguage(state["lang"] as? String) }
+            if !RecordPatch.equal(oldValue["lang"], state["lang"]) { AppLanguage.setLanguage(state["lang"] as? String) }
             // Workout, weight and sync metadata changes do not change exercise names or images.
             if !RecordPatch.equal(oldValue["customEx"],state["customEx"]) { rebuildExerciseIndex() }
             publishTraining()
@@ -17,7 +17,7 @@ import Observation
     var userID: String? { didSet { publishTraining() } }
     var online = false
     var syncing = false { didSet { publishTraining() } }
-    var status = L10n.text("CONNECTING_TO_SERVER" /* 正在连接服务… */)
+    var status = String(localized: "CONNECTING_TO_SERVER", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     var error: String?
     var editError: String?
     var lastSync: Date?
@@ -121,7 +121,7 @@ import Observation
         restoreOfflineAccount()
         if userID == nil, let token = client?.token, let id = token.split(separator: ":").first, !id.isEmpty {
             // Upgrade path: old versions stored only the paired token and the live draft.
-            userID = String(id); userName = L10n.text("OFFLINE_ACCOUNT" /* 离线账号 */); restoreLocalTraining()
+            userID = String(id); userName = String(localized: "OFFLINE_ACCOUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); restoreLocalTraining()
         }
         healthSync.prepare()
     }
@@ -130,7 +130,7 @@ import Observation
             guard let url = Bundle.main.url(forResource: "catalogue", withExtension: "json") else { throw APIError.invalidResponse }
             let list = try await Task.detached { try JSONDecoder().decode([Exercise].self, from: Data(contentsOf: url)) }.value
             registerCatalogue(list)
-        } catch { catalogueError = L10n.text("COULD_NOT_LOAD_EXERCISE_LIBRARY_COUNT" /* 动作库加载失败：{0} */, error.localizedDescription) }
+        } catch { catalogueError = String(format: String(localized: "COULD_NOT_LOAD_EXERCISE_LIBRARY_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
         do {
             let address = try ServerAddress(serverURL)
             client = APIClient(address: address, token: CredentialStore.read(for: serverURL))
@@ -149,7 +149,7 @@ import Observation
         do {
             let health = try await client.request("api/health")
             online = health["ok"] as? Bool == true
-            guard online else { throw APIError.response(503, L10n.text("SERVICE_TEMPORARILY_UNAVAILABLE" /* 服务暂不可用。 */)) }
+            guard online else { throw APIError.response(503, String(localized: "SERVICE_TEMPORARILY_UNAVAILABLE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             if client.token != nil {
                 let me = try await client.request("api/me")
                 if let token = me["token"] as? String { try CredentialStore.save(token, for: serverURL); client.token = token }
@@ -164,17 +164,17 @@ import Observation
                 if !NSDictionary(dictionary:state).isEqual(to:next) { state = next }
                 if changed { restoreLocalTraining() }
                 cacheProfile()
-                lastSync = Date(); status = L10n.text("SYNCED" /* 已同步 */)
-            } else { status = L10n.text("SERVER_CONNECTED_ACCOUNT_NOT_PAIRED" /* 服务已连接 · 尚未配对账号 */) }
+                lastSync = Date(); status = String(localized: "SYNCED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+            } else { status = String(localized: "SERVER_CONNECTED_ACCOUNT_NOT_PAIRED", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
         } catch {
             if let issue = localSaveIssues["serverBackup"], error.localizedDescription == issue { status = issue; self.error = issue; return }
-            if case APIError.response(401, _) = error { userName = nil; status = L10n.text("PAIR_AGAIN_TO_RECONNECT" /* 需要重新配对 */) }
-            else { online = false; status = L10n.text("OFFLINE_USING_LOCAL_DATA" /* 离线 · 使用本机数据 */) }
+            if case APIError.response(401, _) = error { userName = nil; status = String(localized: "PAIR_AGAIN_TO_RECONNECT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
+            else { online = false; status = String(localized: "OFFLINE_USING_LOCAL_DATA", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
         }
     }
     func pair(server: String, code: String) async {
         guard !syncing && !loading && !backgroundMutation else { return }
-        guard draft == nil else { error = L10n.text("FINISH_YOUR_CURRENT_WORKOUT_BEFORE_CHANGING_ACCOUNTS_OR_SERVERS" /* 请先完成当前训练，再切换账号或服务。 */); return }
+        guard draft == nil else { error = String(localized: "FINISH_YOUR_CURRENT_WORKOUT_BEFORE_CHANGING_ACCOUNTS_OR_SERVERS", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
         syncing = true; defer { syncing = false }
         do {
             let address = try ServerAddress(server)
@@ -190,7 +190,7 @@ import Observation
             let data = try await next.request("api/data")
             try backupServerSnapshot(data, server: next.address.url.absoluteString)
             state = data["state"] as? [String: Any] ?? [:]
-            online = true; lastSync = Date(); status = L10n.text("SYNCED" /* 已同步 */); showSettings = false; cacheProfile()
+            online = true; lastSync = Date(); status = String(localized: "SYNCED", bundle: AppLanguage.bundle, locale: AppLanguage.locale); showSettings = false; cacheProfile()
             healthSync.prepare()
         } catch { self.error = error.localizedDescription }
     }
@@ -214,13 +214,13 @@ import Observation
                     _ = try await client.request("api/data", method: "PUT", body: body)
                     if let verify {
                         let canonical = try await client.request("api/data")
-                        guard let doc = canonical["state"] as? [String: Any], verify(doc) else { throw APIError.response(0, L10n.text("THE_SERVER_HAS_NOT_CONFIRMED_THIS_SAVE_YOUR_LOCAL_DATA_IS_SAFE" /* 服务器尚未确认这次保存。本机内容已保留，可以重试。 */)) }
+                        guard let doc = canonical["state"] as? [String: Any], verify(doc) else { throw APIError.response(0, String(localized: "THE_SERVER_HAS_NOT_CONFIRMED_THIS_SAVE_YOUR_LOCAL_DATA_IS_SAFE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                         acceptSyncedState(doc)
                     } else {
                         acceptSyncedState(next)
                         if let canonical = try? await client.request("api/data"), let doc = canonical["state"] as? [String: Any] { acceptSyncedState(doc) }
                     }
-                    online = true; lastSync = Date(); status = L10n.text("SYNCED" /* 已同步 */); cacheProfile()
+                    online = true; lastSync = Date(); status = String(localized: "SYNCED", bundle: AppLanguage.bundle, locale: AppLanguage.locale); cacheProfile()
                     return true
                 } catch APIError.response(409, _) where attempt < 2 { continue }
             }
@@ -243,7 +243,7 @@ import Observation
     func appendExercise(_ exercise: Exercise, to routineID: String) async -> Bool {
         await mutate { source in
             var s = source; var routines = s["routines"] as? [[String: Any]] ?? []
-            guard let i = routines.firstIndex(where: { $0["id"] as? String == routineID }) else { throw APIError.response(404, L10n.text("THIS_ROUTINE_WAS_REMOVED_REFRESH_AND_TRY_AGAIN" /* 这个计划已被移除，请刷新后重试。 */)) }
+            guard let i = routines.firstIndex(where: { $0["id"] as? String == routineID }) else { throw APIError.response(404, String(localized: "THIS_ROUTINE_WAS_REMOVED_REFRESH_AND_TRY_AGAIN", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             var list = routines[i]["ex"] as? [[String: Any]] ?? []
             if !list.contains(where: { $0["id"] as? String == exercise.id }) { list.append(["id":exercise.id,"sets":3,"reps":10,"weight":0]) }
             routines[i]["ex"] = list; s["routines"] = routines; return s
@@ -252,7 +252,7 @@ import Observation
     func recordWeight(_ value: Double) async -> Bool {
         let day = dayString(), t = Date().timeIntervalSince1970 * 1000, expectedUnit = unit
         return await mutate { source in
-            guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409, L10n.text("THE_WEIGHT_UNIT_CHANGED_ON_ANOTHER_DEVICE_REFRESH_AND_TRY_AGAIN" /* 重量单位在其他设备上发生变化，请刷新后重试。 */)) }
+            guard (source["unit"] as? String ?? "kg") == expectedUnit else { throw APIError.response(409, String(localized: "THE_WEIGHT_UNIT_CHANGED_ON_ANOTHER_DEVICE_REFRESH_AND_TRY_AGAIN", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             var s = source; var list = s["bodyweight"] as? [[String: Any]] ?? []
             let row: [String: Any] = ["d":day,"w":value,"t":t]
             if let i = list.firstIndex(where: { $0["d"] as? String == day }) { list[i].merge(row) { _, new in new } } else { list.append(row) }
@@ -276,7 +276,7 @@ import Observation
     }
     func finish() async {
         liveInputBuffer.commitAll()
-        guard !syncing, let d = draft, d.completedSets > 0 else { error = L10n.text("COMPLETE_AT_LEAST_ONE_SET_BEFORE_SAVING_YOUR_WORKOUT" /* 至少完成一组后再保存训练。 */); return }
+        guard !syncing, let d = draft, d.completedSets > 0 else { error = String(localized: "COMPLETE_AT_LEAST_ONE_SET_BEFORE_SAVING_YOUR_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
         do { try TrainingInput.validate(d.activeJSON) } catch { self.error = error.localizedDescription; return }
         if d.activeJSON["nativeFinishAt"] == nil { changeActive { $0["nativeFinishAt"] = Date().timeIntervalSince1970 * 1000 } }
         guard persistDraft(), let snapshot = draft else { error = localSaveError; return }
@@ -288,7 +288,7 @@ import Observation
             guard let expected else { return false }
             return (source["workouts"] as? [[String:Any]] ?? []).contains { WorkoutRecord.key($0) == snapshot.id && RecordPatch.equal($0,expected) }
         }) { source in
-            guard (source["unit"] as? String ?? "kg") == snapshot.unit else { throw APIError.response(409, L10n.text("THE_SERVER_S_WEIGHT_UNIT_CHANGED_YOUR_WORKOUT_DRAFT_IS_SAFE_ON" /* 服务端重量单位已改变，训练草稿保留在本机。 */)) }
+            guard (source["unit"] as? String ?? "kg") == snapshot.unit else { throw APIError.response(409, String(localized: "THE_SERVER_S_WEIGHT_UNIT_CHANGED_YOUR_WORKOUT_DRAFT_IS_SAFE_ON", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             // Calculate once with a frozen finish time. A lost response can safely be retried by ID.
             var without = source
             let existing = (source["workouts"] as? [[String:Any]] ?? []).first { $0["id"] as? String == snapshot.id }
@@ -297,14 +297,14 @@ import Observation
             let built = (result["workouts"] as? [[String:Any]])?.first { $0["id"] as? String == snapshot.id }
             guard let built else { throw APIError.invalidResponse }
             if let existing {
-                for key in ["entries","start","end","name","note"] where !RecordPatch.equal(existing[key],built[key]) { throw APIError.response(409,L10n.text("THIS_WORKOUT_IS_ALREADY_SAVED_ON_THE_SERVER_WITH_DIFFERENT_DETAILS_YOUR" /* 同一训练已在服务端保存，但内容不同。本机草稿已保留，请核对。 */)) }
+                for key in ["entries","start","end","name","note"] where !RecordPatch.equal(existing[key],built[key]) { throw APIError.response(409,String(localized: "THIS_WORKOUT_IS_ALREADY_SAVED_ON_THE_SERVER_WITH_DIFFERENT_DETAILS_YOUR", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                 expected = existing; return source
             }
             expected = built; return result
         }
         if saved {
             liveInputBuffer.commitAll()
-            guard RecordPatch.equal(draft?.activeJSON,snapshot.activeJSON), let folder = accountFolder else { error = L10n.text("NEW_INPUT_WAS_ENTERED_WHILE_SUBMITTING_YOUR_LOCAL_DRAFT_HAS_BEEN_KEPT" /* 提交期间有新的输入，已保留本机草稿。 */); return }
+            guard RecordPatch.equal(draft?.activeJSON,snapshot.activeJSON), let folder = accountFolder else { error = String(localized: "NEW_INPUT_WAS_ENTERED_WHILE_SUBMITTING_YOUR_LOCAL_DRAFT_HAS_BEEN_KEPT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
             do { try localStorage.write(["draft":try JSONSerialization.jsonObject(with:JSONEncoder().encode(snapshot))],to:folder.appendingPathComponent("archive/live-\(snapshot.id).json")) }
             catch { localSaveError = error.localizedDescription; return }
             self.draft = nil; selectedTab = 3
@@ -313,7 +313,7 @@ import Observation
     func deleteCurrentWorkout() {
         liveInputBuffer.commitAll()
         guard !syncing, draft != nil else { return }
-        guard let url = draftURL else { error = L10n.text("YOUR_ACCOUNT_COULD_NOT_BE_IDENTIFIED_THIS_WORKOUT_CANNOT_BE_DELETED" /* 尚未识别账号，无法删除本次训练。 */); return }
+        guard let url = draftURL else { error = String(localized: "YOUR_ACCOUNT_COULD_NOT_BE_IDENTIFIED_THIS_WORKOUT_CANNOT_BE_DELETED", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
         do {
             // Persist an empty document first: a failed write must keep the live input,
             // and an absent file would allow restoreDraft to adopt a legacy draft.
@@ -322,7 +322,7 @@ import Observation
             draft = nil
             selectedTab = 2
         } catch {
-            self.error = L10n.text("COULD_NOT_DELETE_THE_WORKOUT_IT_HAS_BEEN_KEPT_COUNT" /* 删除训练失败，本次训练已保留：{0} */, error.localizedDescription)
+            self.error = String(format: String(localized: "COULD_NOT_DELETE_THE_WORKOUT_IT_HAS_BEEN_KEPT_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))
         }
     }
     func updateSet(entry: Int, set: Int, _ change: (inout TrainingSet) -> Void) {
@@ -346,7 +346,7 @@ import Observation
         guard let url = draftURL else {
             outcome = draft == nil ? "no_draft" : "missing_account"
             if draft != nil {
-                localSaveIssues["live"] = L10n.text("NO_ACCOUNT_IS_AVAILABLE_TO_SAVE_THIS_WORKOUT_DRAFT_LOCALLY" /* 没有账号，训练草稿无法写入本机。 */)
+                localSaveIssues["live"] = String(localized: "NO_ACCOUNT_IS_AVAILABLE_TO_SAVE_THIS_WORKOUT_DRAFT_LOCALLY", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
                 WorkoutActivityDiagnostics.record("draft.save.failed", ["reason": "missing_account"], failure: true)
             }
             return draft == nil
@@ -358,7 +358,7 @@ import Observation
             try localStorage.write(value, to: url); if localSaveIssues["live"] != nil { localSaveIssues.removeValue(forKey:"live") }; outcome = "saved"; return true
         } catch {
             WorkoutActivityDiagnostics.record("draft.save.failed", WorkoutActivityDiagnostics.errorFields(error), failure: true)
-            localSaveIssues["live"] = L10n.text("COULD_NOT_SAVE_THE_WORKOUT_DRAFT_ON_THIS_DEVICE_COUNT" /* 训练草稿写入本机失败：{0} */, error.localizedDescription); return false
+            localSaveIssues["live"] = String(format: String(localized: "COULD_NOT_SAVE_THE_WORKOUT_DRAFT_ON_THIS_DEVICE_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)); return false
         }
     }
     func restoreDraft() {
@@ -381,7 +381,7 @@ import Observation
             if FileManager.default.fileExists(atPath: old.path) { source = "legacy_storage"; draft = try JSONDecoder().decode(TrainingDraft.self, from: Data(contentsOf: old)) }
         } catch {
             WorkoutActivityDiagnostics.record("draft.restore.failed", WorkoutActivityDiagnostics.errorFields(error), failure: true)
-            localSaveError = L10n.text("COULD_NOT_READ_THE_WORKOUT_DRAFT_THE_FILE_HAS_BEEN_KEPT_COUNT" /* 训练草稿读取失败，文件已保留：{0} */, error.localizedDescription)
+            localSaveError = String(format: String(localized: "COULD_NOT_READ_THE_WORKOUT_DRAFT_THE_FILE_HAS_BEEN_KEPT_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))
         }
     }
 }

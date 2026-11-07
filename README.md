@@ -208,7 +208,7 @@ Details and build instructions: [docs/MOBILE.md](docs/MOBILE.md).
 - **`frontend/`** is React 19 and Vite (React Router, Zustand), built to static files inside Docker.
 - **`api/`** is plain `node:http` with two dependencies: `@simplewebauthn/server` for passkeys and
   `web-push` for notifications. Everything is stored as JSON under `./data`.
-- **`web/`** builds the frontend and serves it with nginx, proxying `/api` so the whole app sits on
+- **`deploy/web/`** builds the frontend and serves it with nginx, proxying `/api` so the whole app sits on
   one origin, which passkeys require.
 
 The training logic (progression rules, 1RM, how a logged session is read back) lives in pure
@@ -357,3 +357,5 @@ you keep the copyright in your work, openGym may use and relicense it (so the ap
 App Store and Google Play long term), and every version released under the AGPL stays AGPL.
 
 Full third-party notices, including the body-diagram geometry, are in [NOTICE.md](NOTICE.md).
+
+Repository structure and development entry points: [directory guide](docs/REPOSITORY_LAYOUT.md).

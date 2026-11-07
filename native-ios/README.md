@@ -6,6 +6,8 @@ openGym 的 SwiftUI 原生开发版本。仅在 `native-ios/` 内新增代码；
 
 - iOS 26+；Xcode 26+（本次以 Xcode 27.1 / iPhone 17 Pro，iOS 26.5 验证）。
 - 打开 `OpenGym.xcodeproj`，选择 `OpenGym` scheme 和 iPhone 模拟器，Run。
+- 原生源码统一放在 `OpenGym/` 下；手表和 Widget 分别位于 `OpenGym/Watch/`、`OpenGym/Widgets/`，仍使用独立 target 编译，Xcode 分组与磁盘目录一致。
+- SwiftUI 预览放在对应 View 文件中；Watch 的训练／休息预览打开 `OpenGym/Watch/WatchTrainingView.swift`，等待手机预览打开 `OpenGym/Watch/WatchWaitingView.swift`，选择 `OpenGymWatch` scheme 和 Apple Watch 模拟器。`WatchRootView` 仅负责状态切换与刷新。共享训练控件与计时类型位于 `Shared/Training/`，按类型分文件维护。
 - 不需要 Swift Package、CocoaPods 或 Capacitor。模拟器使用本机服务 `http://localhost:8080`。
 - 真机请填写可访问的 HTTPS 服务地址，选择自己的 Signing Team；`localhost` 在真机上指手机本身。
 - 必须保留模拟器的 ad-hoc 签名和 `OpenGym.entitlements`；不要用 `CODE_SIGNING_ALLOWED=NO`，否则 Keychain 无法保存配对凭据。
@@ -163,7 +165,7 @@ ruby scripts/generate-project.rb  # 需要 xcodeproj Ruby gem；生成的工程�
 
 ## 2026-10-29 个人功能对齐
 
-详细入口、已实现范围及剩余工作见 [FEATURE_PARITY.md](FEATURE_PARITY.md)。本次新增个人设置、器械档案和库存、全局单位换算、体重历史/目标、围度、自定义动作与收藏、动作/肌群/结构平衡分析、计划模板与 JSON 工具、进阶参数、重复训练/分享/删除及每日备注。网页版与服务端未改。
+详细入口、已实现范围及剩余工作见 [FEATURE_PARITY.md](../docs/native-ios/FEATURE_PARITY.md)。本次新增个人设置、器械档案和库存、全局单位换算、体重历史/目标、围度、自定义动作与收藏、动作/肌群/结构平衡分析、计划模板与 JSON 工具、进阶参数、重复训练/分享/删除及每日备注。网页版与服务端未改。
 
 全套 XCTest 118 项通过（含 18 项本次个人功能测试）；独立模拟器及 loopback 虚构服务完成围度、偏好、模板导入、自定义动作和收藏的界面保存/服务端读回。未进行本次真机验收或发布。照片、二维码、提醒、全量备份等仍在对照清单内，不能称为网页全部功能已迁移。
 

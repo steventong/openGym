@@ -55,9 +55,9 @@ describe('the "left" beacon of the web app', () => {
   })
 })
 
-// What the web container does with a request, read off web/nginx.conf.template itself.
+// What the web container does with a request, read off deploy/web/nginx.conf.template itself.
 // A path, not a URL: under happy-dom `URL` is the DOM's, which node:fs will not take.
-const NGINX = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../web/nginx.conf.template'), 'utf8')
+const NGINX = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../deploy/web/nginx.conf.template'), 'utf8')
 
 // Each { } block's own directives, its nested blocks left out. Comments go first, and so do
 // ${VAR} placeholders, whose braces are envsubst's, not nginx's.
@@ -222,7 +222,7 @@ describe('the redirects nginx sends', () => {
 // came up and 404'd under the prefix, silently. The web image now refuses to start on one, from a
 // script nginx's entrypoint runs before it renders the template. Run here with sh, as it is there.
 describe('the web container refuses a BASE_PATH it cannot serve', () => {
-  const WEB = join(dirname(fileURLToPath(import.meta.url)), '../../../web')
+  const WEB = join(dirname(fileURLToPath(import.meta.url)), '../../../deploy/web')
   const check = value => {
     const env = { PATH: process.env.PATH }
     if (value !== undefined) env.BASE_PATH = value
@@ -247,7 +247,7 @@ describe('the web container refuses a BASE_PATH it cannot serve', () => {
     // Not executable, the entrypoint skips it with a log line and nginx starts anyway. Its 05
     // sorts before 20-envsubst-on-templates.sh, nginx's own step that renders the template.
     const dockerfile = readFileSync(join(WEB, 'Dockerfile'), 'utf8')
-    expect(dockerfile).toMatch(/^COPY --chmod=755 web\/05-check-base-path\.sh \/docker-entrypoint\.d\/$/m)
+    expect(dockerfile).toMatch(/^COPY --chmod=755 deploy\/web\/05-check-base-path\.sh \/docker-entrypoint\.d\/$/m)
   })
 
   it('runs nginx as uid 101 and still listens on port 80', () => {
@@ -268,6 +268,6 @@ describe('the web container refuses a BASE_PATH it cannot serve', () => {
     expect(upgrade).toBeGreaterThan(root)
     expect(finalUser).toBeGreaterThan(upgrade)
     expect(dockerfile).toMatch(/^ENV NGINX_PORT=80$/m)
-    expect(dockerfile).toMatch(/^COPY web\/nginx\.conf\.template \/etc\/nginx\/templates\/default\.conf\.template$/m)
+    expect(dockerfile).toMatch(/^COPY deploy\/web\/nginx\.conf\.template \/etc\/nginx\/templates\/default\.conf\.template$/m)
   })
 })

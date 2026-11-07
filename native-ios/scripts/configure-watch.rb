@@ -8,8 +8,8 @@ watch.build_configurations.each do |c|
     'PRODUCT_BUNDLE_IDENTIFIER'=>'me.itwl.opengym.watchkitapp', 'PRODUCT_NAME'=>'OpenGymWatch',
     'SWIFT_VERSION'=>'5.0', 'SDKROOT'=>'watchos', 'SUPPORTED_PLATFORMS'=>'watchos watchsimulator',
     'WATCHOS_DEPLOYMENT_TARGET'=>'10.0', 'TARGETED_DEVICE_FAMILY'=>'4',
-    'GENERATE_INFOPLIST_FILE'=>'YES', 'INFOPLIST_FILE'=>'OpenGymWatch/Info.plist',
-    'CODE_SIGN_ENTITLEMENTS'=>'OpenGymWatch/OpenGymWatch.entitlements', 'INFOPLIST_KEY_CFBundleDisplayName'=>'OpenGYM',
+    'GENERATE_INFOPLIST_FILE'=>'YES', 'INFOPLIST_FILE'=>'OpenGym/Watch/Info.plist',
+    'CODE_SIGN_ENTITLEMENTS'=>'OpenGym/Watch/OpenGymWatch.entitlements', 'INFOPLIST_KEY_CFBundleDisplayName'=>'OpenGYM',
     'INFOPLIST_KEY_WKApplication'=>'YES', 'INFOPLIST_KEY_WKCompanionAppBundleIdentifier'=>'me.itwl.opengym',
     'INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp'=>'NO', 'INFOPLIST_KEY_WKWatchOnly'=>'NO',
     'INFOPLIST_KEY_ITSAppUsesNonExemptEncryption'=>'NO', 'SKIP_INSTALL'=>'YES',
@@ -26,12 +26,15 @@ def add_source(project, target, relative)
   file = group.files.find { |f| f.path == filename } || group.new_file(filename)
   target.add_file_references([file]) unless target.source_build_phase.files_references.include?(file)
 end
-Dir.glob(File.join(root, 'OpenGym/**/*.swift')).each { |p| add_source(project, app, p.delete_prefix(root+'/')) }
-Dir.glob(File.join(root, 'Shared/*.swift')).each { |p| [app, watch].each { |t| add_source(project, t, p.delete_prefix(root+'/')) } }
-Dir.glob(File.join(root, 'OpenGymWatch/*.swift')).each { |p| add_source(project, watch, p.delete_prefix(root+'/')) }
+Dir.glob(File.join(root, 'OpenGym/**/*.swift')).each do |path|
+  next if path.start_with?("#{root}/OpenGym/Watch/", "#{root}/OpenGym/Widgets/")
+  add_source(project, app, path.delete_prefix(root + '/'))
+end
+Dir.glob(File.join(root, 'Shared/{*.swift,Training/**/*.swift}')).each { |p| [app, watch].each { |t| add_source(project, t, p.delete_prefix(root+'/')) } }
+Dir.glob(File.join(root, 'OpenGym/Watch/*.swift')).each { |p| add_source(project, watch, p.delete_prefix(root+'/')) }
 tests = project.targets.find { |t| t.name == 'OpenGymTests' }
 Dir.glob(File.join(root, 'OpenGymTests/*.swift')).each { |p| add_source(project, tests, p.delete_prefix(root+'/')) }
-watch_group = project.main_group.groups.find { |g| g.path == 'OpenGymWatch' }
+watch_group = project.main_group.find_subpath('OpenGym/Watch', false)
 assets = watch_group.files.find { |f| f.path == 'Assets.xcassets' } || watch_group.new_file('Assets.xcassets')
 watch.resources_build_phase.add_file_reference(assets) unless watch.resources_build_phase.files_references.include?(assets)
 app.add_dependency(watch) unless app.dependencies.any? { |d| d.target == watch }

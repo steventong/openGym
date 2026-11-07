@@ -22,6 +22,7 @@ struct WorkoutActivityAttributes: ActivityAttributes {
         // Optional for activities created by older builds. Busy state stays inside the button.
         var busyTitle: String? = nil
         var actionReadyAt: Date? = nil
+        var setStartedAt: Date? = nil
         var language: String? = nil
         var actionTiming: TrainingActionTiming { .init(restEnd: restEnd, readyAt: actionReadyAt) }
     }

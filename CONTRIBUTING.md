@@ -10,11 +10,11 @@ frontend/  React + Vite app (src/views, src/components, src/store, src/lib). Bui
            android/ and ios/ are the Capacitor shells for the standalone app (docs/MOBILE.md).
 api/       Backend: server.js on plain node:http, two dependencies (@simplewebauthn/server, web-push).
            coach/ is the optional AI coach; openapi.yaml documents every route.
-web/       Multi-stage Dockerfile (builds the frontend, serves it with nginx) and the nginx template.
+deploy/web/ Multi-stage Dockerfile (builds the frontend, serves it with nginx) and the nginx template.
 mcp/       Optional read-only MCP server for LLM clients (Claude Desktop, Cursor, ...). Not in the
            Docker build; it only runs when a client spawns it. See mcp/README.md.
 website/   The static project site at opengym.ch.
-kubernetes/ Example manifests (docs/SELF_HOSTING_KUBERNETES.md).
+deploy/    Deployment configuration: web/ (nginx), kubernetes/, helm/, and nix/.
 docs/      User and operator guides (index: docs/README.md); docs/dev/ has feature design notes.
 catalogue/ The exercise catalogue: one JSON file per exercise, translations in i18n/, and the
            licensed 180 px stills and animations in media/ (catalogue/README.md).

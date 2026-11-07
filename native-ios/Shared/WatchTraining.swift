@@ -15,29 +15,27 @@ struct WatchTrainingSnapshot: Codable, Equatable {
     var displayedSet: WatchTrainingSet? { restEnd != nil ? (restSet ?? nextSet) : nextSet }
     var setCompletionLabel: String? {
         guard restEnd != nil, restSet != nil else { return nil }
-        return L10n.format("COMPLETED" /* 已完成 */, language: language ?? L10n.language)
+        return String(localized: "COMPLETED", bundle: AppLanguage.bundle(for: language ?? AppLanguage.language), locale: AppLanguage.locale(for: language ?? AppLanguage.language))
     }
     var nextEntry: Int?
     var restEnd: Date?
     var restEntry: Int?
     var restExercise = ""
-    var message = L10n.text("START_A_WORKOUT_ON_IPHONE" /* 打开手机开始训练 */)
+    var message = String(localized: "START_A_WORKOUT_ON_IPHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     var acknowledged: [String] = []
     var setStartedAt: Date? = nil
     var actionReadyAt: Date? = nil
     var actionTiming: TrainingActionTiming { .init(restEnd: restEnd, readyAt: actionReadyAt) }
 
     var restNotificationTitle: String {
-        L10n.format("REST_NOTIFICATION_TITLE" /* OpenGYM 组间休息完成 */, language: language ?? L10n.language)
+        String(localized: "REST_NOTIFICATION_TITLE", bundle: AppLanguage.bundle(for: language ?? AppLanguage.language), locale: AppLanguage.locale(for: language ?? AppLanguage.language))
     }
     var restNotificationBody: String {
         let name = restExercise.isEmpty ? exercise : restExercise
         if let nextSet, restEntry == nil || nextSet.entry == restEntry {
-            return L10n.format("REST_NOTIFICATION_NEXT_SET" /* {0} 开始{1} */,
-                language: language ?? L10n.language, arguments: [name, nextSet.label])
+            return String(format: String(localized: "REST_NOTIFICATION_NEXT_SET", bundle: AppLanguage.bundle(for: language ?? AppLanguage.language), locale: AppLanguage.locale(for: language ?? AppLanguage.language)), locale: AppLanguage.locale(for: language ?? AppLanguage.language), String(describing: name), String(describing: nextSet.label))
         }
-        return L10n.format("COUNT_READY_FOR_YOUR_NEXT_SET" /* {0} · 准备开始下一组 */,
-            language: language ?? L10n.language, arguments: [name])
+        return String(format: String(localized: "COUNT_READY_FOR_YOUR_NEXT_SET", bundle: AppLanguage.bundle(for: language ?? AppLanguage.language), locale: AppLanguage.locale(for: language ?? AppLanguage.language)), locale: AppLanguage.locale(for: language ?? AppLanguage.language), String(describing: name))
     }
 
     var remainingRest: TimeInterval { max(0, restEnd?.timeIntervalSinceNow ?? 0) }
@@ -47,7 +45,6 @@ struct WatchTrainingSnapshot: Codable, Equatable {
     }
     func isResting(at date: Date = Date()) -> Bool { restEnd.map { $0 > date } ?? false }
     func primaryAction(reachable: Bool, reconnecting: Bool, hasPending: Bool, sending: Bool, at date: Date = Date()) -> WatchTrainingAction {
-        if !reachable && !reconnecting { return .connect }
         if hasPending { return sending ? .sending : .retry }
         if actionTiming.isRestAction { return .endRest }
         if nextSet != nil { return .complete }
@@ -94,21 +91,19 @@ struct WatchForegroundRestReminder {
     }
 }
 enum WatchTrainingAction: Equatable {
-    case connect, sending, retry, endRest, complete, next, finished
+    case sending, retry, endRest, complete, next, finished
     var title: String {
         switch self {
-        case .connect: L10n.text("CONNECT_IPHONE" /* 连接 iPhone */)
-        case .sending: L10n.text("CONFIRMING" /* 正在确认 */)
-        case .retry: L10n.text("RETRY_CONFIRMATION" /* 重试确认 */)
-        case .endRest: L10n.text("END_REST" /* 结束休息 */)
-        case .complete: L10n.text("COMPLETE_SET" /* 完成本组 */)
-        case .next: L10n.text("NEXT_EXERCISE" /* 下一个动作 */)
-        case .finished: L10n.text("WORKOUT_DONE" /* 训练已完成 */)
+        case .sending: String(localized: "CONFIRMING", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        case .retry: String(localized: "RETRY_CONFIRMATION", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        case .endRest: String(localized: "END_REST", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        case .complete: String(localized: "COMPLETE_SET", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        case .next: String(localized: "NEXT_EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        case .finished: String(localized: "WORKOUT_DONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
         }
     }
     var symbol: String {
         switch self {
-        case .connect: "iphone.and.arrow.forward"
         case .sending, .retry: "arrow.clockwise"
         case .endRest: "forward.end.fill"
         case .next: "arrow.right"

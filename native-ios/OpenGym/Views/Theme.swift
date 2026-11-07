@@ -23,20 +23,20 @@ extension View {
         toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-                Button(L10n.text("FOLD_AWAY" /* 收起 */), action: GymKeyboard.dismiss)
+                Button("FOLD_AWAY", action: GymKeyboard.dismiss)
                     .accessibilityIdentifier("dismiss-keyboard")
             }
         }
     }
     func gymCard() -> some View { padding(18).background(GymTheme.card,in:RoundedRectangle(cornerRadius:20)) }
-    func operationAlert(_ issue: Binding<String?>, title: String = L10n.text("COULD_NOT_COMPLETE_ACTION" /* 操作未完成 */)) -> some View {
+    func operationAlert(_ issue: Binding<String?>, title: String = String(localized: "COULD_NOT_COMPLETE_ACTION", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) -> some View {
         alert(title, isPresented: Binding(get: { issue.wrappedValue != nil }, set: { if !$0 { issue.wrappedValue = nil } })) {
-            Button(L10n.text("OK" /* 好 */), role: .cancel) {}
+            Button("OK", role: .cancel) {}
         } message: { Text(issue.wrappedValue ?? "") }
     }
     func invalidInput(_ invalid: Bool) -> some View {
         overlay(RoundedRectangle(cornerRadius: 4).stroke(invalid ? Color.orange : .clear))
-            .accessibilityHint(invalid ? L10n.text("INVALID_INPUT_PLEASE_CHECK" /* 输入无效，请检查 */) : "")
+            .accessibilityHint(invalid ? String(localized: "INVALID_INPUT_PLEASE_CHECK", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : "")
     }
 }
 
@@ -60,8 +60,8 @@ struct ExplanationButton: View {
     @State private var showing = false
     var body: some View {
         Button { showing = true } label: { Image(systemName: "info.circle").frame(width: 28, height: 28) }
-            .buttonStyle(.borderless).accessibilityLabel(L10n.text("ABOUT_COUNT" /* {0}说明 */, title))
-            .alert(title, isPresented: $showing) { Button(L10n.text("OK" /* 好 */), role: .cancel) {} } message: { Text(message) }
+            .buttonStyle(.borderless).accessibilityLabel(String(format: String(localized: "ABOUT_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: title)))
+            .alert(title, isPresented: $showing) { Button("OK", role: .cancel) {} } message: { Text(message) }
     }
 }
 
@@ -75,8 +75,8 @@ struct StatusDetailButton: View {
             Label(title, systemImage: warning ? "exclamationmark.circle" : "info.circle")
                 .font(.caption).lineLimit(1).minimumScaleFactor(0.8)
                 .foregroundStyle(warning ? Color.orange : GymTheme.muted)
-        }.buttonStyle(.borderless).accessibilityHint(L10n.text("VIEW_DETAILS" /* 查看详情 */))
-            .alert(title, isPresented: $showing) { Button(L10n.text("OK" /* 好 */), role: .cancel) {} } message: { Text(message) }
+        }.buttonStyle(.borderless).accessibilityHint("VIEW_DETAILS")
+            .alert(title, isPresented: $showing) { Button("OK", role: .cancel) {} } message: { Text(message) }
     }
 }
 struct GreenButton: View {

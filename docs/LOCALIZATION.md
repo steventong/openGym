@@ -6,9 +6,9 @@
 
 ## Apple 标准资源
 
-SwiftUI、Watch 和 Widget 使用 `native-ios/Localization/Localizable.xcstrings`，可直接在 Xcode String Catalog 编辑器中查看中英文和中文注释。iPhone 与 Watch 的权限说明分别放在各自的 `InfoPlist.xcstrings`。
+SwiftUI、Watch 和 Widget 使用 `native-ios/Resources/Localization/Localizable.xcstrings`，可直接在 Xcode String Catalog 编辑器中查看中英文和中文注释。iPhone 与 Watch 的权限说明分别放在 `native-ios/Resources/Localization/OpenGym/InfoPlist.xcstrings` 和 `native-ios/Resources/Localization/OpenGymWatch/InfoPlist.xcstrings`，按 Target 分目录集中管理。
 
-共享 JSON 在构建前转换为标准 String Catalog，Xcode 编译生成系统本地化资源。Apple App 包不再包含 `en.json` / `zh.json`；`L10n` 仅保留账号语言选择和 Foundation API 的薄封装，使用 `String(localized:bundle:locale:)` 查询、`String(format:locale:arguments:)` 格式化。没有自定义 JSON 读取器或占位符解析器。
+共享 JSON 在构建前转换为标准 String Catalog，Xcode 编译生成系统本地化资源。Apple App 包不再包含 `en.json` / `zh.json`；SwiftUI 界面直接使用 Key（如 `Text("SETTINGS")`），需要字符串的地方使用 `String(localized:bundle:locale:)`，带参数文案使用原生 `String(format:locale:)`。`AppLanguage` 只管理账号语言偏好和 Locale/Bundle 选择，不提供翻译或格式化函数。没有自定义 JSON 读取器或占位符解析器。
 
 JSON 的 `{0}`、`{1}` 转换为标准 `%1$@`、`%2$@`，支持译文调整语序。需要文字百分号时，生成器按标准格式转义。跨端修改仍编辑共享 JSON 并重新生成，避免原生与网页产生两套文案。
 
@@ -26,8 +26,9 @@ t('SET_COUNT_OF_COUNT' /* 第几组，共几组 */, current, total)
 ```
 
 ```swift
-L10n.text("REST_COMPLETE" /* 休息结束 */)
-L10n.text("SET_COUNT_OF_COUNT" /* 第几组，共几组 */, current, total)
+Text("REST_COMPLETE" /* 休息结束 */)
+String(format: String(localized: "SET_COUNT_OF_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale),
+       locale: AppLanguage.locale, String(current), String(total))
 ```
 
 `translateValue` 仅适配目录、旧数据和服务端返回的已有标签。兼容映射位于 `localization/metadata/`，新界面文案应直接使用大写 key。`frontend/src/locales/*.js` 仅保留旧工具与测试所需的适配导出，实际翻译在 JSON 中。

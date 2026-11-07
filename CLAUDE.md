@@ -16,13 +16,15 @@ frontend/  React 19 + Vite app (src/views, src/components, src/store, src/lib). 
            android/ + ios/ are the Capacitor shells for the standalone mobile app (docs/MOBILE.md).
 api/       backend — server.js (Node, no framework), deps: @simplewebauthn/server, web-push.
            coach/ is the optional AI coach; openapi.yaml documents every route.
-web/       multi-stage Dockerfile (builds frontend → nginx) + nginx.conf.template (serves app, proxies /api).
+deploy/web/ multi-stage Dockerfile (builds frontend → nginx) + nginx.conf.template (serves app, proxies /api).
 mcp/       optional MCP server — read-only stdio bridge exposing a user's workouts/1RM/muscle
            balance to LLM clients (Claude Desktop, Cursor…). Not part of the Docker build; only
            runs when an LLM client spawns it.
-media/     exercise img/gif, gitignored, fetched at runtime by the `media` compose service.
+catalogue/ exercise definitions, translations and licensed media.
+localization/ shared translation source JSON.
+native-ios/ native SwiftUI iPhone, Watch and Widget targets.
 website/   static project site (plain HTML/CSS/JS), deployed separately.
-kubernetes/ example manifests (docs/SELF_HOSTING_KUBERNETES.md).
+deploy/    deployment configuration: web/ (nginx), kubernetes/, helm/, and nix/.
 docs/      guides indexed in docs/README.md (FAQ, SELF_HOSTING*, MOBILE, AI_COACH, DATA_IMPORTS, API);
            docs/dev/ holds feature design notes (SET_TYPES: drop sets/rest-pause, LIST_VIEW, COMBINE_ROUTINES).
 ```
@@ -57,7 +59,7 @@ TypeScript — match the existing style by hand.
 
 GitHub (`github.com/DuarteSantos8/openGym`) is the home of the project; `.github/workflows/mirror.yml`
 pushes `main` and `v*` tags to the GitLab mirror. Pull requests are gated by
-`.github/workflows/test.yml` on Node 22 — the same version as `web/Dockerfile` / `api/Dockerfile`
+`.github/workflows/test.yml` on Node 22 — the same version as `deploy/web/Dockerfile` / `api/Dockerfile`
 (`node:22-alpine`): the frontend, api and MCP suites, the locale checks, and building and booting
 both api image targets. GitLab CI on the mirror (`.gitlab-ci.yml`) builds the release artifacts:
 the signed Android APK, the multi-arch images and the SBOMs. Never push or merge on GitLab
@@ -130,7 +132,7 @@ notification code; it documents the exact env-var contract (`RP_ID`, `ORIGIN`, `
 `docker-compose.yml` has three services: `media` (one-shot exercise-asset downloader, gitignored
 output), `api`, `web` (multi-stage build of `frontend/` served by nginx, which also proxies
 `/api` → `api` and serves the shared media volume — single origin, required for passkeys).
-`web/nginx.conf.template` is rendered from env vars at container start (`NGINX_PORT`, `BACKEND`,
+`deploy/web/nginx.conf.template` is rendered from env vars at container start (`NGINX_PORT`, `BACKEND`,
 `PORT`), so host/port remapping works against prebuilt images without a rebuild.
 
 ## Guidelines from CONTRIBUTING.md worth knowing before changing code
@@ -140,3 +142,12 @@ output), `api`, `web` (multi-stage build of `frontend/` served by nginx, which a
 - Don't commit `media/` or `data/` (gitignored).
 - Training-logic changes (progression, 1RM, session read-back) need a unit test in `src/lib`
   beside the code, not just manual clicking-through.
+
+## Native Swift file organization
+
+- Put each independent top-level type in its own same-named physical Swift file. Do not collect
+  app entry points, delegates, views, controls or unrelated models in one file. Closely related
+  extensions and nested implementation details may stay with their owning type.
+- Keep `#Preview` declarations beside the view they preview, not in the app entry point. Match
+  Xcode groups to real directories and update target membership and project-generation scripts
+  whenever files move or split.

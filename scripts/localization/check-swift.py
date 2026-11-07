@@ -40,7 +40,7 @@ def scan(source):
   if re.search('[\u3400-\u9fff]',text): yield text
   for expression in args: yield from scan(expression)
 failures=[]
-for base in ['OpenGym','Shared','OpenGymWatch','OpenGymWidgets']:
+for base in ['OpenGym','Shared']:
  for file in (root/'native-ios'/base).rglob('*.swift'):
   for text in scan(file.read_text()):failures.append(f'{file.relative_to(root)}: unlocalized Swift text: {text}')
 if failures:

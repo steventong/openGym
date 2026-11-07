@@ -20,12 +20,17 @@ import UIKit
 
     func testSetClockSurvivesEditsAndRestartsAfterRest() throws {
         let initialStart = try XCTUnwrap(store.watchSnapshot().setStartedAt)
+        XCTAssertEqual(store.workoutActivityState()?.setStartedAt, initialStart)
         store.changeActive { $0["name"] = "Renamed" }
         XCTAssertEqual(store.watchSnapshot().setStartedAt, initialStart)
         store.startRest(entry: 0, seconds: 90, set: 0)
         XCTAssertNil(store.watchSnapshot().setStartedAt)
+        XCTAssertNil(store.workoutActivityState()?.setStartedAt)
         store.endRestFromTextButton(at: now)
         XCTAssertEqual(try XCTUnwrap(store.watchSnapshot().setStartedAt).timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.000001)
+        XCTAssertEqual(store.workoutActivityState()?.setStartedAt, store.watchSnapshot().setStartedAt)
+        let activity = try XCTUnwrap(store.workoutActivityState())
+        XCTAssertEqual(try JSONDecoder().decode(WorkoutActivityAttributes.ContentState.self, from: JSONEncoder().encode(activity)).setStartedAt, activity.setStartedAt)
         let restored = try JSONDecoder().decode(WatchTrainingSnapshot.self, from: JSONEncoder().encode(store.watchSnapshot()))
         XCTAssertEqual(try XCTUnwrap(restored.setStartedAt).timeIntervalSince1970, now.timeIntervalSince1970, accuracy: 0.000001)
         store.changeActive { $0["name"] = "Renamed again" }
@@ -55,33 +60,33 @@ import UIKit
             index: action == "complete" ? state.nextSet?.index : nil, side: state.nextSet?.side)
     }
 
-    func testCompletionProtectsEndRestAcrossWatchAndActivityForExactlyFiveSeconds() throws {
+    func testCompletionProtectsEndRestAcrossWatchAndActivityForExactlyThreeSeconds() throws {
         let complete = try watchCommand("complete")
         XCTAssertEqual(store.performWatchCommand(complete, now: now)["accepted"] as? Bool, true)
         let deadline = try XCTUnwrap(store.trainingActionReadyAt)
-        XCTAssertEqual(deadline.timeIntervalSince(now), 5, accuracy: 0.00001)
+        XCTAssertEqual(deadline.timeIntervalSince(now), 3, accuracy: 0.00001)
         XCTAssertEqual(store.watchSnapshot().actionReadyAt, store.workoutActivityState()?.actionReadyAt)
         let skip = try XCTUnwrap(store.workoutActivityState()?.restCommand)
-        XCTAssertNotNil(store.performActivityCommand(skip, now: now.addingTimeInterval(4.999)))
+        XCTAssertNotNil(store.performActivityCommand(skip, now: now.addingTimeInterval(2.999)))
         XCTAssertNotNil(store.restUntil)
         // A replayed completion is still acknowledged without extending protection.
         XCTAssertEqual(store.performWatchCommand(complete, now: now.addingTimeInterval(1))["accepted"] as? Bool, true)
         XCTAssertEqual(store.trainingActionReadyAt, deadline)
         XCTAssertNil(store.performActivityCommand(skip, now: deadline))
         XCTAssertNil(store.restUntil)
-        XCTAssertEqual(try XCTUnwrap(store.trainingActionReadyAt).timeIntervalSince(deadline), 5, accuracy: 0.00001)
+        XCTAssertEqual(try XCTUnwrap(store.trainingActionReadyAt).timeIntervalSince(deadline), 3, accuracy: 0.00001)
     }
 
     func testEndRestProtectsCompletionAcrossActivityAndWatchIncludingColdLaunch() throws {
         store.startRest(entry: 0, seconds: 90)
         XCTAssertNil(store.performActivityCommand(try XCTUnwrap(store.workoutActivityState()?.restCommand), now: now))
         let complete = try watchCommand("complete")
-        XCTAssertEqual(store.performWatchCommand(complete, now: now.addingTimeInterval(4.999))["accepted"] as? Bool, false)
+        XCTAssertEqual(store.performWatchCommand(complete, now: now.addingTimeInterval(2.999))["accepted"] as? Bool, false)
         XCTAssertEqual(store.draft?.completedSets, 0)
         let restored = GymStore(userID: "shared-action-test", storage: LocalTrainingStorage(root: root))
         restored.state = store.state; restored.restoreDraft()
         XCTAssertEqual(restored.trainingActionReadyAt, store.trainingActionReadyAt)
-        XCTAssertEqual(restored.performWatchCommand(complete, now: now.addingTimeInterval(3))["accepted"] as? Bool, false)
+        XCTAssertEqual(restored.performWatchCommand(complete, now: now.addingTimeInterval(2))["accepted"] as? Bool, false)
         XCTAssertEqual(restored.performWatchCommand(complete, now: try XCTUnwrap(restored.trainingActionReadyAt))["accepted"] as? Bool, true)
         XCTAssertEqual(restored.draft?.completedSets, 1)
     }
@@ -125,13 +130,13 @@ import UIKit
     }
 
     func testCountdownFormattingAndProtectionShareBoundaryWithoutNegativeValues() {
-        let end = now.addingTimeInterval(5)
+        let end = TrainingActionTiming.deadline(after: now)
         let timing = TrainingActionTiming(restEnd: nil, readyAt: end)
         let style = TrainingCountdownSecondsStyle(end: end)
-        for elapsed in [0.0, 0.1, 1.0, 4.999, 5.0, 6.0] {
+        for elapsed in [0.0, 0.1, 1.0, 2.999, 3.0, 4.0] {
             let date = now.addingTimeInterval(elapsed)
             XCTAssertEqual(style.format(date), "\(timing.protectionSeconds(at: date))S")
-            XCTAssertEqual(timing.isProtected(at: date), elapsed < 5)
+            XCTAssertEqual(timing.isProtected(at: date), elapsed < 3)
         }
         XCTAssertEqual(style.discreteInput(after: now), now.addingTimeInterval(1))
         XCTAssertNil(style.discreteInput(after: end))
@@ -216,11 +221,11 @@ import UIKit
                         state.trainingName = language == "zh" ? "力量训练" : "Strength training"
                         state.exercise = language == "zh" ? "坐姿单臂哑铃肩上推举" : "Seated single-arm dumbbell shoulder press"
                         state.position = language == "zh" ? "第 2/6 个动作" : "Exercise 2/6"
-                        state.setLabel = L10n.format("SET_COUNT_OF_COUNT", language: language, arguments: [2, 4])
+                        state.setLabel = String(format: String(localized: "SET_COUNT_OF_COUNT", bundle: AppLanguage.bundle(for: language), locale: AppLanguage.locale(for: language)), locale: AppLanguage.locale(for: language), String(describing: 2), String(describing: 4))
                         state.setWeight = "40 kg"; state.setDetail = language == "zh" ? "10 次" : "10 reps"
                         state.commandTitle = language == "zh" ? "完成本组" : "Complete set"
                         state.restEnd = phase == "ready" ? nil : now.addingTimeInterval(phase == "expired" ? -55 : 55)
-                        state.setCompletionLabel = phase == "ready" ? nil : L10n.format("COMPLETED", language: language)
+                        state.setCompletionLabel = phase == "ready" ? nil : String(localized: "COMPLETED", bundle: AppLanguage.bundle(for: language), locale: AppLanguage.locale(for: language))
                         state.restCommand = phase == "ready" ? nil : "preview-rest"
                         state.actionReadyAt = phase == "protected" ? now.addingTimeInterval(5) : nil
                         state.busyTitle = phase == "busy" ? (language == "zh" ? "正在保存" : "Saving") : nil

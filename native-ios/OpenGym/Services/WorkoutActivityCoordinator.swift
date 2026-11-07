@@ -170,11 +170,11 @@ import UIKit
                         store.liveActivityIssue = nil
                     } catch {
                         WorkoutActivityDiagnostics.record("activity.request.failed", WorkoutActivityDiagnostics.errorFields(error), traces: traces, failure: true)
-                        store.liveActivityIssue = L10n.text("LIVE_ACTIVITY_HAS_NOT_STARTED_IT_WILL_RETRY_WHEN_YOU_RETURN_TO" /* 实时活动暂未启动，回到 App 后会重试。 */)
+                        store.liveActivityIssue = String(localized: "LIVE_ACTIVITY_HAS_NOT_STARTED_IT_WILL_RETRY_WHEN_YOU_RETURN_TO", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
                     }
                 } else {
                     WorkoutActivityDiagnostics.record("activity.request.skipped", ["reason": "activities_disabled"], traces: traces)
-                    store.liveActivityIssue = L10n.text("LIVE_ACTIVITIES_ARE_OFF_ENABLE_THEM_FOR_OPENGYM_IN_SYSTEM_SETTINGS" /* 实时活动未开启，可在系统设置中允许 openGym 的实时活动。 */)
+                    store.liveActivityIssue = String(localized: "LIVE_ACTIVITIES_ARE_OFF_ENABLE_THEM_FOR_OPENGYM_IN_SYSTEM_SETTINGS", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
                 }
             } else {
                 WorkoutActivityDiagnostics.record("activity.request.skipped", ["reason": "no_matching_activity_in_background"], traces: traces)

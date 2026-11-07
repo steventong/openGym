@@ -26,7 +26,7 @@ struct WorkoutActivityContent: View {
 
     private var exerciseTitle: some View {
         TrainingExerciseTitle(title: state.exercise.isEmpty
-            ? L10n.format("READY_TO_START", language: state.language ?? L10n.language)
+            ? String(localized: "READY_TO_START", bundle: AppLanguage.bundle(for: state.language ?? AppLanguage.language), locale: AppLanguage.locale(for: state.language ?? AppLanguage.language))
             : state.exercise)
     }
 
@@ -46,23 +46,24 @@ struct WorkoutActivityContent: View {
             // Older activities may only contain the combined detail string.
             TrainingSetSummary(weight: state.setWeight ?? state.detail,
                 detail: state.setWeight == nil ? "" : (state.setDetail ?? ""), label: state.setLabel,
-                detailFontSize: 14, detailFontWeight: .medium, detailColor: .white.opacity(0.9), completionLabel: state.setCompletionLabel)
+                detailFontSize: 14, detailFontWeight: .medium, detailColor: .white.opacity(0.9))
             Color.clear.frame(height: TrainingDisplayStyle.actionGap - (island ? 6 : 0)).accessibilityHidden(true)
             actionControl.accessibilityHint(state.message)
         }
         .padding(Self.contentInsets(island: island))
         .foregroundStyle(.white)
+        .environment(\.locale, AppLanguage.locale(for: state.language ?? AppLanguage.language))
     }
 
     private var actionControl: some View {
         let rest = state.restEnd != nil && state.restCommand != nil
-        let title = state.busyTitle ?? (rest ? L10n.format("END_REST" /* 结束休息 */, language: state.language ?? L10n.language) : state.commandTitle)
+        let title = state.busyTitle ?? (rest ? String(localized: "END_REST", bundle: AppLanguage.bundle(for: state.language ?? AppLanguage.language), locale: AppLanguage.locale(for: state.language ?? AppLanguage.language)) : state.commandTitle)
         let command = rest ? state.restCommand : state.command
         let symbol = state.busyTitle != nil ? "arrow.triangle.2.circlepath" : (rest ? "forward.end.fill" : "checkmark")
         return TrainingActionControl(title: title, symbol: symbol, timing: state.actionTiming,
             disabled: state.busyTitle != nil, tint: TrainingDisplayStyle.green,
             quietReady: !rest && command != nil && state.busyTitle == nil && state.setWeight != nil,
-            language: state.language, systemDeadlinePassed: systemDeadlinePassed, countdownPresentation: .systemTimer) { label in
+            setStartedAt: state.setStartedAt, language: state.language, systemDeadlinePassed: systemDeadlinePassed) { label in
                 if let command {
                     Button(intent: WorkoutActivityIntent(command: command)) { label }
                 } else {

@@ -66,7 +66,7 @@ final class PersonalFeaturesTests:XCTestCase {
     @MainActor func testProgressKeepsBodyweightRepsAndCompletedSideOnly() throws {
         let state:[String:Any] = ["workouts":[["id":"w","d":"2026-10-20","start":10000,"entries":[["id":"0025","sets":[["w":0,"r":8,"done":true],["w":100,"r":8,"done":false]]]]]]]
         let result = try rule("progress",state,["id":"0025"])
-        XCTAssertEqual(result["unit"] as? String,L10n.text("REPS_A" /* 次 */))
+        XCTAssertEqual(result["unit"] as? String,String(localized: "REPS_A", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
         XCTAssertEqual(number((result["points"] as! [[String:Any]])[0]["y"]),8)
     }
     @MainActor func testProgressExcludesWarmupAndUsesConfiguredFormula() throws {
@@ -137,7 +137,7 @@ final class PersonalFeaturesTests:XCTestCase {
         var later = workout("b",40);later["start"] = 1792500000000
         let s:[String:Any] = ["logRef":"best","workouts":[workout("a",60),later]]
         let result = try WebRules.shared.call("personalReference",payload:["state":s,"entry":["id":"0025","target":["mode":"reps"]],"before":1792600000000,"exclude":"new"]) as! [String:Any]
-        XCTAssertEqual(result["kind"] as? String,L10n.text("BEST_A" /* 最佳 */));XCTAssertTrue((result["label"] as? String ?? "").contains("60"))
+        XCTAssertEqual(result["kind"] as? String,String(localized: "BEST_A", bundle: AppLanguage.bundle, locale: AppLanguage.locale));XCTAssertTrue((result["label"] as? String ?? "").contains("60"))
     }
     @MainActor func testProfileUnitSwitchBlockedByLocalDraft() async throws {
         let store = GymStore();store.draft = TrainingDraft(name:"training",entries:[],unit:"kg")

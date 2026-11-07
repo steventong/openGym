@@ -43,7 +43,7 @@ final class LocalTrainingStorage {
         for candidate in [url, backup] {
             if let data = try? Data(contentsOf: candidate), let value = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { return value }
         }
-        throw APIError.response(0, L10n.text("COULD_NOT_READ_THE_LOCAL_FILE_THE_ORIGINAL_HAS_BEEN_KEPT_DO" /* 本地文件无法读取，原文件已保留，请勿卸载 App。 */))
+        throw APIError.response(0, String(localized: "COULD_NOT_READ_THE_LOCAL_FILE_THE_ORIGINAL_HAS_BEEN_KEPT_DO", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
     }
     func write(_ value: [String: Any], to url: URL) throws {
         let data = try JSONSerialization.data(withJSONObject: value, options: [.sortedKeys])
@@ -69,7 +69,7 @@ extension GymStore {
             try localStorage.saveServerSnapshot(response, server: server, user: userID)
             if localSaveIssues["serverBackup"] != nil { localSaveIssues.removeValue(forKey: "serverBackup") }
         } catch {
-            let message = L10n.text("SERVER_BACKUP_FAILED_SYNC_STOPPED" /* 服务器快照保存失败，已停止同步：{0} */, error.localizedDescription)
+            let message = String(format: String(localized: "SERVER_BACKUP_FAILED_SYNC_STOPPED", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))
             if localSaveIssues["serverBackup"] != message { localSaveIssues["serverBackup"] = message }
             throw APIError.response(0, message)
         }
@@ -83,7 +83,7 @@ extension GymStore {
             try localStorage.write(["state": state, "name": userName ?? ""], to: folder.appendingPathComponent("profile.json"))
             try localStorage.write(["server": serverURL, "user": userID, "name": userName ?? ""], to: localStorage.root.appendingPathComponent("last-account.json"))
             if localSaveIssues["profile"] != nil { localSaveIssues.removeValue(forKey:"profile") }
-        } catch { localSaveIssues["profile"] = L10n.text("COULD_NOT_SAVE_ON_THIS_DEVICE_COUNT" /* 本机保存失败：{0} */, error.localizedDescription) }
+        } catch { localSaveIssues["profile"] = String(format: String(localized: "COULD_NOT_SAVE_ON_THIS_DEVICE_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
     }
     func restoreOfflineAccount() {
         do {
@@ -93,7 +93,7 @@ extension GymStore {
             let cached = try localStorage.read(localStorage.folder(server: serverURL, user: id).appendingPathComponent("profile.json"))
             state = cached?["state"] as? [String: Any] ?? [:]
             restoreLocalTraining()
-            status = L10n.text("LOCAL_DATA_LOADED" /* 已载入本机数据 */)
+            status = String(localized: "LOCAL_DATA_LOADED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
         } catch { localSaveError = error.localizedDescription }
     }
     func restoreLocalTraining() {
@@ -103,9 +103,9 @@ extension GymStore {
         } catch { localSaveError = error.localizedDescription }
     }
     @discardableResult func persistHistoryEdits() -> Bool {
-        guard let url = localHistoryURL else { localSaveIssues["history"] = L10n.text("YOUR_ACCOUNT_COULD_NOT_BE_IDENTIFIED_THE_DRAFT_CANNOT_BE_SAFELY_SAVED" /* 尚未识别账号，无法安全保存本机草稿。 */); return false }
+        guard let url = localHistoryURL else { localSaveIssues["history"] = String(localized: "YOUR_ACCOUNT_COULD_NOT_BE_IDENTIFIED_THE_DRAFT_CANNOT_BE_SAFELY_SAVED", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return false }
         do { try localStorage.write(["edits": historyEdits], to: url); localSaveIssues.removeValue(forKey:"history"); return true }
-        catch { localSaveIssues["history"] = L10n.text("YOUR_EDITS_ARE_STILL_IN_MEMORY_BUT_COULD_NOT_BE_SAVED_ON" /* 编辑内容仍在内存，但写入本机失败：{0} */, error.localizedDescription); return false }
+        catch { localSaveIssues["history"] = String(format: String(localized: "YOUR_EDITS_ARE_STILL_IN_MEMORY_BUT_COULD_NOT_BE_SAVED_ON", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)); return false }
     }
     @discardableResult func keepHistoryEdit(original: [String: Any], proposed: [String: Any], unit: String, form: [String: Any]? = nil, submit: Bool = false) -> Bool {
         let key = WorkoutRecord.key(original)

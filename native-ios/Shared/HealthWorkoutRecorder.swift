@@ -9,7 +9,7 @@ enum HealthWorkoutAccess {
     static func authorize(_ health: HKHealthStore) async throws {
         try await health.requestAuthorization(toShare: [workout, energy], read: [workout, energy, restingEnergy, heartRate])
         guard health.authorizationStatus(for: workout) == .sharingAuthorized else {
-            throw NSError(domain: "OpenGymHealth", code: 1, userInfo: [NSLocalizedDescriptionKey: L10n.text("ALLOW_OPENGYM_TO_WRITE_WORKOUTS_IN_THE_HEALTH_APP" /* 请在健康 App 中允许 openGym 写入体能训练。 */)])
+            throw NSError(domain: "OpenGymHealth", code: 1, userInfo: [NSLocalizedDescriptionKey: String(localized: "ALLOW_OPENGYM_TO_WRITE_WORKOUTS_IN_THE_HEALTH_APP", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])
         }
     }
     static var configuration: HKWorkoutConfiguration {
@@ -30,7 +30,7 @@ enum HealthWorkoutAccess {
         try await builder.addMetadata(metadata(request))
         try await builder.endCollection(at: end)
         guard try await builder.finishWorkout() != nil else {
-            throw NSError(domain: "OpenGymHealth", code: 4, userInfo: [NSLocalizedDescriptionKey: L10n.text("APPLE_HEALTH_HAS_NOT_CONFIRMED_THE_SAVE_RETRY_SYNCING" /* Apple 健康尚未确认保存，请重试同步。 */)])
+            throw NSError(domain: "OpenGymHealth", code: 4, userInfo: [NSLocalizedDescriptionKey: String(localized: "APPLE_HEALTH_HAS_NOT_CONFIRMED_THE_SAVE_RETRY_SYNCING", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])
         }
     }
 }
@@ -76,7 +76,7 @@ enum HealthWorkoutAccess {
                 worker = nil
             }
         } catch {
-            for request in requests { onReport?(HealthWorkoutReport(id: request.id, state: .failed, message: L10n.text("COULD_NOT_SAVE_HEALTH_SYNC_DATA_LOCALLY_COUNT" /* 健康同步本机保存失败：{0} */, error.localizedDescription))) }
+            for request in requests { onReport?(HealthWorkoutReport(id: request.id, state: .failed, message: String(format: String(localized: "COULD_NOT_SAVE_HEALTH_SYNC_DATA_LOCALLY_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)))) }
         }
     }
     func stopFromWatch() {
@@ -105,7 +105,7 @@ enum HealthWorkoutAccess {
             // Retry recovery before creating a new session, including when protected data is locked.
             recovered = false
             for request in ledger.pending {
-                onReport?(HealthWorkoutReport(id: request.id, state: .failed, message: L10n.text("WORKOUT_RECOVERY_IS_INCOMPLETE_UNLOCK_YOUR_DEVICE_AND_RETRY_COUNT" /* 运动恢复未完成，请解锁设备后重试：{0} */, error.localizedDescription)))
+                onReport?(HealthWorkoutReport(id: request.id, state: .failed, message: String(format: String(localized: "WORKOUT_RECOVERY_IS_INCOMPLETE_UNLOCK_YOUR_DEVICE_AND_RETRY_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))))
             }
         }
     }
@@ -119,14 +119,14 @@ enum HealthWorkoutAccess {
             }
             if request.phase == .running {
                 guard ledger.interruptedIDs?.contains(request.id) != true else {
-                    try report(HealthWorkoutReport(id: request.id, state: .failed, message: L10n.text("ACTIVITY_TRACKING_WAS_INTERRUPTED_DURATION_WILL_SYNC_WHEN_YOU_FINISH_THE_WORKOUT" /* 运动采集已中断；结束训练后将同步时长。 */))); return
+                    try report(HealthWorkoutReport(id: request.id, state: .failed, message: String(localized: "ACTIVITY_TRACKING_WAS_INTERRUPTED_DURATION_WILL_SYNC_WHEN_YOU_FINISH_THE_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale))); return
                 }
                 guard health.authorizationStatus(for: HealthWorkoutAccess.workout) == .sharingAuthorized else {
-                    throw NSError(domain: "OpenGymHealth", code: 1, userInfo: [NSLocalizedDescriptionKey: L10n.text("OPEN_HEALTH_SYNC_SETTINGS_IN_OPENGYM_AND_ALLOW_ACCESS" /* 请打开 openGym 的健康同步设置并授权。 */)])
+                    throw NSError(domain: "OpenGymHealth", code: 1, userInfo: [NSLocalizedDescriptionKey: String(localized: "OPEN_HEALTH_SYNC_SETTINGS_IN_OPENGYM_AND_ALLOW_ACCESS", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])
                 }
                 if ledger.activeID == request.id, session != nil { emitMetrics(); return }
                 guard session == nil else {
-                    throw NSError(domain: "OpenGymHealth", code: 2, userInfo: [NSLocalizedDescriptionKey: L10n.text("THE_PREVIOUS_WORKOUT_HAS_NOT_ENDED_CONNECT_IPHONE_AND_RETRY_SYNCING" /* 上一场训练尚未结束，请连接 iPhone 重试同步。 */)])
+                    throw NSError(domain: "OpenGymHealth", code: 2, userInfo: [NSLocalizedDescriptionKey: String(localized: "THE_PREVIOUS_WORKOUT_HAS_NOT_ENDED_CONNECT_IPHONE_AND_RETRY_SYNCING", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])
                 }
                 ledger.activeID = request.id; try journal.write(ledger)
                 let next = try HKWorkoutSession(healthStore: health, configuration: HealthWorkoutAccess.configuration)
@@ -147,13 +147,13 @@ enum HealthWorkoutAccess {
                     try await Task.sleep(for: .milliseconds(50))
                 }
                 guard session.state == .stopped || session.state == .ended else {
-                    throw NSError(domain: "OpenGymHealth", code: 3, userInfo: [NSLocalizedDescriptionKey: L10n.text("STOPPING_ACTIVITY_TRACKING_RETRY_SYNCING_SHORTLY" /* 正在停止运动采集，请稍后重试同步。 */)])
+                    throw NSError(domain: "OpenGymHealth", code: 3, userInfo: [NSLocalizedDescriptionKey: String(localized: "STOPPING_ACTIVITY_TRACKING_RETRY_SYNCING_SHORTLY", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])
                 }
                 if !collectionEnded { try await builder.endCollection(at: end); collectionEnded = true }
                 // The training may have been renamed since collection began.
                 try await builder.addMetadata(HealthWorkoutAccess.metadata(request))
                 guard let workout = try await builder.finishWorkout() else {
-                    throw NSError(domain: "OpenGymHealth", code: 4, userInfo: [NSLocalizedDescriptionKey: L10n.text("APPLE_HEALTH_HAS_NOT_CONFIRMED_THE_SAVE_RETRY_SYNCING" /* Apple 健康尚未确认保存，请重试同步。 */)])
+                    throw NSError(domain: "OpenGymHealth", code: 4, userInfo: [NSLocalizedDescriptionKey: String(localized: "APPLE_HEALTH_HAS_NOT_CONFIRMED_THE_SAVE_RETRY_SYNCING", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])
                 }
                 let calories = workout.statistics(for: HealthWorkoutAccess.energy)?.sumQuantity()?.doubleValue(for: .kilocalorie())
                 let resting = workout.statistics(for: HealthWorkoutAccess.restingEnergy)?.sumQuantity()?.doubleValue(for: .kilocalorie())
@@ -163,7 +163,7 @@ enum HealthWorkoutAccess {
                 session.end(); clearSession()
             } else {
                 try await HealthWorkoutAccess.saveDuration(request, health: health)
-                try report(HealthWorkoutReport(id: request.id, state: .saved, message: L10n.text("WORKOUT_DURATION_SYNCED_NO_LIVE_ACTIVITY_DATA_WAS_AVAILABLE_FOR_THIS_SESSION" /* 训练时长已同步；本次没有可用的实时运动数据。 */)))
+                try report(HealthWorkoutReport(id: request.id, state: .saved, message: String(localized: "WORKOUT_DURATION_SYNCED_NO_LIVE_ACTIVITY_DATA_WAS_AVAILABLE_FOR_THIS_SESSION", bundle: AppLanguage.bundle, locale: AppLanguage.locale)))
             }
         } catch {
             // A session that failed before collection is usable must not block future retries.
@@ -197,7 +197,7 @@ enum HealthWorkoutAccess {
     nonisolated func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
         Task { @MainActor [weak self] in
             guard let self, self.session === workoutSession, let id = self.ledger.activeID else { return }
-            self.onReport?(HealthWorkoutReport(id: id, state: .failed, message: L10n.text("SYSTEM_WORKOUT_INTERRUPTED_COUNT" /* 系统训练已中断：{0} */, error.localizedDescription)))
+            self.onReport?(HealthWorkoutReport(id: id, state: .failed, message: String(format: String(localized: "SYSTEM_WORKOUT_INTERRUPTED_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))))
             // An interrupted system workout must stop accumulating, even if the phone is unreachable.
             if var request = self.ledger.requests[id], request.phase == .running {
                 request.phase = .finished; request.end = max(request.start, Date()); self.accept([request])

@@ -20,7 +20,7 @@ enum RecordPatch {
             if let old = old as? [String:Any], let new = new as? [String:Any], let remote = remote as? [String:Any] {
                 result[key] = try apply(original:old,proposed:new,current:remote,preferLocal:preferLocal)
             } else {
-                guard preferLocal || equal(old,remote) else { throw APIError.response(409,L10n.text("THIS_ITEM_CHANGED_ON_ANOTHER_DEVICE_YOUR_LOCAL_EDITS_ARE_SAFE_COMPARE" /* 这项内容已在其他设备修改。你的本机编辑已保留，请核对两个版本后再提交。 */)) }
+                guard preferLocal || equal(old,remote) else { throw APIError.response(409,String(localized: "THIS_ITEM_CHANGED_ON_ANOTHER_DEVICE_YOUR_LOCAL_EDITS_ARE_SAFE_COMPARE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                 result[key] = new
             }
         }
@@ -51,10 +51,10 @@ struct WorkoutRecord: Identifiable {
 }
 enum EditValidation {
     static func routine(_ raw:[String:Any]) throws {
-        guard !(raw["name"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines).isEmpty else { throw APIError.response(0,L10n.text("ENTER_A_ROUTINE_NAME" /* 请输入计划名称。 */)) }
-        guard let entries = raw["ex"] as? [[String:Any]], !entries.isEmpty else { throw APIError.response(0,L10n.text("ADD_AT_LEAST_ONE_EXERCISE_TO_THE_ROUTINE" /* 计划至少需要一个动作。 */)) }
+        guard !(raw["name"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines).isEmpty else { throw APIError.response(0,String(localized: "ENTER_A_ROUTINE_NAME", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
+        guard let entries = raw["ex"] as? [[String:Any]], !entries.isEmpty else { throw APIError.response(0,String(localized: "ADD_AT_LEAST_ONE_EXERCISE_TO_THE_ROUTINE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
         for row in entries where ordinaryConfig(row) {
-            guard validNumber(row["sets"] ?? 3,1...30), validNumber(row["reps"] ?? 10,1...1000), validNumber(row["weight"] ?? 0,0...2000), validNumber(row["restSec"] ?? 90,0...900) else { throw APIError.response(0,L10n.text("CHECK_THE_RANGES_FOR_SETS_REPS_WEIGHT_AND_REST_TIME" /* 请检查组数、次数、重量和休息时间的范围。 */)) }
+            guard validNumber(row["sets"] ?? 3,1...30), validNumber(row["reps"] ?? 10,1...1000), validNumber(row["weight"] ?? 0,0...2000), validNumber(row["restSec"] ?? 90,0...900) else { throw APIError.response(0,String(localized: "CHECK_THE_RANGES_FOR_SETS_REPS_WEIGHT_AND_REST_TIME", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
         }
     }
     static func validNumber(_ value:Any?,_ range:ClosedRange<Double>) -> Bool {

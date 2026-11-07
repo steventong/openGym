@@ -19,50 +19,50 @@ struct HomeView: View {
             VStack(alignment:.leading,spacing:24) {
                 HStack(alignment:.center) {
                     VStack(alignment:.leading,spacing:7) {
-                        Text(L10n.text("START_WORKOUT" /* 开始训练 */)).font(.system(size:35,weight:.bold))
-                        Text(Date().formatted(.dateTime.month().day().weekday(.wide).locale(L10n.locale))).font(.system(size:13)).foregroundStyle(GymTheme.muted)
+                        Text("START_WORKOUT").font(.system(size:35,weight:.bold))
+                        Text(Date().formatted(.dateTime.month().day().weekday(.wide).locale(AppLanguage.locale))).font(.system(size:13)).foregroundStyle(GymTheme.muted)
                     }
                     Spacer()
-                    Button { store.showSettings = true } label: { Image(systemName:"gearshape").font(.system(size:22)).foregroundStyle(.white).padding(12).background(GymTheme.card,in:Circle()) }.accessibilityLabel(L10n.text("SETTINGS" /* 设置 */))
+                    Button { store.showSettings = true } label: { Image(systemName:"gearshape").font(.system(size:22)).foregroundStyle(.white).padding(12).background(GymTheme.card,in:Circle()) }.accessibilityLabel("SETTINGS")
                 }
                 VStack(spacing:18) {
                     HStack {
-                        Button { weekOffset -= 1 } label: { Image(systemName:"chevron.left").padding(6) }.accessibilityLabel(L10n.text("PREVIOUS_WEEK" /* 上一周 */))
-                        Spacer(); Text(weekOffset == 0 ? L10n.text("THIS_WEEK" /* 本周 */) : calendarDays[0].formatted(.dateTime.month().day())).font(.system(size:13,weight:.medium)); Spacer()
-                        Button { weekOffset += 1 } label: { Image(systemName:"chevron.right").padding(6) }.accessibilityLabel(L10n.text("NEXT_WEEK" /* 下一周 */))
+                        Button { weekOffset -= 1 } label: { Image(systemName:"chevron.left").padding(6) }.accessibilityLabel("PREVIOUS_WEEK")
+                        Spacer(); Text(weekOffset == 0 ? String(localized: "THIS_WEEK", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : calendarDays[0].formatted(.dateTime.month().day())).font(.system(size:13,weight:.medium)); Spacer()
+                        Button { weekOffset += 1 } label: { Image(systemName:"chevron.right").padding(6) }.accessibilityLabel("NEXT_WEEK")
                     }.foregroundStyle(GymTheme.muted)
                     HStack(spacing:7) {
                         ForEach(Array(calendarDays.enumerated()),id:\.offset) { i, day in
                             Button { selectedDay = day } label: {
                                 VStack(spacing:11) {
-                                    Text([L10n.text("MO" /* 一 */),L10n.text("TU" /* 二 */),L10n.text("WE" /* 三 */),L10n.text("TH" /* 四 */),L10n.text("FR" /* 五 */),L10n.text("SA" /* 六 */),L10n.text("SU" /* 日 */)][i]).font(.system(size:11))
+                                    Text([String(localized: "MO", bundle: AppLanguage.bundle, locale: AppLanguage.locale),String(localized: "TU", bundle: AppLanguage.bundle, locale: AppLanguage.locale),String(localized: "WE", bundle: AppLanguage.bundle, locale: AppLanguage.locale),String(localized: "TH", bundle: AppLanguage.bundle, locale: AppLanguage.locale),String(localized: "FR", bundle: AppLanguage.bundle, locale: AppLanguage.locale),String(localized: "SA", bundle: AppLanguage.bundle, locale: AppLanguage.locale),String(localized: "SU", bundle: AppLanguage.bundle, locale: AppLanguage.locale)][i]).font(.system(size:11))
                                     Text(day.formatted(.dateTime.day())).font(.system(size:18,weight:.semibold))
                                     Circle().fill(markers[i] == .completed ? GymTheme.green : markers[i] == .planned ? GymTheme.muted : .clear)
                                         .frame(width:4,height:4).accessibilityHidden(true)
                                 }.foregroundStyle(day == selectedDay ? .black : GymTheme.muted).frame(maxWidth:.infinity).padding(.vertical,12)
                                     .background(day == selectedDay ? GymTheme.green : GymTheme.card,in:Capsule())
                             }.buttonStyle(.plain)
-                                .accessibilityValue(markers[i] == .completed ? L10n.text("WORKOUT_LOGGED" /* 有训练记录 */) : markers[i] == .planned ? L10n.text("WORKOUT_SCHEDULED" /* 已安排训练 */) : L10n.text("NO_WORKOUT_SCHEDULED" /* 无训练安排 */))
+                                .accessibilityValue(markers[i] == .completed ? String(localized: "WORKOUT_LOGGED", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : markers[i] == .planned ? String(localized: "WORKOUT_SCHEDULED", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "NO_WORKOUT_SCHEDULED", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
                         }
                     }
                 }
                 VStack(alignment:.leading,spacing:18) {
-                    HStack { Text(Calendar.current.isDateInToday(selectedDay) ? L10n.text("TODAY" /* 今天 */) : selectedDay.formatted(.dateTime.month().day())).font(.system(size:12)).foregroundStyle(GymTheme.muted); Spacer(); Image(systemName:"figure.strengthtraining.traditional").foregroundStyle(GymTheme.green) }
+                    HStack { Text(Calendar.current.isDateInToday(selectedDay) ? String(localized: "TODAY", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : selectedDay.formatted(.dateTime.month().day())).font(.system(size:12)).foregroundStyle(GymTheme.muted); Spacer(); Image(systemName:"figure.strengthtraining.traditional").foregroundStyle(GymTheme.green) }
                         .lineLimit(1).frame(height:20)
                     HStack(alignment:.bottom,spacing:12) {
-                        Text(store.draft?.name ?? (scheduled.isEmpty ? L10n.text("REST_DAY" /* 休息日 */) : scheduled.map(\.name).joined(separator:" + ")))
+                        Text(store.draft?.name ?? (scheduled.isEmpty ? String(localized: "REST_DAY", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : scheduled.map(\.name).joined(separator:" + ")))
                             .font(.system(size:29,weight:.bold)).lineLimit(1)
                             .frame(maxWidth:.infinity, alignment:.leading)
                         if store.draft == nil && !scheduled.isEmpty {
-                            Text(L10n.text("COUNT_EXERCISES" /* {0} 个动作 */, scheduled.flatMap(\.exercises).count))
+                            Text(String(format: String(localized: "COUNT_EXERCISES", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: scheduled.flatMap(\.exercises).count)))
                                 .font(.system(size:13)).foregroundStyle(GymTheme.muted)
                                 .lineLimit(1).fixedSize()
                         }
                     }.frame(height:36, alignment:.leading)
                     GlassEffectContainer {
                         VStack(spacing: 18) {
-                            trainingButton(
-                                store.draft != nil ? L10n.text("CONTINUE_WORKOUT" /* 继续训练 */) : scheduled.isEmpty ? L10n.text("FREESTYLE" /* 自由训练 */) : L10n.text("START_WORKOUT" /* 开始训练 */),
+                            HomeTrainingButton(title:
+                                store.draft != nil ? String(localized: "CONTINUE_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : scheduled.isEmpty ? String(localized: "FREESTYLE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "START_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale),
                                 icon: store.draft == nil && scheduled.isEmpty ? "figure.strengthtraining.traditional" : "play.fill",
                                 primary: true,
                                 identifier: store.draft == nil && scheduled.isEmpty ? "start-freestyle-workout" : "home-start-workout",
@@ -76,8 +76,8 @@ struct HomeView: View {
                                     store.start(scheduled)
                                 }
                             }
-                            trainingButton(
-                                scheduled.isEmpty ? L10n.text("CHOOSE_A_ROUTINE" /* 选择训练计划 */) : L10n.text("FREESTYLE" /* 自由训练 */),
+                            HomeTrainingButton(title:
+                                scheduled.isEmpty ? String(localized: "CHOOSE_A_ROUTINE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "FREESTYLE", bundle: AppLanguage.bundle, locale: AppLanguage.locale),
                                 icon: scheduled.isEmpty ? "list.bullet" : "figure.strengthtraining.traditional",
                                 primary: false,
                                 identifier: scheduled.isEmpty ? "home-select-plan" : "start-freestyle-workout",
@@ -96,69 +96,14 @@ struct HomeView: View {
             }.padding(22)
         }.refreshable { await store.refresh() }
     }
-    private func trainingButton(_ title:String,icon:String,primary:Bool,identifier:String,startedAt:Date? = nil,enabled:Bool = true,action:@escaping () -> Void) -> some View {
-        let button = Button(action: action) {
-            HStack(spacing: 8) {
-                Image(systemName: icon).frame(width: 22, height: 22).accessibilityHidden(true)
-                Text(title)
-                    .padding(.horizontal, startedAt == nil ? 0 : 32)
-                    .frame(maxWidth: .infinity)
-                Color.clear.frame(width: 22, height: 22).accessibilityHidden(true)
-            }
-            .font(.system(size: primary ? 17 : 15, weight: .semibold))
-            .lineLimit(1).minimumScaleFactor(0.8)
-            .frame(maxWidth: .infinity)
-            .overlay(alignment: .trailing) {
-                if let startedAt {
-                    HomeWorkoutDurationLabel(start: startedAt)
-                        .allowsHitTesting(false)
-                }
-            }
-            .foregroundStyle(enabled ? (primary ? Color.black : GymTheme.green) : GymTheme.muted)
-        }
-        .disabled(!enabled)
-        .controlSize(.large)
-        .buttonBorderShape(.capsule)
-        .accessibilityIdentifier(identifier)
-
-        return Group {
-            if primary {
-                button.buttonStyle(.glassProminent)
-            } else {
-                button.buttonStyle(.glass)
-            }
-        }
-    }
-
-}
-private struct HomeWorkoutDurationLabel: View {
-    let start: Date
-
-    var body: some View {
-        // Reserve a stable trailing slot so ticking digits never move the title.
-        Text(verbatim: "00:00:00").hidden()
-            .overlay(alignment: .trailing) {
-                TimelineView(.periodic(from: start, by: 1)) { context in
-                    let elapsed = max(0, Int(context.date.timeIntervalSince(start)))
-                    let duration = Duration.seconds(elapsed).formatted(.time(pattern: .hourMinuteSecond))
-                    Text(duration)
-                        .lineLimit(1).minimumScaleFactor(0.7)
-                        .accessibilityLabel(L10n.text("SESSION_LENGTH" /* 训练时长 */))
-                        .accessibilityValue(duration)
-                }
-            }
-            .font(.system(size: 12, weight: .medium).monospacedDigit())
-            .fixedSize()
-            .accessibilityIdentifier("home-workout-duration")
-    }
 }
 struct WeightChart: View {
     let points: [[String:Any]]
     var body: some View {
         Chart {
             ForEach(Array(points.suffix(30).enumerated()),id:\.offset) { i, p in
-                LineMark(x:.value(L10n.text("DATE" /* 日期 */),i),y:.value(L10n.text("BODY_WEIGHT" /* 体重 */),number(p["w"]))).foregroundStyle(GymTheme.green).interpolationMethod(.catmullRom)
-                PointMark(x:.value(L10n.text("DATE" /* 日期 */),i),y:.value(L10n.text("BODY_WEIGHT" /* 体重 */),number(p["w"]))).foregroundStyle(GymTheme.green).symbolSize(20)
+                LineMark(x:.value(String(localized: "DATE", bundle: AppLanguage.bundle, locale: AppLanguage.locale),i),y:.value(String(localized: "BODY_WEIGHT", bundle: AppLanguage.bundle, locale: AppLanguage.locale),number(p["w"]))).foregroundStyle(GymTheme.green).interpolationMethod(.catmullRom)
+                PointMark(x:.value(String(localized: "DATE", bundle: AppLanguage.bundle, locale: AppLanguage.locale),i),y:.value(String(localized: "BODY_WEIGHT", bundle: AppLanguage.bundle, locale: AppLanguage.locale),number(p["w"]))).foregroundStyle(GymTheme.green).symbolSize(20)
             }
         }.chartYScale(domain:.automatic(includesZero:false)).chartXAxis(.hidden)
     }
@@ -170,11 +115,11 @@ struct WeightEntryView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(L10n.text("TODAY_S_WEIGHT_COUNT" /* 今天的体重（{0}） */, store.unit)) { TextField(L10n.text("ENTER_BODY_WEIGHT" /* 输入体重 */),text:$value).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.keyboardType(.decimalPad) }
-                Section { Button(store.syncing ? L10n.text("SAVING" /* 正在保存 */) : L10n.text("SAVE_TO_SERVER" /* 保存到服务端 */)) {
+                Section(String(format: String(localized: "TODAY_S_WEIGHT_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: store.unit))) { TextField("ENTER_BODY_WEIGHT",text:$value).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.keyboardType(.decimalPad) }
+                Section { Button(store.syncing ? String(localized: "SAVING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "SAVE_TO_SERVER", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) {
                     if let number = Double(value.replacingOccurrences(of:",",with:".")), number > 0 { Task { if await store.recordWeight(number) { dismiss() } } }
                 }.disabled(store.syncing || (Double(value.replacingOccurrences(of:",",with:".")) ?? 0) <= 0) }
-            }.navigationTitle(L10n.text("LOG_BODY_WEIGHT" /* 记录体重 */)).toolbar { ToolbarItem(placement:.topBarTrailing) { Button(L10n.text("CANCEL" /* 取消 */)) { dismiss() } } }
+            }.navigationTitle("LOG_BODY_WEIGHT").toolbar { ToolbarItem(placement:.topBarTrailing) { Button("CANCEL") { dismiss() } } }
                 .keyboardDismissToolbar()
         }.presentationDetents([.medium]).tint(GymTheme.green)
     }

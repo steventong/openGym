@@ -118,10 +118,10 @@ extension GymStore {
         let payload: [String: Any] = ["state": state, "entry": entry, "before": before, "exclude": exclude, "reference": "last"]
         guard let result = try? WebRules.shared.call("personalReference", payload: payload) as? [String: Any],
               let date = result["date"] as? String, let label = result["label"] as? String else {
-            return (L10n.text("PREVIOUS_WORKOUT_EMPTY" /* 上次：暂无同一动作的训练记录 */), nil)
+            return (String(localized: "PREVIOUS_WORKOUT_EMPTY", bundle: AppLanguage.bundle, locale: AppLanguage.locale), nil)
         }
         let note = (result["note"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
-        return (L10n.text("PREVIOUS_WORKOUT_SUMMARY" /* 上次 {0} · {1} · {2} */, date, label, unit), note?.isEmpty == false ? note : nil)
+        return (String(format: String(localized: "PREVIOUS_WORKOUT_SUMMARY", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: date), String(describing: label), String(describing: unit)), note?.isEmpty == false ? note : nil)
     }
     func setLiveNote(entry:Int,text:String) {
         changeActive { raw in var entries = raw["entries"] as? [[String:Any]] ?? [];guard entries.indices.contains(entry) else {return};entries[entry]["note"] = text;raw["entries"] = entries }
@@ -202,9 +202,9 @@ extension GymStore {
         let active = draft?.activeJSON
         return await mutate(reportError:false) { source in
             // Progress may change while editing; preserve it. Do not adopt another owner's queue silently.
-            for key in ["rotation","scheduleMode"] where !RecordPatch.equal(baseline[key],source[key]) { throw APIError.response(409,L10n.text("ROTATION_SETTINGS_CHANGED_ON_ANOTHER_DEVICE_REOPEN_THEM_TO_REVIEW" /* 循环设置已在另一台设备改变，请重新打开后核对。 */)) }
+            for key in ["rotation","scheduleMode"] where !RecordPatch.equal(baseline[key],source[key]) { throw APIError.response(409,String(localized: "ROTATION_SETTINGS_CHANGED_ON_ANOTHER_DEVICE_REOPEN_THEM_TO_REVIEW", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             let oldQueue = baseline["queue"] as? [String:Any] ?? [:],newQueue = source["queue"] as? [String:Any] ?? [:]
-            if !RecordPatch.equal(oldQueue["rotationId"],newQueue["rotationId"]) { throw APIError.response(409,L10n.text("THE_SCHEDULE_S_OWNER_CHANGED_REFRESH_AND_TRY_AGAIN" /* 排期归属已改变，请刷新后重试。 */)) }
+            if !RecordPatch.equal(oldQueue["rotationId"],newQueue["rotationId"]) { throw APIError.response(409,String(localized: "THE_SCHEDULE_S_OWNER_CHANGED_REFRESH_AND_TRY_AGAIN", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             var payload:[String:Any] = ["state":source,"action":action,"ids":ids,"label":label,"today":dayString(),"now":Date().timeIntervalSince1970*1000]
             if let active { payload["active"] = active }
             guard let result = try WebRules.shared.call("rotationChange",payload:payload) as? [String:Any] else { throw APIError.invalidResponse };return result

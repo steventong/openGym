@@ -60,7 +60,7 @@ import WatchConnectivity
     nonisolated func sessionWatchStateDidChange(_ session: WCSession) { Task { @MainActor [weak self] in self?.publish(); self?.sendHealthRequests() } }
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         Task { @MainActor [weak self] in
-            guard let store = self?.store else { replyHandler(["error": L10n.text("OPEN_OPENGYM_ON_IPHONE" /* 请打开 iPhone 上的 openGym */)]); return }
+            guard let store = self?.store else { replyHandler(["error": String(localized: "OPEN_OPENGYM_ON_IPHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)]); return }
             if let command = WatchTrainingCommand.decode(message) {
                 let response = store.performWatchCommand(command)
                 await store.restNotifications?.flush()
@@ -71,7 +71,7 @@ import WatchConnectivity
                 var payload = store.watchSnapshot().payload
                 payload.merge(HealthWorkoutWire.requests(store.workoutHealth.watchRequests)) { _, new in new }
                 replyHandler(payload)
-            } else { replyHandler(["error": L10n.text("UPDATE_OPENGYM_ON_YOUR_PHONE_AND_WATCH" /* 请更新手机和手表上的 openGym */)]); return }
+            } else { replyHandler(["error": String(localized: "UPDATE_OPENGYM_ON_YOUR_PHONE_AND_WATCH", bundle: AppLanguage.bundle, locale: AppLanguage.locale)]); return }
             self?.publish()
         }
     }

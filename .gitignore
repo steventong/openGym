@@ -30,3 +30,10 @@ frontend/bundle-size.json
 
 # Local planning notes
 docs/superpowers/plans/
+
+# Local build products, previews, and exported task output
+/artifacts/
+/outputs/
+/.local-preview/
+/coach-auth/
+native-ios/.build*/

@@ -4,11 +4,11 @@ import OSLog
 /// The same intent metadata is compiled into the widget and the app. LiveActivityIntent
 /// makes the system execute the action in the app process, using its account-scoped store.
 struct WorkoutActivityIntent: LiveActivityIntent {
-    static var title: LocalizedStringResource = "UPDATE_CURRENT_WORKOUT" /* 更新当前训练 */
+    static var title: LocalizedStringResource = "UPDATE_CURRENT_WORKOUT"
     static var isDiscoverable = false
     static var openAppWhenRun = false
 
-    @Parameter(title: "WORKOUT_ACTION" /* 训练操作 */) var command: String
+    @Parameter(title: "WORKOUT_ACTION") var command: String
 
     init() {}
     init(command: String) { self.command = command }

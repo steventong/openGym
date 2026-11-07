@@ -11,7 +11,7 @@ struct WorkoutView: View {
     var body: some View {
         NavigationStack {
             workoutContent
-                .navigationTitle(store.draft?.name ?? L10n.text("CHOOSE_A_ROUTINE" /* 选择训练计划 */))
+                .navigationTitle(store.draft?.name ?? String(localized: "CHOOSE_A_ROUTINE", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     if let d = store.draft {
@@ -31,11 +31,15 @@ struct WorkoutView: View {
                             }
                         }
                         ToolbarItem(placement: .topBarTrailing) {
-                            workoutMenu(d)
+                            WorkoutMenuView(draft: d, timerRunning: store.workTimer != nil,
+                                addExercise: { store.liveInputBuffer.commitAll(); showExercisePicker = true },
+                                reorderExercises: { store.liveInputBuffer.commitAll(); exerciseOrderDraft = store.draft },
+                                showDetails: { store.liveInputBuffer.commitAll(); showWorkoutDetails = true },
+                                finishWorkout: { confirmFinish = true }, deleteWorkout: { confirmDelete = true })
                         }
                         if d.allSetsCompleted {
                             ToolbarItem(placement: .topBarLeading) {
-                                Button(L10n.text("SAVE_WORKOUT" /* 保存训练 */)) { confirmFinish = true }
+                                Button("SAVE_WORKOUT") { confirmFinish = true }
                                     .disabled(store.workTimer != nil)
                                     .accessibilityIdentifier("save-completed-workout")
                             }
@@ -60,26 +64,26 @@ struct WorkoutView: View {
                     TrainingExercisePager(selected: min(max(0, d.activeJSON["cur"] as? Int ?? 0), d.rawEntries.count - 1),
                         names: d.rawEntries.map(name), select: store.selectLiveEntry) { index in
                         VStack(alignment: .leading, spacing: 20) {
-                            workoutNote(d)
-                            exerciseCard(d, index: index)
+                            WorkoutNoteView(note: d.activeJSON["note"] as? String)
+                            LiveWorkoutExerciseCard(draft: d, index: index, showingNote: $showExerciseNote)
                         }
                     }.id(d.id)
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
                             if let d = store.draft {
-                                workoutNote(d)
+                                WorkoutNoteView(note: d.activeJSON["note"] as? String)
                                 Spacer(minLength: 0)
                                 emptyWorkout
                                 Spacer(minLength: 0)
                             } else {
-                                EmptyCard(icon: "figure.strengthtraining.traditional", title: L10n.text("START_WORKOUT" /* 开始训练 */))
-                                GreenButton(title: L10n.text("FREESTYLE" /* 自由训练 */), icon: "figure.strengthtraining.traditional") { store.startFreestyle() }
+                                EmptyCard(icon: "figure.strengthtraining.traditional", title: String(localized: "START_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
+                                GreenButton(title: String(localized: "FREESTYLE", bundle: AppLanguage.bundle, locale: AppLanguage.locale), icon: "figure.strengthtraining.traditional") { store.startFreestyle() }
                                     .accessibilityIdentifier("start-freestyle-workout")
                                 let scheduled = store.scheduledRoutines(on: Date())
-                                if !scheduled.isEmpty { GreenButton(title: L10n.text("START_TODAY_S_WORKOUTS" /* 开始今日安排 */), icon: "play.fill") { store.start(scheduled) } }
+                                if !scheduled.isEmpty { GreenButton(title: String(localized: "START_TODAY_S_WORKOUTS", bundle: AppLanguage.bundle, locale: AppLanguage.locale), icon: "play.fill") { store.start(scheduled) } }
                                 ForEach(store.routines) { r in GreenButton(title: r.name, icon: "play.fill") { store.start(r) } }
-                                if store.routines.isEmpty { GreenButton(title: L10n.text("GO_TO_ROUTINES" /* 前往训练计划 */)) { store.selectedTab = 1 } }
+                                if store.routines.isEmpty { GreenButton(title: String(localized: "GO_TO_ROUTINES", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) { store.selectedTab = 1 } }
                             }
                         }.padding(20)
                             .frame(minHeight: store.draft != nil ? geometry.size.height : nil, alignment: .top)
@@ -89,7 +93,7 @@ struct WorkoutView: View {
         }
             .sheet(isPresented: $showWorkoutDetails) { WorkoutDetailsEditor() }
             .sheet(isPresented: $showExercisePicker) {
-                ExercisePicker(title: L10n.text("ADD_EXERCISE" /* 添加动作 */)) { exercise in
+                ExercisePicker(title: String(localized: "ADD_EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) { exercise in
                     store.manageLiveExercise(action: "add", index: 0, id: exercise.id)
                     showExercisePicker = false
                 }
@@ -99,24 +103,17 @@ struct WorkoutView: View {
                     try store.reorderLiveExercises(order, expectedEntries: baseline, sessionID: draft.id)
                 }
             }
-            .confirmationDialog(L10n.text("SAVE_AND_SUBMIT_WORKOUT" /* 保存训练？ */), isPresented: $confirmFinish, titleVisibility: .visible) {
-                Button(L10n.text("SAVE_AND_SUBMIT_WORKOUT_A" /* 保存训练 */)) { Task { await store.finish() } }
-                Button(L10n.text("CONTINUE_WORKOUT" /* 继续训练 */), role: .cancel) {}
+            .confirmationDialog("SAVE_AND_SUBMIT_WORKOUT", isPresented: $confirmFinish, titleVisibility: .visible) {
+                Button("SAVE_AND_SUBMIT_WORKOUT_A") { Task { await store.finish() } }
+                Button("CONTINUE_WORKOUT", role: .cancel) {}
             }
-            .confirmationDialog(L10n.text("DELETE_THIS_WORKOUT" /* 删除训练记录？ */), isPresented: $confirmDelete, titleVisibility: .visible) {
-                Button(L10n.text("DELETE_WORKOUT_A" /* 删除训练 */), role: .destructive) { store.deleteCurrentWorkout() }
-                Button(L10n.text("CONTINUE_WORKOUT" /* 继续训练 */), role: .cancel) {}
+            .confirmationDialog("DELETE_THIS_WORKOUT", isPresented: $confirmDelete, titleVisibility: .visible) {
+                Button("DELETE_WORKOUT_A", role: .destructive) { store.deleteCurrentWorkout() }
+                Button("CONTINUE_WORKOUT", role: .cancel) {}
             } message: {
-                Text(L10n.text("THE_LOCAL_DRAFT_WILL_BE_DELETED_AND_ITS_TIMER_STOPPED_THIS_CANNOT" /* 将清除本次训练的本机草稿并停止计时，无法撤销。已提交的历史记录和训练计划不受影响。 */))
+                Text("THE_LOCAL_DRAFT_WILL_BE_DELETED_AND_ITS_TIMER_STOPPED_THIS_CANNOT")
             }
             .task { while !Task.isCancelled { store.settleTimer(); try? await Task.sleep(for: .seconds(1)) } }
-    }
-    @ViewBuilder private func workoutNote(_ draft: TrainingDraft) -> some View {
-        if let note = draft.activeJSON["note"] as? String, !note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            Text(note).font(.subheadline).foregroundStyle(GymTheme.muted)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .accessibilityIdentifier("live-workout-note-display")
-        }
     }
     private var emptyWorkout: some View {
         VStack(spacing: 16) {
@@ -124,88 +121,24 @@ struct WorkoutView: View {
                 .font(.system(size: 44, weight: .light))
                 .foregroundStyle(GymTheme.muted)
                 .accessibilityHidden(true)
-            Text(L10n.text("NO_EXERCISES_YET" /* 还没有动作。 */))
+            Text("NO_EXERCISES_YET")
                 .font(.subheadline)
                 .foregroundStyle(GymTheme.muted)
                 .multilineTextAlignment(.center)
             Button { showExercisePicker = true } label: {
-                Label(L10n.text("ADD" /* 添加 */), systemImage: "plus")
+                Label("ADD", systemImage: "plus")
                     .font(.headline)
                     .foregroundStyle(.primary)
                     .padding(.horizontal, 24)
                     .frame(minHeight: 48)
                     .background(GymTheme.card, in: RoundedRectangle(cornerRadius: 14))
             }.buttonStyle(.plain)
-                .accessibilityLabel(L10n.text("ADD_WORKOUT_EXERCISE" /* 添加训练动作 */))
+                .accessibilityLabel("ADD_WORKOUT_EXERCISE")
                 .accessibilityIdentifier("empty-workout-add-exercise")
         }.frame(maxWidth: .infinity)
             .padding(.vertical, 24)
     }
-    private func name(_ entry: [String: Any]) -> String { store.exercise(entry["id"] as? String ?? "")?.recordName ?? L10n.text("CUSTOM_EXERCISE" /* 自定义动作 */) }
-    private func workoutMenu(_ d: TrainingDraft) -> some View {
-        Menu {
-            Section {
-                Button(L10n.text("ADD_EXERCISE" /* 添加动作 */), systemImage: "plus") { store.liveInputBuffer.commitAll(); showExercisePicker = true }
-                    .accessibilityIdentifier("add-workout-exercise")
-                Button(L10n.text("REORDER_EXERCISES" /* 调整动作顺序 */), systemImage: "arrow.up.arrow.down") { store.liveInputBuffer.commitAll(); exerciseOrderDraft = store.draft }
-                    .disabled(d.rawEntries.count < 2).accessibilityIdentifier("reorder-exercises")
-            }
-            Section(L10n.text("WORKOUT" /* 训练 */)) {
-                Button(L10n.text("WORKOUT_DETAILS" /* 训练详情 */), systemImage: "note.text") { store.liveInputBuffer.commitAll(); showWorkoutDetails = true }
-                    .accessibilityIdentifier("workout-details-menu")
-                Button(L10n.text("SAVE_AND_SUBMIT_WORKOUT_A" /* 保存训练 */), systemImage: "checkmark.circle") { confirmFinish = true }
-                    .disabled(d.completedSets == 0 || store.workTimer != nil).accessibilityIdentifier("finish-workout")
-                Button(role: .destructive) { confirmDelete = true } label: {
-                    Label(L10n.text("DELETE_WORKOUT_A" /* 删除训练 */), systemImage: "trash")
-                }.accessibilityIdentifier("delete-workout")
-            }
-        } label: {
-            Label(L10n.text("WORKOUT_MENU" /* 训练菜单 */), systemImage: "ellipsis")
-        }.accessibilityIdentifier("workout-menu")
-    }
-    private func exerciseCard(_ d: TrainingDraft, index e: Int) -> some View {
-        let entry = d.rawEntries[e]
-        let rows = entry["sets"] as? [[String: Any]] ?? []
-        let previous = store.previousExerciseReference(entry, before: d.start.timeIntervalSince1970 * 1000, exclude: d.id)
-        return TrainingExerciseEditor(
-            showingOptions: Binding(get: { showExerciseNote && (store.draft?.activeJSON["cur"] as? Int ?? 0) == e }, set: { showExerciseNote = $0 }), entries: d.rawEntries, names: d.rawEntries.map(name),
-            selected: Binding(get: { e }, set: { store.selectLiveEntry($0) }),
-            rows: rows.enumerated().map { TrainingEditorRow(id: $0.element["nativeViewID"] as? String ?? "\(d.id)-\(e)-\($0.offset)", raw: $0.element, accessibilityIdentifier: "\(e)-\($0.offset)") },
-            unit: d.unit, inputState: store.state.merging(["unit": d.unit]) { _, new in new }, previous: previous.text, previousNote: previous.note,
-            note: Binding(get: { entry["note"] as? String ?? "" }, set: { store.setLiveNote(entry: e, text: $0) }),
-            identifier: "live", showsEntryPosition: false, entryIdentity: "\(d.id)-\(entry["nativeViewID"] as? String ?? String(e))", timerRunning: store.workTimer != nil,
-            restUntil: store.restEntry == e ? store.restUntil : nil,
-            startTimer: { store.startWorkTimer(entry: e, set: $0) },
-            startRest: { store.startRest(entry: e, seconds: $1, set: $0) },
-            showDetails: { store.selectedExercise = store.exercise(entry["id"] as? String ?? "") },
-            addSet: { store.addLiveSet(entry: e) },
-            copySet: { store.copyLiveSet(entry: e, set: $0) },
-            removeSet: { store.removeLiveSet(entry: e, set: $0) },
-            editSet: { store.liveRowAction(entry: e, set: $0, action: $1) },
-            undoRemove: store.canUndoSetRemoval ? { store.undoSetRemoval() } : nil,
-            exerciseActions: { LiveExerciseManagement(entryIndex: e, showExerciseNote: { store.liveInputBuffer.commitAll(); store.selectLiveEntry(e); showExerciseNote = true }) }
-        ) {
-            if let timer = store.workTimer, timer["entry"] as? Int == e { timerCard(timer) }
-        }
-    }
-    private func timerCard(_ timer: [String: Any]) -> some View {
-        let paused = timer["paused"] as? Bool == true
-        return VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label(paused ? L10n.text("TIMER_PAUSED" /* 计时已暂停 */) : L10n.text("EXERCISE_TIMER" /* 动作计时 */), systemImage: "stopwatch")
-                Spacer()
-                TrainingCountdownText(end: Date(timeIntervalSince1970: number(timer["end"])),
-                    pausedRemaining: paused ? number(timer["remaining"]) : nil)
-                    .font(.title2.monospacedDigit()).frame(width: 84, alignment: .trailing)
-            }
-            HStack {
-                Button(paused ? L10n.text("RESUME" /* 继续 */) : L10n.text("PAUSE" /* 暂停 */)) { store.pauseWorkTimer() }
-                Spacer()
-                Button(L10n.text("FINISH_EARLY_A" /* 提前完成 */)) { store.finishWorkTimer() }
-                Button(L10n.text("CANCEL" /* 取消 */), role: .cancel) { store.finishWorkTimer(cancel: true) }
-            }.font(.subheadline)
-        }.foregroundStyle(GymTheme.green).accessibilityIdentifier("work-timer")
-    }
+    private func name(_ entry: [String: Any]) -> String { store.exercise(entry["id"] as? String ?? "")?.recordName ?? String(localized: "CUSTOM_EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
 }
 
 private struct WorkoutHealthMetrics: View {
@@ -229,13 +162,13 @@ struct WorkoutHealthMetricsContent: View {
             Text(" ").hidden().frame(maxWidth: .infinity)
                 .overlay(alignment: .leading) {
                     if let energy = report?.activeCalories {
-                        Label(L10n.text("COUNT_ACTIVE_KCAL" /* {0} 活动千卡 */, String(format: "%.0f", energy)), systemImage: "flame.fill").foregroundStyle(.orange)
+                        Label(String(format: String(localized: "COUNT_ACTIVE_KCAL", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: String(format: "%.0f", energy))), systemImage: "flame.fill").foregroundStyle(.orange)
                     }
                 }
             Text(" ").hidden().frame(maxWidth: .infinity)
                 .overlay(alignment: .leading) {
                     if report?.state == .running, let heart = report?.heartRate {
-                        Label(L10n.text("COUNT_BPM" /* {0} 次/分 */, String(format: "%.0f", heart)), systemImage: "heart.fill").foregroundStyle(.red)
+                        Label(String(format: String(localized: "COUNT_BPM", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: String(format: "%.0f", heart))), systemImage: "heart.fill").foregroundStyle(.red)
                     }
                 }
         }.font(.caption.monospacedDigit()).lineLimit(1).minimumScaleFactor(0.5)
@@ -258,7 +191,7 @@ private struct WorkoutDurationLabel: View {
                         let duration = Duration.seconds(elapsed).formatted(.time(pattern: .hourMinuteSecond(padHourToLength: 2)))
                         Text(duration)
                             .lineLimit(1).minimumScaleFactor(0.5)
-                            .accessibilityLabel(L10n.text("SESSION_LENGTH" /* 训练时长 */))
+                            .accessibilityLabel("SESSION_LENGTH")
                             .accessibilityValue(duration)
                     }
                 }
@@ -276,21 +209,21 @@ private struct WorkoutDetailsEditor: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(L10n.text("WORKOUT_TITLE" /* 训练标题 */)) {
-                    BufferedTextField(L10n.text("WORKOUT_TITLE" /* 训练标题 */), text: Binding(
+                Section("WORKOUT_TITLE") {
+                    BufferedTextField(String(localized: "WORKOUT_TITLE", bundle: AppLanguage.bundle, locale: AppLanguage.locale), text: Binding(
                         get: { store.draft?.name ?? "" },
                         set: { text in store.changeActive { $0["name"] = text } }
                     )).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.accessibilityIdentifier("live-workout-name")
                 }
-                Section(L10n.text("WORKOUT_NOTES" /* 本次训练备注 */)) {
-                    BufferedTextField(L10n.text("ADD_NOTE" /* 添加备注 */), text: Binding(
+                Section("WORKOUT_NOTES") {
+                    BufferedTextField(String(localized: "ADD_NOTE", bundle: AppLanguage.bundle, locale: AppLanguage.locale), text: Binding(
                         get: { store.draft?.activeJSON["note"] as? String ?? "" },
                         set: { text in store.changeActive { $0["note"] = text } }
                     ), axis: .vertical).textFieldStyle(.plain).submitLabel(.done).onSubmit { GymKeyboard.dismiss() }
                         .lineLimit(3...6).accessibilityIdentifier("live-workout-note")
                 }
-            }.navigationTitle(L10n.text("WORKOUT_DETAILS" /* 训练详情 */)).navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .confirmationAction) { Button(L10n.text("DONE" /* 完成 */)) { store.liveInputBuffer.commitAll(); dismiss() } } }
+            }.navigationTitle("WORKOUT_DETAILS").navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("DONE") { store.liveInputBuffer.commitAll(); dismiss() } } }
         }.presentationDetents([.medium, .large]).presentationDragIndicator(.visible)
             .onChange(of: store.draft?.id) { _, _ in dismiss() }
     }

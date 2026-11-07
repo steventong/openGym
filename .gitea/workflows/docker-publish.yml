@@ -31,7 +31,7 @@ jobs:
             file: ./api/Dockerfile
           - image: web
             context: .
-            file: ./web/Dockerfile
+            file: ./deploy/web/Dockerfile
     steps:
       - uses: actions/checkout@v4
 

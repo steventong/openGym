@@ -5,3 +5,10 @@ data
 .env
 .git
 *.log
+
+artifacts
+outputs
+.local-preview
+coach-auth
+native-ios/.build*
+native-ios/artifacts

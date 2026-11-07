@@ -40,7 +40,7 @@ struct HistoryForm {
         self.unit = saved?["unit"] as? String ?? unit
         let proposed = saved?["proposed"] as? [String: Any] ?? original
         let fields = saved?["form"] as? [String: Any] ?? [:]
-        name = fields["name"] as? String ?? proposed["name"] as? String ?? L10n.text("WORKOUT" /* 训练 */)
+        name = fields["name"] as? String ?? proposed["name"] as? String ?? String(localized: "WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
         note = fields["note"] as? String ?? proposed["note"] as? String ?? ""
         date = Date(timeIntervalSince1970: number(fields["start"] ?? proposed["start"]) / 1000)
         minutes = fields["minutes"] as? String ?? String(format: "%.8g", max(0, number(proposed["end"]) - number(proposed["start"])) / 60000)

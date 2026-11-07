@@ -24,7 +24,7 @@ extension GymStore {
             guard let expectedValues else { return false }
             return keys.allSatisfy { RecordPatch.equal(source[$0],expectedValues[$0]) }
         }) { source in
-            if let expected, (source["unit"] as? String ?? "kg") != expected { throw APIError.response(409,L10n.text("THE_WEIGHT_UNIT_CHANGED_REOPEN_THIS_SCREEN" /* 重量单位已改变，请重新打开页面。 */)) }
+            if let expected, (source["unit"] as? String ?? "kg") != expected { throw APIError.response(409,String(localized: "THE_WEIGHT_UNIT_CHANGED_REOPEN_THIS_SCREEN", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             let next = try PersonalPatch.apply(original:original,proposed:proposed,current:source)
             expectedValues = next; return next
         }
@@ -45,21 +45,21 @@ extension GymStore {
             if proposed == nil { return !list.contains { $0[key] as? String == identity } }
             return list.contains { $0[key] as? String == destination && RecordPatch.equal($0,confirmed) }
         }) { source in
-            if let expected, (source["unit"] as? String ?? "kg") != expected { throw APIError.response(409,L10n.text("THE_UNIT_CHANGED_REOPEN_THE_EDITOR" /* 单位已改变，请重新打开编辑器。 */)) }
+            if let expected, (source["unit"] as? String ?? "kg") != expected { throw APIError.response(409,String(localized: "THE_UNIT_CHANGED_REOPEN_THE_EDITOR", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             var s = source, list = source[collection] as? [[String:Any]] ?? []
             let index = list.firstIndex { $0[key] as? String == identity }
             if let proposed {
-                if identity != destination, list.contains(where:{$0[key] as? String == destination}) { throw APIError.response(409,L10n.text("A_RECORD_ALREADY_EXISTS_FOR_THIS_DATE_EDIT_THAT_RECORD_INSTEAD" /* 该日期已有记录，请编辑已有记录。 */)) }
+                if identity != destination, list.contains(where:{$0[key] as? String == destination}) { throw APIError.response(409,String(localized: "A_RECORD_ALREADY_EXISTS_FOR_THIS_DATE_EDIT_THAT_RECORD_INSTEAD", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                 if let index {
                     if let original { list[index] = try PersonalRecordPatch.apply(original:original,proposed:proposed,current:list[index]) }
-                    else if !PersonalRecordPatch.sameValues(list[index],proposed) { throw APIError.response(409,L10n.text("THIS_RECORD_ALREADY_EXISTS_REOPEN_THE_EDITOR" /* 记录已存在，请重新打开编辑器。 */)) }
+                    else if !PersonalRecordPatch.sameValues(list[index],proposed) { throw APIError.response(409,String(localized: "THIS_RECORD_ALREADY_EXISTS_REOPEN_THE_EDITOR", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                     confirmed = list[index]
                 } else {
-                    guard original == nil else { throw APIError.response(409,L10n.text("THIS_RECORD_WAS_DELETED_ON_ANOTHER_DEVICE" /* 记录已在其他设备删除。 */)) }
+                    guard original == nil else { throw APIError.response(409,String(localized: "THIS_RECORD_WAS_DELETED_ON_ANOTHER_DEVICE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                     list.append(proposed); confirmed = proposed
                 }
             } else if let index {
-                guard RecordPatch.equal(list[index],original) else { throw APIError.response(409,L10n.text("THIS_RECORD_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT" /* 记录已在其他设备修改，请刷新后核对。 */)) }
+                guard RecordPatch.equal(list[index],original) else { throw APIError.response(409,String(localized: "THIS_RECORD_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                 list.remove(at:index)
             }
             if key == "d" { list.sort { ($0[key] as? String ?? "") < ($1[key] as? String ?? "") } }
@@ -67,12 +67,12 @@ extension GymStore {
         }
     }
     func switchProfileUnit(to:String,convert:Bool) async -> Bool {
-        guard draft == nil, historyEdits.isEmpty else { editError = L10n.text("SAVE_WORKOUT_AND_HISTORY_DRAFTS_BEFORE_CHANGING_YOUR_ACCOUNT_S_UNIT" /* 请先保存训练与历史编辑草稿，再切换账号单位。 */); return false }
+        guard draft == nil, historyEdits.isEmpty else { editError = String(localized: "SAVE_WORKOUT_AND_HISTORY_DRAFTS_BEFORE_CHANGING_YOUR_ACCOUNT_S_UNIT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return false }
         let before = unit
         return await mutate(reportError:false,verify:{$0["unit"] as? String == to}) { source in
             let current = source["unit"] as? String ?? "kg"
             if current == to { return source }
-            guard current == before, ["kg","lb"].contains(to) else { throw APIError.response(409,L10n.text("YOUR_ACCOUNT_S_UNIT_HAS_CHANGED" /* 账号单位已改变。 */)) }
+            guard current == before, ["kg","lb"].contains(to) else { throw APIError.response(409,String(localized: "YOUR_ACCOUNT_S_UNIT_HAS_CHANGED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             return try WebRules.shared.call("personalChange",payload:["action":"unit","state":source,"unit":to,"convert":convert]) as! [String:Any]
         }
     }
@@ -80,23 +80,23 @@ extension GymStore {
         await mutate(verify:{ ($0["routines"] as? [[String:Any]] ?? []).contains { $0["id"] as? String == newID } }) { source in
             var s = source; var list = s["routines"] as? [[String:Any]] ?? []
             if list.contains(where:{$0["id"] as? String == newID}) { return s }
-            guard var copy = list.first(where:{$0["id"] as? String == routine.id}) else { throw APIError.response(404,L10n.text("THE_ORIGINAL_ROUTINE_WAS_DELETED" /* 原计划已删除。 */)) }
-            copy = RecordPatch.clean(copy) as! [String:Any]; copy["id"] = newID; copy["name"] = (copy["name"] as? String ?? L10n.text("WORKOUT" /* 训练 */)) + L10n.text("COPY_A" /* 副本 */)
+            guard var copy = list.first(where:{$0["id"] as? String == routine.id}) else { throw APIError.response(404,String(localized: "THE_ORIGINAL_ROUTINE_WAS_DELETED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
+            copy = RecordPatch.clean(copy) as! [String:Any]; copy["id"] = newID; copy["name"] = (copy["name"] as? String ?? String(localized: "WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) + String(localized: "COPY_A", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
             list.append(copy); s["routines"] = list; return s
         }
     }
     func deletePersonalWorkout(_ record:WorkoutRecord) async -> Bool {
-        guard historyEdits[record.id] == nil else { editError = L10n.text("THIS_RECORD_HAS_A_LOCAL_DRAFT_SAVE_OR_DISCARD_IT_FIRST" /* 此记录有本机编辑草稿，请先保存或放弃草稿。 */); return false }
+        guard historyEdits[record.id] == nil else { editError = String(localized: "THIS_RECORD_HAS_A_LOCAL_DRAFT_SAVE_OR_DISCARD_IT_FIRST", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return false }
         return await mutate(reportError:false,verify:{ !($0["workouts"] as? [[String:Any]] ?? []).contains { WorkoutRecord.key($0) == record.id } }) { source in
-            if let current = (source["workouts"] as? [[String:Any]] ?? []).first(where:{WorkoutRecord.key($0) == record.id}), !RecordPatch.equal(current,record.raw) { throw APIError.response(409,L10n.text("THIS_WORKOUT_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT" /* 训练记录已在其他设备修改，请刷新后核对。 */)) }
+            if let current = (source["workouts"] as? [[String:Any]] ?? []).first(where:{WorkoutRecord.key($0) == record.id}), !RecordPatch.equal(current,record.raw) { throw APIError.response(409,String(localized: "THIS_WORKOUT_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             return try WebRules.shared.call("personalChange",payload:["action":"deleteWorkout","state":source,"id":record.id]) as! [String:Any]
         }
     }
     func deleteCustomExercise(_ original:[String:Any]) async -> Bool {
         let id = original["id"] as? String ?? ""
-        guard !(draft?.rawEntries.contains { $0["id"] as? String == id } ?? false), historyEdits.isEmpty else { editError = L10n.text("SAVE_YOUR_WORKOUT_AND_HISTORY_DRAFTS_FIRST" /* 请先保存训练与历史编辑草稿。 */); return false }
+        guard !(draft?.rawEntries.contains { $0["id"] as? String == id } ?? false), historyEdits.isEmpty else { editError = String(localized: "SAVE_YOUR_WORKOUT_AND_HISTORY_DRAFTS_FIRST", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return false }
         return await mutate(reportError:false,verify:{ !($0["customEx"] as? [[String:Any]] ?? []).contains { $0["id"] as? String == id } }) { source in
-            if let current = (source["customEx"] as? [[String:Any]] ?? []).first(where:{$0["id"] as? String == id}), !RecordPatch.equal(current,original) { throw APIError.response(409,L10n.text("THIS_EXERCISE_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT" /* 动作已在其他设备修改，请刷新后核对。 */)) }
+            if let current = (source["customEx"] as? [[String:Any]] ?? []).first(where:{$0["id"] as? String == id}), !RecordPatch.equal(current,original) { throw APIError.response(409,String(localized: "THIS_EXERCISE_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
             return try WebRules.shared.call("personalChange",payload:["action":"deleteCustom","state":source,"id":id]) as! [String:Any]
         }
     }
@@ -104,14 +104,14 @@ extension GymStore {
 
 extension GymStore {
     func repeatPersonalWorkout(_ record:WorkoutRecord) -> Bool {
-        guard draft == nil else { error = L10n.text("FINISH_YOUR_CURRENT_WORKOUT_FIRST" /* 请先完成当前训练 */);return false }
+        guard draft == nil else { error = String(localized: "FINISH_YOUR_CURRENT_WORKOUT_FIRST", bundle: AppLanguage.bundle, locale: AppLanguage.locale);return false }
         guard userID != nil else {showSettings = true;return false}
         do {
             let result = try WebRules.shared.call("personalRepeat",payload:["state":state,"workout":record.raw,"id":UUID().uuidString,"day":dayString(),"now":Date().timeIntervalSince1970*1000]) as! [String:Any]
             draft = try TrainingDraft.fromWeb(result["active"] as! [String:Any],unit:unit)
             guard persistDraft() else {error = localSaveError;return false}
             selectedTab = 2
-            if number(result["skipped"])>0 {error = L10n.text("WORKOUT_STARTED_COUNT_DELETED_EXERCISES_COULD_NOT_BE_REPEATED" /* 已开始训练；{0} 个已删除动作无法重复。 */, Int(number(result["skipped"])))}
+            if number(result["skipped"])>0 {error = String(format: String(localized: "WORKOUT_STARTED_COUNT_DELETED_EXERCISES_COULD_NOT_BE_REPEATED", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: Int(number(result["skipped"]))))}
             return true
         } catch {self.error = error.localizedDescription;return false}
     }

@@ -14,7 +14,7 @@ struct RoutineEditor: View {
     @State private var confirmDelete = false
     @State private var deleting = false
     @State private var saving = false
-    @State private var errorTitle = L10n.text("COULD_NOT_SAVE" /* 无法保存 */)
+    @State private var errorTitle = String(localized: "COULD_NOT_SAVE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     @State private var error: String?
     init(routine:Routine,unit:String) {
         _original = State(initialValue: routine.raw); expectedUnit = unit
@@ -25,54 +25,54 @@ struct RoutineEditor: View {
     var body: some View {
         NavigationStack {
             List {
-                Section(L10n.text("ROUTINE_NAME" /* 计划名称 */)) { BufferedTextField(L10n.text("ROUTINE_NAME" /* 计划名称 */),text:$name).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.accessibilityIdentifier("edit-routine-name") }
+                Section("ROUTINE_NAME") { BufferedTextField(String(localized: "ROUTINE_NAME", bundle: AppLanguage.bundle, locale: AppLanguage.locale),text:$name).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.accessibilityIdentifier("edit-routine-name") }
                 Section {
                     ForEach($rows) { $row in
                         VStack(alignment:.leading,spacing:14) {
                             HStack {
                                 ExerciseThumbnail(id:row.raw["id"] as? String ?? "",size:46)
-                                Text(store.exercise(row.raw["id"] as? String ?? "")?.name ?? row.raw["id"] as? String ?? L10n.text("EXERCISE" /* 动作 */)).font(.headline)
+                                Text(store.exercise(row.raw["id"] as? String ?? "")?.name ?? row.raw["id"] as? String ?? String(localized: "EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)).font(.headline)
                                 Spacer()
                                 RoutineExerciseReplacement(slot: $row.raw, routineID: original["id"] as? String ?? "")
                             }
                             if EditValidation.ordinaryConfig(row.raw) {
                                 HStack {
-                                    numeric(L10n.text("SETS" /* 组数 */),key:"sets",fallback:3,row:$row)
-                                    numeric(L10n.text("REPS" /* 次数 */),key:"reps",fallback:10,row:$row)
-                                    numeric(expectedUnit,key:"weight",fallback:0,row:$row)
+                                    RoutineNumberField(title: String(localized: "SETS", bundle: AppLanguage.bundle, locale: AppLanguage.locale), value: numericBinding("sets", fallback: 3, row: $row), allowsDecimal: false, identifier: "routine-sets-\(row.raw["id"] as? String ?? "")")
+                                    RoutineNumberField(title: String(localized: "REPS", bundle: AppLanguage.bundle, locale: AppLanguage.locale), value: numericBinding("reps", fallback: 10, row: $row), allowsDecimal: false, identifier: "routine-reps-\(row.raw["id"] as? String ?? "")")
+                                    RoutineNumberField(title: expectedUnit, value: numericBinding("weight", fallback: 0, row: $row), allowsDecimal: true, identifier: "routine-weight-\(row.raw["id"] as? String ?? "")")
                                 }
-                                Stepper(L10n.text("REST_BETWEEN_SETS_COUNT_SECONDS" /* 组间休息 {0} 秒 */, Int(number(row.raw["restSec"] ?? 90))),value:Binding(get:{Int(number(row.raw["restSec"] ?? 90))},set:{row.raw["restSec"] = $0}),in:0...900,step:15).font(.subheadline)
-                            } else { Text(L10n.text("ADVANCED_SET_TYPES" /* 高级组型 */)).font(.caption).foregroundStyle(.secondary) }
-                            Button { inputBuffer.commitAll(); configuration = rows.first { $0.id == row.id } } label: { Label(L10n.text("ADVANCED_SETS_AND_TIMERS" /* 高级组型与计时 */),systemImage:"slider.horizontal.3") }.buttonStyle(.borderless).accessibilityIdentifier("advanced-slot-\(row.raw["id"] as? String ?? "")")
-                            if row.raw["sg"] != nil { Label(L10n.text("SUPERSET" /* 超级组 */),systemImage:"link").font(.caption).foregroundStyle(GymTheme.green) }
+                                Stepper(String(format: String(localized: "REST_BETWEEN_SETS_COUNT_SECONDS", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: Int(number(row.raw["restSec"] ?? 90)))),value:Binding(get:{Int(number(row.raw["restSec"] ?? 90))},set:{row.raw["restSec"] = $0}),in:0...900,step:15).font(.subheadline)
+                            } else { Text("ADVANCED_SET_TYPES").font(.caption).foregroundStyle(.secondary) }
+                            Button { inputBuffer.commitAll(); configuration = rows.first { $0.id == row.id } } label: { Label("ADVANCED_SETS_AND_TIMERS",systemImage:"slider.horizontal.3") }.buttonStyle(.borderless).accessibilityIdentifier("advanced-slot-\(row.raw["id"] as? String ?? "")")
+                            if row.raw["sg"] != nil { Label("SUPERSET",systemImage:"link").font(.caption).foregroundStyle(GymTheme.green) }
                             HStack {
-                                if rows.last?.id != row.id { Button(L10n.text("MAKE_SUPERSET_WITH_NEXT" /* 与下一个组成超级组 */)) { group(row.id,"pair") }.font(.caption).buttonStyle(.borderless) }
-                                if row.raw["sg"] != nil { Button(L10n.text("UNPAIR" /* 取消组合 */)) { group(row.id,"unpair") }.font(.caption).buttonStyle(.borderless) }
+                                if rows.last?.id != row.id { Button("MAKE_SUPERSET_WITH_NEXT") { group(row.id,"pair") }.font(.caption).buttonStyle(.borderless) }
+                                if row.raw["sg"] != nil { Button("UNPAIR") { group(row.id,"unpair") }.font(.caption).buttonStyle(.borderless) }
                             }
-                            BufferedTextField(L10n.text("EXERCISE_NOTES" /* 动作备注 */),text:Binding(get:{row.raw["note"] as? String ?? ""},set:{row.raw["note"] = $0})).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.font(.subheadline)
+                            BufferedTextField(String(localized: "EXERCISE_NOTES", bundle: AppLanguage.bundle, locale: AppLanguage.locale),text:Binding(get:{row.raw["note"] as? String ?? ""},set:{row.raw["note"] = $0})).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.font(.subheadline)
                             HStack {
-                                Button { inputBuffer.commitAll(); sorting = true } label: { Label(L10n.text("REORDER_EXERCISES" /* 调整动作顺序 */), systemImage: "arrow.up.arrow.down").frame(minHeight: 48) }.disabled(rows.count < 2)
+                                Button { inputBuffer.commitAll(); sorting = true } label: { Label("REORDER_EXERCISES", systemImage: "arrow.up.arrow.down").frame(minHeight: 48) }.disabled(rows.count < 2)
                                 Spacer()
-                                Button(role:.destructive) { inputBuffer.commitAll(); let id = row.id; rows.removeAll { $0.id == id } } label: { Image(systemName:"minus.circle") }.accessibilityLabel(L10n.text("REMOVE_EXERCISE" /* 移除动作 */))
+                                Button(role:.destructive) { inputBuffer.commitAll(); let id = row.id; rows.removeAll { $0.id == id } } label: { Image(systemName:"minus.circle") }.accessibilityLabel("REMOVE_EXERCISE")
                             }.font(.caption).buttonStyle(.borderless)
                         }.padding(.vertical,7)
                     }.onDelete { inputBuffer.commitAll(); rows.remove(atOffsets:$0) }
-                    Button { inputBuffer.commitAll(); pick = true } label: { Label(L10n.text("ADD_EXERCISE" /* 添加动作 */),systemImage:"plus.circle.fill") }.accessibilityIdentifier("edit-add-exercise")
-                } header: { Text(L10n.text("EXERCISE_COUNT" /* 动作 · {0} */, rows.count)) }
+                    Button { inputBuffer.commitAll(); pick = true } label: { Label("ADD_EXERCISE",systemImage:"plus.circle.fill") }.accessibilityIdentifier("edit-add-exercise")
+                } header: { Text(String(format: String(localized: "EXERCISE_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: rows.count))) }
                 Section {
                     Button(role:.destructive) { guard !saving, !deleting else { return }; confirmDelete = true } label: {
-                        Label(deleting ? L10n.text("DELETING" /* 删除中 */) : L10n.text("DELETE_ROUTINE_A" /* 删除训练计划 */),systemImage:"trash")
+                        Label(deleting ? String(localized: "DELETING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "DELETE_ROUTINE_A", bundle: AppLanguage.bundle, locale: AppLanguage.locale),systemImage:"trash")
                     }.accessibilityIdentifier("delete-routine")
                 }
-            }.navigationTitle(L10n.text("EDIT_ROUTINE" /* 编辑计划 */)).navigationBarTitleDisplayMode(.inline)
+            }.navigationTitle("EDIT_ROUTINE").navigationBarTitleDisplayMode(.inline)
                 .keyboardDismissToolbar()
                 .toolbar {
-                    ToolbarItem(placement:.topBarLeading) { Button(L10n.text("CANCEL" /* 取消 */)) { guard !saving, !deleting else { return }; inputBuffer.commitAll(); if dirty { discard = true } else { dismiss() } } }
-                    ToolbarItem(placement:.topBarTrailing) { Button(saving ? L10n.text("SAVING" /* 正在保存 */) : L10n.text("SAVE" /* 保存 */)) { Task { await saveRoutine() } }.accessibilityIdentifier("save-routine-edit") }
+                    ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { guard !saving, !deleting else { return }; inputBuffer.commitAll(); if dirty { discard = true } else { dismiss() } } }
+                    ToolbarItem(placement:.topBarTrailing) { Button(saving ? String(localized: "SAVING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "SAVE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) { Task { await saveRoutine() } }.accessibilityIdentifier("save-routine-edit") }
                 }
                 .sheet(isPresented: $sorting) {
                     ExerciseOrderSheet(entries: rows.map(\.raw)) { order, baseline in
-                        guard RecordPatch.equal(baseline, rows.map(\.raw)) else { throw APIError.response(0, L10n.text("THE_EXERCISE_LIST_HAS_CHANGED_OPEN_THE_REORDER_SCREEN_AGAIN" /* 动作列表已变化，请重新打开顺序调整。 */)) }
+                        guard RecordPatch.equal(baseline, rows.map(\.raw)) else { throw APIError.response(0, String(localized: "THE_EXERCISE_LIST_HAS_CHANGED_OPEN_THE_REORDER_SCREEN_AGAIN", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                         let result = try ExerciseOrder.apply(order, to: ["entries": rows.map(\.raw)])
                         guard let updated = result["entries"] as? [[String: Any]] else { throw APIError.invalidResponse }
                         let existing = rows
@@ -83,14 +83,14 @@ struct RoutineEditor: View {
                 }
                 .sheet(item:$configuration) { selected in AdvancedConfigEditor(config:selected.raw,unit:expectedUnit) { updated in if let i = rows.firstIndex(where:{$0.id == selected.id}) { rows[i].raw = updated } } }
                 .sheet(isPresented:$pick) { ExercisePicker { exercise in rows.append(RawRow(raw:["id":exercise.id,"sets":3,"reps":10,"weight":0,"restSec":90])); pick = false } }
-                .alert(errorTitle,isPresented:Binding(get:{error != nil},set:{if !$0 { error = nil }})) { Button(L10n.text("GOT_IT" /* 知道了 */),role:.cancel) {} } message: { Text(error ?? "") }
-                .confirmationDialog(L10n.text("DELETE_ROUTINE" /* 删除训练计划？ */),isPresented:$confirmDelete,titleVisibility:.visible) {
-                    Button(L10n.text("DELETE_ROUTINE_A" /* 删除训练计划 */),role:.destructive) { Task { await deleteRoutine() } }
-                    Button(L10n.text("CANCEL" /* 取消 */),role:.cancel) {}
+                .alert(errorTitle,isPresented:Binding(get:{error != nil},set:{if !$0 { error = nil }})) { Button("GOT_IT",role:.cancel) {} } message: { Text(error ?? "") }
+                .confirmationDialog("DELETE_ROUTINE",isPresented:$confirmDelete,titleVisibility:.visible) {
+                    Button("DELETE_ROUTINE_A",role:.destructive) { Task { await deleteRoutine() } }
+                    Button("CANCEL",role:.cancel) {}
                 } message: {
-                    Text(L10n.text("COUNT_AND_ITS_SCHEDULE_WILL_BE_DELETED_THIS_CANNOT_BE_UNDONE_YOUR" /* 将删除「{0}」及其排期，无法撤销。训练历史和正在进行的训练会保留。 */, original["name"] as? String ?? L10n.text("ROUTINES" /* 训练计划 */)) + (dirty ? L10n.text("YOUR_UNSAVED_CHANGES_WILL_BE_DISCARDED" /* 当前未保存的修改将被放弃。 */) : ""))
+                    Text(String(format: String(localized: "COUNT_AND_ITS_SCHEDULE_WILL_BE_DELETED_THIS_CANNOT_BE_UNDONE_YOUR", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: original["name"] as? String ?? String(localized: "ROUTINES", bundle: AppLanguage.bundle, locale: AppLanguage.locale))) + (dirty ? String(localized: "YOUR_UNSAVED_CHANGES_WILL_BE_DISCARDED", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : ""))
                 }
-                .confirmationDialog(L10n.text("DISCARD_UNSAVED_CHANGES" /* 放弃未保存的修改？ */),isPresented:$discard,titleVisibility:.visible) { Button(L10n.text("DISCARD_CHANGES" /* 放弃修改 */),role:.destructive) { dismiss() }; Button(L10n.text("KEEP_EDITING" /* 继续编辑 */),role:.cancel) {} }
+                .confirmationDialog("DISCARD_UNSAVED_CHANGES",isPresented:$discard,titleVisibility:.visible) { Button("DISCARD_CHANGES",role:.destructive) { dismiss() }; Button("KEEP_EDITING",role:.cancel) {} }
                 .interactiveDismissDisabled(dirty || saving || deleting)
         }.tint(GymTheme.green).environment(\.inputCommitBuffer, inputBuffer)
     }
@@ -105,25 +105,21 @@ struct RoutineEditor: View {
             original = snapshot
             // Keep any edits entered while the request was in flight in this editor.
             if RecordPatch.equal(proposed, snapshot) { dismiss() }
-        } else { errorTitle = L10n.text("COULD_NOT_SAVE" /* 无法保存 */); error = store.editError }
+        } else { errorTitle = String(localized: "COULD_NOT_SAVE", bundle: AppLanguage.bundle, locale: AppLanguage.locale); error = store.editError }
     }
     private func deleteRoutine() async {
         guard !saving, !deleting, let id = original["id"] as? String else { return }
         deleting = true; defer { deleting = false }
         if await store.deleteRoutine(id:id) { dismiss() }
-        else { errorTitle = L10n.text("COULD_NOT_DELETE" /* 无法删除 */); error = store.editError }
+        else { errorTitle = String(localized: "COULD_NOT_DELETE", bundle: AppLanguage.bundle, locale: AppLanguage.locale); error = store.editError }
     }
     private func group(_ id:UUID,_ operation:String,_ direction:Int = 0) {
         inputBuffer.commitAll()
         guard let i = rows.firstIndex(where:{$0.id == id}) else { return }
-        do { let result = try WebRules.shared.call("planGroup",payload:["rows":rows.map(\.raw),"operation":operation,"index":i,"direction":direction]) as! [[String:Any]];rows = result.map { RawRow(raw:$0) } } catch { errorTitle = L10n.text("COULD_NOT_SAVE" /* 无法保存 */); self.error = error.localizedDescription }
+        do { let result = try WebRules.shared.call("planGroup",payload:["rows":rows.map(\.raw),"operation":operation,"index":i,"direction":direction]) as! [[String:Any]];rows = result.map { RawRow(raw:$0) } } catch { errorTitle = String(localized: "COULD_NOT_SAVE", bundle: AppLanguage.bundle, locale: AppLanguage.locale); self.error = error.localizedDescription }
     }
-    private func numeric(_ title:String,key:String,fallback:Double,row:Binding<RawRow>) -> some View {
-        VStack(alignment:.leading,spacing:5) {
-            Text(title).font(.caption).foregroundStyle(.secondary)
-            BufferedNumberField(title,value:Binding(get:{number(row.wrappedValue.raw[key] ?? fallback)},set:{row.wrappedValue.raw[key] = $0})).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.keyboardType(key == "weight" ? .decimalPad : .numberPad)
-                .padding(9).background(.white.opacity(0.07),in:RoundedRectangle(cornerRadius:9)).accessibilityIdentifier("routine-\(key)-\(row.wrappedValue.raw["id"] as? String ?? "")")
-        }
+    private func numericBinding(_ key: String, fallback: Double, row: Binding<RawRow>) -> Binding<Double> {
+        Binding(get: { number(row.wrappedValue.raw[key] ?? fallback) }, set: { row.wrappedValue.raw[key] = $0 })
     }
 }
 struct ExercisePicker: View {
@@ -157,7 +153,7 @@ struct ExercisePicker: View {
     private var equipments: [String] {
         [""] + Set(store.exercises.filter { bodyPart.isEmpty || $0.bodyPart == bodyPart }.map(\.equipment)).sorted()
     }
-    var title = L10n.text("ADD_EXERCISE" /* 添加动作 */)
+    var title = String(localized: "ADD_EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     var selectionIcon = "plus"
     let select:(Exercise)->Void
     var body: some View {
@@ -168,14 +164,14 @@ struct ExercisePicker: View {
                     filters
                     let results = choices
                     HStack {
-                        Text(L10n.text("COUNT_EXERCISES_FOUND" /* 找到 {0} 个动作 */, results.count))
+                        Text(String(format: String(localized: "COUNT_EXERCISES_FOUND", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: results.count)))
                         Spacer()
-                        if let error = store.catalogueError { StatusDetailButton(title: L10n.text("COULD_NOT_LOAD" /* 无法加载 */), message: error, warning: true) }
-                        else { Label(L10n.text("EXERCISES" /* 动作库 */), systemImage: "checkmark.seal") }
+                        if let error = store.catalogueError { StatusDetailButton(title: String(localized: "COULD_NOT_LOAD", bundle: AppLanguage.bundle, locale: AppLanguage.locale), message: error, warning: true) }
+                        else { Label("EXERCISES", systemImage: "checkmark.seal") }
                     }.font(.caption).foregroundStyle(GymTheme.muted)
                     if results.isEmpty {
-                        EmptyCard(icon: "magnifyingglass", title: L10n.text("NO_EXERCISES_FOUND" /* 没有找到动作 */))
-                        Button(L10n.text("CLEAR_SEARCH_AND_FILTERS" /* 清除搜索与筛选 */)) { resetFilters() }
+                        EmptyCard(icon: "magnifyingglass", title: String(localized: "NO_EXERCISES_FOUND", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
+                        Button("CLEAR_SEARCH_AND_FILTERS") { resetFilters() }
                             .frame(maxWidth: .infinity, minHeight: 44)
                     }
                     LazyVStack(spacing: 10) {
@@ -192,7 +188,7 @@ struct ExercisePicker: View {
                 .scrollDismissesKeyboard(.interactively)
                 .navigationTitle(title)
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .topBarTrailing) { Button(L10n.text("CANCEL" /* 取消 */)) { dismiss() } } }
+                .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("CANCEL") { dismiss() } } }
                 .onAppear { refreshEquipment() }
                 .onChange(of: store.lastSync) { _, _ in refreshEquipment() }
                 .onChange(of: search) { _, _ in limit = 60 }
@@ -206,13 +202,13 @@ struct ExercisePicker: View {
     private var searchField: some View {
         HStack {
             Image(systemName: "magnifyingglass").foregroundStyle(GymTheme.muted)
-            CommittedSearchField(L10n.text("SEARCH_EXERCISES_MUSCLES" /* 搜索动作、肌群… */), text: $search, resetToken: searchReset).submitLabel(.search).onSubmit { GymKeyboard.dismiss() }
+            CommittedSearchField(String(localized: "SEARCH_EXERCISES_MUSCLES", bundle: AppLanguage.bundle, locale: AppLanguage.locale), text: $search, resetToken: searchReset).submitLabel(.search).onSubmit { GymKeyboard.dismiss() }
                 .textFieldStyle(.plain).font(.system(size: 15)).autocorrectionDisabled()
                 .accessibilityIdentifier("picker-search")
             if !search.isEmpty {
                 Button { searchReset += 1; search = "" } label: {
                     Image(systemName: "xmark.circle.fill").foregroundStyle(.gray)
-                }.accessibilityLabel(L10n.text("CLEAR_SEARCH" /* 清除搜索 */))
+                }.accessibilityLabel("CLEAR_SEARCH")
             }
         }.padding(.horizontal, 14).frame(height: 48)
             .background(Color(white: 0.16), in: RoundedRectangle(cornerRadius: 14))
@@ -222,7 +218,7 @@ struct ExercisePicker: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(bodyParts, id: \.self) { item in
-                        Pill(title: item.isEmpty ? L10n.text("ALL" /* 全部 */) : Vocabulary.label(item), selected: bodyPart == item) {
+                        Pill(title: item.isEmpty ? String(localized: "ALL", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : Vocabulary.label(item), selected: bodyPart == item) {
                             bodyPart = item; equipment = ""
                         }
                     }
@@ -231,14 +227,14 @@ struct ExercisePicker: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(equipments, id: \.self) { item in
-                        Pill(title: item.isEmpty ? L10n.text("ANY_EQUIPMENT" /* 所有器械 */) : Vocabulary.label(item), selected: equipment == item) { equipment = item }
+                        Pill(title: item.isEmpty ? String(localized: "ANY_EQUIPMENT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : Vocabulary.label(item), selected: equipment == item) { equipment = item }
                     }
                 }
             }
             HStack(spacing: 8) {
-                Pill(title: L10n.text("FAVOURITES" /* 收藏 */), selected: favouritesOnly) { favouritesOnly.toggle() }
-                Pill(title: L10n.text("PREVIOUSLY_TRAINED" /* 练过 */), selected: trainedOnly) { trainedOnly.toggle() }
-                Pill(title: L10n.text("CUSTOM" /* 自定义 */), selected: customOnly) { customOnly.toggle() }
+                Pill(title: String(localized: "FAVOURITES", bundle: AppLanguage.bundle, locale: AppLanguage.locale), selected: favouritesOnly) { favouritesOnly.toggle() }
+                Pill(title: String(localized: "PREVIOUSLY_TRAINED", bundle: AppLanguage.bundle, locale: AppLanguage.locale), selected: trainedOnly) { trainedOnly.toggle() }
+                Pill(title: String(localized: "CUSTOM", bundle: AppLanguage.bundle, locale: AppLanguage.locale), selected: customOnly) { customOnly.toggle() }
             }
         }
     }

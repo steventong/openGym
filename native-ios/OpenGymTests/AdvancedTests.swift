@@ -70,16 +70,16 @@ import AVFoundation
     }
 
     func testPullHintAppearanceInBothLanguages() throws {
-        let original = L10n.preferences.language
-        defer { L10n.preferences.language = original }
+        let original = AppLanguage.preferences.language
+        defer { AppLanguage.preferences.language = original }
         for language in ["zh", "en"] {
-            L10n.preferences.language = language
+            AppLanguage.preferences.language = language
             let content = VStack(spacing: 20) {
                 TrainingExercisePagingHint(name: language == "zh" ? "杠铃卧推" : "Barbell bench press", previous: true, ready: false)
                 TrainingExercisePagingHint(name: language == "zh" ? "杠铃卧推" : "Barbell bench press", previous: true, ready: true)
                 TrainingExercisePagingHint(name: language == "zh" ? "深蹲" : "Squat", previous: false, ready: false)
                 TrainingExercisePagingHint(name: language == "zh" ? "深蹲" : "Squat", previous: false, ready: true)
-            }.padding(.vertical, 20).frame(width: 390).background(GymTheme.background).preferredColorScheme(.dark)
+            }.environment(\.locale, AppLanguage.locale).padding(.vertical, 20).frame(width: 390).background(GymTheme.background).preferredColorScheme(.dark)
             let renderer = ImageRenderer(content: content)
             renderer.scale = 2
             let attachment = XCTAttachment(image: try XCTUnwrap(renderer.uiImage))

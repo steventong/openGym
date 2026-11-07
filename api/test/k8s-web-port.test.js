@@ -13,11 +13,11 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
 
 test('the image keeps NGINX_PORT=80 for Docker', () => {
-  assert.match(read('web/Dockerfile'), /^ENV NGINX_PORT=80$/m);
+  assert.match(read('deploy/web/Dockerfile'), /^ENV NGINX_PORT=80$/m);
 });
 
-test('kubernetes/: the web container listens on an unprivileged port, and everything follows it', () => {
-  const dep = read('kubernetes/deployment.yaml');
+test('deploy/kubernetes/: the web container listens on an unprivileged port, and everything follows it', () => {
+  const dep = read('deploy/kubernetes/deployment.yaml');
   const web = dep.slice(dep.indexOf('- name: web'));
   const port = Number(/- name: NGINX_PORT\s+value: "(\d+)"/.exec(web)?.[1]);
   assert.ok(port >= 1024, 'NGINX_PORT ' + port);
@@ -26,18 +26,18 @@ test('kubernetes/: the web container listens on an unprivileged port, and everyt
     const block = web.slice(web.indexOf(probe), web.indexOf(probe) + 120);
     assert.match(block, /port: web\b/, probe);
   }
-  assert.match(read('kubernetes/service.yaml'), /targetPort: web\b/);
+  assert.match(read('deploy/kubernetes/service.yaml'), /targetPort: web\b/);
 });
 
-test('helm/: NGINX_PORT and the container port are web.service.port, unprivileged by default', () => {
-  const values = read('helm/values.yaml');
+test('deploy/helm/: NGINX_PORT and the container port are web.service.port, unprivileged by default', () => {
+  const values = read('deploy/helm/values.yaml');
   const webBlock = values.slice(values.indexOf('\nweb:'));
   const port = Number(/\n  service:[\s\S]*?\n    port: (\d+)/.exec(webBlock)?.[1]);
   assert.ok(port >= 1024, 'web.service.port ' + port);
-  assert.match(read('helm/templates/configmap.yaml'), /NGINX_PORT: \{\{ \.Values\.web\.service\.port \| quote \}\}/);
-  const dep = read('helm/templates/deployment.yaml');
+  assert.match(read('deploy/helm/templates/configmap.yaml'), /NGINX_PORT: \{\{ \.Values\.web\.service\.port \| quote \}\}/);
+  const dep = read('deploy/helm/templates/deployment.yaml');
   assert.match(dep, /- name: web\s+containerPort: \{\{ \.Values\.web\.service\.port \}\}/);
-  assert.match(read('helm/templates/service.yaml'), /targetPort: web\b/);
+  assert.match(read('deploy/helm/templates/service.yaml'), /targetPort: web\b/);
   for (const probe of ['livenessProbe', 'readinessProbe']) {
     const block = webBlock.slice(webBlock.indexOf(probe), webBlock.indexOf(probe) + 80);
     assert.match(block, /port: web\b/, probe);

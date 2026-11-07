@@ -6,7 +6,7 @@ import WatchConnectivity
 @MainActor @Observable final class WorkoutHealthSync {
     private(set) var enabled: Bool
     private(set) var busy = false
-    private(set) var status = L10n.text("WORKOUT_SYNC_IS_OFF" /* 未开启训练同步 */)
+    private(set) var status = String(localized: "WORKOUT_SYNC_IS_OFF", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     private(set) var current: HealthWorkoutReport?
     private(set) var ledger = HealthWorkoutLedger()
     private let journal: HealthWorkoutJournal
@@ -29,19 +29,19 @@ import WatchConnectivity
     }
     private func load() {
         guard !loaded else { return }
-        do { ledger = try journal.read(); loaded = true; status = enabled ? L10n.text("ENABLED_FOR_YOUR_NEXT_WORKOUT" /* 已开启，下一次训练自动同步 */) : L10n.text("WORKOUT_SYNC_IS_OFF" /* 未开启训练同步 */) }
-        catch { status = L10n.text("COULD_NOT_READ_HEALTH_SYNC_RECORDS_COUNT" /* 健康同步记录读取失败：{0} */, error.localizedDescription) }
+        do { ledger = try journal.read(); loaded = true; status = enabled ? String(localized: "ENABLED_FOR_YOUR_NEXT_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "WORKOUT_SYNC_IS_OFF", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
+        catch { status = String(format: String(localized: "COULD_NOT_READ_HEALTH_SYNC_RECORDS_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
     }
     func setEnabled(_ value: Bool) async {
-        guard canChangeSetting else { status = L10n.text("FINISH_YOUR_CURRENT_WORKOUT_BEFORE_CHANGING_HEALTH_SYNC_SETTINGS" /* 请先结束当前训练，再更改健康同步设置。 */); return }
+        guard canChangeSetting else { status = String(localized: "FINISH_YOUR_CURRENT_WORKOUT_BEFORE_CHANGING_HEALTH_SYNC_SETTINGS", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
         if value {
-            guard available else { status = L10n.text("HEALTH_DATA_IS_UNAVAILABLE_ON_THIS_DEVICE" /* 此设备不支持健康数据 */); return }
+            guard available else { status = String(localized: "HEALTH_DATA_IS_UNAVAILABLE_ON_THIS_DEVICE", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
             busy = true; defer { busy = false }
             do { try await HealthWorkoutAccess.authorize(health) }
             catch { status = error.localizedDescription; return }
         }
         enabled = value; UserDefaults.standard.set(value, forKey: "health.workouts.enabled")
-        status = value ? L10n.text("ENABLED_FOR_YOUR_NEXT_WORKOUT_ALLOW_ACCESS_ON_YOUR_WATCH_TOO_IF" /* 已开启，下一次训练自动同步；使用手表时也需在手表授权 */) : L10n.text("DISABLED_EXISTING_WORKOUT_RECORDS_ARE_KEPT" /* 已关闭，已有训练记录保留 */)
+        status = value ? String(localized: "ENABLED_FOR_YOUR_NEXT_WORKOUT_ALLOW_ACCESS_ON_YOUR_WATCH_TOO_IF", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "DISABLED_EXISTING_WORKOUT_RECORDS_ARE_KEPT", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     }
     func authorize() async {
         guard available, !busy else { return }
@@ -61,7 +61,7 @@ import WatchConnectivity
         var next = ledger
         guard next.merge(request) else { retry(); return }
         do { try journal.write(next); ledger = next; current = nil; retry(wakeWatch: true) }
-        catch { status = L10n.text("YOUR_WORKOUT_STARTED_BUT_HEALTH_SYNC_HAS_NOT_COUNT" /* 训练已开始，但健康同步尚未启动：{0} */, error.localizedDescription) }
+        catch { status = String(format: String(localized: "YOUR_WORKOUT_STARTED_BUT_HEALTH_SYNC_HAS_NOT_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
     }
     /// Persist the stop independently of server submission; retries keep the first end time and owner.
     @discardableResult func finish(_ draft: TrainingDraft, discard: Bool = false, at date: Date) -> Bool {
@@ -72,7 +72,7 @@ import WatchConnectivity
         request.title = draft.name
         var next = ledger; next.merge(request)
         do { try journal.write(next); ledger = next; retry(); return true }
-        catch { status = L10n.text("COULD_NOT_SAVE_THE_HEALTH_SYNC_STOP_REQUEST_COUNT" /* 无法保存健康同步结束指令：{0} */, error.localizedDescription); return false }
+        catch { status = String(format: String(localized: "COULD_NOT_SAVE_THE_HEALTH_SYNC_STOP_REQUEST_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)); return false }
     }
     var watchRequests: [HealthWorkoutRequest] { ledger.pending.filter { $0.owner == .watch } }
     func retry(wakeWatch: Bool = false) {
@@ -84,7 +84,7 @@ import WatchConnectivity
             request.title = draft.name
             var next = ledger; next.merge(request)
             do { try journal.write(next); ledger = next }
-            catch { status = L10n.text("COULD_NOT_RESTORE_THE_STOP_REQUEST_COUNT" /* 结束指令恢复失败：{0} */, error.localizedDescription); return }
+            catch { status = String(format: String(localized: "COULD_NOT_RESTORE_THE_STOP_REQUEST_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)); return }
         }
         if let dispatch { dispatch(ledger.pending); return }
         retrying = true
@@ -104,14 +104,14 @@ import WatchConnectivity
                         if request.phase == .finished { try await HealthWorkoutAccess.saveDuration(request, health: health) }
                         let state: HealthWorkoutReport.State = request.phase == .running ? .running : request.phase == .finished ? .saved : .discarded
                         receive(HealthWorkoutReport(id: request.id, state: state,
-                            message: request.phase == .running ? L10n.text("THIS_IOS_VERSION_SYNCS_WORKOUT_DURATION_WHEN_YOU_FINISH_WITHOUT_LIVE_METRICS" /* 当前 iOS 将在结束时同步训练时长，不采集实时指标。 */) : nil), owner: .phone)
+                            message: request.phase == .running ? String(localized: "THIS_IOS_VERSION_SYNCS_WORKOUT_DURATION_WHEN_YOU_FINISH_WITHOUT_LIVE_METRICS", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : nil), owner: .phone)
                     } catch { receive(HealthWorkoutReport(id: request.id, state: .failed, message: error.localizedDescription), owner: .phone) }
                 }
             }
             store?.watchBridge?.publish()
             store?.watchBridge?.sendHealthRequests()
             if let request = watchRequests.last(where: { $0.phase == .running }), ledger.reports[request.id]?.state != .running {
-                status = L10n.text("WAITING_FOR_APPLE_WATCH_TO_START_TRACKING_ALLOW_ACCESS_ON_YOUR_WATCH" /* 等待 Apple Watch 开始运动采集；首次使用请在手表授权 */)
+                status = String(localized: "WAITING_FOR_APPLE_WATCH_TO_START_TRACKING_ALLOW_ACCESS_ON_YOUR_WATCH", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
                 if wakeWatch { await wakeWatchApp() }
             }
         }
@@ -119,7 +119,7 @@ import WatchConnectivity
     private func wakeWatchApp() async {
         guard !wakingWatch else { return }; wakingWatch = true; defer { wakingWatch = false }
         do { try await health.startWatchApp(toHandle: HealthWorkoutAccess.configuration) }
-        catch { status = L10n.text("WATCH_TRACKING_HAS_NOT_STARTED_OPEN_OPENGYM_ON_YOUR_WATCH_AND_TRY" /* 尚未启动手表运动采集，请打开手表上的 openGym 并重试：{0} */, error.localizedDescription) }
+        catch { status = String(format: String(localized: "WATCH_TRACKING_HAS_NOT_STARTED_OPEN_OPENGYM_ON_YOUR_WATCH_AND_TRY", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
     }
     func receive(_ report: HealthWorkoutReport, owner: HealthWorkoutRequest.Owner) {
         guard ledger.requests[report.id]?.owner == owner else { return }
@@ -134,12 +134,12 @@ import WatchConnectivity
             guard report.id == activeID || (activeID == nil && report.id.hasPrefix(account)) else { return }
             current = accepted
             switch accepted.state {
-            case .running: status = accepted.message ?? (owner == .watch ? L10n.text("APPLE_WATCH_IS_RECORDING_YOUR_WORKOUT" /* Apple Watch 正在记录训练 */) : L10n.text("IPHONE_IS_RECORDING_YOUR_WORKOUT" /* iPhone 正在记录训练 */))
-            case .saved: status = accepted.message ?? L10n.text("WORKOUT_SYNCED_TO_APPLE_HEALTH_AND_FITNESS" /* 训练已同步到 Apple 健康与健身 */)
-            case .discarded: status = L10n.text("ACTIVITY_RECORDING_CANCELLED" /* 本次运动记录已取消 */)
-            case .failed: status = accepted.message ?? L10n.text("WORKOUT_SYNC_INCOMPLETE_YOU_CAN_RETRY" /* 训练同步未完成，可重试 */)
+            case .running: status = accepted.message ?? (owner == .watch ? String(localized: "APPLE_WATCH_IS_RECORDING_YOUR_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "IPHONE_IS_RECORDING_YOUR_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
+            case .saved: status = accepted.message ?? String(localized: "WORKOUT_SYNCED_TO_APPLE_HEALTH_AND_FITNESS", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+            case .discarded: status = String(localized: "ACTIVITY_RECORDING_CANCELLED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+            case .failed: status = accepted.message ?? String(localized: "WORKOUT_SYNC_INCOMPLETE_YOU_CAN_RETRY", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
             }
-        } catch { status = L10n.text("COULD_NOT_SAVE_HEALTH_SYNC_CONFIRMATION_YOU_CAN_RETRY_COUNT" /* 健康同步回执保存失败，可重试：{0} */, error.localizedDescription) }
+        } catch { status = String(format: String(localized: "COULD_NOT_SAVE_HEALTH_SYNC_CONFIRMATION_YOU_CAN_RETRY_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
     }
     func report(for draft: TrainingDraft) -> HealthWorkoutReport? { ledger.reports[requestID(for: draft)] }
 }

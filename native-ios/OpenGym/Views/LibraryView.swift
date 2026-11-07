@@ -27,37 +27,37 @@ struct LibraryView: View {
             VStack(alignment:.leading,spacing:18) {
                 HStack(alignment:.top) {
                     VStack(alignment:.leading,spacing:6) {
-                        Text(L10n.text("EXERCISES" /* 动作库 */)).font(.system(size:34,weight:.bold))
-                        Text(L10n.text("COUNT_EXERCISES" /* {0} 个动作 */, store.exercises.count)).font(.subheadline).foregroundStyle(GymTheme.muted)
+                        Text("EXERCISES").font(.system(size:34,weight:.bold))
+                        Text(String(format: String(localized: "COUNT_EXERCISES", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: store.exercises.count))).font(.subheadline).foregroundStyle(GymTheme.muted)
                     }
                     Spacer()
-                    if let error = store.catalogueError { StatusDetailButton(title: L10n.text("COULD_NOT_LOAD" /* 无法加载 */), message: error, warning: true) }
+                    if let error = store.catalogueError { StatusDetailButton(title: String(localized: "COULD_NOT_LOAD", bundle: AppLanguage.bundle, locale: AppLanguage.locale), message: error, warning: true) }
                 }
                 HStack(spacing:10) {
                     HStack {
                         Image(systemName:"magnifyingglass").foregroundStyle(GymTheme.muted)
-                        CommittedSearchField(L10n.text("SEARCH_EXERCISES_MUSCLES" /* 搜索动作、肌群… */),text:$query, resetToken: searchReset).submitLabel(.search).onSubmit { GymKeyboard.dismiss() }.textFieldStyle(.plain).font(.system(size:15)).autocorrectionDisabled().accessibilityIdentifier("exercise-search")
-                        if !query.isEmpty { Button { searchReset += 1; query = "" } label: { Image(systemName:"xmark.circle.fill").foregroundStyle(.gray) }.accessibilityLabel(L10n.text("CLEAR_SEARCH" /* 清除搜索 */)) }
+                        CommittedSearchField(String(localized: "SEARCH_EXERCISES_MUSCLES", bundle: AppLanguage.bundle, locale: AppLanguage.locale),text:$query, resetToken: searchReset).submitLabel(.search).onSubmit { GymKeyboard.dismiss() }.textFieldStyle(.plain).font(.system(size:15)).autocorrectionDisabled().accessibilityIdentifier("exercise-search")
+                        if !query.isEmpty { Button { searchReset += 1; query = "" } label: { Image(systemName:"xmark.circle.fill").foregroundStyle(.gray) }.accessibilityLabel("CLEAR_SEARCH") }
                     }.padding(.horizontal,14).frame(height:48).background(Color(white:0.16),in:RoundedRectangle(cornerRadius:14))
-                    Button { grid.toggle() } label: { Image(systemName:grid ? "list.bullet" : "square.grid.2x2").frame(width:48,height:48).background(GymTheme.card,in:RoundedRectangle(cornerRadius:14)) }.accessibilityLabel(grid ? L10n.text("LIST_VIEW" /* 列表视图 */) : L10n.text("CARD_VIEW" /* 卡片视图 */))
+                    Button { grid.toggle() } label: { Image(systemName:grid ? "list.bullet" : "square.grid.2x2").frame(width:48,height:48).background(GymTheme.card,in:RoundedRectangle(cornerRadius:14)) }.accessibilityLabel(grid ? String(localized: "LIST_VIEW", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "CARD_VIEW", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
                 }
                 ScrollView(.horizontal,showsIndicators:false) {
-                    HStack(spacing:8) { ForEach(bodyParts,id:\.self) { item in Pill(title:item.isEmpty ? L10n.text("ALL" /* 全部 */) : Vocabulary.label(item),selected:bodyPart == item) { bodyPart = item; equipment = "" } } }
+                    HStack(spacing:8) { ForEach(bodyParts,id:\.self) { item in Pill(title:item.isEmpty ? String(localized: "ALL", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : Vocabulary.label(item),selected:bodyPart == item) { bodyPart = item; equipment = "" } } }
                 }
                 ScrollView(.horizontal,showsIndicators:false) {
-                    HStack(spacing:8) { ForEach(equipments,id:\.self) { item in Pill(title:item.isEmpty ? L10n.text("ANY_EQUIPMENT" /* 所有器械 */) : Vocabulary.label(item),selected:equipment == item) { equipment = item } } }
+                    HStack(spacing:8) { ForEach(equipments,id:\.self) { item in Pill(title:item.isEmpty ? String(localized: "ANY_EQUIPMENT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : Vocabulary.label(item),selected:equipment == item) { equipment = item } } }
                 }
                 HStack {
-                    Pill(title:L10n.text("FAVOURITES" /* 收藏 */),selected:favouritesOnly) { favouritesOnly.toggle();limit = 60 }
-                    Pill(title:L10n.text("PREVIOUSLY_TRAINED" /* 练过 */),selected:trainedOnly) { trainedOnly.toggle();limit = 60 }
-                    Pill(title:L10n.text("CUSTOM" /* 自定义 */),selected:customOnly) { customOnly.toggle();limit = 60 }
+                    Pill(title:String(localized: "FAVOURITES", bundle: AppLanguage.bundle, locale: AppLanguage.locale),selected:favouritesOnly) { favouritesOnly.toggle();limit = 60 }
+                    Pill(title:String(localized: "PREVIOUSLY_TRAINED", bundle: AppLanguage.bundle, locale: AppLanguage.locale),selected:trainedOnly) { trainedOnly.toggle();limit = 60 }
+                    Pill(title:String(localized: "CUSTOM", bundle: AppLanguage.bundle, locale: AppLanguage.locale),selected:customOnly) { customOnly.toggle();limit = 60 }
                     Spacer()
-                    Button { createCustom = true } label: { Label(L10n.text("CREATE" /* 创建 */),systemImage:"plus") }.accessibilityIdentifier("create-custom-exercise")
+                    Button { createCustom = true } label: { Label("CREATE",systemImage:"plus") }.accessibilityIdentifier("create-custom-exercise")
                 }
-                HStack { Text(query.isEmpty && bodyPart.isEmpty && equipment.isEmpty && !favouritesOnly && !trainedOnly && !customOnly ? L10n.text("EXPLORE_EXERCISES" /* 探索动作 */) : L10n.text("COUNT_EXERCISES_FOUND" /* 找到 {0} 个动作 */, results.count)).font(.caption).foregroundStyle(GymTheme.muted); Spacer(); Label(L10n.text("EXERCISES" /* 动作库 */),systemImage:"checkmark.seal").font(.caption2).foregroundStyle(GymTheme.muted) }
+                HStack { Text(query.isEmpty && bodyPart.isEmpty && equipment.isEmpty && !favouritesOnly && !trainedOnly && !customOnly ? String(localized: "EXPLORE_EXERCISES", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(format: String(localized: "COUNT_EXERCISES_FOUND", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: results.count))).font(.caption).foregroundStyle(GymTheme.muted); Spacer(); Label("EXERCISES",systemImage:"checkmark.seal").font(.caption2).foregroundStyle(GymTheme.muted) }
                 if results.isEmpty {
-                    EmptyCard(icon:"magnifyingglass",title:L10n.text("NO_EXERCISES_FOUND" /* 没有找到动作 */))
-                    Button(L10n.text("CLEAR_SEARCH_AND_FILTERS" /* 清除搜索与筛选 */)) { searchReset += 1; query = ""; bodyPart = ""; equipment = ""; favouritesOnly = false; trainedOnly = false; customOnly = false }
+                    EmptyCard(icon:"magnifyingglass",title:String(localized: "NO_EXERCISES_FOUND", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
+                    Button("CLEAR_SEARCH_AND_FILTERS") { searchReset += 1; query = ""; bodyPart = ""; equipment = ""; favouritesOnly = false; trainedOnly = false; customOnly = false }
                         .frame(maxWidth: .infinity, minHeight: 44)
                 }
                 LazyVGrid(columns:grid ? [GridItem(.flexible()),GridItem(.flexible())] : [GridItem(.flexible())],spacing:10) {
@@ -71,7 +71,7 @@ struct LibraryView: View {
                                 }.frame(maxWidth:.infinity,alignment:.leading).padding(12).background(GymTheme.card,in:RoundedRectangle(cornerRadius:16))
                             } else { ExerciseRow(exercise:exercise) }
                         }.buttonStyle(.plain).accessibilityIdentifier("exercise-\(exercise.id)")
-                            .contextMenu { Button(store.favouriteIDs.contains(exercise.id) ? L10n.text("REMOVE_FROM_FAVOURITES" /* 取消收藏 */):L10n.text("FAVOURITES" /* 收藏 */)) { Task { _ = await store.setFavourite(exercise.id,enabled:!store.favouriteIDs.contains(exercise.id)) } } }
+                            .contextMenu { Button(store.favouriteIDs.contains(exercise.id) ? String(localized: "REMOVE_FROM_FAVOURITES", bundle: AppLanguage.bundle, locale: AppLanguage.locale):String(localized: "FAVOURITES", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) { Task { _ = await store.setFavourite(exercise.id,enabled:!store.favouriteIDs.contains(exercise.id)) } } }
                     }
                     if results.count > limit { ExercisePageTrigger(limit: $limit, total: results.count).id(limit) }
                 }

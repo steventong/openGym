@@ -59,7 +59,7 @@ extension TrainingDraft {
         return raw
     }
     static func fromWeb(_ raw:[String:Any],unit:String) throws -> TrainingDraft {
-        var draft = TrainingDraft(routineID:raw["routineId"] as? String,name:raw["name"] as? String ?? L10n.text("WORKOUT" /* 训练 */),start:Date(timeIntervalSince1970:number(raw["start"])/1000),entries:[],unit:unit,routineIDs:raw["routineIds"] as? [String])
+        var draft = TrainingDraft(routineID:raw["routineId"] as? String,name:raw["name"] as? String ?? String(localized: "WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale),start:Date(timeIntervalSince1970:number(raw["start"])/1000),entries:[],unit:unit,routineIDs:raw["routineIds"] as? [String])
         draft.id = raw["id"] as? String ?? UUID().uuidString;try draft.setActive(raw);return draft
     }
 }

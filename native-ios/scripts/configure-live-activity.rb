@@ -8,7 +8,7 @@ widget.build_configurations.each do |config|
     'PRODUCT_BUNDLE_IDENTIFIER' => 'me.itwl.opengym.widgets',
     'IPHONEOS_DEPLOYMENT_TARGET' => '26.0',
     'SWIFT_VERSION' => '5.0', 'GENERATE_INFOPLIST_FILE' => 'YES',
-    'INFOPLIST_FILE' => 'OpenGymWidgets/Info.plist', 'INFOPLIST_KEY_CFBundleDisplayName' => 'openGym 训练',
+    'INFOPLIST_FILE' => 'OpenGym/Widgets/Info.plist', 'INFOPLIST_KEY_CFBundleDisplayName' => 'openGym 训练',
     'TARGETED_DEVICE_FAMILY' => '1,2', 'SKIP_INSTALL' => 'YES',
     'APPLICATION_EXTENSION_API_ONLY' => 'YES', 'CODE_SIGN_STYLE' => 'Automatic',
     'DEVELOPMENT_TEAM' => app.build_configurations.first.build_settings['DEVELOPMENT_TEAM'],
@@ -25,10 +25,11 @@ def activity_file(project, relative)
   group.files.find { |f| f.path == name } || group.new_file(name)
 end
 
-{app => ['OpenGym/**/*.swift', 'Shared/LiveActivity/*.swift', 'Shared/TrainingAction*.swift'], widget => ['OpenGymWidgets/*.swift', 'Shared/LiveActivity/*.swift', 'Shared/TrainingAction*.swift'],
+{app => ['OpenGym/**/*.swift', 'Shared/LiveActivity/*.swift', 'Shared/Training/**/*.swift'], widget => ['OpenGym/Widgets/*.swift', 'Shared/LiveActivity/*.swift', 'Shared/Training/**/*.swift'],
  project.targets.find { |t| t.name == 'OpenGymTests' } => ['OpenGymTests/*.swift']}.each do |target, patterns|
   patterns.each do |pattern|
     Dir.glob(File.join(root, pattern)).sort.each do |path|
+      next if target == app && path.start_with?("#{root}/OpenGym/Watch/", "#{root}/OpenGym/Widgets/")
       file = activity_file(project, path.delete_prefix(root + '/'))
       target.add_file_references([file]) unless target.source_build_phase.files_references.include?(file)
     end
@@ -36,9 +37,9 @@ end
 end
 # The extension needs its own small asset catalog; the app's catalog also contains
 # the entire exercise library and is not bundled into this target.
-assets = activity_file(project, 'OpenGymWidgets/Assets.xcassets')
+assets = activity_file(project, 'OpenGym/Widgets/Assets.xcassets')
 widget.resources_build_phase.add_file_reference(assets) unless widget.resources_build_phase.files_references.include?(assets)
-activity_file(project, 'OpenGymWidgets/Info.plist')
+activity_file(project, 'OpenGym/Widgets/Info.plist')
 app.add_dependency(widget) unless app.dependencies.any? { |d| d.target == widget }
 embed = app.copy_files_build_phases.find { |p| p.files_references.include?(widget.product_reference) } ||
   app.copy_files_build_phases.find { |p| p.name == 'Embed App Extensions' } || app.new_copy_files_build_phase('Embed App Extensions')

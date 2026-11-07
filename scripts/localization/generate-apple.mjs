@@ -12,7 +12,7 @@ export function appleFormat(value) {
 }
 // Validate direct lookups even when a call has no translator comment.
 export function nativeLocalizationKeys(source, en, zh, file = 'Swift source') {
-  for (const match of source.matchAll(/L10n\.(?:text|format)\(\s*"([^"]+)"/g)) {
+  for (const match of source.matchAll(/(?:String\(localized:\s*|(?:Text|Button|Section|Label|Toggle|Picker|TextField|SecureField|DatePicker|NavigationLink|LabeledContent|navigationTitle|accessibilityLabel|accessibilityHint|confirmationDialog|alert)\(\s*)"([A-Z][A-Z_0-9]*)"/g)) {
     for (const [language, pack] of [['en', en], ['zh', zh]]) {
       if (typeof pack[match[1]] !== 'string' || !pack[match[1]].trim()) {
         throw Error(`${file}: missing ${language} translation for ${match[1]}`)
@@ -48,12 +48,12 @@ export function appleCatalogs() {
       }
     }
   }
-  for (const directory of ['OpenGym', 'Shared', 'OpenGymWatch', 'OpenGymWidgets', 'OpenGymTests']) scan(resolve(root, 'native-ios', directory))
+  for (const directory of ['OpenGym', 'Shared', 'OpenGymTests']) scan(resolve(root, 'native-ios', directory))
   const result = {
-    'native-ios/Localization/Localizable.xcstrings': make([...used].sort().map(key => [key, key])),
+    'native-ios/Resources/Localization/Localizable.xcstrings': make([...used].sort().map(key => [key, key])),
   }
   for (const target of ['OpenGym', 'OpenGymWatch']) {
-    result[`native-ios/Localization/${target}/InfoPlist.xcstrings`] = make([
+    result[`native-ios/Resources/Localization/${target}/InfoPlist.xcstrings`] = make([
       ['NSHealthShareUsageDescription', target === 'OpenGymWatch' ? 'SYSTEM_HEALTH_READ_WATCH' : 'SYSTEM_HEALTH_READ_PHONE'], // 健康读取权限
       ['NSHealthUpdateUsageDescription', 'SYSTEM_HEALTH_WRITE'], // 健康写入权限
     ])

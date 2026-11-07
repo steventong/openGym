@@ -8,7 +8,7 @@
  *
  * `location.pathname` is the base because the router never leaves it: every screen is a hash,
  * and a path that is not a file is sent back to the app's root before React boots
- * (web/nginx.conf.template). Anything after the last slash is therefore index.html or a stale
+ * (deploy/web/nginx.conf.template). Anything after the last slash is therefore index.html or a stale
  * deep link, and is dropped.
  *
  * Its own module, not api.js, because the store needs it too (the server a signed-in browser

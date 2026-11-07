@@ -11,7 +11,7 @@ extension GymStore {
         if let row = displayedRow {
             let rows = draft.rawEntries[row.entry]["sets"] as? [[String: Any]] ?? []
             let logical = rows.indices.filter { !(rows[$0]["side"] as? String == "R" && $0 > 0 && rows[$0 - 1]["side"] as? String == "L") }
-            compactSet = L10n.text("SET_COUNT_OF_COUNT" /* 第 {0}/{1} 组 */, logical.filter { $0 <= row.index }.count, logical.count)
+            compactSet = String(format: String(localized: "SET_COUNT_OF_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: logical.filter { $0 <= row.index }.count), String(describing: logical.count))
         } else { compactSet = draft.rawEntries.isEmpty ? "…" : "✓" }
         let available = !syncing && localSaveError == nil
         let command: String?
@@ -21,18 +21,18 @@ extension GymStore {
             command = activityCommand(snapshot, action: "next", entry: next)
         } else { command = nil }
         let commandTitle: String
-        if localSaveError != nil { commandTitle = L10n.text("COULD_NOT_SAVE" /* 无法保存 */) }
-        else if row?.blockedReason != nil, !syncing { commandTitle = workTimer != nil ? L10n.text("TIMER_RUNNING" /* 正在计时 */) : L10n.text("COMPLETE_SET_DETAILS" /* 补全数据 */) }
-        else { commandTitle = row != nil ? L10n.text("COMPLETE_SET" /* 完成本组 */) : (snapshot.nextEntry != nil ? L10n.text("NEXT_EXERCISE" /* 下一个动作 */) : L10n.text("OPEN_APP" /* 打开App */)) }
+        if localSaveError != nil { commandTitle = String(localized: "COULD_NOT_SAVE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
+        else if row?.blockedReason != nil, !syncing { commandTitle = workTimer != nil ? String(localized: "TIMER_RUNNING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "COMPLETE_SET_DETAILS", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
+        else { commandTitle = row != nil ? String(localized: "COMPLETE_SET", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : (snapshot.nextEntry != nil ? String(localized: "NEXT_EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "OPEN_APP", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
         return .init(trainingName: String(draft.name.prefix(80)), exercise: snapshot.exercise,
-            position: snapshot.exercisePosition, setLabel: displayedRow?.label ?? (draft.rawEntries.isEmpty ? L10n.text("ADD_AN_EXERCISE_TO_START" /* 添加动作后开始 */) : L10n.text("ALL_SETS_COMPLETE" /* 全部组已完成 */)), compactSet: compactSet,
+            position: snapshot.exercisePosition, setLabel: displayedRow?.label ?? (draft.rawEntries.isEmpty ? String(localized: "ADD_AN_EXERCISE_TO_START", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "ALL_SETS_COMPLETE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)), compactSet: compactSet,
             detail: displayedRow.map { "\($0.weight) · \($0.detail)" } ?? "",
             message: row?.blockedReason ?? snapshot.message, restEnd: snapshot.restEnd,
             restExercise: snapshot.restExercise, command: command,
             commandTitle: commandTitle,
             restCommand: snapshot.restEnd != nil && available ? activityCommand(snapshot, action: "skipRest", entry: restEntry ?? 0) : nil,
-            setWeight: displayedRow?.weight, setDetail: displayedRow?.detail, setCompletionLabel: snapshot.setCompletionLabel, busyTitle: syncing ? L10n.text("SAVING" /* 正在保存 */) : nil,
-            actionReadyAt: snapshot.actionReadyAt, language: L10n.language)
+            setWeight: displayedRow?.weight, setDetail: displayedRow?.detail, setCompletionLabel: snapshot.setCompletionLabel, busyTitle: syncing ? String(localized: "SAVING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : nil,
+            actionReadyAt: snapshot.actionReadyAt, setStartedAt: snapshot.setStartedAt, language: AppLanguage.language)
     }
 
     private func activityCommand(_ snapshot: WatchTrainingSnapshot, action: String, entry: Int, index: Int? = nil, side: String? = nil) -> String? {
@@ -55,6 +55,7 @@ extension GymStore {
         // Receipts distinguish a new completion after the user undoes a previous one.
         raw.removeValue(forKey: "nativeRest")
         raw.removeValue(forKey: "nativeActionReadyAt")
+        raw.removeValue(forKey: "nativeSetStartedAt")
         guard let data = try? JSONSerialization.data(withJSONObject: raw, options: [.sortedKeys]) else { return nil }
         return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
@@ -70,7 +71,7 @@ extension GymStore {
         defer { WorkoutActivityDiagnostics.record("activity.command.end", ["elapsed_ms": WorkoutActivityDiagnostics.elapsed(started)]) }
         guard let data = Data(base64Encoded: encoded), var command = try? JSONDecoder().decode(WatchTrainingCommand.self, from: data) else {
             WorkoutActivityDiagnostics.record("activity.command.rejected", ["reason": "invalid_payload"], failure: true)
-            return L10n.text("THIS_ACTION_HAS_EXPIRED_OPEN_THE_WORKOUT_SCREEN" /* 操作已失效，请打开训练页面。 */)
+            return String(localized: "THIS_ACTION_HAS_EXPIRED_OPEN_THE_WORKOUT_SCREEN", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
         }
         let before = watchSnapshot()
         WorkoutActivityDiagnostics.record("activity.command.decoded", WorkoutActivityDiagnostics.command(command, snapshot: before))
@@ -88,7 +89,7 @@ extension GymStore {
             else { reason = nil }
             if let reason {
                 WorkoutActivityDiagnostics.record("activity.command.rejected", ["reason": reason], failure: true)
-                return L10n.text("YOUR_REST_TIMER_HAS_CHANGED_CHECK_THE_CURRENT_TIMER_BEFORE_CONTINUING" /* 休息已更新，请按最新状态操作。 */)
+                return String(localized: "YOUR_REST_TIMER_HAS_CHANGED_CHECK_THE_CURRENT_TIMER_BEFORE_CONTINUING", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
             }
             endRestFromTextButton(at: now)
             WorkoutActivityDiagnostics.record("activity.rest.cleared", ["saved": String(localSaveError == nil)], failure: localSaveError != nil)
@@ -96,7 +97,7 @@ extension GymStore {
         }
         guard ["complete", "next"].contains(command.action) else {
             WorkoutActivityDiagnostics.record("activity.command.rejected", ["reason": "unsupported_action"], failure: true)
-            return L10n.text("THIS_WORKOUT_ACTION_IS_NOT_SUPPORTED" /* 不支持的训练操作。 */)
+            return String(localized: "THIS_WORKOUT_ACTION_IS_NOT_SUPPORTED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
         }
         let normalizedMatch = command.activityRevision.map { $0 == workoutActionRevision() } ?? false
         WorkoutActivityDiagnostics.record("activity.revision.checked", ["has_activity_revision": String(command.activityRevision != nil),

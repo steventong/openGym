@@ -59,12 +59,12 @@ struct RestNotificationPermission {
 
     var status: String {
         if let issue { return issue }
-        if !enabled { return L10n.text("REST_END_REMINDERS_ARE_OFF" /* 已关闭休息结束提醒。 */) }
+        if !enabled { return String(localized: "REST_END_REMINDERS_ARE_OFF", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
         switch permission.authorization {
-        case .notDetermined: return L10n.text("ALLOW_NOTIFICATIONS_TO_RECEIVE_REST_END_REMINDERS" /* 尚未授权，请允许通知以接收休息结束提醒。 */)
-        case .denied: return L10n.text("NOTIFICATIONS_ARE_BLOCKED_ALLOW_THEM_IN_SYSTEM_SETTINGS" /* 系统通知已关闭，请前往系统设置允许通知。 */)
-        case .provisional: return L10n.text("NOTIFICATIONS_ARE_CURRENTLY_SILENT_ENABLE_BANNERS_AND_SOUND_IN_SYSTEM_SETTINGS" /* 当前为静默通知，请前往系统设置开启横幅和声音。 */)
-        default: return permission.alerts ? L10n.text("NOTIFICATIONS_APPEAR_IN_THE_BACKGROUND_AND_ON_THE_LOCK_SCREEN_AND_ARE" /* 后台和锁屏时发送通知；打开 App 自动清除，App 内仅声音提醒。 */) : L10n.text("NOTIFICATION_BANNERS_ARE_OFF_ENABLE_THEM_IN_SYSTEM_SETTINGS" /* 系统横幅提醒已关闭，请前往系统设置开启。 */)
+        case .notDetermined: return String(localized: "ALLOW_NOTIFICATIONS_TO_RECEIVE_REST_END_REMINDERS", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        case .denied: return String(localized: "NOTIFICATIONS_ARE_BLOCKED_ALLOW_THEM_IN_SYSTEM_SETTINGS", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        case .provisional: return String(localized: "NOTIFICATIONS_ARE_CURRENTLY_SILENT_ENABLE_BANNERS_AND_SOUND_IN_SYSTEM_SETTINGS", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        default: return permission.alerts ? String(localized: "NOTIFICATIONS_APPEAR_IN_THE_BACKGROUND_AND_ON_THE_LOCK_SCREEN_AND_ARE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "NOTIFICATION_BANNERS_ARE_OFF_ENABLE_THEM_IN_SYSTEM_SETTINGS", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
         }
     }
 
@@ -128,7 +128,7 @@ struct RestNotificationPermission {
                 WorkoutActivityDiagnostics.record("reminder.authorization.end", traces: traces)
             } catch {
                 WorkoutActivityDiagnostics.record("reminder.authorization.failed", WorkoutActivityDiagnostics.errorFields(error), traces: traces, failure: true)
-                issue = L10n.text("COULD_NOT_REQUEST_NOTIFICATION_ACCESS_COUNT" /* 通知授权失败：{0} */, error.localizedDescription)
+                issue = String(format: String(localized: "COULD_NOT_REQUEST_NOTIFICATION_ACCESS_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))
             }
             busy = false
             permission = await center.permission()
@@ -167,7 +167,7 @@ struct RestNotificationPermission {
             WorkoutActivityDiagnostics.record("reminder.schedule.end", traces: traces)
         } catch {
             WorkoutActivityDiagnostics.record("reminder.schedule.failed", WorkoutActivityDiagnostics.errorFields(error), traces: traces, failure: true)
-            issue = L10n.text("COULD_NOT_SCHEDULE_REST_REMINDER_COUNT" /* 休息提醒安排失败：{0} */, error.localizedDescription)
+            issue = String(format: String(localized: "COULD_NOT_SCHEDULE_REST_REMINDER_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))
         }
     }
 }

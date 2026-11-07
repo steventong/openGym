@@ -18,9 +18,9 @@ downloaded at start-up. There are only a few resources to create:
 ```bash
 git clone https://github.com/DuarteSantos8/openGym   # or https://gitlab.com/DuarteSantos8/opengym — same repo
 cd openGym
-# In kubernetes/deployment.yaml, set RP_ID and ORIGIN in spec.template.spec.containers[api].env
-# to your hostname, and the hostname in kubernetes/httproute.yaml.
-kubectl apply -k kubernetes/
+# In deploy/kubernetes/deployment.yaml, set RP_ID and ORIGIN in spec.template.spec.containers[api].env
+# to your hostname, and the hostname in deploy/kubernetes/httproute.yaml.
+kubectl apply -k deploy/kubernetes/
 ```
 
 Notes:
@@ -30,8 +30,8 @@ Notes:
   `net.ipv4.ip_unprivileged_port_start=0`, as Docker does and most Kubernetes runtimes do not.
   The Service still answers on port 80 and targets the container's `web` port by name. Writing
   your own manifests, keep `NGINX_PORT` at 1024 or higher, or set that sysctl on the pod.
-- The manifests create and use the `fitness` namespace (`kubernetes/namespace.yaml`, set on every
-  resource by `kubernetes/kustomization.yaml`; rename it in both), and a Gateway
+- The manifests create and use the `fitness` namespace (`deploy/kubernetes/namespace.yaml`, set on every
+  resource by `deploy/kubernetes/kustomization.yaml`; rename it in both), and a Gateway
   called `eg` in `envoy-gateway-system` with an `https` listener; change both to match your
   cluster. The Gateway has to terminate TLS; this was tested with
   [Envoy Gateway](https://gateway.envoyproxy.io) and [cert-manager](https://cert-manager.io).
@@ -48,7 +48,7 @@ Notes:
 - Settings are environment variables on the `api` container, named as in `.env.example`. Keep
   secrets such as the push keys in a Kubernetes Secret and load them with `envFrom`.
 - **Client addresses.** The web container overwrites `X-Forwarded-For` with the address it was
-  reached from (see `web/nginx.conf.template`), and behind a Gateway that is the gateway's pod,
+  reached from (see `deploy/web/nginx.conf.template`), and behind a Gateway that is the gateway's pod,
   not the visitor. So the sign-in throttle, which counts attempts per address, acts on the whole
   instance at once, and the activity log records the gateway's address. `TRUST_PROXY` is left
   off because it would not change that: the API would read the same gateway address from the

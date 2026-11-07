@@ -32,6 +32,8 @@ All settings live in `.env`; [`.env.example`](../.env.example) explains each one
 
 ## Working on the code
 
+See [Repository layout](REPOSITORY_LAYOUT.md) for directories and common commands.
+
 | Guide | Read it when |
 |---|---|
 | [Contributing](../CONTRIBUTING.md) | Before your first pull request: setup, guidelines, what CI checks |
@@ -44,6 +46,8 @@ Design notes for specific features, kept next to the code they describe:
 
 | Note | Covers |
 |---|---|
+| [Native iOS parity](native-ios/FEATURE_PARITY.md) | Implemented native features and remaining gaps |
+| [Live Activity](native-ios/LIVE_ACTIVITY.md) | Lock Screen, Dynamic Island and training controls |
 | [Set types](dev/SET_TYPES.md) | Drop sets and rest-pause: the set-row model and how totals are counted |
 | [Workout views](dev/LIST_VIEW.md) | The cards, list and compact layouts of the workout screen |
 | [Combine routines](dev/COMBINE_ROUTINES.md) | Spec for running more than one routine in a session |

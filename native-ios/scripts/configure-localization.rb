@@ -2,7 +2,7 @@ require 'xcodeproj'
 root = File.expand_path('..', __dir__)
 project = Xcodeproj::Project.open(File.join(root, 'OpenGym.xcodeproj'))
 shared = project.main_group.groups.find { |g| g.path == 'Shared' } || project.main_group.new_group('Shared', 'Shared')
-source = shared.files.find { |f| f.path == 'Localization.swift' } || shared.new_file('Localization.swift')
+source = shared.files.find { |f| f.path == 'AppLanguage.swift' } || shared.new_file('AppLanguage.swift')
 # 移除旧 JSON 和手工 strings 的引用，避免与 String Catalog 编译产物冲突。
 old_groups = project.main_group.groups.select { |g| g.path == '../localization' || g.path&.start_with?('Localization/') }
 old_groups.each do |group|
@@ -11,7 +11,8 @@ old_groups.each do |group|
   end
   group.remove_from_project
 end
-group = project.main_group.groups.find { |g| g.path == 'Localization' } || project.main_group.new_group('Localization', 'Localization')
+resources_group = project.main_group.groups.find { |g| g.path == 'Resources' } || project.main_group.new_group('Resources', 'Resources')
+group = resources_group.groups.find { |g| g.path == 'Localization' } || resources_group.new_group('Localization', 'Localization')
 localizable = group.files.find { |f| f.path == 'Localizable.xcstrings' } || group.new_file('Localizable.xcstrings')
 localizable.last_known_file_type = 'text.json.xcstrings'
 project.targets.select { |t| %w[OpenGym OpenGymWatch OpenGymWidgets].include?(t.name) }.each do |target|

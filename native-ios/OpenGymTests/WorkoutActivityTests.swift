@@ -139,7 +139,7 @@ import ActivityKit
 
     func testBlockedStatesHaveShortActionTitlesForOpeningTheApp() throws {
         store.localSaveError = "private save failure"
-        XCTAssertEqual(store.workoutActivityState()?.commandTitle, L10n.text("COULD_NOT_SAVE"))
+        XCTAssertEqual(store.workoutActivityState()?.commandTitle, String(localized: "COULD_NOT_SAVE", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
         XCTAssertNil(store.workoutActivityState()?.command)
         store.localSaveError = nil
         store.liveRowAction(entry: 0, set: 0, action: ["action": "input", "path": "both.w", "text": "", "operation": ["action": "field", "key": "w"]])
