@@ -42,10 +42,10 @@ struct LibraryView: View {
                     Button { grid.toggle() } label: { Image(systemName:grid ? "list.bullet" : "square.grid.2x2").frame(width:48,height:48).background(GymTheme.card,in:RoundedRectangle(cornerRadius:14)) }.accessibilityLabel(grid ? String(localized: "LIST_VIEW", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "CARD_VIEW", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
                 }
                 ScrollView(.horizontal,showsIndicators:false) {
-                    HStack(spacing:8) { ForEach(bodyParts,id:\.self) { item in Pill(title:item.isEmpty ? String(localized: "ALL", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : Vocabulary.label(item),selected:bodyPart == item) { bodyPart = item; equipment = "" } } }
+                    HStack(spacing:8) { ForEach(bodyParts,id:\.self) { item in Pill(title:item.isEmpty ? String(localized: "ALL", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: String.LocalizationValue(item), table: "Vocabulary", bundle: AppLanguage.bundle, locale: AppLanguage.locale),selected:bodyPart == item) { bodyPart = item; equipment = "" } } }
                 }
                 ScrollView(.horizontal,showsIndicators:false) {
-                    HStack(spacing:8) { ForEach(equipments,id:\.self) { item in Pill(title:item.isEmpty ? String(localized: "ANY_EQUIPMENT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : Vocabulary.label(item),selected:equipment == item) { equipment = item } } }
+                    HStack(spacing:8) { ForEach(equipments,id:\.self) { item in Pill(title:item.isEmpty ? String(localized: "ANY_EQUIPMENT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: String.LocalizationValue(item), table: "Vocabulary", bundle: AppLanguage.bundle, locale: AppLanguage.locale),selected:equipment == item) { equipment = item } } }
                 }
                 HStack {
                     Pill(title:String(localized: "FAVOURITES", bundle: AppLanguage.bundle, locale: AppLanguage.locale),selected:favouritesOnly) { favouritesOnly.toggle();limit = 60 }

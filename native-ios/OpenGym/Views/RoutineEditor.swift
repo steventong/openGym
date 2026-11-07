@@ -218,7 +218,7 @@ struct ExercisePicker: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(bodyParts, id: \.self) { item in
-                        Pill(title: item.isEmpty ? String(localized: "ALL", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : Vocabulary.label(item), selected: bodyPart == item) {
+                        Pill(title: item.isEmpty ? String(localized: "ALL", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: String.LocalizationValue(item), table: "Vocabulary", bundle: AppLanguage.bundle, locale: AppLanguage.locale), selected: bodyPart == item) {
                             bodyPart = item; equipment = ""
                         }
                     }
@@ -227,7 +227,7 @@ struct ExercisePicker: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(equipments, id: \.self) { item in
-                        Pill(title: item.isEmpty ? String(localized: "ANY_EQUIPMENT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : Vocabulary.label(item), selected: equipment == item) { equipment = item }
+                        Pill(title: item.isEmpty ? String(localized: "ANY_EQUIPMENT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: String.LocalizationValue(item), table: "Vocabulary", bundle: AppLanguage.bundle, locale: AppLanguage.locale), selected: equipment == item) { equipment = item }
                     }
                 }
             }

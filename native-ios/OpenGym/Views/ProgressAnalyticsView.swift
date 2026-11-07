@@ -64,7 +64,7 @@ struct MuscleAnalyticsView:View {
                 ForEach(Array(muscles.enumerated()),id:\.offset) { _,muscle in
                     let id = muscle["id"] as? String ?? "", value = number((data[metric] as? [String:Any])?[id])
                     VStack(alignment:.leading,spacing:6) {
-                        HStack { Text(muscleName(id));Spacer();Text(["fatigue","strength"].contains(metric) ? "\(Int(value*100))%":String(format: String(localized: "COUNT_SETS", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: decimal(value)))).foregroundStyle(.secondary) }
+                        HStack { Text(String(localized: String.LocalizationValue(id), table: "Muscles", bundle: AppLanguage.bundle, locale: AppLanguage.locale));Spacer();Text(["fatigue","strength"].contains(metric) ? "\(Int(value*100))%":String(format: String(localized: "COUNT_SETS", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: decimal(value)))).foregroundStyle(.secondary) }
                         ProgressView(value:value,total:["fatigue","strength"].contains(metric) ? max(1,value):max(1,((data[metric] as? [String:Any]) ?? [:]).values.map{number($0)}.max() ?? 1)).tint(GymTheme.green)
                     }
                 }

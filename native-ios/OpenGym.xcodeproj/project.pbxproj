@@ -13,7 +13,7 @@
 		070DB37FCE616D9C5EA01F4C /* TrainingActionLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95AC6CCF872BF8F0A5ED155 /* TrainingActionLabel.swift */; };
 		072A74F8F0EFB3A2F98DFA3F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6ECF351C6BEA9F8EC663CA2 /* Assets.xcassets */; };
 		073BC6BFD812EB21E6938592 /* TrainingActionControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43050807FF947BABCBE70D29 /* TrainingActionControl.swift */; };
-		078495A25F6FBF5A4F207ED3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF3C493F32914FC0C99A7E4A /* Foundation.framework */; };
+		080B336FE60015A79842624E /* Muscles.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8AF0D06BDD99E380193A4234 /* Muscles.xcstrings */; };
 		0823E04116CED0EBC5FD8D8E /* TrainingActionTiming.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F41CDCA29C41923FC5652C /* TrainingActionTiming.swift */; };
 		087EC34216E58BE3384F8EA1 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73EA27B09A0D8219F0276D89 /* AppLanguage.swift */; };
 		0B5796DB7E96F8582BB7C8B5 /* TrainingExercisePosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D5FD5943BEB11B650438DA /* TrainingExercisePosition.swift */; };
@@ -40,7 +40,6 @@
 		2F61DF398B791C41337045C8 /* EquipmentProfilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2428DB2D9D291EF49D5DAF5D /* EquipmentProfilesView.swift */; };
 		30808B78ADC1F73F523AAAEB /* RestNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F956E5D1C9713CE9C333DB0 /* RestNotificationTests.swift */; };
 		3113B48EF862508C78C4FDEC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF3C493F32914FC0C99A7E4A /* Foundation.framework */; };
-		36516E29C3470D65C9D0AC02 /* ComponentUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E8A59D8FCB9B458B39BAC1 /* ComponentUITests.swift */; };
 		36922B53B3D490AAE49F5B31 /* 0289.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 04075495099929508CC7FD56 /* 0289.mp4 */; };
 		3745AFFF28B4E82EDA8D3525 /* WatchTraining.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6A244B0DA57E7FD1770BDC /* WatchTraining.swift */; };
 		386EB4C76DD45A7331545ABC /* CoachTextList.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFA1D980F36A780B2FA1997 /* CoachTextList.swift */; };
@@ -89,6 +88,7 @@
 		6D32D69CB6E603230BD371BF /* TrainingExerciseTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F123C8D9E30EADFAE9F7CB3A /* TrainingExerciseTitle.swift */; };
 		6D608AC120452FC96152E27B /* HealthWorkoutRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE4E6C571D277C8BBE6A58A /* HealthWorkoutRecorder.swift */; };
 		6E3007222515AC0B13E2F1DE /* AdvancedConfigEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F64DA2DE6A48EDA9D72F01F7 /* AdvancedConfigEditor.swift */; };
+		6ED93A94133F2586FA6AA94E /* Muscles.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8AF0D06BDD99E380193A4234 /* Muscles.xcstrings */; };
 		6FA7CC08A36F6F011FBF33E2 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 68CB26D6B4F4310C3C5F9753 /* Localizable.xcstrings */; };
 		70A3C12A429972A1B02823DE /* WorkoutActivityDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766D4DD8429513C20254BB06 /* WorkoutActivityDiagnostics.swift */; };
 		70C57E6C3650D209DC72BAC8 /* TrainingActionControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43050807FF947BABCBE70D29 /* TrainingActionControl.swift */; };
@@ -132,6 +132,7 @@
 		AA74A51525B2E4C6E967C28F /* TrainingSetClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E90A9745CF05421E9AF99B /* TrainingSetClock.swift */; };
 		AB315A9AC566AE6D7646E9E9 /* PersonalFeaturesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B03BBCF48B481B48D5A6F6A /* PersonalFeaturesTests.swift */; };
 		ADE0CB3D58A83004A46C7250 /* GymStore+Personal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F859787ED6E90BA77D7B7EE /* GymStore+Personal.swift */; };
+		AEE1E7C723FE8CEA02212CDF /* Vocabulary.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C27946317CD6B75475216DB0 /* Vocabulary.xcstrings */; };
 		AFE91B713CB6AF9EA219C895 /* TrainingSetSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAD1C31904E2B717D34300C /* TrainingSetSummary.swift */; };
 		B0F54B9602907A87699B099C /* WatchPrimaryActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0853B72065142901042E1887 /* WatchPrimaryActionButton.swift */; };
 		B101D06BC00EBCE7DA324E0D /* TrainingCountdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBD4B4C6A57C4E7BA91CAD /* TrainingCountdownText.swift */; };
@@ -156,7 +157,6 @@
 		CEBFE82DC2CE8323DE44C761 /* AdvancedSetMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5F9F01734E9E77735ADD7F /* AdvancedSetMenu.swift */; };
 		CF41CE84FDC863CB5CA61F75 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11CA947BAD88F7E921CD07C2 /* Foundation.framework */; };
 		D0A95491D219D94D568BAB69 /* CoachWeeklyScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB9FA80C1451FF06110B5737 /* CoachWeeklyScheduleView.swift */; };
-		D2091F204779F108008EDEB1 /* ui-labels.json in Resources */ = {isa = PBXBuildFile; fileRef = E47900EE553F66F776B8DFBD /* ui-labels.json */; };
 		D23EEBF11223873EAED841A5 /* TrainingCountdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBD4B4C6A57C4E7BA91CAD /* TrainingCountdownText.swift */; };
 		D28A0C85B819E972D5EC9E2A /* ConfigNumberFieldRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE9B3CC0272C594AF4ABE82 /* ConfigNumberFieldRow.swift */; };
 		D3234DB10EC57BE395DFB1FD /* WorkoutActivityIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704730797E530254E7CCA4E8 /* WorkoutActivityIntent.swift */; };
@@ -164,6 +164,7 @@
 		D5880F53A1347CBCA63B6C94 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14CF241617C6EB6AF1A3954 /* LibraryView.swift */; };
 		D6D72BDD1388D496F3D10A53 /* HomeTrainingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340C2A07310783CD25E7784B /* HomeTrainingButton.swift */; };
 		D6DBD39021A7BD9F7E21C0AD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF3C493F32914FC0C99A7E4A /* Foundation.framework */; };
+		D84E9DCE35C326C482C8745A /* Vocabulary.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C27946317CD6B75475216DB0 /* Vocabulary.xcstrings */; };
 		D89F1DB8244416BF3B9AC743 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22DB756A5AFCB7DB84B9473F /* APIClient.swift */; };
 		D961C9A1A698EA46180405C4 /* OfflineTrainingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7339028252B2780CC64D4A9C /* OfflineTrainingTests.swift */; };
 		D9A262ED5BD70C8931A73DD4 /* TrainingActionLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95AC6CCF872BF8F0A5ED155 /* TrainingActionLabel.swift */; };
@@ -178,7 +179,9 @@
 		EA2E0A8951C28179C194B59C /* PlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F1426841E24532291D699 /* PlanView.swift */; };
 		EAF2591955CEB75A04404DE8 /* AppLifecycleObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183C907912E5B4EF3F8E3549 /* AppLifecycleObserver.swift */; };
 		EC566DC63A8B562627581B8F /* TrainingCountdownPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC473187E637770CEC54CBC5 /* TrainingCountdownPresentation.swift */; };
+		EE1387032F9B36313EA8558D /* Muscles.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8AF0D06BDD99E380193A4234 /* Muscles.xcstrings */; };
 		F023C3AB247D571658421296 /* RoutineNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC45A09CC034B2DEBC9586B /* RoutineNumberField.swift */; };
+		F08EF130C558FD80A89EFD4B /* Vocabulary.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C27946317CD6B75475216DB0 /* Vocabulary.xcstrings */; };
 		F5CCE91E23507D4F41101014 /* TrainingActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E73D404C2787194933E3EEF /* TrainingActionTests.swift */; };
 		F7336DC4AF2BD68CC352DD79 /* TrainingExercisePosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D5FD5943BEB11B650438DA /* TrainingExercisePosition.swift */; };
 		F758358B8F657F6DEBDDD6ED /* OpenGymWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 16BF62E517CCD03EB6209D11 /* OpenGymWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -191,13 +194,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0D64FB2C703F0A6C7B04DBAF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B9C94E4CB830E432C8BDBB03 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 66EC1B8CBBFD039B30077615;
-			remoteInfo = OpenGym;
-		};
 		813C387C79F144DF479BE439 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B9C94E4CB830E432C8BDBB03 /* Project object */;
@@ -331,6 +327,7 @@
 		7A9279FAE107BDB8422A165B /* HistoryEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryEditor.swift; sourceTree = "<group>"; };
 		7B8F1426841E24532291D699 /* PlanView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlanView.swift; sourceTree = "<group>"; };
 		87804E94568E5BBB5216F53E /* ScheduleEditor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScheduleEditor.swift; sourceTree = "<group>"; };
+		8AF0D06BDD99E380193A4234 /* Muscles.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json.xcstrings; path = Muscles.xcstrings; sourceTree = "<group>"; };
 		8B2598349FBDAADEF9FD5465 /* BundledVideoTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BundledVideoTests.swift; sourceTree = "<group>"; };
 		8D58AB8C30820075E14ECB4C /* CoachChangeRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CoachChangeRow.swift; sourceTree = "<group>"; };
 		8FA55A0CF3B339602ED472DE /* LiveWorkoutExerciseCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LiveWorkoutExerciseCard.swift; sourceTree = "<group>"; };
@@ -356,7 +353,6 @@
 		A48EAD8E95A3F3ED91FDF924 /* ExerciseRestStatus.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExerciseRestStatus.swift; sourceTree = "<group>"; };
 		A55E3E2CB815F93D517452CF /* Theme.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A888A36CD77CA5F601F868A8 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
-		A8CF0307C89B25773A73DA2A /* OpenGymComponentUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OpenGymComponentUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ADFA1D980F36A780B2FA1997 /* CoachTextList.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CoachTextList.swift; sourceTree = "<group>"; };
 		AE284093C6AB1F49EB363EC6 /* WorkoutLiveActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutLiveActivity.swift; sourceTree = "<group>"; };
 		AF3C493F32914FC0C99A7E4A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -368,6 +364,7 @@
 		BD83B77952CACD0676D0D4D6 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C179C63FDB93FBEAFF6AD8B7 /* GymStore+Editing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "GymStore+Editing.swift"; sourceTree = "<group>"; };
 		C1E09E7AF6451F040744FDE6 /* WorkoutView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutView.swift; sourceTree = "<group>"; };
+		C27946317CD6B75475216DB0 /* Vocabulary.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json.xcstrings; path = Vocabulary.xcstrings; sourceTree = "<group>"; };
 		C90D8DFC309EBBAA009D9844 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		CAEDAC44029FB92B0A2A360C /* TrainingCountdownSecondsStyle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrainingCountdownSecondsStyle.swift; sourceTree = "<group>"; };
 		CDE77C128BB9BC6401B579B2 /* TrainingInput.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrainingInput.swift; sourceTree = "<group>"; };
@@ -382,9 +379,7 @@
 		DEC45A09CC034B2DEBC9586B /* RoutineNumberField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RoutineNumberField.swift; sourceTree = "<group>"; };
 		E0520EC977A41FDC54F4ECA0 /* WatchWaitingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WatchWaitingView.swift; sourceTree = "<group>"; };
 		E0CB57D39E1BC9D4915DE8DF /* WorkoutActivityCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutActivityCoordinator.swift; sourceTree = "<group>"; };
-		E1E8A59D8FCB9B458B39BAC1 /* ComponentUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ComponentUITests.swift; path = "/Users/tongwanglin/Workspace/openGym/native-ios/artifacts/view-components-20261107/ComponentUITests.swift"; sourceTree = "<absolute>"; };
 		E1E9AEA674D0901E1129F123 /* WatchTrainingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WatchTrainingView.swift; sourceTree = "<group>"; };
-		E47900EE553F66F776B8DFBD /* ui-labels.json */ = {isa = PBXFileReference; includeInIndex = 1; name = "ui-labels.json"; path = "/Users/tongwanglin/Workspace/openGym/native-ios/artifacts/view-components-20261107/ui-labels.json"; sourceTree = "<absolute>"; };
 		E47A548C509B9A40C50F8C01 /* HistoryForm.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryForm.swift; sourceTree = "<group>"; };
 		E92BEEEEBA2D193960B6A74E /* CoachInsightMetric.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CoachInsightMetric.swift; sourceTree = "<group>"; };
 		EB6A244B0DA57E7FD1770BDC /* WatchTraining.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WatchTraining.swift; sourceTree = "<group>"; };
@@ -423,14 +418,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3113B48EF862508C78C4FDEC /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9111041396341C519C879066 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				078495A25F6FBF5A4F207ED3 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -532,16 +519,6 @@
 			path = OpenGymTests;
 			sourceTree = "<group>";
 		};
-		73A367DA5200FBB65C6DE8DF /* ComponentUITests */ = {
-			isa = PBXGroup;
-			children = (
-				E1E8A59D8FCB9B458B39BAC1 /* ComponentUITests.swift */,
-				E47900EE553F66F776B8DFBD /* ui-labels.json */,
-			);
-			name = ComponentUITests;
-			path = "artifacts/view-components-20261107";
-			sourceTree = "<absolute>";
-		};
 		8EFB337E2705349F9364F1F3 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -570,6 +547,8 @@
 				68CB26D6B4F4310C3C5F9753 /* Localizable.xcstrings */,
 				0058B2BACE80D52CFDF3B456 /* OpenGym */,
 				A1C90C55B364484D5150D755 /* OpenGymWatch */,
+				C27946317CD6B75475216DB0 /* Vocabulary.xcstrings */,
+				8AF0D06BDD99E380193A4234 /* Muscles.xcstrings */,
 			);
 			path = Localization;
 			sourceTree = "<group>";
@@ -636,7 +615,6 @@
 				2D2B27FBCA67631CEDC5F73F /* OpenGymTests.xctest */,
 				16BF62E517CCD03EB6209D11 /* OpenGymWatch.app */,
 				32AEA6755D110B7DED1FE314 /* OpenGymWidgets.appex */,
-				A8CF0307C89B25773A73DA2A /* OpenGymComponentUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -768,7 +746,6 @@
 				BBF1F5D7FBD8C5968BD51B8F /* Products */,
 				9A01BD3B0649F04C709E5F6A /* Shared */,
 				E709A03B591DB9D717410EC0 /* Resources */,
-				73A367DA5200FBB65C6DE8DF /* ComponentUITests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -831,24 +808,6 @@
 			productReference = FA4763C5A708F3613F82FE7E /* OpenGym.app */;
 			productType = "com.apple.product-type.application";
 		};
-		CDB751E2A15E604948BEDAD0 /* OpenGymComponentUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 35A84E0BBEA525E3F4FAFB2E /* Build configuration list for PBXNativeTarget "OpenGymComponentUITests" */;
-			buildPhases = (
-				9441F937DDC3E57B3DC7374E /* Sources */,
-				9111041396341C519C879066 /* Frameworks */,
-				17D885FA068858101C7C4D56 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C57F959000078BE431D000EC /* PBXTargetDependency */,
-			);
-			name = OpenGymComponentUITests;
-			productName = OpenGymComponentUITests;
-			productReference = A8CF0307C89B25773A73DA2A /* OpenGymComponentUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		E4A2BD1A24D3F25BF5F047CF /* OpenGymWidgets */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FE0B49A9BF71C5BEA8C69DFC /* Build configuration list for PBXNativeTarget "OpenGymWidgets" */;
@@ -900,20 +859,11 @@
 				61B06D426B612A407329C2C6 /* OpenGymTests */,
 				6429ACA6A2A7E4FC25E073A9 /* OpenGymWatch */,
 				E4A2BD1A24D3F25BF5F047CF /* OpenGymWidgets */,
-				CDB751E2A15E604948BEDAD0 /* OpenGymComponentUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		17D885FA068858101C7C4D56 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D2091F204779F108008EDEB1 /* ui-labels.json in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		2689FBA20B31BCA418FC72BA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -927,6 +877,8 @@
 				B2A5931C5670F5A09B33A8FF /* PrivacyInfo.xcprivacy in Resources */,
 				A669B12AA15B1998F97AA215 /* Localizable.xcstrings in Resources */,
 				3D76D0A8498D0C0C0D20FCC9 /* InfoPlist.xcstrings in Resources */,
+				F08EF130C558FD80A89EFD4B /* Vocabulary.xcstrings in Resources */,
+				EE1387032F9B36313EA8558D /* Muscles.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -945,6 +897,8 @@
 				2BBD7B6D1355F3D2409FBCCD /* Assets.xcassets in Resources */,
 				6FA7CC08A36F6F011FBF33E2 /* Localizable.xcstrings in Resources */,
 				A4A94619C954E7E7A84F24DD /* InfoPlist.xcstrings in Resources */,
+				D84E9DCE35C326C482C8745A /* Vocabulary.xcstrings in Resources */,
+				6ED93A94133F2586FA6AA94E /* Muscles.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -954,6 +908,8 @@
 			files = (
 				E0D9C6E811B174FB0EB659BC /* Localizable.xcstrings in Resources */,
 				072A74F8F0EFB3A2F98DFA3F /* Assets.xcassets in Resources */,
+				AEE1E7C723FE8CEA02212CDF /* Vocabulary.xcstrings in Resources */,
+				080B336FE60015A79842624E /* Muscles.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1115,14 +1071,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9441F937DDC3E57B3DC7374E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				36516E29C3470D65C9D0AC02 /* ComponentUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E66056142A22B9496EB6729C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1174,12 +1122,6 @@
 			target = 6429ACA6A2A7E4FC25E073A9 /* OpenGymWatch */;
 			targetProxy = 813C387C79F144DF479BE439 /* PBXContainerItemProxy */;
 		};
-		C57F959000078BE431D000EC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = OpenGym;
-			target = 66EC1B8CBBFD039B30077615 /* OpenGym */;
-			targetProxy = 0D64FB2C703F0A6C7B04DBAF /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -1228,22 +1170,6 @@
 			};
 			name = Debug;
 		};
-		245EE0F615A647736CEC0306 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = HHH7WTMLVN;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.itwl.opengym.componentUITests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = OpenGym;
-			};
-			name = Debug;
-		};
 		2EBE9134948FC70627E7A70A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1289,23 +1215,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		5275477B485FC2F88467FC2F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = HHH7WTMLVN;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				PRODUCT_BUNDLE_IDENTIFIER = me.itwl.opengym.componentUITests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = OpenGym;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1562,15 +1471,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		35A84E0BBEA525E3F4FAFB2E /* Build configuration list for PBXNativeTarget "OpenGymComponentUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				5275477B485FC2F88467FC2F /* Release */,
-				245EE0F615A647736CEC0306 /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		586BD5230CDA86DE2ECC33EE /* Build configuration list for PBXProject "OpenGym" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

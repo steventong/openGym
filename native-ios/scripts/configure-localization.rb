@@ -13,11 +13,14 @@ old_groups.each do |group|
 end
 resources_group = project.main_group.groups.find { |g| g.path == 'Resources' } || project.main_group.new_group('Resources', 'Resources')
 group = resources_group.groups.find { |g| g.path == 'Localization' } || resources_group.new_group('Localization', 'Localization')
-localizable = group.files.find { |f| f.path == 'Localizable.xcstrings' } || group.new_file('Localizable.xcstrings')
-localizable.last_known_file_type = 'text.json.xcstrings'
+catalogs = %w[Localizable Vocabulary Muscles].map do |name|
+  file = group.files.find { |f| f.path == "#{name}.xcstrings" } || group.new_file("#{name}.xcstrings")
+  file.last_known_file_type = 'text.json.xcstrings'
+  file
+end
 project.targets.select { |t| %w[OpenGym OpenGymWatch OpenGymWidgets].include?(t.name) }.each do |target|
   target.add_file_references([source]) unless target.source_build_phase.files_references.include?(source)
-  resources = [localizable]
+  resources = catalogs.dup
   unless target.name == 'OpenGymWidgets'
     native_group = group.groups.find { |g| g.path == target.name } || group.new_group(target.name, target.name)
     info = native_group.files.find { |f| f.path == 'InfoPlist.xcstrings' } || native_group.new_file('InfoPlist.xcstrings')

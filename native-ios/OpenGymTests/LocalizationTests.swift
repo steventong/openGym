@@ -57,7 +57,7 @@ import SwiftUI
         }
     }
 
-    func testLanguageSwitchUpdatesExerciseAndVocabularyWithoutChangingUserContent() {
+    func testLanguageSwitchPreservesConfiguredExerciseContentAndLocalizesUIVocabulary() {
         let original = AppLanguage.preferences.language
         defer { AppLanguage.preferences.language = original }
         let builtIn = Exercise(id: "0001", name: "杠铃卧推", english: "barbell bench press", bodyPart: "chest", equipment: "barbell", target: "pectorals", category: "strength", instructions: ["平躺在训练凳上。"], description: "", englishInstructions: ["Lie on the bench."])
@@ -67,11 +67,25 @@ import SwiftUI
         XCTAssertEqual(builtIn.instructions, ["平躺在训练凳上。"])
         XCTAssertEqual(builtIn.equipmentLabel, "杠铃")
         AppLanguage.preferences.language = "en"
-        XCTAssertEqual(builtIn.name, "barbell bench press")
-        XCTAssertEqual(builtIn.instructions, ["Lie on the bench."])
+        XCTAssertEqual(builtIn.name, "杠铃卧推")
+        XCTAssertEqual(builtIn.instructions, ["平躺在训练凳上。"])
         XCTAssertEqual(builtIn.equipmentLabel.lowercased(), "barbell")
         XCTAssertEqual(custom.name, "我的动作 A")
         XCTAssertTrue(builtIn.searchText.contains("杠铃卧推"))
+        XCTAssertTrue(builtIn.searchText.contains("barbell bench press"))
+        let searchText = builtIn.searchText
+        AppLanguage.preferences.language = "zh"
+        XCTAssertEqual(builtIn.searchText, searchText)
+    }
+
+    func testCatalogueIdentifiersResolveUsingNativeStringTables() {
+        for (language, equipment, muscle) in [("en", "Barbell", "Traps"), ("zh", "杠铃", "斜方肌")] {
+            let bundle = AppLanguage.bundle(for: language)
+            let locale = AppLanguage.locale(for: language)
+            XCTAssertEqual(String(localized: "barbell", table: "Vocabulary", bundle: bundle, locale: locale).lowercased(), equipment.lowercased())
+            XCTAssertEqual(String(localized: "trapezius", table: "Muscles", bundle: bundle, locale: locale).lowercased(), muscle.lowercased())
+            XCTAssertEqual(String(localized: "custom-equipment", table: "Vocabulary", bundle: bundle, locale: locale), "custom-equipment")
+        }
     }
 
     func testRulesKeepSelectedLanguageAfterOpeningCoach() throws {

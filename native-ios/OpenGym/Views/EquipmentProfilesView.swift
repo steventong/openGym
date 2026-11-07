@@ -39,7 +39,7 @@ struct EquipmentProfileEditor:View {
         Form {
             BufferedTextField(String(localized: "GYM_NAME", bundle: AppLanguage.bundle, locale: AppLanguage.locale),text:Binding(get:{profile.raw["name"] as? String ?? ""},set:{profile.raw["name"] = String($0.prefix(80))})).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }
             Section("AVAILABLE_EQUIPMENT") {ForEach(options,id:\.self) {option in
-                Toggle(option == "bench" ? String(localized: "BENCH_A", bundle: AppLanguage.bundle, locale: AppLanguage.locale):option == "pull-up bar" ? String(localized: "PULL_UP_BAR_A", bundle: AppLanguage.bundle, locale: AppLanguage.locale):Vocabulary.label(option),isOn:Binding(get:{(profile.raw["equipment"] as? [String] ?? []).contains(option)},set:{on in var list = profile.raw["equipment"] as? [String] ?? [];list.removeAll{$0 == option};if on{list.append(option)};profile.raw["equipment"] = list;profile.raw["accV"] = 1}))
+                Toggle(option == "bench" ? String(localized: "BENCH_A", bundle: AppLanguage.bundle, locale: AppLanguage.locale):option == "pull-up bar" ? String(localized: "PULL_UP_BAR_A", bundle: AppLanguage.bundle, locale: AppLanguage.locale):String(localized: String.LocalizationValue(option), table: "Vocabulary", bundle: AppLanguage.bundle, locale: AppLanguage.locale),isOn:Binding(get:{(profile.raw["equipment"] as? [String] ?? []).contains(option)},set:{on in var list = profile.raw["equipment"] as? [String] ?? [];list.removeAll{$0 == option};if on{list.append(option)};profile.raw["equipment"] = list;profile.raw["accV"] = 1}))
             } }
         }.navigationTitle("PICK_EQUIPMENT").navigationBarTitleDisplayMode(.inline)
     }
