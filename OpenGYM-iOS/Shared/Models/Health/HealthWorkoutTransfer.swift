@@ -1,6 +1,7 @@
 import Foundation
 
-/// One device owns each workout for its whole lifetime. Terminal requests never regress to running.
+/// Phone-issued sensor commands. `owner` identifies the HealthKit writer, not the training controller.
+/// Automatic collection uses Watch; explicit history exports use the phone. Terminal commands never regress.
 struct HealthWorkoutRequest: Codable, Equatable, Identifiable {
     enum Owner: String, Codable { case phone, watch }
     enum Phase: String, Codable { case running, finished, discarded }
@@ -14,6 +15,11 @@ struct HealthWorkoutRequest: Codable, Equatable, Identifiable {
     var isValid: Bool {
         !id.isEmpty && start.timeIntervalSince1970.isFinite &&
         (phase == .running ? end == nil : end.map { $0 >= start && $0.timeIntervalSince1970.isFinite } == true)
+    }
+    /// Late Watch connections collect from now, without claiming sensor coverage before joining.
+    func collectionStart(at now: Date) -> Date? {
+        guard owner == .watch, phase == .running, isValid else { return nil }
+        return max(start, now)
     }
     var syncIdentifier: String { "me.itwl.opengym.workout.\(id)" }
 }

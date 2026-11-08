@@ -51,8 +51,10 @@ enum HealthWorkoutAccess {
     }
 }
 
-@available(iOS 26.0, *)
+#if os(watchOS)
+/// Sensor execution only; training state and commands belong to the phone.
 @MainActor final class HealthWorkoutRecorder: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
+    private static let logger = Logger(subsystem: "me.itwl.opengym", category: "HealthSync")
     private let health = HKHealthStore()
     private let journal: HealthWorkoutJournal
     private var ledger = HealthWorkoutLedger()
@@ -66,7 +68,6 @@ enum HealthWorkoutAccess {
     var onReport: ((HealthWorkoutReport) -> Void)?
     var onSessionStateChange: (() -> Void)?
     var runningSessionID: String? { session?.state == .running ? ledger.activeID : nil }
-    var currentReport: HealthWorkoutReport? { ledger.activeID.flatMap { ledger.reports[$0] } }
 
     init(name: String) { journal = HealthWorkoutJournal(name: name); super.init() }
 
@@ -94,10 +95,6 @@ enum HealthWorkoutAccess {
         } catch {
             for request in requests { onReport?(HealthWorkoutReport(id: request.id, state: .failed, message: String(format: String(localized: "COULD_NOT_SAVE_HEALTH_SYNC_DATA_LOCALLY_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)))) }
         }
-    }
-    func stopFromWatch() {
-        guard let id = ledger.activeID, var request = ledger.requests[id], request.phase == .running else { return }
-        request.phase = .finished; request.end = max(request.start, Date()); accept([request])
     }
     func recover() async {
         guard !recovered else { return }; recovered = true
@@ -151,11 +148,23 @@ enum HealthWorkoutAccess {
                 live.dataSource = HKLiveWorkoutDataSource(healthStore: health, workoutConfiguration: next.workoutConfiguration)
                 collectionEnded = false
                 next.prepare()
-                next.startActivity(with: request.start)
-                try await live.beginCollection(at: request.start)
+                guard let collectionStart = request.collectionStart(at: Date()) else { return }
+                Self.logger.notice("Watch sensor session starting")
+                next.startActivity(with: collectionStart)
+                try await live.beginCollection(at: collectionStart)
                 try await live.addMetadata(HealthWorkoutAccess.metadata(request))
+                Self.logger.notice("Watch sensor collection started")
                 try report(HealthWorkoutReport(id: request.id, state: .running))
             } else if ledger.activeID == request.id, let session, let builder, let end = request.end {
+                // The phone may have finished while a delayed start was being delivered.
+                // Do not save sensor data collected after that authoritative end time.
+                if let joined = builder.startDate, end <= joined {
+                    session.end(); builder.discardWorkout(); clearSession()
+                    try await HealthWorkoutAccess.saveDuration(request, health: health)
+                    try report(HealthWorkoutReport(id: request.id, state: .saved,
+                        message: String(localized: "WORKOUT_DURATION_SYNCED_NO_LIVE_ACTIVITY_DATA_WAS_AVAILABLE_FOR_THIS_SESSION", bundle: AppLanguage.bundle, locale: AppLanguage.locale)))
+                    return
+                }
                 if session.state != .stopped && session.state != .ended { session.stopActivity(with: end) }
                 // stopActivity is asynchronous; allow final sensor samples to reach the builder.
                 for _ in 0..<100 {
@@ -187,6 +196,7 @@ enum HealthWorkoutAccess {
             if request.phase == .running, ledger.activeID == request.id, ledger.reports[request.id]?.state != .running {
                 session?.end(); builder?.discardWorkout(); clearSession()
             }
+            Self.logger.error("Watch sensor command failed domain=\((error as NSError).domain, privacy: .public) code=\((error as NSError).code)")
             try? report(HealthWorkoutReport(id: request.id, state: .failed, message: error.localizedDescription))
         }
     }
@@ -231,3 +241,5 @@ enum HealthWorkoutAccess {
         }
     }
 }
+
+#endif

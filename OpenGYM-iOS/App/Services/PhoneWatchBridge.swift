@@ -42,6 +42,12 @@ import WatchConnectivity
             if !queued { session.transferUserInfo(HealthWorkoutWire.requests([request])) }
         }
     }
+    private func connectionChanged() {
+        // Remote controls must still refresh if a HealthKit retry is already in flight.
+        publish()
+        sendHealthRequests()
+        store?.workoutHealth.retry(wakeWatch: true)
+    }
     private func receiveHealth(_ message: [String: Any]) {
         if let report = HealthWorkoutWire.report(from: message) { store?.workoutHealth.receive(report, owner: .watch) }
     }
@@ -52,12 +58,12 @@ import WatchConnectivity
         Task { @MainActor [weak self] in self?.receiveHealth(message) }
     }
     nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        Task { @MainActor [weak self] in self?.publish(); self?.sendHealthRequests() }
+        Task { @MainActor [weak self] in self?.connectionChanged() }
     }
     nonisolated func sessionDidBecomeInactive(_ session: WCSession) {}
     nonisolated func sessionDidDeactivate(_ session: WCSession) { session.activate() }
-    nonisolated func sessionReachabilityDidChange(_ session: WCSession) { Task { @MainActor [weak self] in self?.publish(); self?.sendHealthRequests() } }
-    nonisolated func sessionWatchStateDidChange(_ session: WCSession) { Task { @MainActor [weak self] in self?.publish(); self?.sendHealthRequests() } }
+    nonisolated func sessionReachabilityDidChange(_ session: WCSession) { Task { @MainActor [weak self] in self?.connectionChanged() } }
+    nonisolated func sessionWatchStateDidChange(_ session: WCSession) { Task { @MainActor [weak self] in self?.connectionChanged() } }
     nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         Task { @MainActor [weak self] in
             guard let store = self?.store else { replyHandler(["error": String(localized: "OPEN_OPENGYM_ON_IPHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)]); return }

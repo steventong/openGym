@@ -14,7 +14,6 @@ import WatchConnectivity
     private weak var store: GymStore?
     private let dispatch: (([HealthWorkoutRequest]) -> Void)?
     private var loaded = false
-    private var recorder: AnyObject?
     private var retrying = false
     private var wakingWatch = false
     var available: Bool { HKHealthStore.isHealthDataAvailable() }
@@ -55,9 +54,8 @@ import WatchConnectivity
     func begin(_ draft: TrainingDraft) {
         guard enabled else { return }
         load(); guard loaded else { return }
-        let session = WCSession.default
-        let owner: HealthWorkoutRequest.Owner = WCSession.isSupported() && session.activationState == .activated && session.isPaired && session.isWatchAppInstalled ? .watch : .phone
-        let request = HealthWorkoutRequest(id: requestID(for: draft), start: draft.start, owner: owner, title: draft.name)
+        // The phone owns the training; Watch is always its sensor endpoint, even before WCSession activates.
+        let request = HealthWorkoutRequest(id: requestID(for: draft), start: draft.start, owner: .watch, title: draft.name)
         var next = ledger
         guard next.merge(request) else { retry(); return }
         do { try journal.write(next); ledger = next; current = nil; retry(wakeWatch: true) }
@@ -90,29 +88,20 @@ import WatchConnectivity
         retrying = true
         Task {
             defer { retrying = false }
-            let pending = ledger.pending
-            let local = pending.filter { $0.owner == .phone }
-            if #available(iOS 26.0, *) {
-                if recorder == nil {
-                    let value = HealthWorkoutRecorder(name: "phone-recorder")
-                    value.onReport = { [weak coordinator = self] in coordinator?.receive($0, owner: .phone) }; recorder = value
-                }
-                (recorder as? HealthWorkoutRecorder)?.accept(local)
-            } else {
-                for request in local {
-                    do {
-                        if request.phase == .finished { try await HealthWorkoutAccess.saveDuration(request, health: health) }
-                        let state: HealthWorkoutReport.State = request.phase == .running ? .running : request.phase == .finished ? .saved : .discarded
-                        receive(HealthWorkoutReport(id: request.id, state: state,
-                            message: request.phase == .running ? String(localized: "THIS_IOS_VERSION_SYNCS_WORKOUT_DURATION_WHEN_YOU_FINISH_WITHOUT_LIVE_METRICS", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : nil), owner: .phone)
-                    } catch { receive(HealthWorkoutReport(id: request.id, state: .failed, message: error.localizedDescription), owner: .phone) }
-                }
+            // Complete already queued phone exports without starting another live sensor session.
+            for request in ledger.pending where request.owner == .phone && request.phase != .running {
+                do {
+                    if request.phase == .finished { try await HealthWorkoutAccess.saveDuration(request, health: health) }
+                    receive(HealthWorkoutReport(id: request.id, state: request.phase == .finished ? .saved : .discarded), owner: .phone)
+                } catch { receive(HealthWorkoutReport(id: request.id, state: .failed, message: error.localizedDescription), owner: .phone) }
             }
             store?.watchBridge?.publish()
             store?.watchBridge?.sendHealthRequests()
             if let request = watchRequests.last(where: { $0.phase == .running }), ledger.reports[request.id]?.state != .running {
                 status = String(localized: "WAITING_FOR_APPLE_WATCH_TO_START_TRACKING_ALLOW_ACCESS_ON_YOUR_WATCH", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
-                if wakeWatch { await wakeWatchApp() }
+                let connection = WCSession.default
+                if wakeWatch, WCSession.isSupported(), connection.activationState == .activated,
+                   connection.isPaired, connection.isWatchAppInstalled { await wakeWatchApp() }
             }
         }
     }

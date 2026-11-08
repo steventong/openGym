@@ -26,6 +26,63 @@ import HealthKit
         store.workoutHealth = WorkoutHealthSync(store: store, journal: journal, dispatch: { _ in })
         return (store, journal, id)
     }
+    func testNewTrainingAlwaysQueuesWatchSensorsBeforeConnectivityIsReady() throws {
+        let (store, _, id) = try fixture()
+        let key = "health.workouts.enabled"
+        let previous = UserDefaults.standard.object(forKey: key)
+        UserDefaults.standard.set(true, forKey: key)
+        defer {
+            if let previous { UserDefaults.standard.set(previous, forKey: key) }
+            else { UserDefaults.standard.removeObject(forKey: key) }
+        }
+        let journal = HealthWorkoutJournal(name: "not-yet-connected", root: root)
+        var sent: [HealthWorkoutRequest] = []
+        let sync = WorkoutHealthSync(store: store, journal: journal, dispatch: { sent = $0 })
+        let draft = try XCTUnwrap(store.draft)
+        sync.begin(draft)
+        XCTAssertEqual(sent.count, 1)
+        XCTAssertEqual(sent.first?.id, id)
+        XCTAssertEqual(sent.first?.owner, .watch)
+        XCTAssertNil(sync.current, "Queued is not the same as collecting sensor data")
+        // A later connection (or phone restart) gets the same pending sensor command.
+        let restored = WorkoutHealthSync(store: store, journal: journal, dispatch: { sent = $0 })
+        restored.retry(wakeWatch: true)
+        XCTAssertEqual(restored.watchRequests, sent)
+        XCTAssertEqual(sent.first?.owner, .watch)
+        restored.receive(HealthWorkoutReport(id: id, state: .running, activeCalories: 3, heartRate: 90), owner: .watch)
+        XCTAssertEqual(restored.current?.heartRate, 90)
+        XCTAssertEqual(store.draft?.id, draft.id, "Sensor reports never control phone training progress")
+        XCTAssertTrue(restored.finish(draft, at: Date()))
+        XCTAssertEqual(sent.first?.phase, .finished)
+        restored.receive(HealthWorkoutReport(id: id, state: .saved, activeCalories: 4), owner: .watch)
+        XCTAssertTrue(restored.watchRequests.isEmpty)
+        XCTAssertNotNil(store.draft, "Saving HealthKit must not submit or delete the phone training")
+    }
+
+    func testLateSensorJoinDoesNotBackdateCollectionOrStartFinishedTraining() {
+        XCTAssertNil(request(owner: .phone).collectionStart(at: Date()))
+        var command = request()
+        let joined = command.start.addingTimeInterval(300)
+        XCTAssertEqual(command.collectionStart(at: joined), joined)
+        command.phase = .finished
+        command.end = joined.addingTimeInterval(60)
+        XCTAssertNil(command.collectionStart(at: joined))
+        command.phase = .discarded
+        XCTAssertNil(command.collectionStart(at: joined))
+    }
+
+    func testDisconnectedPhoneFinishReplaysOnlyStopOnReconnect() throws {
+        let (store, journal, _) = try fixture()
+        let draft = try XCTUnwrap(store.draft)
+        XCTAssertTrue(store.workoutHealth.finish(draft, at: Date()))
+        var sent: [HealthWorkoutRequest] = []
+        let restored = WorkoutHealthSync(store: store, journal: journal, dispatch: { sent = $0 })
+        restored.retry(wakeWatch: true)
+        XCTAssertEqual(sent.count, 1)
+        XCTAssertEqual(sent.first?.phase, .finished)
+        XCTAssertNil(sent.first?.collectionStart(at: Date()))
+    }
+
     func testEndArrivingBeforeStartNeverStartsDelayedSession() {
         var ledger = HealthWorkoutLedger(), end = request()
         end.phase = .finished; end.end = end.start.addingTimeInterval(600)
