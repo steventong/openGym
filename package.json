@@ -3,7 +3,7 @@
     "js-yaml": "^4.1.0"
   },
   "scripts": {
-    "check:localization": "node scripts/localization/check.mjs && node scripts/localization/check-generated.mjs && python3 scripts/localization/check-swift.py && node scripts/localization/generate-android.mjs --check",
-    "generate:localization": "node scripts/localization/generate-apple.mjs && node scripts/localization/generate-push.mjs && node api/scripts/build-nudge-copy.mjs && node scripts/localization/generate-android.mjs && npm run build:rules --prefix native-ios"
+    "check:localization": "node scripts/localization/check.mjs && node scripts/localization/check-generated.mjs && python3 scripts/localization/test_check_swift.py && python3 scripts/localization/check-swift.py && node scripts/localization/generate-android.mjs --check",
+    "generate:localization": "node scripts/localization/generate-apple.mjs && node scripts/localization/generate-push.mjs && node api/scripts/build-nudge-copy.mjs && node scripts/localization/generate-android.mjs && npm run build:rules --prefix OpenGYM-iOS"
   }
 }

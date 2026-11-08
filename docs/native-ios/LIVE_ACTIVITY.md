@@ -4,7 +4,7 @@
 
 - **完成本组**：调用与 Apple Watch 相同的完成命令，沿用训练草稿的组型、左右侧、休息和保存逻辑。从实时活动完成动作最后一组后不启动休息，自动切换到下一个未完成动作；全部完成后显示“打开App”，回训练页保存。重复命令不会再次切换动作或误记下一组。
 - **结束休息**：必须主动点击才清除休息；自然到零保留该操作，倒计时停在零。点击后在原位置显示灰色不可点击的“完成本组”，不显示保护期倒计时；5 秒保护结束后恢复可用。
-- **统一组合按钮**：锁屏、灵动岛与 watchOS 共用 `TrainingActionControl`，始终只有一个操作按钮。完成本组后，下一操作也有 5 秒保护；有休息时，前 5 秒保护期只显示灰色休息倒计时，隐藏下排“结束休息”图标与文字，并保留其布局空间，不额外显示保护期倒计时；保护期结束后显示“结束休息”，按钮恢复可用。“完成本组”上方不显示“准备好后开始下一组”提示。手机录入页的勾选不受该限制。展开区域为圆弧边缘保留水平和底部留白，按钮有效高度至少 44 点。组数不加“接下来”前缀，休息标签与倒计时右对齐。
+- **统一组合按钮**：锁屏、灵动岛与 watchOS 直接在各自的按钮中使用 `TrainingActionLabel`，始终只有一个操作按钮。完成本组后，下一操作也有 5 秒保护；有休息时，前 5 秒保护期只显示灰色休息倒计时，隐藏下排“结束休息”图标与文字，并保留其布局空间，不额外显示保护期倒计时；保护期结束后显示“结束休息”，按钮恢复可用。“完成本组”上方不显示“准备好后开始下一组”提示。手机录入页的勾选不受该限制。展开区域为圆弧边缘保留水平和底部留白，按钮有效高度至少 44 点。组数不加“接下来”前缀，休息标签与倒计时右对齐。
 - **紧凑动作名**：不设固定的 72 点宽度上限，交由系统按设备和灵动岛可用空间显示单行名称。
 - **信息与全宽按钮**：训练名称／动作序号、动作名、组数／重量／次数依次排在按钮上方。组数保持绿色、重量白色、次数浅灰；三位等宽倒计时与放大的 `S` 统一放在按钮上排，下排为操作图标和文字。旧活动内容缺少新增字段时仍可解码并显示原有数据。
 - **固定尺寸与按钮内状态**：不再追加独立的保存/错误提示行。同步保存时在原按钮位置显示禁用的“正在保存”；保存失败、输入未完成等用按钮短标题引导回 App，完整说明保留为辅助功能提示。完成本组、结束休息和忙碌状态使用同一个全宽、62 点高的位置；紧凑右侧在倒计时／组数间固定为 48 点，避免状态切换改变布局尺寸。
@@ -15,7 +15,7 @@
 
 完成/下一动作命令的版本校验排除 `nativeRest` 和 `nativeActionReadyAt`，避免调整或结束休息后、系统尚未重绘时误拒绝未变更的目标组；结束休息仍严格校验完整草稿版本，避免取消新计时。旧版实时活动载荷和手表命令保持原有校验。`LiveActivity` 日志记录 Intent 接收、命令接受结果及刷新耗时，不记录账号、训练内容或命令载荷。
 
-工程最低版本为 iOS 26（App 与 Widget 扩展一致）。新增 `OpenGymWidgets` 扩展（`me.itwl.opengym.widgets`），共享定义在 `Shared/LiveActivity/`；重建工程运行 `scripts/generate-project.rb`，现有工程可运行 `scripts/configure-live-activity.rb`。扩展无需共享账号凭据或额外 App Group。
+工程最低版本为 iOS 26（App 与 Widget 扩展一致）。新增 `OpenGYMWidgets` 扩展（`me.itwl.opengym.widgets`），共享定义按职责位于 `Shared/Models/LiveActivity/`、`Shared/Services/LiveActivity/`、`Shared/ViewModels/LiveActivity/` 和 `Shared/Views/LiveActivity/`；重建工程运行 `scripts/generate-project.rb`，现有工程可运行 `scripts/configure-live-activity.rb`。扩展无需共享账号凭据或额外 App Group。
 
 实现参考：[Apple Live Activities](https://developer.apple.com/documentation/activitykit/displaying-live-data-with-live-activities)、[Apple 交互式实时活动](https://developer.apple.com/documentation/widgetkit/adding-interactivity-to-widgets-and-live-activities)。按钮交互由系统按锁屏认证状态处理；专注模式、静音与通知设置可能影响声音和横幅。
 
@@ -71,13 +71,13 @@ xcrun simctl spawn <SIMULATOR-UDID> log show --last 10m --style compact \
 
 ## 2026-11-04 共享组合按钮
 
-`Shared/TrainingActionTiming.swift` 定义 5 秒保护和休息待结束状态；绝对截止时间 `nativeActionReadyAt` 保存于手机训练草稿，经 WatchConnectivity 与 ActivityKit 同步。两个文字操作在手机执行层再次校验，不能跨端绕过；重复完成回执不会延长保护。手机行内勾选沿用原编辑路径。
+`Shared/Models/Training/TrainingActionTiming.swift` 定义 5 秒保护和休息待结束状态；绝对截止时间 `nativeActionReadyAt` 保存于手机训练草稿，经 WatchConnectivity 与 ActivityKit 同步。两个文字操作在手机执行层再次校验，不能跨端绕过；重复完成回执不会延长保护。手机行内勾选沿用原编辑路径。
 
-`Shared/TrainingActionComponents.swift` 封装 `TrainingCountdownText`、`TrainingActionControl` 和双行标签。旧单行按钮和手表专用标签已经移除；完成本组、结束休息、处理中及连接／重试都使用这套组件。休息状态上排显示标签和三位等宽秒数，下排保留操作图标及文字；单位字号为 20 点（手表按整体比例缩放）。所有状态的禁用配色来自同一处，5 秒保护、调用方禁用和父级 `.disabled` 都显示灰色。
+`Shared/Views/Timer/` 提供 `TrainingCountdownText`，`Shared/Views/TrainingAction/` 提供双行标签 `TrainingActionLabel`。手表和 Live Activity 直接在各自的 `Button`／`Link` 中声明标签，不再通过泛型控件闭包转发；手表负责保护到期刷新，Live Activity 使用系统 stale 状态。旧单行按钮和手表专用标签已经移除；完成本组、结束休息、处理中及连接／重试都使用这套标签。休息状态上排显示标签和三位等宽秒数，下排保留操作图标及文字；单位字号为 20 点（手表按整体比例缩放）。所有状态的禁用配色来自同一处，5 秒保护、调用方禁用和父级 `.disabled` 都显示灰色。
 
 系统日期文本驱动数字更新，不用整页 `TimelineView`；watchOS 10 回退仅在数字子视图内计时。App/Watch 仅在保护到期时更新按钮可用性；Live Activity 使用 `actionReadyAt` 作为 stale date，并直接使用 `context.isStale` 解除保护状态，避免依赖视图归档时求值的 `Date()` 而一直灰色。系统 stale 状态可能延迟数分钟，因此协调器还在保护截止时主动重新发布活动；短时后台任务覆盖这 5 秒，结束或切换训练时取消旧刷新。执行层仍按绝对时间验证。保护到期前灰色不可点击，标题与填充色采用短暂过渡，尊重减少动态效果设置。
 
-锁屏与展开灵动岛改用全宽 62 点按钮，倒计时统一放在按钮内部；紧凑／最小灵动岛沿用适合其空间的数字／图标。`Shared/LiveActivity/WorkoutActivityContent.swift` 承载实际 WidgetKit 内容，也用于原生尺寸验证。中英文、296／347／384 点宽度、休息／完成／保护／忙碌状态的高度测试通过；展开内容为顶部系统区域额外预留 36 点，整体不超过 160 点。53 项训练按钮、手表遥控与 Live Activity 测试通过，截图在忽略目录 `artifacts/shared-action-layout/`。这轮验证覆盖模拟器和原生内容渲染，尚未完成真实锁屏／灵动岛系统容器及真机验收。
+锁屏与展开灵动岛改用全宽 62 点按钮，倒计时统一放在按钮内部；紧凑／最小灵动岛沿用适合其空间的数字／图标。`Shared/Views/LiveActivity/WorkoutActivityContent.swift` 承载实际 WidgetKit 内容，也用于原生尺寸验证。中英文、296／347／384 点宽度、休息／完成／保护／忙碌状态的高度测试通过；展开内容为顶部系统区域额外预留 36 点，整体不超过 160 点。53 项训练按钮、手表遥控与 Live Activity 测试通过，截图在忽略目录 `artifacts/shared-action-layout/`。这轮验证覆盖模拟器和原生内容渲染，尚未完成真实锁屏／灵动岛系统容器及真机验收。
 
 最终倒计时统一使用大写 `S`（如 `90S`、`5S`、`0S`），包括动作计时的暂停状态；训练总时长的正计时保留原格式。共享按钮相关 62 项 XCTest 最终通过，重构阶段全套 213 项通过，iOS/Widget 与 watchOS 构建通过。手表模拟器验证灰色保护倒计时、到期恢复与休息自然到零不切换；证据在 `artifacts/shared-training-action/`。本轮 Device Hub 未能连接新模拟器画面，锁屏的系统动画和 stale-date 重绘仍需真机验收，未发布 TestFlight。
 

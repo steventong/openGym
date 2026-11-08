@@ -1,0 +1,5 @@
+{
+  "name": "project-actions",
+  "version": "0.1.0",
+  "description": "在输入框上方提供提交并推送代码、内部 TestFlight 打包按钮。"
+}

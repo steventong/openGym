@@ -2961,7 +2961,7 @@
   "Could not read workout data. Sync and try again.": "COULD_NOT_READ_WORKOUT_DATA_SYNC_AND_TRY_AGAIN",
   "The server's coach configuration is incomplete. Contact your administrator.": "THE_SERVER_S_COACH_CONFIGURATION_IS_INCOMPLETE_CONTACT_YOUR_ADMINISTRATOR",
   "The coach could not complete your request. Retry or contact your administrator.": "THE_COACH_COULD_NOT_COMPLETE_YOUR_REQUEST_RETRY_OR_CONTACT_YOUR_ADMINISTRATOR",
-  "Start a workout on iPhone": "START_A_WORKOUT_ON_IPHONE",
+  "Start a workout on iPhone": "START_A_WORKOUT_ON_PHONE",
   "Connect iPhone": "CONNECT_IPHONE",
   "Confirming": "CONFIRMING",
   "Retry confirmation": "RETRY_CONFIRMATION",

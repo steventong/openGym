@@ -24,27 +24,37 @@ Paths in this guide are relative to the repository root.
 
 ```text
 native-ios/
-  OpenGym/                   Native app sources
+  App/                       iPhone/iPad app sources and configuration
     Models/                  iPhone models
     Services/                iPhone services
     Views/                   iPhone views
-    Resources/               iPhone-only assets and generated rule bundle
-    Watch/                   Watch app
-    Widgets/                 Widget and Live Activity extension
-  OpenGymTests/              Tests
-  Shared/                    Code shared by targets
-    Training/                Training UI and timing types, one primary type per file
-    LiveActivity/            Shared Live Activity definitions and presentation
-  Resources/
+  Watch/                     Watch app sources, configuration and platform assets
+  Widgets/                   Widget and Live Activity extension
+  Shared/                    Code and brand assets shared by targets
+    Assets.xcassets/         BrandMark and BrandLogo; no exercise thumbnails
+    Models/                  Training, Watch, Health and Live Activity data types
+    Services/                Localization, Health and Live Activity services
+    ViewModels/              Training content models and platform data adapters
+    Views/                   Shared views, grouped by feature
+      TrainingContent/       Common training content layout and summary views
+      TrainingAction/        Training/rest action display
+      Timer/                 Countdown views and display formatting
+      Style/                 Shared training display style
+      LiveActivity/          Live Activity layout and native Intent interaction
+  Resources/                 iPhone assets, rule bundle, launch screen and licenses
+    Assets.xcassets/         iOS AppIcon and AccentColor; exercise images download on demand
     Localization/
       Localizable.xcstrings  Shared interface translations
-      OpenGym/
+      OpenGYM/
         InfoPlist.xcstrings  iPhone system strings
-      OpenGymWatch/
+      OpenGYMWatch/
         InfoPlist.xcstrings  Watch system strings
+  Tests/                     OpenGYMTests target sources
   scripts/                   Native project/resource tooling
-  OpenGym.xcodeproj/
+  OpenGYM.xcodeproj/
 ```
+
+Exercise images and videos are fetched from the configured server and persisted under `Documents/workout-images/` and `Documents/workout-videos/`; neither is bundled with the native app. Icons and shared branding remain in asset catalogs.
 
 Translation source remains in the root `localization/` directory. `scripts/localization/generate-apple.mjs` generates the catalogs; `native-ios/scripts/configure-localization.rb` maintains their Xcode target references.
 
@@ -57,7 +67,7 @@ npm test --prefix api
 npm test --prefix frontend
 npm test --prefix mcp
 npm run check:localization
-open native-ios/OpenGym.xcodeproj
+open native-ios/OpenGYM.xcodeproj
 kubectl apply -k deploy/kubernetes/
 helm lint deploy/helm
 ```

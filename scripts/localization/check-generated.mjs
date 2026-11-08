@@ -14,7 +14,7 @@ for (const [language, values] of Object.entries(push)) {
 }
 console.log('Apple resources and generated notification copy match JSON.')
 
-const { buildRules } = await import('../../native-ios/scripts/build-rules.mjs')
+const { buildRules } = await import('../../OpenGYM-iOS/scripts/build-rules.mjs')
 const built = await buildRules(false)
-if (readFileSync(new URL('native-ios/OpenGym/Resources/web-rules.js', root), 'utf8') !== built.outputFiles[0].text) throw Error('Stale native rule bundle; run npm run generate:localization')
+if (readFileSync(new URL('OpenGYM-iOS/Resources/web-rules.js', root), 'utf8') !== built.outputFiles[0].text) throw Error('Stale native rule bundle; run npm run generate:localization')
 console.log('Native rule bundle matches shared JSON and source.')

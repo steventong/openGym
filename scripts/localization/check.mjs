@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { resolve, relative } from 'node:path'
 import { createRequire } from 'node:module'
+import { nativeLocalizationKeys } from './generate-apple.mjs'
 const root = fileURLToPath(new URL('../../', import.meta.url))
 const require = createRequire(resolve(root, 'frontend/package.json'))
 const { parse } = require('@babel/parser')
@@ -53,7 +54,7 @@ const leaves = (node, visit) => {
 }
 // Stable brands, technical sample values and visible unit symbols are not prose.
 const nonCopy = /^(?:openGym(?: v)?|PR|s|15s|CF-Access-Client-(?:Id|Secret)|Gym visual|NOTICE\.md|xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)$/
-for (const file of [...files('frontend/src'), ...files('native-ios/scripts/rules')].filter(f => /\.[jt]sx?$/.test(f) && !f.includes('.test.') && !/\/(locales|instr|exercise-names|exercise-desc)\//.test(f))) {
+for (const file of [...files('frontend/src'), ...files('OpenGYM-iOS/scripts/rules')].filter(f => /\.[jt]sx?$/.test(f) && !f.includes('.test.') && !/\/(locales|instr|exercise-names|exercise-desc)\//.test(f))) {
   const source = read(file)
   walk(parse(source, { sourceType: 'module', plugins: ['jsx'] }), (n, parent) => {
     // Catch untranslated workout fragments even when assembled before reaching JSX.
@@ -72,13 +73,14 @@ for (const file of [...files('frontend/src'), ...files('native-ios/scripts/rules
       && /[A-Za-z\u3400-\u9fff]/.test(n.value) && !nonCopy.test(n.value) && !/^https?:\/\//.test(n.value)) report(`${file}: unlocalized ${parent.name.name}: ${n.value}`)
   })
 }
-for (const directory of ['OpenGym', 'Shared']) {
-  for (const file of files(`native-ios/${directory}`).filter(f => f.endsWith('.swift'))) {
+for (const directory of ['App', 'Watch', 'Widgets', 'Shared']) {
+  for (const file of files(`OpenGYM-iOS/${directory}`).filter(f => f.endsWith('.swift'))) {
     const source = read(file)
-    for (const match of source.matchAll(/(?:String\(localized:\s*|(?:Text|Button|Section|Label|Toggle|Picker|TextField|SecureField|DatePicker|NavigationLink|LabeledContent|navigationTitle|accessibilityLabel|accessibilityHint|confirmationDialog|alert)\(\s*)"([A-Z][A-Z_0-9]*)"/g)) {
-      if (!keyPattern.test(match[1]) || !Object.hasOwn(en, match[1]) || !Object.hasOwn(zh, match[1])) report(`${file}: missing/invalid key ${match[1]}`)
-      if (canonicalKeys[match[1]]) report(`${file}: use shared copy ${canonicalKeys[match[1]]} instead of ${match[1]}`)
-    }
+    try {
+      for (const key of nativeLocalizationKeys(source, en, zh, file)) {
+        if (canonicalKeys[key]) report(`${file}: use shared copy ${canonicalKeys[key]} instead of ${key}`)
+      }
+    } catch (error) { report(error.message) }
     for (const match of source.matchAll(/(?:String\(localized:\s*|(?:Text|Button|Section|Label|Toggle|Picker|TextField|SecureField|DatePicker|NavigationLink|LabeledContent|navigationTitle|accessibilityLabel|accessibilityHint|confirmationDialog|alert)\(\s*)"([A-Z][A-Z_0-9]*)"\s*\/\*([\s\S]*?)\*\//g)) verify(match[1], match[2], file)
   }
 }

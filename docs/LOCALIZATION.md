@@ -6,7 +6,7 @@
 
 ## Apple 标准资源
 
-SwiftUI、Watch 和 Widget 使用 `native-ios/Resources/Localization/Localizable.xcstrings`，可直接在 Xcode String Catalog 编辑器中查看中英文和中文注释。iPhone 与 Watch 的权限说明分别放在 `native-ios/Resources/Localization/OpenGym/InfoPlist.xcstrings` 和 `native-ios/Resources/Localization/OpenGymWatch/InfoPlist.xcstrings`，按 Target 分目录集中管理。
+SwiftUI、Watch 和 Widget 使用 `native-ios/Resources/Localization/Localizable.xcstrings`，可直接在 Xcode String Catalog 编辑器中查看中英文和中文注释。iPhone 与 Watch 的权限说明分别放在 `native-ios/Resources/Localization/OpenGYM/InfoPlist.xcstrings` 和 `native-ios/Resources/Localization/OpenGYMWatch/InfoPlist.xcstrings`，按 Target 分目录集中管理。
 
 共享 JSON 在构建前转换为标准 String Catalog，Xcode 编译生成系统本地化资源。Apple App 包不再包含 `en.json` / `zh.json`；SwiftUI 界面直接使用 Key（如 `Text("SETTINGS")`），需要字符串的地方使用 `String(localized:bundle:locale:)`，带参数文案使用原生 `String(format:locale:)`。`AppLanguage` 只管理账号语言偏好和 Locale/Bundle 选择，不提供翻译或格式化函数。没有自定义 JSON 读取器或占位符解析器。
 
@@ -17,7 +17,7 @@ JSON 的 `{0}`、`{1}` 转换为标准 `%1$@`、`%2$@`，支持译文调整语�
 - key 只使用大写英文字母和下划线，例如 `REST_COMPLETE`、`MEASUREMENT_CHEST`。
 - 引用处附中文注释，描述文案含义；不要把中文正文写进组件。
 - 一句话使用一个模板，通过 `{0}`、`{1}` 传入变量，避免拼接语言片段。
-- 用户填写的计划名、动作名、备注、聊天内容不做自动翻译。动作目录继续按稳定的动作 ID 管理双语名称和教学步骤；ID、接口字段、枚举值不属于翻译 key。
+- 用户填写的计划名、动作名、备注、聊天内容不做自动翻译。原生动作名称和教学步骤直接读取配置默认内容，不随界面语言切换；搜索直接匹配配置字段。
 - 同一含义复用 key；不同语境分别命名，即便英文相同。例如 `CHEST_A` 表示胸部，`MEASUREMENT_CHEST` 表示胸围。
 
 ```js
@@ -35,7 +35,7 @@ String(format: String(localized: "SET_COUNT_OF_COUNT", bundle: AppLanguage.bundl
 
 ## 语言与术语
 
-原生端在“设置 → 训练偏好与单位”选择中文或英文，保存到账号 `lang`，和网页使用相同偏好。无偏好时跟随设备语言。手表收到快照时同步语言；实时活动使用快照携带的语言。中文显示中文动作名及英文副标题，英文显示英文名称，动作步骤随之切换；自定义内容保留原文。教练的新请求携带所选语言，已保存的聊天和建议正文不被重写。
+原生端在“设置 → 训练偏好与单位”选择中文或英文，保存到账号 `lang`，和网页使用相同偏好。无偏好时跟随设备语言。手表收到快照时同步语言；实时活动使用快照携带的语言。原生动作名称和步骤始终使用配置默认内容；自定义内容保留原文。教练的新请求携带所选语言，已保存的聊天和建议正文不被重写。
 
 统一术语：训练计划（routine）、训练（workout）、工作组、热身组、递减组（drop set）、减重组（Back-off）、休息暂停组（rest-pause）、训练量、估算 1RM。RIR、RPE 保留通用缩写，解释使用中文。身体部位与围度指标分开处理。
 
@@ -60,3 +60,5 @@ npm run check:localization
 检查覆盖 key 格式、双语完整性、非空值、占位符、引用处中文注释、JSX 硬编码、原生中文硬编码，以及生成资源是否与 JSON 一致。前端构建和 CI 都会执行检查。检查不能替代语言审校或小屏幕视觉验收。
 
 验证可使用 `TZ=UTC npm test --prefix frontend`，避免已有日期夹具依赖执行机器时区。原生现有测试用中文运行，`LocalizationTests` 另验证中英文切换、语境区分、变量替换、动作名称/步骤和旧手表快照兼容性。
+
+原生筛选项和肌群标签分别维护在 `Vocabulary.xcstrings`、`Muscles.xcstrings`，直接使用数据标识作为标准 localization key。调用处使用 `String(localized:table:bundle:locale:)`，不通过自定义翻译函数或运行时 key 映射。两张词表直接维护，不由共享 JSON 生成；未知标识由系统回退显示原 key。

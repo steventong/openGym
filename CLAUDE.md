@@ -22,7 +22,7 @@ mcp/       optional MCP server — read-only stdio bridge exposing a user's work
            runs when an LLM client spawns it.
 catalogue/ exercise definitions, translations and licensed media.
 localization/ shared translation source JSON.
-native-ios/ native SwiftUI iPhone, Watch and Widget targets.
+native-ios/ native SwiftUI targets: App/ (iPhone/iPad), Watch/, Widgets/, Shared/, Resources/, Tests/.
 website/   static project site (plain HTML/CSS/JS), deployed separately.
 deploy/    deployment configuration: web/ (nginx), kubernetes/, helm/, and nix/.
 docs/      guides indexed in docs/README.md (FAQ, SELF_HOSTING*, MOBILE, AI_COACH, DATA_IMPORTS, API);
