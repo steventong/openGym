@@ -147,6 +147,16 @@ import UIKit
         XCTAssertEqual(String(format: String(localized: "ADMIN_LOGIN_NAME_OR_EMAIL", bundle: AppLanguage.bundle(for: "en"), locale: AppLanguage.locale(for: "en")), locale: AppLanguage.locale(for: "en"), String(describing: "{1}"), String(describing: "a@example.com")), "{1} (or sign-in email a@example.com)") // 参数不再次展开
     }
 
+    func testSettingsSyncFeedbackResolvesInBothLanguages() {
+        for (key, english, chinese) in [
+            ("SYNC_SUCCEEDED", "Sync succeeded", "同步成功"),
+            ("SYNC_FAILED", "Sync failed", "同步失败")
+        ] {
+            XCTAssertEqual(String(localized: String.LocalizationValue(key), bundle: AppLanguage.bundle(for: "en"), locale: AppLanguage.locale(for: "en")), english)
+            XCTAssertEqual(String(localized: String.LocalizationValue(key), bundle: AppLanguage.bundle(for: "zh"), locale: AppLanguage.locale(for: "zh")), chinese)
+        }
+    }
+
     func testHistoryHealthActionsResolveInBothLanguages() {
         for (key, english, chinese) in [
             ("SYNC_TO_APPLE_HEALTH", "Sync to Apple Health", "同步到 Apple 健康"),

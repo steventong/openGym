@@ -2436,6 +2436,8 @@
   "SYNC_PENDING": "Sync pending",
   "WEIGHT_SYNCED": "Weight synced",
   "SYNCED": "Synced",
+  "SYNC_SUCCEEDED": "Sync succeeded",
+  "SYNC_FAILED": "Sync failed",
   "VIEW_STATUS": "View status",
   "PROCESSING": "Processing",
   "RECORDING": "Recording",

@@ -1,4 +1,5 @@
 import SwiftUI
+
 struct SettingsView: View {
     @Environment(GymStore.self) private var store
     @Environment(\.openURL) private var openURL
@@ -9,6 +10,7 @@ struct SettingsView: View {
     @State private var loaded = false
     @State private var pairingAgain = false
     @State private var confirmPairing = false
+
     var body: some View {
         let weightDetails = [store.healthSync.status, store.healthSync.backgroundIssue,
             String(localized: "READS_BODY_WEIGHT_AND_SYNCS_IT_TO_THIS_ACCOUNT_WITHOUT_WRITING_TO", bundle: AppLanguage.bundle, locale: AppLanguage.locale)].compactMap { $0 }.joined(separator: "\n\n")
@@ -17,62 +19,84 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 if store.userID != nil && !pairingAgain {
-                  Section("CURRENT_CONNECTION") {
-                    LabeledContent("SERVICE",value:store.online ? String(localized: "AVAILABLE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "CONNECTION_FAILED", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
-                    LabeledContent("SERVER") {
-                        Text(store.serverURL).multilineTextAlignment(.trailing).textSelection(.enabled)
+                    Section("CURRENT_CONNECTION") {
+                        LabeledContent("SERVER") {
+                            Text(store.serverURL)
+                                .lineLimit(1).truncationMode(.middle).textSelection(.enabled)
+                        }
+                        LabeledContent("ACCOUNT", value: store.userName ?? String(localized: "PAIR_AGAIN_TO_RECONNECT", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
+                        LabeledContent("SERVICE", value: store.online ? String(localized: "AVAILABLE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "CONNECTION_FAILED", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
+                        LabeledContent("LAST_SYNC", value: store.lastSync?.formatted(date: .omitted, time: .standard) ?? "—")
+                        SettingsSyncControls(isBusy: store.syncing, onSync: store.refresh) { confirmPairing = true }
                     }
-                    LabeledContent("ACCOUNT",value:store.userName ?? String(localized: "PAIR_AGAIN_TO_RECONNECT", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
-                    LabeledContent("LAST_SYNC", value: store.lastSync?.formatted(date: .omitted, time: .standard) ?? "—")
-                    HStack {
-                        Button("SYNC_NOW") { Task { await store.refresh() } }
-                        Spacer()
-                        Button("PAIR_AGAIN") { confirmPairing = true }.accessibilityIdentifier("pair-again")
-                    }.buttonStyle(.borderless).disabled(store.syncing)
-                    Text("SYNC_BACKUP_LOCATION")
-                        .font(.footnote).foregroundStyle(.secondary)
-                  }
                 } else {
-                  Section {
-                    TextField("LOCAL_SERVER_EXAMPLE",text:$server).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled().accessibilityIdentifier("server-url")
-                    TextField("ENTER_A_ONE_TIME_PAIRING_CODE",text:$code).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.textInputAutocapitalization(.characters).autocorrectionDisabled().accessibilityIdentifier("pair-code")
-                    Button { Task { await store.pair(server:server,code:code) } } label: {
-                        HStack { Text(LocalizedStringKey(store.syncing ? "PAIRING" : "CONNECT_ACCOUNT")); Spacer(); if store.syncing { ProgressView() } }
-                    }.disabled(code.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || store.syncing)
-                    if pairingAgain {
-                        Button("CANCEL_PAIRING", role: .cancel) { pairingAgain = false; code = "" }
-                            .disabled(store.syncing)
+                    Section("PAIR_OPENGYM") {
+                        TextField("LOCAL_SERVER_EXAMPLE", text: $server)
+                            .textFieldStyle(.plain).stableInputLine().submitLabel(.done)
+                            .onSubmit { GymKeyboard.dismiss() }.keyboardType(.URL)
+                            .textInputAutocapitalization(.never).autocorrectionDisabled()
+                            .accessibilityIdentifier("server-url")
+                        TextField("ENTER_A_ONE_TIME_PAIRING_CODE", text: $code)
+                            .textFieldStyle(.plain).stableInputLine().submitLabel(.done)
+                            .onSubmit { GymKeyboard.dismiss() }.textInputAutocapitalization(.characters)
+                            .autocorrectionDisabled().accessibilityIdentifier("pair-code")
+                        Button { Task { await store.pair(server: server, code: code) } } label: {
+                            HStack {
+                                Text(LocalizedStringKey(store.syncing ? "PAIRING" : "CONNECT_ACCOUNT"))
+                                Spacer()
+                                if store.syncing { ProgressView() }
+                            }
+                        }
+                        .disabled(code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || store.syncing)
+                        if pairingAgain {
+                            Button("CANCEL_PAIRING", role: .cancel) { pairingAgain = false; code = "" }
+                                .disabled(store.syncing)
+                        }
                     }
-                } header: { Text("PAIR_OPENGYM") } footer: {
-                    Text("GET_A_PAIRING_CODE_FROM_ACCOUNT_IN_THE_WEB_APP_IT_EXPIRES")
-                  }
                 }
-                Section {
-                    Toggle("SYNC_WEIGHT_FROM_APPLE_HEALTH",isOn:Binding(get:{store.healthSync.enabled},set:{ value in Task { await store.healthSync.setEnabled(value) } }))
-                        .disabled(!store.healthSync.available || (store.healthSync.busy && !store.healthSync.enabled) || store.userID == nil).accessibilityIdentifier("health-weight-enabled")
+
+                Section("PERSONAL_SETTINGS") {
+                    NavigationLink("FILTER_BY_GYM_EQUIPMENT") { EquipmentProfilesView() }
+                    NavigationLink("WORKOUT_PREFERENCES_AND_UNITS") { PersonalSettingsView() }
+                    NavigationLink("BODY_WEIGHT_AND_GOAL") { BodyRecordsView(measurements: false) }
+                    NavigationLink("BODY_MEASUREMENTS") { BodyRecordsView(measurements: true) }
+                }
+
+                Section("APPLE_HEALTH") {
+                    Toggle("SYNC_WEIGHT_FROM_APPLE_HEALTH", isOn: Binding(get: { store.healthSync.enabled }, set: { value in
+                        Task { await store.healthSync.setEnabled(value) }
+                    }))
+                    .disabled(!store.healthSync.available || (store.healthSync.busy && !store.healthSync.enabled) || store.userID == nil)
+                    .accessibilityIdentifier("health-weight-enabled")
                     LabeledContent("SYNC_STATUS") {
                         StatusDetailButton(title: weightStatus, message: "\(weightDetails)",
                             warning: store.healthSync.backgroundIssue != nil || store.healthSync.pending)
                     }
                     LabeledContent("LAST_READ", value: store.healthSync.lastRead?.formatted(date: .abbreviated, time: .shortened) ?? "—")
-                    Button("ALLOW_WEIGHT_ACCESS") { Task { await store.healthSync.setEnabled(true) } }.disabled(store.healthSync.busy || !store.healthSync.available || store.userID == nil)
-                    Button("SYNC_WEIGHT_NOW") { Task { await store.healthSync.sync() } }.disabled(!store.healthSync.enabled || store.healthSync.busy || store.syncing)
-                } header: { Text("APPLE_HEALTH") }
-                Section {
-                    Toggle("SYNC_WORKOUTS_TO_APPLE_FITNESS", isOn: Binding(get: { store.workoutHealth.enabled }, set: { value in Task { await store.workoutHealth.setEnabled(value) } }))
-                        .disabled(!store.workoutHealth.available || !store.workoutHealth.canChangeSetting)
-                        .accessibilityIdentifier("health-workout-enabled")
+                    Button("ALLOW_WEIGHT_ACCESS") { Task { await store.healthSync.setEnabled(true) } }
+                        .disabled(store.healthSync.busy || !store.healthSync.available || store.userID == nil)
+                    Button("SYNC_WEIGHT_NOW") { Task { await store.healthSync.sync() } }
+                        .disabled(!store.healthSync.enabled || store.healthSync.busy || store.syncing)
+                }
+
+                Section("APPLE_FITNESS_WORKOUT_SYNC") {
+                    Toggle("SYNC_WORKOUTS_TO_APPLE_FITNESS", isOn: Binding(get: { store.workoutHealth.enabled }, set: { value in
+                        Task { await store.workoutHealth.setEnabled(value) }
+                    }))
+                    .disabled(!store.workoutHealth.available || !store.workoutHealth.canChangeSetting)
+                    .accessibilityIdentifier("health-workout-enabled")
                     LabeledContent("SYNC_STATUS") {
-                        StatusDetailButton(title: workoutStatus,
-                            message: "\(workoutDetails)",
+                        StatusDetailButton(title: workoutStatus, message: "\(workoutDetails)",
                             warning: store.workoutHealth.current?.state == .failed)
                     }
                     Button("ALLOW_WORKOUT_AND_ACTIVITY_ACCESS") { Task { await store.workoutHealth.authorize() } }
                         .disabled(store.workoutHealth.busy || !store.workoutHealth.available)
-                    Button("RETRY_WORKOUT_SYNC") { store.workoutHealth.retry(wakeWatch: true) }.disabled(!store.workoutHealth.available)
-                } header: { Text("APPLE_FITNESS_WORKOUT_SYNC") }
+                    Button("RETRY_WORKOUT_SYNC") { store.workoutHealth.retry(wakeWatch: true) }
+                        .disabled(!store.workoutHealth.available)
+                }
+
                 if let notifications = store.restNotifications {
-                    Section {
+                    Section("SYSTEM_NOTIFICATIONS") {
                         Toggle("REST_END_NOTIFICATIONS", isOn: Binding(get: { notifications.enabled }, set: { value in
                             Task { await notifications.setEnabled(value) }
                         }))
@@ -85,32 +109,31 @@ struct SettingsView: View {
                         Button(LocalizedStringKey(notifications.permission.authorization == .notDetermined ? "ALLOW_NOTIFICATIONS" : "SYSTEM_NOTIFICATION_SETTINGS")) {
                             if notifications.permission.authorization == .notDetermined { Task { await notifications.authorize() } }
                             else if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) }
-                        }.disabled(notifications.busy)
-                    } header: { Text("SYSTEM_NOTIFICATIONS") }
+                        }
+                        .disabled(notifications.busy)
+                    }
                 }
-                Section("PERSONAL_SETTINGS") {
-                    NavigationLink("FILTER_BY_GYM_EQUIPMENT") { EquipmentProfilesView() }
-                    NavigationLink("WORKOUT_PREFERENCES_AND_UNITS") { PersonalSettingsView() }
-                    NavigationLink("BODY_WEIGHT_AND_GOAL") { BodyRecordsView(measurements:false) }
-                    NavigationLink("BODY_MEASUREMENTS") { BodyRecordsView(measurements:true) }
-                }
+
                 Section("ABOUT") {
-                    LabeledContent("CLIENT",value:String(localized: "SWIFTUI_NATIVE_PREVIEW_ZERO_ONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
-                    LabeledContent("EXERCISES",value:String(format: String(localized: "COUNT_EXERCISES", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: store.exercises.count)))
+                    LabeledContent("EXERCISES", value: String(format: String(localized: "COUNT_EXERCISES", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: store.exercises.count)))
                     Button("LICENSES_AND_CREDITS") { notice = true }
                 }
-            }.navigationTitle("SETTINGS").toolbar { ToolbarItem(placement:.topBarTrailing) { Button("DONE") { dismiss() } } }
-                .onAppear { guard !loaded else { return }; loaded = true; server = store.serverURL }
-                .task { await store.restNotifications?.flush() }
-                .confirmationDialog("PAIR_OPENGYM_AGAIN", isPresented: $confirmPairing, titleVisibility: .visible) {
-                    Button("PAIR_AGAIN") { server = store.serverURL; code = ""; pairingAgain = true }
-                    Button("CANCEL", role: .cancel) {}
-                }
-                .sheet(isPresented:$notice) {
-                    ScrollView { Text((try? String(contentsOf:Bundle.main.url(forResource:"NOTICE",withExtension:"txt")!,encoding:.utf8)) ?? "openGym · GNU AGPL v3.0").font(.system(size:12)).padding() }
-                }
+            }
+            .navigationTitle("SETTINGS")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("DONE") { dismiss() } } }
+            .onAppear { guard !loaded else { return }; loaded = true; server = store.serverURL }
+            .task { await store.restNotifications?.flush() }
+            .confirmationDialog("PAIR_OPENGYM_AGAIN", isPresented: $confirmPairing, titleVisibility: .visible) {
+                Button("PAIR_AGAIN") { server = store.serverURL; code = ""; pairingAgain = true }
+                Button("CANCEL", role: .cancel) {}
+            }
+            .sheet(isPresented: $notice) {
+                ScrollView { Text((try? String(contentsOf: Bundle.main.url(forResource: "NOTICE", withExtension: "txt")!, encoding: .utf8)) ?? "openGym · GNU AGPL v3.0").font(.system(size: 12)).padding() }
+            }
         }.tint(GymTheme.green)
     }
+
     private var weightStatus: LocalizedStringKey {
         if !store.healthSync.available { return "UNAVAILABLE" }
         if store.healthSync.busy { return "SYNCING" }
@@ -131,4 +154,23 @@ struct SettingsView: View {
         case nil: return "VIEW_STATUS"
         }
     }
+}
+
+#Preview("Connected") {
+    let store = GymStore(userID: "preview")
+    store.serverURL = "https://gym.example.com"
+    store.userName = "Alex"
+    store.online = true
+    store.lastSync = Date()
+    if let url = Bundle.main.url(forResource: "catalogue", withExtension: "json"),
+       let data = try? Data(contentsOf: url), let exercises = try? JSONDecoder().decode([Exercise].self, from: data) {
+        store.registerCatalogue(exercises)
+    }
+    return SettingsView().environment(store).environment(\.locale, AppLanguage.locale)
+}
+
+#Preview("Pair account · Dark") {
+    let store = GymStore()
+    store.serverURL = "https://gym.example.com"
+    return SettingsView().environment(store).environment(\.locale, AppLanguage.locale).preferredColorScheme(.dark)
 }

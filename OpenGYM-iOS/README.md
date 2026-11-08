@@ -6,10 +6,10 @@ openGym 的 SwiftUI 原生开发版本。仅在 `native-ios/` 内新增代码；
 
 - iOS 26+；Xcode 26+（本次以 Xcode 27.1 / iPhone 17 Pro，iOS 26.5 验证）。
 - 打开 `OpenGYM.xcodeproj`，选择 `OpenGYM` scheme 和 iPhone 模拟器，Run。
-- 原生顶层目录按职责划分：`App/` 放 iPhone/iPad 源码与配置，`Watch/`、`Widgets/` 分别放手表和 Widget，`Shared/` 放跨 target 代码与品牌资源，`Resources/` 放 iOS 资源及集中管理的本地化，`Tests/` 放测试。Xcode 顶层分组与磁盘目录一致，不再嵌套 `OpenGYM/`；工程、target、scheme 和对应模块统一使用 `OpenGYM` 命名，Bundle ID 保持不变。
+- 原生顶层目录按职责划分：`App/` 放 iPhone/iPad 源码与配置，`Watch/`、`Widgets/` 分别放手表和 Widget，`Shared/` 放跨 target 代码，`Resources/` 集中存放各端资源与本地化，`Tests/` 放测试。Xcode 顶层分组与磁盘目录一致，不再嵌套 `OpenGYM/`；工程、target、scheme 和对应模块统一使用 `OpenGYM` 命名，Bundle ID 保持不变。
 - SwiftUI 预览放在对应 View 文件中；Watch 的训练／休息预览打开 `Watch/View/WatchTrainingView.swift`，等待手机预览打开 `Watch/View/WatchWaitingView.swift`，选择 `OpenGYMWatch` scheme 和 Apple Watch 模拟器。`WatchRootView` 仅负责状态切换与刷新。`Shared/` 按 `Models/`、`Services/`、`ViewModels/`、`Views/` 分类，根目录不平铺 Swift 文件；`Views/` 再按 `TrainingContent/`、`TrainingAction/`、`Timer/`、`Style/`、`LiveActivity/` 分组。共享训练内容入口为 `Shared/Views/TrainingContent/TrainingContentView.swift`，按类型分文件维护。
 - Shared Swift 源文件的 target 归属由 `scripts/shared-sources.rb` 统一管理：`Watch/`、`Health/` 功能目录用于 App + Watch，`LiveActivity/` 用于 App + Widget，其余三端共用。移动文件时保持磁盘目录、Xcode 分组与这套规则一致。
-- 品牌资源统一放在 `Shared/Assets.xcassets`，由 iOS、Watch 和 Widget 三个 target 共同引用：`BrandMark` 是启动屏与实时活动共用的透明哑铃矢量图，`BrandLogo` 是手表等待页使用的方形品牌图。iOS 与 Watch 的 AppIcon 和各自不同色值的 AccentColor 保留在平台目录，动作缩略图与视频均按需下载，不编译进任何 App target；Widget 不再保留独立资源目录。工程生成与配置脚本会同步这些 target membership。
+- 所有 Asset Catalog 资源统一放在唯一的 `Resources/Assets.xcassets`，由 iOS、Watch 和 Widget 三个 target 共同引用。`AppIcon` 在同一个 appiconset 中包含 iPhone、iPad 和 Watch 槽位，相同尺寸共用 PNG；`AccentColor` 在同一个 colorset 中保留默认色与 Watch 色值。`BrandMark` 是启动屏与实时活动共用的透明哑铃矢量图，`BrandLogo` 是手表等待页使用的方形品牌图。动作缩略图与视频仍按需下载，不编译进任何 App target。工程生成与配置脚本同步这些 target membership；`scripts/build-app-icons.py --check` 与 `ruby scripts/check-assets.rb` 可检查图标和资源引用。
 - 不需要 Swift Package、CocoaPods 或 Capacitor。模拟器使用本机服务 `http://localhost:8080`。
 - 真机请填写可访问的 HTTPS 服务地址，选择自己的 Signing Team；`localhost` 在真机上指手机本身。
 - 必须保留模拟器的 ad-hoc 签名和 `OpenGYM.entitlements`；不要用 `CODE_SIGNING_ALLOWED=NO`，否则 Keychain 无法保存配对凭据。

@@ -2436,6 +2436,8 @@
   "SYNC_PENDING": "待同步",
   "WEIGHT_SYNCED": "体重已同步",
   "SYNCED": "已同步",
+  "SYNC_SUCCEEDED": "同步成功",
+  "SYNC_FAILED": "同步失败",
   "VIEW_STATUS": "查看状态",
   "PROCESSING": "处理中",
   "RECORDING": "记录中",

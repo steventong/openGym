@@ -2269,24 +2269,6 @@
         }
       }
     },
-    "CLIENT": {
-      "comment": "客户端",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Client"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "客户端"
-          }
-        }
-      }
-    },
     "CLOSE_EXERCISE_DETAILS": {
       "comment": "关闭动作详情",
       "extractionState": "manual",
@@ -6729,24 +6711,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "认识你"
-          }
-        }
-      }
-    },
-    "GET_A_PAIRING_CODE_FROM_ACCOUNT_IN_THE_WEB_APP_IT_EXPIRES": {
-      "comment": "配对码在网页「账号」中获取，5 分钟有效。",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Get a pairing code from Account in the web app. It expires in 5 minutes."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "配对码在网页「账号」中获取，5 分钟有效。"
           }
         }
       }
@@ -13195,24 +13159,6 @@
         }
       }
     },
-    "START_TODAY_S_WORKOUTS": {
-      "comment": "开始今日安排",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start today's workouts"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "开始今日安排"
-          }
-        }
-      }
-    },
     "START_WORKOUT": {
       "comment": "开始训练",
       "extractionState": "manual",
@@ -13483,24 +13429,6 @@
         }
       }
     },
-    "SWIFTUI_NATIVE_PREVIEW_ZERO_ONE": {
-      "comment": "SwiftUI 原生预览 · 0.1",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SwiftUI native preview · 0.1"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SwiftUI 原生预览 · 0.1"
-          }
-        }
-      }
-    },
     "SWITCH_TO_COUNT": {
       "comment": "切换为 {0}",
       "extractionState": "manual",
@@ -13591,20 +13519,20 @@
         }
       }
     },
-    "SYNC_BACKUP_LOCATION": {
-      "comment": "每次同步前自动保存服务器快照，可在“文件”App → OpenGYM → backup 中查看。",
+    "SYNC_FAILED": {
+      "comment": "同步失败",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A server snapshot is saved before every sync. Find it in Files → OpenGYM → backup."
+            "value": "Sync failed"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "每次同步前自动保存服务器快照，可在“文件”App → OpenGYM → backup 中查看。"
+            "value": "同步失败"
           }
         }
       }
@@ -13767,6 +13695,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "已停止同步，已有体重记录保留"
+          }
+        }
+      }
+    },
+    "SYNC_SUCCEEDED": {
+      "comment": "同步成功",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync succeeded"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同步成功"
           }
         }
       }
@@ -14595,24 +14541,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "动作已在其他设备修改，请刷新后核对。"
-          }
-        }
-      }
-    },
-    "THIS_IOS_VERSION_SYNCS_WORKOUT_DURATION_WHEN_YOU_FINISH_WITHOUT_LIVE_METRICS": {
-      "comment": "当前 iOS 将在结束时同步训练时长，不采集实时指标。",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This iOS version syncs workout duration when you finish, without live metrics."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "当前 iOS 将在结束时同步训练时长，不采集实时指标。"
           }
         }
       }

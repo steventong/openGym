@@ -161,8 +161,10 @@ import Observation
         }
         #endif
     }
-    func refresh() async {
-        guard !loading, !syncing, !backgroundMutation, let client else { return }; loading = true; defer { loading = false }
+    @discardableResult func refresh() async -> Result<Void, Error> {
+        guard !loading, !syncing, !backgroundMutation else { return .failure(APIError.busy) }
+        guard let client else { return .failure(APIError.signIn) }
+        loading = true; defer { loading = false }
         do {
             let health = try await client.request("api/health")
             online = health["ok"] as? Bool == true
@@ -182,11 +184,18 @@ import Observation
                 if changed { restoreLocalTraining() }
                 cacheProfile()
                 lastSync = Date(); status = String(localized: "SYNCED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
-            } else { status = String(localized: "SERVER_CONNECTED_ACCOUNT_NOT_PAIRED", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
+                return .success(())
+            } else {
+                status = String(localized: "SERVER_CONNECTED_ACCOUNT_NOT_PAIRED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+                return .failure(APIError.signIn)
+            }
         } catch {
-            if let issue = localSaveIssues["serverBackup"], error.localizedDescription == issue { status = issue; self.error = issue; return }
+            if let issue = localSaveIssues["serverBackup"], error.localizedDescription == issue {
+                status = issue; self.error = issue; return .failure(error)
+            }
             if case APIError.response(401, _) = error { userName = nil; status = String(localized: "PAIR_AGAIN_TO_RECONNECT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
             else { online = false; status = String(localized: "OFFLINE_USING_LOCAL_DATA", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
+            return .failure(error)
         }
     }
     func pair(server: String, code: String) async {

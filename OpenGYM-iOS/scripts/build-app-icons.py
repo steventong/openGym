@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build explicit iOS/watchOS AppIcon sizes with macOS sips; no dependencies.
 
-Run from any directory: python3 native-ios/scripts/build-app-icons.py [--check]
-The original 1024px artwork is retained. Regenerate after changing either original.
+Run from any directory: python3 OpenGYM-iOS/scripts/build-app-icons.py [--check]
+One shared AppIcon contains every platform slot. Regenerate after changing the 1024px artwork.
 Explicit slots provide a compatibility fallback for Health/Fitness icon consumers.
 """
 
@@ -45,11 +45,8 @@ def catalogs():
     watch += [image(size, 2, "watch", role="quickLook", subtype=subtype) for size, subtype in (
         (86, "38mm"), (98, "42mm"), (108, "44mm"), (117, "45mm"), (129, "49mm"),
     )]
-    watch.append({"filename": "AppIcon.png", "idiom": "watch-marketing", "size": "1024x1024", "scale": "1x"})
-    return (
-        (ROOT / "Resources/Assets.xcassets/AppIcon.appiconset", "AppIcon-512@2x.png", ios),
-        (ROOT / "Watch/Assets.xcassets/AppIcon.appiconset", "AppIcon.png", watch),
-    )
+    watch.append({"filename": "AppIcon-512@2x.png", "idiom": "watch-marketing", "size": "1024x1024", "scale": "1x"})
+    return ((ROOT / "Resources/Assets.xcassets/AppIcon.appiconset", "AppIcon-512@2x.png", ios + watch),)
 
 
 def check_png(path, pixels):

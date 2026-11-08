@@ -17,7 +17,8 @@ watch.build_configurations.each do |c|
     'CODE_SIGN_STYLE'=>'Automatic', 'DEVELOPMENT_TEAM'=>app.build_configurations.first.build_settings['DEVELOPMENT_TEAM'],
     'MARKETING_VERSION'=>app.build_configurations.first.build_settings['MARKETING_VERSION'],
     'CURRENT_PROJECT_VERSION'=>app.build_configurations.first.build_settings['CURRENT_PROJECT_VERSION'],
-    'ASSETCATALOG_COMPILER_APPICON_NAME'=>'AppIcon'
+    'ASSETCATALOG_COMPILER_APPICON_NAME'=>'AppIcon',
+    'ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME'=>'AccentColor'
   })
 end
 
@@ -34,11 +35,8 @@ SharedSources.register(project, root, targets: [app, watch])
 Dir.glob(File.join(root, 'Watch/**/*.swift')).each { |p| add_source(project, watch, p.delete_prefix(root+'/')) }
 tests = project.targets.find { |t| t.name == 'OpenGYMTests' }
 Dir.glob(File.join(root, 'Tests/*.swift')).each { |p| add_source(project, tests, p.delete_prefix(root+'/')) }
-watch_group = project.main_group.find_subpath('Watch', false)
-assets = watch_group.files.find { |f| f.path == 'Assets.xcassets' } || watch_group.new_file('Assets.xcassets')
-watch.resources_build_phase.add_file_reference(assets) unless watch.resources_build_phase.files_references.include?(assets)
-shared_group = project.main_group.groups.find { |g| g.path == 'Shared' } || project.main_group.new_group('Shared', 'Shared')
-shared_assets = shared_group.files.find { |f| f.path == 'Assets.xcassets' } || shared_group.new_file('Assets.xcassets')
+resources_group = project.main_group.groups.find { |g| g.path == 'Resources' } || project.main_group.new_group('Resources', 'Resources')
+shared_assets = resources_group.files.find { |f| f.path == 'Assets.xcassets' } || resources_group.new_file('Assets.xcassets')
 [app, watch].each do |target|
   target.resources_build_phase.add_file_reference(shared_assets) unless target.resources_build_phase.files_references.any? { |file| file.uuid == shared_assets.uuid }
 end

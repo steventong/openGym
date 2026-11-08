@@ -36,8 +36,8 @@ SharedSources.register(project, root, targets: [app, widget])
     end
   end
 end
-# Share only the small brand catalog, not the app's exercise thumbnails.
-assets = activity_file(project, 'Shared/Assets.xcassets')
+# 三端共用唯一的资源库，图标和强调色由 asset catalog 的平台槽位区分。
+assets = activity_file(project, 'Resources/Assets.xcassets')
 [app, widget].each do |target|
   target.resources_build_phase.add_file_reference(assets) unless target.resources_build_phase.files_references.any? { |file| file.uuid == assets.uuid }
 end
