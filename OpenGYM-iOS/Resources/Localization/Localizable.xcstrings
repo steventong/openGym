@@ -757,6 +757,24 @@
         }
       }
     },
+    "ALL_TRAINING_PLANS": {
+      "comment": "所有计划",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All plans"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所有计划"
+          }
+        }
+      }
+    },
     "ALREADY_TRAINING_CONSISTENTLY": {
       "comment": "已经持续训练一段时间",
       "extractionState": "manual",
@@ -15045,6 +15063,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "今天"
+          }
+        }
+      }
+    },
+    "TODAY_S_PLAN": {
+      "comment": "今日计划",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's plan"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日计划"
           }
         }
       }

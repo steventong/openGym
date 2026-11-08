@@ -77,11 +77,15 @@ struct WorkoutView: View {
                                 emptyWorkout
                                 Spacer(minLength: 0)
                             } else {
-                                EmptyCard(icon: "figure.strengthtraining.traditional", title: "START_WORKOUT")
+                                planHeading(title: "START_WORKOUT", icon: "figure.strengthtraining.traditional")
                                 GreenButton(title: "FREESTYLE", icon: "figure.strengthtraining.traditional") { store.startFreestyle() }
                                     .accessibilityIdentifier("start-freestyle-workout")
                                 let scheduled = store.scheduledRoutines(on: Date())
-                                if !scheduled.isEmpty { GreenButton(title: "START_TODAY_S_WORKOUTS", icon: "play.fill") { store.start(scheduled) } }
+                                if !scheduled.isEmpty {
+                                    planHeading(title: "TODAY_S_PLAN", icon: "calendar")
+                                    GreenButton(title: "\(scheduled.map(\.name).joined(separator: " + "))", icon: "play.fill") { store.start(scheduled) }
+                                }
+                                planHeading(title: "ALL_TRAINING_PLANS", icon: "list.bullet")
                                 ForEach(store.routines) { r in GreenButton(title: "\(r.name)", icon: "play.fill") { store.start(r) } }
                                 if store.routines.isEmpty { GreenButton(title: "GO_TO_ROUTINES") { store.selectedTab = 1 } }
                             }
@@ -115,6 +119,15 @@ struct WorkoutView: View {
             }
             .task { while !Task.isCancelled { store.settleTimer(); try? await Task.sleep(for: .seconds(1)) } }
     }
+    private func planHeading(title: LocalizedStringKey, icon: String) -> some View {
+        Label(title, systemImage: icon)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(GymTheme.muted)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .accessibilityAddTraits(.isHeader)
+    }
+
     private var emptyWorkout: some View {
         VStack(spacing: 16) {
             Image(systemName: "dumbbell")
