@@ -35,6 +35,14 @@ import Observation
     @ObservationIgnored var watchBridge: PhoneWatchBridge?
     @ObservationIgnored var liveActivity: WorkoutActivityCoordinator?
     var restNotifications: RestNotifications?
+    /// 本机开关由手机持久化，并随训练快照下发给手表控制动作检测。
+    var autoEndRestEnabled: Bool {
+        didSet {
+            defaults.set(autoEndRestEnabled, forKey: "watch.autoEndRest.enabled")
+            publishTraining()
+        }
+    }
+    @ObservationIgnored private let defaults: UserDefaults
     var liveActivityIssue: String?
     var localSaveIssues: [String: String] = [:] { didSet { publishTraining() } }
     var localSaveError: String? {
@@ -56,7 +64,11 @@ import Observation
     private var client: APIClient?
     @ObservationIgnored private var loading = false
     @ObservationIgnored private var backgroundMutation = false
-    init(client: APIClient? = nil, userID: String? = nil, storage: LocalTrainingStorage = LocalTrainingStorage()) { self.client = client; self.userID = userID; self.localStorage = storage }
+    init(client: APIClient? = nil, userID: String? = nil, storage: LocalTrainingStorage = LocalTrainingStorage(), defaults: UserDefaults = .standard) {
+        self.client = client; self.userID = userID; self.localStorage = storage
+        self.defaults = defaults
+        self.autoEndRestEnabled = defaults.bool(forKey: "watch.autoEndRest.enabled")
+    }
     private func publishTraining() { restNotifications?.publish(); watchBridge?.publish(); liveActivity?.publish() }
     var unit: String { state["unit"] as? String ?? "kg" }
     var routines: [Routine] { (state["routines"] as? [[String: Any]] ?? []).filter { ($0["id"] as? String) != nil }.map { Routine(raw: $0) } }

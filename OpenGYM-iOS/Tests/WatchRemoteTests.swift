@@ -134,6 +134,40 @@ import XCTest
         snapshot.nextEntry = nil
         XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .finished)
     }
+    func testFinishedScreenFollowsConfirmedLastSetAndReturnsToTrainingWhenReopened() throws {
+        XCTAssertFalse(store.watchSnapshot().isFinished)
+        _ = store.performReadyWatchCommand(try completeCommand())
+        XCTAssertFalse(store.watchSnapshot().isFinished)
+        _ = store.performReadyWatchCommand(try endRestCommand())
+        _ = store.performReadyWatchCommand(try completeCommand())
+
+        let finished = store.watchSnapshot()
+        XCTAssertNotNil(finished.sessionID, "The completion screen must not wait for the phone to save the workout")
+        XCTAssertTrue(finished.isFinished)
+        XCTAssertNil(finished.restEnd)
+
+        XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
+        XCTAssertFalse(store.watchSnapshot().isFinished)
+    }
+    func testFinishedScreenExcludesWaitingAndEmptyDraft() throws {
+        XCTAssertFalse(WatchTrainingSnapshot().isFinished)
+        store.draft = try TrainingDraft.fromWeb(["id": "empty", "name": "训练", "start": 1000,
+            "cur": 0, "entries": []], unit: "kg")
+        XCTAssertFalse(store.watchSnapshot().isFinished)
+        store.draft = nil
+        XCTAssertFalse(store.watchSnapshot().isFinished)
+    }
+    func testFinishedScreenWaitsForRestAndRemainingExercises() {
+        var snapshot = WatchTrainingSnapshot(sessionID: "session", exercise: "卧推")
+        XCTAssertTrue(snapshot.isFinished)
+        snapshot.restEnd = Date().addingTimeInterval(90)
+        XCTAssertFalse(snapshot.isFinished)
+        snapshot.restEnd = Date().addingTimeInterval(-1)
+        XCTAssertFalse(snapshot.isFinished, "Expired rest still waits for the phone to end it")
+        snapshot.restEnd = nil
+        snapshot.nextEntry = 1
+        XCTAssertFalse(snapshot.isFinished)
+    }
     func testPendingConfirmationTakesPriorityOverEveryTrainingAction() throws {
         let command = try completeCommand()
         let snapshots = [store.watchSnapshot(),

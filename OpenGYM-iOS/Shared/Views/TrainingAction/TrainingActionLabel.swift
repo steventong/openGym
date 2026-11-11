@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// 手表、锁屏和灵动岛共用的训练操作外观，不负责处理点击或修改训练数据。
-/// 上排显示训练／组间休息计时，下排始终显示操作文字；禁用只改变配色。
+/// 上排显示训练／组间休息计时，下排仅可点击时显示操作文字，隐藏时保留占位。
 struct TrainingActionLabel: View {
     let title: String
     let symbol: String
@@ -21,6 +21,8 @@ struct TrainingActionLabel: View {
                 .font(.system(size: 16 * scale, weight: .semibold))
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
+                .opacity(unavailable ? 0 : 1)
+                .accessibilityHidden(unavailable)
         }
         .padding(.horizontal, 10 * scale)
         .lineLimit(1)

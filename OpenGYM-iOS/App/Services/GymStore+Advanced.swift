@@ -62,16 +62,21 @@ extension GymStore {
         changeActive { $0["nativeActionReadyAt"] = TrainingActionTiming.deadline(after: now).timeIntervalSince1970 }
     }
     func endRestFromTextButton(at now: Date) {
+        endRest(startedAt: now, confirmedAt: now)
+    }
+    /// 实际起点和确认时间分开：回溯训练用时不缩短跨设备按钮保护期。
+    func endRest(startedAt: Date, confirmedAt: Date) {
         changeActive {
             $0.removeValue(forKey: "nativeRest")
-            $0["nativeSetStartedAt"] = now.timeIntervalSince1970
-            $0["nativeActionReadyAt"] = TrainingActionTiming.deadline(after: now).timeIntervalSince1970
+            $0["nativeSetStartedAt"] = startedAt.timeIntervalSince1970
+            $0["nativeActionReadyAt"] = TrainingActionTiming.deadline(after: confirmedAt).timeIntervalSince1970
         }
     }
     func startRest(entry:Int,seconds:Double,set:Int? = nil) {
         changeActive { raw in
             if seconds > 0 {
-                var rest: [String: Any] = ["entry":entry,"end":Date().addingTimeInterval(seconds).timeIntervalSince1970]
+                let now = Date()
+                var rest: [String: Any] = ["entry":entry,"start":now.timeIntervalSince1970,"end":now.addingTimeInterval(seconds).timeIntervalSince1970]
                 rest["set"] = set; raw["nativeRest"] = rest
             }
             else { raw.removeValue(forKey:"nativeRest") }
@@ -111,7 +116,8 @@ extension GymStore {
             guard entries.indices.contains(entry) else { return }
             var target = entries[entry]["target"] as? [String: Any] ?? [:]
             target["restSec"] = seconds; entries[entry]["target"] = target; raw["entries"] = entries
-            raw["nativeRest"] = ["entry": entry, "end": Date().addingTimeInterval(seconds).timeIntervalSince1970]
+            let now = Date()
+            raw["nativeRest"] = ["entry": entry, "start": now.timeIntervalSince1970, "end": now.addingTimeInterval(seconds).timeIntervalSince1970]
         }
     }
     func previousExerciseReference(_ entry: [String: Any], before: Double, exclude: String) -> (text: String, note: String?) {

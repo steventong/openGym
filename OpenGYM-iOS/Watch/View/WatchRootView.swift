@@ -15,10 +15,12 @@ struct WatchRootView: View {
         Group {
             // snapshot 是手机通过 WatchConnectivity 同步给手表的训练状态快照；
             // 它代表最近收到的状态，断线时不一定是手机当前的最新状态。
-            // sessionID 标识一次训练（不是登录会话）：为空时显示等待手机，否则显示训练仪表盘。
+            // sessionID 标识一次训练（不是登录会话）；完成后用独立结束页替换训练仪表盘。
             // 训练中与休息中属于同一次训练，sessionID 相同，由 restEnd 等字段区分状态。
             if store.snapshot.sessionID == nil {
                 WatchWaitingView()
+            } else if store.snapshot.isFinished {
+                WatchWorkoutFinishedView()
             } else {
                 WatchTrainingView(viewModel: trainingViewModel, healthReport: store.currentHealthReport,
                     onPrimaryAction: store.performPrimaryAction)

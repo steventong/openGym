@@ -14,10 +14,16 @@ extension WatchRemoteStore {
         guard !isPreview else { return }
         restReminder.onError = { [weak self] message in self?.error = message }
         restReminder.start()
-        healthRecorder.onSessionStateChange = { [weak self] in self?.updateReminder() }
+        restMotion.onResume = { [weak self] command in
+            guard let self, case .idle = commandState,
+                  command.account == snapshot.account, command.sessionID == snapshot.sessionID,
+                  command.revision == snapshot.revision, snapshot.restEnd != nil else { return }
+            send(command)
+        }
+        healthRecorder.onSessionStateChange = { [weak self] in self?.updateCompanionServices() }
         healthRecorder.onReport = { [weak self] report in self?.publishHealth(report) }
         healthRecorder.accept([])
-        updateReminder()
+        updateCompanionServices()
         guard WCSession.isSupported() else { return }
         WCSession.default.delegate = self
         WCSession.default.activate()
@@ -64,6 +70,7 @@ extension WatchRemoteStore {
     private func updateReachability() {
         let session = WCSession.default
         reachable = session.activationState == .activated && session.isReachable
+        updateCompanionServices()
     }
 
     private func finishConnection() {
@@ -75,7 +82,9 @@ extension WatchRemoteStore {
     /// 抬腕进入前台时刷新手机状态；具体震动和通知调度交给提醒对象。
     func setForegroundActive(_ active: Bool) {
         guard !isPreview else { return }
+        foregroundActive = active
         restReminder.setForegroundActive(active)
+        updateCompanionServices()
         if active { refresh() }
     }
 
@@ -152,6 +161,7 @@ extension WatchRemoteStore {
         updateReachability()
         guard reachable else { refresh(); return }
         commandState = .sending(command)
+        updateCompanionServices()
         UserDefaults.standard.set(try? JSONEncoder().encode(command), forKey: "remote.pending")
         error = nil
         timeout?.cancel()
@@ -171,6 +181,7 @@ extension WatchRemoteStore {
     /// 超时或发送失败都进入“等待确认”；不把通信失败当作手机没有执行。
     private func commandUnconfirmed(id: String) {
         guard commandState.markUnconfirmed(commandID: id) else { return }
+        updateCompanionServices()
         timeout?.cancel()
         timeout = nil
         error = String(localized: "YOUR_PHONE_HAS_NOT_CONFIRMED_YET_YOU_CAN_RETRY_CONFIRMATION", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
@@ -180,6 +191,7 @@ extension WatchRemoteStore {
     /// 手机已给出结果，或账号／训练已切换时，清除内存和磁盘中的待确认命令。
     private func clearCommand() {
         commandState = .idle
+        updateCompanionServices()
         timeout?.cancel()
         timeout = nil
         UserDefaults.standard.removeObject(forKey: "remote.pending")
@@ -219,7 +231,7 @@ extension WatchRemoteStore {
                 clearCommand()
                 error = String(localized: "THE_WORKOUT_CHANGED_UPDATED_TO_MATCH_YOUR_PHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
             }
-            updateReminder()
+            updateCompanionServices()
         }
 
         // 若前面的快照已经确认此命令，这里不会再次震动。
@@ -252,7 +264,7 @@ extension WatchRemoteStore {
         // 上一场训练迟到的报告仍需回传，但不能替换当前训练的实时指标。
         let expected = "\(snapshot.account):\(snapshot.sessionID ?? "")"
         if report.id == expected || healthReport == nil || healthReport?.id == report.id { healthReport = report }
-        updateReminder()
+        updateCompanionServices()
         guard WCSession.default.activationState == .activated else { return }
         let payload = HealthWorkoutWire.report(report)
         if WCSession.default.isReachable { WCSession.default.sendMessage(payload, replyHandler: nil, errorHandler: { _ in }) }
@@ -266,10 +278,12 @@ extension WatchRemoteStore {
         }
     }
 
-    /// 只传入当前训练是否正在采集；通知和震动的具体规则由提醒对象负责。
-    private func updateReminder() {
+    /// Store 只协调状态；提醒与动作采样的规则分别由各自服务负责。
+    private func updateCompanionServices() {
         let workoutRunning = snapshot.sessionID.map { healthRecorder.runningSessionID == "\(snapshot.account):\($0)" } ?? false
         restReminder.update(snapshot, workoutRunning: workoutRunning)
+        restMotion.update(snapshot, canSend: reachable && commandState == .idle,
+            runtimeAvailable: foregroundActive || workoutRunning)
     }
 
     // MARK: - 本地恢复

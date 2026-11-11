@@ -1,6 +1,23 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "NSMotionUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Detect repeated wrist movement during rest to end rest automatically and time your next set from the first movement."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅在休息阶段检测手腕重复动作，自动结束休息，并从第一次动作开始计算下一组训练时间。"
+          }
+        }
+      }
+    },
     "NSHealthShareUsageDescription": {
       "comment": "读取本次训练的心率、活动与静息能量，用于显示心率、活动热量和总热量（kcal）。",
       "extractionState": "manual",

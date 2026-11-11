@@ -10,6 +10,8 @@
 	<array>
 		<string>audio</string>
 	</array>
+	<key>NSMotionUsageDescription</key>
+	<string>Detect repeated wrist movement during rest to end rest automatically and time your next set from the first movement.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Read heart rate, active and resting energy during this workout to display heart rate, active calories and total calories (kcal).</string>
 	<key>NSHealthUpdateUsageDescription</key>

@@ -25,6 +25,8 @@ struct WatchTrainingSnapshot: Codable, Equatable {
     var acknowledged: [String] = []
     var setStartedAt: Date? = nil
     var actionReadyAt: Date? = nil
+    var restStartedAt: Date? = nil
+    var autoEndRestEnabled = false
     var actionTiming: TrainingActionTiming { .init(restEnd: restEnd, readyAt: actionReadyAt) }
 
     var restNotificationTitle: String {
@@ -44,6 +46,10 @@ struct WatchTrainingSnapshot: Codable, Equatable {
         return "\(account)|\(sessionID)|\(restEnd.timeIntervalSince1970)"
     }
     func isResting(at date: Date = Date()) -> Bool { restEnd.map { $0 > date } ?? false }
+    /// 空白草稿仍等待手机添加动作；有动作且没有后续操作时才进入结束页。
+    var isFinished: Bool {
+        sessionID != nil && !exercise.isEmpty && primaryAction(commandState: .idle) == .finished
+    }
     func primaryAction(commandState: WatchCommandState) -> WatchTrainingAction {
         switch commandState {
         case .sending: return .sending
@@ -110,6 +116,8 @@ struct WatchTrainingCommand: Codable, Equatable {
     // Live Activity completion can survive rest-only changes while its UI catches up.
     // Watch commands and older Live Activity payloads retain strict revision checks.
     var activityRevision: String? = nil
+    /// 仅 resumeFromMotion 使用；手机验证后作为下一组实际起点，不作为接收时间。
+    var detectedStartedAt: Date? = nil
     var payload: [String: Any] { ["command": (try? JSONEncoder().encode(self)) ?? Data()] }
     static func decode(_ payload: [String: Any]) -> Self? {
         guard let data = payload["command"] as? Data,

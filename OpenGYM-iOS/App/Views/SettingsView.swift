@@ -62,6 +62,15 @@ struct SettingsView: View {
                     NavigationLink("BODY_MEASUREMENTS") { BodyRecordsView(measurements: true) }
                 }
 
+                Section {
+                    Toggle("AUTO_END_REST", isOn: Binding(get: { store.autoEndRestEnabled }, set: { store.autoEndRestEnabled = $0 }))
+                        .accessibilityIdentifier("auto-end-rest-enabled")
+                } header: {
+                    Text("APPLE_WATCH")
+                } footer: {
+                    Text("AUTO_END_REST_INFO")
+                }
+
                 Section("APPLE_HEALTH") {
                     Toggle("SYNC_WEIGHT_FROM_APPLE_HEALTH", isOn: Binding(get: { store.healthSync.enabled }, set: { value in
                         Task { await store.healthSync.setEnabled(value) }

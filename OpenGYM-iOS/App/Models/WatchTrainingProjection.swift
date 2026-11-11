@@ -5,6 +5,7 @@ extension GymStore {
     func watchSnapshot(now: Date = Date()) -> WatchTrainingSnapshot {
         var snapshot = WatchTrainingSnapshot(generatedAt: now)
         snapshot.language = AppLanguage.language
+        snapshot.autoEndRestEnabled = autoEndRestEnabled
         guard let userID else { return snapshot }
         snapshot.account = Self.watchHash(Data("\(serverURL)|\(userID)".utf8))
         guard let draft else { return snapshot }
@@ -34,6 +35,7 @@ extension GymStore {
         snapshot.exercisePosition = String(format: String(localized: "EXERCISE_COUNT_OF_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: e + 1), String(describing: entries.count))
         if let rest = draft.activeJSON["nativeRest"] as? [String: Any], let end = rest["end"] as? Double {
             snapshot.restEnd = Date(timeIntervalSince1970: end)
+            snapshot.restStartedAt = (rest["start"] as? Double).map(Date.init(timeIntervalSince1970:))
             snapshot.restEntry = rest["entry"] as? Int
             if let owner = rest["entry"] as? Int, entries.indices.contains(owner) { snapshot.restExercise = watchExerciseName(entries[owner]) }
         }
@@ -114,9 +116,19 @@ extension GymStore {
         } else if syncing || localSaveError != nil {
             outcome = syncing ? "syncing" : "save_error"
             result = String(localized: "FINISH_SAVING_ON_IPHONE_FIRST", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
-        } else if ["complete", "skipRest", "next"].contains(command.action), before.actionTiming.isProtected(at: now) {
+        } else if command.action == "resumeFromMotion", !autoEndRestEnabled {
+            outcome = "motion_disabled"
+            result = String(localized: "AUTO_END_REST_IS_OFF", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        } else if ["complete", "skipRest", "resumeFromMotion", "next"].contains(command.action), before.actionTiming.isProtected(at: now) {
             outcome = "action_cooldown"
             result = String(format: String(localized: "TRY_AGAIN_IN_COUNT_SECONDS", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: before.actionTiming.protectionSeconds(at: now)))
+        } else if command.action == "resumeFromMotion", before.restEnd != nil, before.restEntry == command.entry,
+                  let restStart = before.restStartedAt, let startedAt = command.detectedStartedAt,
+                  startedAt.timeIntervalSince1970.isFinite, restStart.timeIntervalSince1970.isFinite,
+                  startedAt >= restStart, startedAt <= now, !before.actionTiming.isProtected(at: startedAt),
+                  let next = before.nextSet, next.blockedReason == nil {
+            endRest(startedAt: startedAt, confirmedAt: now)
+            if localSaveError == nil { acknowledgeWatchCommand(command.id) }
         } else if command.action == "skipRest", before.restEnd != nil, before.restEntry == command.entry {
             endRestFromTextButton(at: now)
             if localSaveError == nil { acknowledgeWatchCommand(command.id) }

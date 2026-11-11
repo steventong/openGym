@@ -18,6 +18,17 @@ import UIKit
         }
     }
 
+    func testAutomaticRestSettingsResolveInBothLanguages() {
+        for (language, expected) in [("en", "Automatically end rest"), ("zh", "自动结束休息")] {
+            let bundle = AppLanguage.bundle(for: language)
+            let locale = AppLanguage.locale(for: language)
+            XCTAssertEqual(String(localized: "AUTO_END_REST", bundle: bundle, locale: locale), expected)
+            for key in ["APPLE_WATCH", "AUTO_END_REST_INFO", "AUTO_END_REST_IS_OFF"] {
+                XCTAssertNotEqual(String(localized: String.LocalizationValue(key), bundle: bundle, locale: locale), key)
+            }
+        }
+    }
+
     func testSwiftUIKeysFollowLocaleWithoutTranslationWrapper() throws {
         for (region, expected) in [("en", "Cancel"), ("zh-Hans", "取消")] {
             func render(_ text: Text) throws -> Data {

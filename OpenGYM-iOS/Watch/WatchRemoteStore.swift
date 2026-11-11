@@ -42,6 +42,10 @@ final class WatchRemoteStore: NSObject {
     /// 管理休息结束时的震动和本地通知，不承担手机通信。
     @ObservationIgnored let restReminder = WatchRestReminder()
 
+    /// 仅在休息阶段采样，重复动作确认与传感器生命周期均由服务持有。
+    @ObservationIgnored let restMotion = WatchRestMotionService(source: CoreMotionRestMotionSource())
+    @ObservationIgnored var foregroundActive = false
+
     // MARK: - 内部任务
 
     /// 防止同一时间重复弹出健康授权。

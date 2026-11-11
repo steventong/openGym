@@ -937,6 +937,23 @@
         }
       }
     },
+    "APPLE_WATCH": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        }
+      }
+    },
     "APPLE_WATCH_IS_RECORDING_YOUR_WORKOUT": {
       "comment": "Apple Watch 正在记录训练",
       "extractionState": "manual",
@@ -1131,6 +1148,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "自动评估"
+          }
+        }
+      }
+    },
+    "AUTO_END_REST": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatically end rest"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动结束休息"
+          }
+        }
+      }
+    },
+    "AUTO_END_REST_INFO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Apple Watch to detect repeated exercise movements, end your rest, and start timing the next set. Sets are not marked complete automatically."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通过 Apple Watch 检测连续训练动作，自动结束休息并开始下一组计时，不会自动标记本组完成。"
+          }
+        }
+      }
+    },
+    "AUTO_END_REST_IS_OFF": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic rest ending is off. End your rest manually."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动结束休息已关闭，请手动结束休息。"
           }
         }
       }
@@ -16773,6 +16841,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "训练已完成"
+          }
+        }
+      }
+    },
+    "WORKOUT_ENDED": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workout ended"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "训练已结束"
           }
         }
       }

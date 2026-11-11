@@ -207,11 +207,12 @@ import UIKit
         XCTAssertEqual(content.action?.disabled, true)
     }
 
-    func testDisabledRestStillRendersActionText() throws {
-        func render(title: String, language: String) throws -> Data {
+    func testActionTextOnlyRendersWhenAvailable() throws {
+        func render(title: String, language: String, status: TrainingActionStatus,
+                    disabled: Bool, parentDisabled: Bool = false) throws -> Data {
             let view = TrainingActionLabel(title: title, symbol: "forward.end.fill",
-                status: .rest(endsAt: Date(timeIntervalSince1970: 1000)),
-                disabled: true, tint: .green)
+                status: status, disabled: disabled, tint: .green)
+                .disabled(parentDisabled)
                 .environment(\.locale, AppLanguage.locale(for: language))
                 .frame(width: 184)
                 .environment(\.colorScheme, .dark)
@@ -220,13 +221,18 @@ import UIKit
             return try XCTUnwrap(renderer.uiImage?.pngData())
         }
 
-        for (language, title) in [("zh", "结束"), ("en", "Finish")] {
-            let image = try render(title: title, language: language)
-            XCTAssertNotEqual(image, try render(title: "", language: language))
-            let attachment = XCTAttachment(data: image, uniformTypeIdentifier: "public.png")
-            attachment.name = "rest-action-\(language)"
-            attachment.lifetime = .keepAlways
-            add(attachment)
+        for status in [TrainingActionStatus.rest(endsAt: Date(timeIntervalSince1970: 1000)), .workout(startedAt: nil)] {
+            for (language, title, alternateTitle) in [("zh", "结束", "开始"), ("en", "Finish", "Resume")] {
+                // 保留相同的文字行高，避免空标题本身改变 Label 的布局。
+                for (disabled, parentDisabled) in [(true, false), (false, true)] {
+                    XCTAssertEqual(
+                        try render(title: title, language: language, status: status, disabled: disabled, parentDisabled: parentDisabled),
+                        try render(title: alternateTitle, language: language, status: status, disabled: disabled, parentDisabled: parentDisabled))
+                }
+                XCTAssertNotEqual(
+                    try render(title: title, language: language, status: status, disabled: false),
+                    try render(title: alternateTitle, language: language, status: status, disabled: false))
+            }
         }
     }
 
