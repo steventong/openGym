@@ -73,12 +73,14 @@ struct ExerciseOrderSheet: View {
     @Environment(GymStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var entries: [[String: Any]]
+    private let history: Bool
     private let save: ([Int], [[String: Any]]) throws -> Void
     @State private var order: [Int]
     @State private var error: String?
 
-    init(entries: [[String: Any]], save: @escaping ([Int], [[String: Any]]) throws -> Void) {
+    init(entries: [[String: Any]], history: Bool = false, save: @escaping ([Int], [[String: Any]]) throws -> Void) {
         _entries = State(initialValue: entries)
+        self.history = history
         self.save = save
         _order = State(initialValue: Array(entries.indices))
     }
@@ -89,19 +91,28 @@ struct ExerciseOrderSheet: View {
                 Section {
                     ForEach(order, id: \.self) { index in
                         let entry = entries[index]
+                        let id = entry["id"] as? String
+                        let exercise = id.flatMap(store.exercise)
+                        let snapshot = entry["muscleSnapshot"] as? [String: Any]
+                        let name = exercise?.recordName ?? entry["n"] as? String ?? snapshot?["n"] as? String ?? id
                         HStack(spacing: 12) {
-                            ExerciseThumbnail(id: entry["id"] as? String ?? "", size: 44)
+                            ExerciseThumbnail(id: id ?? "", size: 44)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(store.exercise(entry["id"] as? String ?? "")?.recordName ?? entry["id"] as? String ?? String(localized: "EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
+                                if let name { Text(name) } else { Text("EXERCISE") }
+                                if history, let muscle = muscleLabel(for: exercise, snapshot: snapshot) {
+                                    Text(muscle).font(.caption).foregroundStyle(GymTheme.muted)
+                                }
                                 if let group = entry["sg"] as? String, !group.isEmpty {
                                     Label("SUPERSET", systemImage: "link").font(.caption).foregroundStyle(GymTheme.green)
                                 }
                             }
                         }.accessibilityIdentifier("exercise-order-row-\(index)")
+                            .moveDisabled(entries.count < 2)
                     }.onMove { order.move(fromOffsets: $0, toOffset: $1) }
                 }
             }.environment(\.editMode, .constant(.active))
-                .navigationTitle("REORDER_EXERCISES").navigationBarTitleDisplayMode(.inline)
+                .navigationTitle(history ? Text("EXERCISE_LIST") : Text("REORDER_EXERCISES"))
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button("CANCEL") { dismiss() } }
                     ToolbarItem(placement: .topBarTrailing) { ExplanationButton(title: "SUPERSET", message: "SEPARATING_EXERCISES_IN_A_SUPERSET_WILL_UNGROUP_THEM") }
@@ -116,6 +127,14 @@ struct ExerciseOrderSheet: View {
                     Button("GOT_IT", role: .cancel) {}
                 } message: { Text(error ?? "") }
         }.tint(GymTheme.green).presentationDragIndicator(.visible)
+    }
+
+    private func muscleLabel(for exercise: Exercise?, snapshot: [String: Any]?) -> String? {
+        let candidates = [exercise?.target, (snapshot?["primaries"] as? [String])?.first,
+                          (snapshot?["muscleGroups"] as? [String])?.first, exercise?.bodyPart, snapshot?["bp"] as? String]
+        guard let muscle = candidates.compactMap({ $0 }).first(where: { !$0.isEmpty }) else { return nil }
+        let key = muscle == "upper back" ? "upper-back" : muscle
+        return String(localized: String.LocalizationValue(key), table: "Muscles", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     }
 }
 

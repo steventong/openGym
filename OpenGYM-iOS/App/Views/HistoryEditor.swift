@@ -86,8 +86,8 @@ struct HistoryEditor: View {
                         Menu {
                             Button("ADD_EXERCISE", systemImage: "plus") { inputBuffer.commitAll(); exerciseSheet = .add }
                                 .accessibilityIdentifier("add-workout-exercise")
-                            Button("REORDER_EXERCISES", systemImage: "arrow.up.arrow.down") { inputBuffer.commitAll(); exerciseSheet = .reorder }
-                                .disabled(form.entries.count < 2).accessibilityIdentifier("reorder-exercises")
+                            Button("EXERCISE_LIST", systemImage: "list.bullet") { inputBuffer.commitAll(); exerciseSheet = .reorder }
+                                .disabled(form.entries.isEmpty).accessibilityIdentifier("reorder-exercises")
                             if let issue = store.localSaveError {
                                 Divider()
                                 Button("SAVE_ERROR_DETAILS", systemImage: "exclamationmark.circle") { error = issue }
@@ -115,7 +115,7 @@ struct HistoryEditor: View {
                             exerciseSheet = nil
                         }
                     case .reorder:
-                        ExerciseOrderSheet(entries: form.entries.map(\.value), save: reorderExercises)
+                        ExerciseOrderSheet(entries: form.entries.map(\.value), history: true, save: reorderExercises)
                     }
                 }
                 .confirmationDialog("DELETE_THIS_WORKOUT",isPresented:$deleting,titleVisibility:.visible) {
@@ -149,6 +149,7 @@ struct HistoryEditor: View {
     private func reorderExercises(_ order: [Int], baseline: [[String: Any]]) throws {
         inputBuffer.commitAll()
         guard RecordPatch.equal(baseline, form.entries.map(\.value)) else { throw APIError.response(0, String(localized: "THE_EXERCISE_LIST_HAS_CHANGED_OPEN_THE_REORDER_SCREEN_AGAIN", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
+        guard order != Array(baseline.indices) else { return }
         try form.reorderExercises(order)
         persist()
         if let issue = store.localSaveError { throw APIError.response(0, issue) }

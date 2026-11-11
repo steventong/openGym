@@ -2827,6 +2827,24 @@
         }
       }
     },
+    "COPY_EXERCISE": {
+      "comment": "复制动作",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy exercise"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "复制动作"
+          }
+        }
+      }
+    },
     "COPY_EXERCISE_NAME": {
       "comment": "复制动作名称",
       "extractionState": "manual",
@@ -5761,6 +5779,24 @@
         }
       }
     },
+    "EXERCISE_COPIED": {
+      "comment": "已复制动作",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exercise copied"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已复制动作"
+          }
+        }
+      }
+    },
     "EXERCISE_DEMONSTRATION": {
       "comment": "动作示范动画",
       "extractionState": "manual",
@@ -5829,6 +5865,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "动作素材 © Aliaksandr Makatserchyk · Gym visual\n用于 openGym，保留原版授权。"
+          }
+        }
+      }
+    },
+    "EXERCISE_LIST": {
+      "comment": "动作列表",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exercise list"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "动作列表"
           }
         }
       }
@@ -8763,6 +8817,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "周一"
+          }
+        }
+      }
+    },
+    "MORE_EXERCISE_ACTIONS": {
+      "comment": "更多动作选项",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More exercise actions"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多动作选项"
           }
         }
       }

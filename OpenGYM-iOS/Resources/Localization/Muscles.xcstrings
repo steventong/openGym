@@ -1,6 +1,24 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "abductors" : {
+      "comment" : "外展肌群",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abductors"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外展肌群"
+          }
+        }
+      }
+    },
     "abs" : {
       "comment" : "腹肌",
       "extractionState" : "manual",
@@ -613,6 +631,24 @@
         }
       }
     },
+    "levator scapulae" : {
+      "comment" : "肩胛提肌",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Levator scapulae"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "肩胛提肌"
+          }
+        }
+      }
+    },
     "lower arms" : {
       "comment" : "前臂",
       "extractionState" : "manual",
@@ -963,6 +999,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Serratus"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前锯肌"
+          }
+        }
+      }
+    },
+    "serratus anterior" : {
+      "comment" : "前锯肌",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serratus anterior"
           }
         },
         "zh-Hans" : {

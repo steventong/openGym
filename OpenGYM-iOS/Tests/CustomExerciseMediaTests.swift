@@ -5,6 +5,68 @@ import UIKit
 @MainActor final class CustomExerciseMediaTests: XCTestCase {
     private let customID = "c-narrow-neutral-pullup"
 
+    func testCopyingCatalogueExercisePreservesDefinitionAndMedia() throws {
+        let source = try sourceExercise()
+        let store = try makeStore(custom: [:])
+        let raw = try store.exerciseCopyRecord(source, id: customID, name: "我的引体向上")
+        XCTAssertEqual(raw["custom"] as? Bool, true)
+        XCTAssertEqual(raw["primaries"] as? [String], ["upper-back"])
+        XCTAssertEqual(raw["secondaries"] as? [String], ["biceps", "deltoids", "forearm"])
+        XCTAssertEqual(raw["st"] as? [String], source.englishInstructions)
+        XCTAssertEqual(raw["fv"] as? String, "3600")
+
+        store.state["customEx"] = [raw]
+        let copy = try XCTUnwrap(store.exercise(customID))
+        XCTAssertEqual(copy.name, "我的引体向上")
+        XCTAssertEqual(copy.english, source.english)
+        XCTAssertEqual(copy.bodyPart, source.bodyPart)
+        XCTAssertEqual(copy.equipment, source.equipment)
+        XCTAssertEqual(copy.target, source.target)
+        XCTAssertEqual(copy.category, source.category)
+        XCTAssertEqual(copy.description, source.description)
+        XCTAssertEqual(copy.instructions, source.instructions)
+        XCTAssertEqual(copy.englishInstructions, source.englishInstructions)
+        XCTAssertEqual(store.imageMediaID(copy.id), source.id)
+        XCTAssertEqual(store.videoMediaID(copy.id), source.id)
+        XCTAssertEqual(store.exercise(source.id), source)
+        XCTAssertNotNil(store.customExerciseNameIssue(source.english.uppercased()))
+        XCTAssertNotNil(store.customExerciseNameIssue(copy.name))
+        XCTAssertNotNil(store.customExerciseNameIssue(String(repeating: "a", count: 81)))
+        XCTAssertNotNil(store.customExerciseNameIssue(""))
+        XCTAssertNil(store.customExerciseNameIssue("另一组引体向上"))
+    }
+
+    func testCopyingCustomExerciseKeepsOtherFieldsAndDropsSyncMetadata() throws {
+        let source = try sourceExercise()
+        var original = copiedExercise(source)
+        original["url"] = "https://example.com/tutorial"
+        original["muscleWeights"] = ["upper-back": 1, "biceps": 0.4]
+        original["futureField"] = ["value": 3]
+        original["_ts"] = 100
+        original["_f"] = ["desc": 100]
+        original["_u"] = ["n": 100]
+        let store = try makeStore(custom: original)
+        let exercise = try XCTUnwrap(store.exercise(customID))
+        let copy = try store.exerciseCopyRecord(exercise, id: "c-copy", name: "备用引体向上")
+
+        XCTAssertEqual(copy["id"] as? String, "c-copy")
+        XCTAssertEqual(copy["n"] as? String, "备用引体向上")
+        for (key, value) in original where !["id", "n", "_ts", "_f", "_u"].contains(key) {
+            XCTAssertTrue(RecordPatch.equal(copy[key], value), key)
+        }
+        for key in ["_ts", "_f", "_u"] { XCTAssertNil(copy[key]) }
+        XCTAssertTrue(RecordPatch.equal(store.customExercises.first, original))
+    }
+
+    func testCopyingAssistanceMachineKeepsLoadSemanticsAfterRename() throws {
+        let store = try makeStore(custom: [:])
+        let source = try XCTUnwrap(store.exercises.first {
+            $0.equipment == "leverage machine" && $0.english.contains("assisted")
+        })
+        let copy = try store.exerciseCopyRecord(source, id: customID, name: "我的训练动作")
+        XCTAssertEqual(copy["assisted"] as? Bool, true)
+    }
+
     func testCustomExerciseReusesCatalogueMediaAndInstructionsWithoutChangingIdentity() throws {
         let source = try sourceExercise()
         let store = try makeStore(custom: copiedExercise(source))

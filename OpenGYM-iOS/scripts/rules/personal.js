@@ -27,6 +27,13 @@ const prepare = state => {
 export function personalInfo(input) {
   const p=JSON.parse(input), s=prepare(p.state);
   if(p.action==='customMetadata')return JSON.stringify({groups:normalizeMuscleGroups(p.exercise)});
+  if (p.action === 'exerciseDefinition') {
+    const exercise = EXIDX[p.id];
+    if (!exercise) return JSON.stringify({exercise: null});
+    // The catalogue infers assistance from the original name on leverage machines.
+    const assisted = exercise.eq === 'leverage machine' ? isAssisted(exercise) : undefined;
+    return JSON.stringify({exercise, assisted});
+  }
   if(p.action==='equipment')return JSON.stringify({equipment:ALL_EQUIPMENT,available:Object.values(EXIDX).filter(e=>p.equipment ? eqAvailable(p.equipment,e) : exAvailable(s,e)).map(e=>e.id)});
   if(p.action==='plates'){const kind=loadKindFor(s,p.config);return JSON.stringify({kind,base:baseWeightFor(s,p.config.id),...rowLoad(kind,p.weight,baseWeightFor(s,p.config.id),inventoryFor(s))});}
   if(p.action==='measurements')return JSON.stringify({fields:MEASUREMENT_FIELDS,state:normalizeMeasurementsState(s)});

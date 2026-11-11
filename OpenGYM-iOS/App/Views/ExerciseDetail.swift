@@ -145,17 +145,35 @@ struct ExerciseDetail: View {
     @Environment(GymStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
-    let exercise: Exercise
+    private let initialExercise: Exercise
     @State private var playback = LoopPlayback()
     @State private var videoAttempt = 0
     @State private var weight = 20.0
     @State private var reps = 10
     @State private var choosePlan = false
     @State private var saved = false
-    @State private var editingCustom = false
+    @State private var editingCustom: RawRow?
     @State private var progress = false
     @State private var copiedName = false
     @State private var copyFeedbackID = UUID()
+    @State private var namingCopy = false
+    @State private var copyName = ""
+    @State private var copyID = "c" + UUID().uuidString
+    @State private var copyIssue: String?
+    @State private var savedCopyName: String?
+    @State private var copyConfirmation: String?
+    @FocusState private var copyNameFocused: Bool
+
+    init(exercise: Exercise) {
+        initialExercise = exercise
+    }
+
+    private var exercise: Exercise { store.exercise(initialExercise.id) ?? initialExercise }
+
+    private var customExercise: [String: Any]? {
+        store.customExercises.first { $0["id"] as? String == exercise.id }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment:.leading,spacing:22) {
@@ -174,6 +192,19 @@ struct ExerciseDetail: View {
                             ExerciseDetailActionIcon(symbol: copiedName ? "checkmark" : "doc.on.doc")
                         }.accessibilityLabel(LocalizedStringKey(copiedName ? "EXERCISE_NAME_COPIED" : "COPY_EXERCISE_NAME"))
                             .accessibilityIdentifier("copy-exercise-name")
+                        Menu {
+                            Button("COPY_EXERCISE", systemImage: "doc.on.doc") { namingCopy = true }
+                                .disabled(store.syncing)
+                            if let customExercise {
+                                Button("EDIT_EXERCISE", systemImage: "pencil") {
+                                    editingCustom = RawRow(raw: customExercise)
+                                }
+                            }
+                        } label: {
+                            ExerciseDetailActionIcon(symbol: "ellipsis")
+                        }
+                        .accessibilityLabel("MORE_EXERCISE_ACTIONS")
+                        .accessibilityIdentifier("exercise-detail-menu")
                         Button { dismiss() } label: { ExerciseDetailActionIcon(symbol: "xmark") }
                             .accessibilityLabel("CLOSE_EXERCISE_DETAILS")
                     }.buttonStyle(.plain).fixedSize()
@@ -204,10 +235,7 @@ struct ExerciseDetail: View {
                     Spacer()
                     Button("WORKOUT_HISTORY_AND_PROGRESS") { progress = true }
                 }
-                if store.customExercises.contains(where:{$0["id"] as? String == exercise.id}) {
-                    Button("EDIT_CUSTOM_EXERCISE") { editingCustom = true }
-                }
-                if let link = store.customExercises.first(where:{$0["id"] as? String == exercise.id})?["url"] as? String, let url = URL(string:link), ["http","https"].contains(url.scheme?.lowercased() ?? "") {
+                if let link = customExercise?["url"] as? String, let url = URL(string:link), ["http","https"].contains(url.scheme?.lowercased() ?? "") {
                     Link("OPEN_EXERCISE_TUTORIAL",destination:url)
                 }
                 GreenButton(title:saved ? "ADDED_TO_ROUTINE" : "ADD_TO_MY_PLAN",icon:saved ? "checkmark" : "plus") { choosePlan = true }
@@ -231,8 +259,14 @@ struct ExerciseDetail: View {
                 Text("EXERCISE_MEDIA_ALIAKSANDR_MAKATSERCHYK_GYM_VISUAL_USED_IN_OPENGYM_UNDER_THE_ORIGINAL").font(.system(size:10)).foregroundStyle(GymTheme.muted).padding(.top,12)
             }.padding(22)
         }.background(GymTheme.background).presentationDragIndicator(.visible)
-            .sheet(isPresented:$editingCustom) { CustomExerciseEditor(original:store.customExercises.first {$0["id"] as? String == exercise.id}) }
+            .sheet(item: $editingCustom) {
+                CustomExerciseEditor(original: $0.raw)
+            }
             .sheet(isPresented:$progress) { NavigationStack { ExerciseProgressView(initialID:exercise.id) } }
+            .sheet(isPresented: $namingCopy, onDismiss: finishNamingCopy) {
+                copyNameSheet
+            }
+            .operationAlert($copyConfirmation, title: "EXERCISE_COPIED")
             .task(id:"\(exercise.id)|\(store.videoMediaID(exercise.id) ?? "")|\(store.serverURL)|\(videoAttempt)") { await loadVideo() }.onDisappear { playback.stop() }
             .task(id:copyFeedbackID) {
                 guard copiedName else { return }
@@ -247,6 +281,65 @@ struct ExerciseDetail: View {
                 Button("CANCEL",role:.cancel) {}
             }
     }
+
+    private var copyNameSheet: some View {
+        NavigationStack {
+            Form {
+                TextField("EXERCISE_NAME", text: $copyName)
+                    .focused($copyNameFocused)
+                    .submitLabel(.done)
+                    .onSubmit { Task { await saveExerciseCopy() } }
+                    .onChange(of: copyName) { copyIssue = nil }
+                    .disabled(store.syncing)
+                    .accessibilityIdentifier("exercise-copy-name")
+                if let copyIssue { Text(copyIssue).foregroundStyle(.red) }
+            }
+            .navigationTitle("COPY_EXERCISE")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("CANCEL") { namingCopy = false }.disabled(store.syncing)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("SAVE") { Task { await saveExerciseCopy() } }
+                        .disabled(store.syncing)
+                        .accessibilityIdentifier("save-exercise-copy")
+                }
+            }
+        }
+        .presentationDetents([.height(240), .large])
+        .interactiveDismissDisabled(store.syncing)
+        .onAppear { copyNameFocused = true }
+    }
+
+    private func finishNamingCopy() {
+        copyConfirmation = savedCopyName
+        savedCopyName = nil
+        copyName = ""
+        copyIssue = nil
+        copyID = "c" + UUID().uuidString
+    }
+
+    private func saveExerciseCopy() async {
+        guard !store.syncing else { return }
+        let name = copyName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let issue = store.customExerciseNameIssue(name) {
+            copyIssue = issue
+            return
+        }
+        do {
+            let proposed = try store.exerciseCopyRecord(exercise, id: copyID, name: name)
+            if await store.savePersonalRecord(collection: "customEx", key: "id", original: nil, proposed: proposed) {
+                savedCopyName = name
+                namingCopy = false
+            } else {
+                copyIssue = store.editError
+            }
+        } catch {
+            copyIssue = error.localizedDescription
+        }
+    }
+
     private var estimateText:String {
         guard let result = try? store.personalInfo("oneRM",["weight":weight,"reps":reps]), let value = result["value"] as? Double else { return String(localized: "TOO_MANY_REPS_FOR_A_RELIABLE_ESTIMATE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
         return "\(decimal(value)) \(store.unit)"

@@ -16,6 +16,42 @@ extension GymStore {
         guard let result = try WebRules.shared.call("personalInfo",payload:payload) as? [String:Any] else { throw APIError.invalidResponse }
         return result
     }
+    func customExerciseNameIssue(_ name: String, original: [String: Any]? = nil) -> String? {
+        guard !name.isEmpty, name.count <= 80 else {
+            return String(localized: "USE_A_NAME_BETWEEN_ONE_AND_EIGHTZERO_CHARACTERS", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        }
+        if name.lowercased() != (original?["n"] as? String ?? "").lowercased(),
+           exercises.contains(where: { exercise in
+               exercise.id != original?["id"] as? String
+                   && (exercise.name.localizedCaseInsensitiveCompare(name) == .orderedSame
+                       || exercise.english.localizedCaseInsensitiveCompare(name) == .orderedSame)
+           }) {
+            return String(localized: "AN_EXERCISE_WITH_THIS_NAME_ALREADY_EXISTS", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+        }
+        return nil
+    }
+    func exerciseCopyRecord(_ exercise: Exercise, id: String, name: String) throws -> [String: Any] {
+        let custom = customExercises.first { $0["id"] as? String == exercise.id }
+        let result = try WebRules.shared.call("personalInfo", payload: [
+            "action": "exerciseDefinition", "state": ["customEx": custom.map { [$0] } ?? []], "id": exercise.id
+        ]) as? [String: Any]
+        guard let definition = result?["exercise"] as? [String: Any] else { throw APIError.invalidResponse }
+        var copy = definition.filter { !RecordPatch.metadata.contains($0.key) }
+        if custom == nil {
+            copy["english"] = exercise.english
+            copy["desc"] = exercise.description
+            copy["instructions"] = exercise.instructions
+            copy["englishInstructions"] = exercise.englishInstructions
+            copy["st"] = exercise.englishInstructions ?? exercise.instructions
+            copy["img"] = imageMediaID(exercise.id).map { "\($0).webp" }
+            copy["gif"] = videoMediaID(exercise.id).map { "\($0).mp4" }
+        }
+        if let assisted = result?["assisted"] as? Bool { copy["assisted"] = assisted }
+        copy["id"] = id
+        copy["n"] = name
+        copy["custom"] = true
+        return copy
+    }
     /// Patch only fields shown by the editor; concurrent, unrelated profile edits survive.
     func savePersonalFields(original:[String:Any],proposed:[String:Any],unit expected:String? = nil) async -> Bool {
         var expectedValues:[String:Any]?

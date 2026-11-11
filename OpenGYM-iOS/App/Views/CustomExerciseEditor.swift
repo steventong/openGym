@@ -4,6 +4,7 @@ struct CustomExerciseEditor:View {
     @Environment(GymStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let original:[String:Any]?
+    private let initial: [String: Any]
     @State private var inputBuffer = InputCommitBuffer()
     @State private var raw:[String:Any]
     @State private var issue:String?
@@ -16,6 +17,7 @@ struct CustomExerciseEditor:View {
            let metadata = try? WebRules.shared.call("personalInfo",payload:["action":"customMetadata","state":[:],"exercise":original]) as? [String:Any],let groups = metadata["groups"] as? [String] {
             initial["primaries"] = Array(groups.prefix(1));initial["secondaries"] = Array(groups.dropFirst())
         }
+        self.initial = initial
         _raw = State(initialValue:initial)
     }
     private let parts = ["back","cardio","chest","full body","lower arms","lower legs","neck","shoulders","upper arms","upper legs","waist"]
@@ -28,6 +30,8 @@ struct CustomExerciseEditor:View {
                     Picker("BODY_PART",selection:text("bp")) { ForEach(parts,id:\.self) { Text(String(localized: String.LocalizationValue($0), table: "Vocabulary", bundle: AppLanguage.bundle, locale: AppLanguage.locale)).tag($0) } }
                     Picker("EQUIPMENT",selection:text("eq")) { ForEach(Array(Set(store.exercises.map(\.equipment)+[raw["eq"] as? String ?? "body weight"])).sorted(),id:\.self) { Text(String(localized: String.LocalizationValue($0), table: "Vocabulary", bundle: AppLanguage.bundle, locale: AppLanguage.locale)).tag($0) } }
                     BufferedTextField("DESCRIPTION_AND_INSTRUCTIONS",text:text("desc"),axis:.vertical).textFieldStyle(.plain).submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.lineLimit(3...10)
+                        .accessibilityLabel("DESCRIPTION_AND_INSTRUCTIONS")
+                        .accessibilityIdentifier("custom-exercise-description")
                     BufferedTextField("VIDEO_OR_TUTORIAL_URL_OPTIONAL",text:text("url")).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled().invalidInput(invalidField == "url")
                 }
                 if raw["bp"] as? String != "cardio" {
@@ -47,18 +51,35 @@ struct CustomExerciseEditor:View {
     private func save() {
         inputBuffer.commitAll()
         invalidField = nil
-        var proposed = raw
-        let name = (raw["n"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines)
-        guard !name.isEmpty, name.count<=80 else { invalidField = "n"; issue = String(localized: "USE_A_NAME_BETWEEN_ONE_AND_EIGHTZERO_CHARACTERS", bundle: AppLanguage.bundle, locale: AppLanguage.locale);return }
-        let renamed = name.lowercased() != (original?["n"] as? String ?? "").lowercased()
-        if renamed && store.exercises.contains(where:{$0.id != raw["id"] as? String && ($0.name.localizedCaseInsensitiveCompare(name) == .orderedSame || $0.english.localizedCaseInsensitiveCompare(name) == .orderedSame)}) { invalidField = "n"; issue = String(localized: "AN_EXERCISE_WITH_THIS_NAME_ALREADY_EXISTS", bundle: AppLanguage.bundle, locale: AppLanguage.locale);return }
-        let url = (raw["url"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines)
-        if !url.isEmpty { guard let parsed = URL(string:url), ["https","http"].contains(parsed.scheme?.lowercased() ?? ""),parsed.host != nil,parsed.user == nil,parsed.password == nil else { invalidField = "url"; issue = String(localized: "ENTER_A_VALID_HTTP_OR_HTTPS_URL", bundle: AppLanguage.bundle, locale: AppLanguage.locale);return } }
-        proposed["n"] = name;proposed["url"] = url.isEmpty ? nil:url;proposed["desc"] = String((raw["desc"] as? String ?? "").prefix(1000))
-        let primary = raw["bp"] as? String == "cardio" ? ["cardiovascular system"] : raw["primaries"] as? [String] ?? []
-        let secondary = (raw["secondaries"] as? [String] ?? []).filter{!primary.contains($0)}
-        proposed["primaries"] = primary;proposed["secondaries"] = secondary;proposed["sm"] = secondary;proposed["muscleGroups"] = primary+secondary
-        proposed["tg"] = primary.contains(original?["tg"] as? String ?? "") ? original?["tg"] : primary.first ?? ""
+        var proposed = original ?? raw
+        if original == nil || !RecordPatch.equal(initial["n"], raw["n"]) {
+            let name = (raw["n"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines)
+            if let nameIssue = store.customExerciseNameIssue(name, original: original) {
+                invalidField = "n"
+                issue = nameIssue
+                return
+            }
+            proposed["n"] = name
+        }
+        proposed["bp"] = raw["bp"]
+        proposed["eq"] = raw["eq"]
+        if original == nil || !RecordPatch.equal(initial["url"], raw["url"]) {
+            let url = (raw["url"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines)
+            if !url.isEmpty { guard let parsed = URL(string:url), ["https","http"].contains(parsed.scheme?.lowercased() ?? ""),parsed.host != nil,parsed.user == nil,parsed.password == nil else { invalidField = "url"; issue = String(localized: "ENTER_A_VALID_HTTP_OR_HTTPS_URL", bundle: AppLanguage.bundle, locale: AppLanguage.locale);return } }
+            proposed["url"] = url.isEmpty ? nil : url
+        }
+        if original == nil || !RecordPatch.equal(initial["desc"], raw["desc"]) {
+            proposed["desc"] = String((raw["desc"] as? String ?? "").prefix(1000))
+        }
+        if original == nil || ["bp", "primaries", "secondaries"].contains(where: { !RecordPatch.equal(initial[$0], raw[$0]) }) {
+            let primary = raw["bp"] as? String == "cardio" ? ["cardiovascular system"] : raw["primaries"] as? [String] ?? []
+            let secondary = (raw["secondaries"] as? [String] ?? []).filter { !primary.contains($0) }
+            proposed["primaries"] = primary
+            proposed["secondaries"] = secondary
+            proposed["sm"] = secondary
+            proposed["muscleGroups"] = primary + secondary
+            proposed["tg"] = primary.contains(original?["tg"] as? String ?? "") ? original?["tg"] : primary.first ?? ""
+        }
         Task { if await store.savePersonalRecord(collection:"customEx",key:"id",original:original,proposed:proposed) { if let id = proposed["id"] as? String, store.selectedExercise != nil { store.selectedExercise = store.exercise(id) };dismiss() } else { issue = store.editError } }
     }
 }
