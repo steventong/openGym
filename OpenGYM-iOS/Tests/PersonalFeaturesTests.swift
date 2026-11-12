@@ -105,13 +105,53 @@ final class PersonalFeaturesTests:XCTestCase {
         XCTAssertEqual(active["id"] as? String,"new");XCTAssertFalse(sets.contains(where:rawCompleted));XCTAssertEqual(active["routineIds"] as? [String],[])
         XCTAssertTrue(((w["entries"] as! [[String:Any]])[0]["sets"] as! [[String:Any]])[0]["done"] as! Bool)
     }
-    @MainActor func testCustomDeletionKeepsHistorySnapshotAndUnknownFields() throws {
-        let custom:[String:Any] = ["id":"custom","n":"独立动作","bp":"chest","eq":"dumbbell","tg":"chest","primaries":["chest"]]
-        let state:[String:Any] = ["customEx":[custom],"favEx":["custom","0025"],"routines":[["id":"r","ex":[["id":"custom"]]]],"workouts":[["id":"w","entries":[["id":"custom","sets":[["w":20,"r":8,"done":true]],"future":true]]]]]
-        let next = try WebRules.shared.call("personalChange",payload:["action":"deleteCustom","state":state,"id":"custom"]) as! [String:Any]
-        XCTAssertTrue((next["customEx"] as! [Any]).isEmpty)
-        let entry = ((next["workouts"] as! [[String:Any]])[0]["entries"] as! [[String:Any]])[0]
-        XCTAssertEqual(entry["n"] as? String,"独立动作");XCTAssertNotNil(entry["muscleSnapshot"]);XCTAssertNotNil(entry["future"])
+    @MainActor func testCustomDeletionRejectsEachUseIndependently() throws {
+        let id = "custom"
+        let entries: [[String: Any]] = [["id": id, "sets": [["done": false]]]]
+        let associations: [String: Any] = [
+            "routines": [["ex": entries]], "workouts": [["entries": entries]], "active": ["entries": entries],
+            "favEx": [id], "exNotes": [id: "seat 4"], "barWeights": [id: 0],
+            "loadKind": [id: ["kind": "single"]], "dbLoad": [id: ["mode": "each"]],
+            "balanceOverrides": ["test:role": ["id": id]]
+        ]
+        let exercise = ["id": id, "n": "Custom exercise"]
+        for (key, value) in associations {
+            let state: [String: Any] = ["customEx": [exercise], key: value]
+            let result = try WebRules.shared.call("personalChange", payload: ["action": "deleteCustom", "state": state, "id": id]) as? [String: Any]
+            XCTAssertEqual(result?["inUse"] as? Bool, true, "Deletion should be blocked by \(key)")
+            XCTAssertNil(result?["state"])
+        }
+    }
+
+    @MainActor func testCustomDeletionPreservesUnrelatedRecordsAndAllowsClearedSettings() throws {
+        let id = "custom"
+        let other = ["id": "other", "n": "Another custom exercise"]
+        let state: [String: Any] = [
+            "customEx": [["id": id, "n": "Custom exercise"], other],
+            "routines": [["id": "r", "ex": [["id": "other"]]]],
+            "workouts": [workout("recent", 20), workout("older", 10)],
+            "favEx": ["other"], "loadKind": [id: ["kind": NSNull(), "_ts": 123]],
+            "dbLoad": [id: ["mode": NSNull(), "_ts": 456]], "futureField": true
+        ]
+        let result = try WebRules.shared.call("personalChange", payload: [
+            "action": "deleteCustom", "state": state, "id": id, "localEntries": [["id": "other"]]
+        ]) as? [String: Any]
+        let next = try XCTUnwrap(result?["state"] as? [String: Any])
+        var expected = state
+        expected["customEx"] = [other]
+        XCTAssertTrue(RecordPatch.equal(next, expected))
+    }
+
+    @MainActor func testOnlyDraftsReferencingTheCustomExerciseBlockDeletion() throws {
+        let store = GymStore()
+        let id = "custom"
+        store.historyEdits = ["w": ["proposed": ["entries": [["id": "unrelated"]]]]]
+        XCTAssertNil(store.customExerciseDeletionIssue(id))
+        store.historyEdits["w"] = ["proposed": ["entries": [["id": id]]]]
+        XCTAssertNotNil(store.customExerciseDeletionIssue(id))
+        store.historyEdits = [:]
+        store.draft = try TrainingDraft.fromWeb(["id": "live", "entries": [["id": id, "sets": []]]], unit: "kg")
+        XCTAssertNotNil(store.customExerciseDeletionIssue(id))
     }
     @MainActor func testDeletingWorkoutRepairsTrackedWeightAndKeepsOtherHistory() throws {
         let state:[String:Any] = ["workouts":[workout("a",80),workout("b",60)],"exWeights":["0025":["w":80,"d":"2026-10-20"]]]

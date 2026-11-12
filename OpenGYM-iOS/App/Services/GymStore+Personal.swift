@@ -128,12 +128,33 @@ extension GymStore {
             return try WebRules.shared.call("personalChange",payload:["action":"deleteWorkout","state":source,"id":record.id]) as! [String:Any]
         }
     }
+    private var localExerciseEntries: [[String: Any]] {
+        (draft?.rawEntries ?? []) + historyEdits.values.flatMap { edit in
+            (edit["proposed"] as? [String: Any])?["entries"] as? [[String: Any]] ?? []
+        }
+    }
+    private var customExerciseInUseMessage: String {
+        String(localized: "CUSTOM_EXERCISE_STILL_IN_USE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+    }
+    func customExerciseDeletionIssue(_ id: String) -> String? {
+        do {
+            let usage = try personalInfo("customExerciseInUse", ["id": id, "localEntries": localExerciseEntries])
+            guard let inUse = usage["inUse"] as? Bool else { throw APIError.invalidResponse }
+            return inUse ? customExerciseInUseMessage : nil
+        } catch {
+            return error.localizedDescription
+        }
+    }
     func deleteCustomExercise(_ original:[String:Any]) async -> Bool {
-        let id = original["id"] as? String ?? ""
-        guard !(draft?.rawEntries.contains { $0["id"] as? String == id } ?? false), historyEdits.isEmpty else { editError = String(localized: "SAVE_YOUR_WORKOUT_AND_HISTORY_DRAFTS_FIRST", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return false }
+        guard let id = original["id"] as? String, !id.isEmpty else { editError = APIError.invalidResponse.localizedDescription; return false }
         return await mutate(reportError:false,verify:{ !($0["customEx"] as? [[String:Any]] ?? []).contains { $0["id"] as? String == id } }) { source in
             if let current = (source["customEx"] as? [[String:Any]] ?? []).first(where:{$0["id"] as? String == id}), !RecordPatch.equal(current,original) { throw APIError.response(409,String(localized: "THIS_EXERCISE_CHANGED_ON_ANOTHER_DEVICE_REFRESH_TO_REVIEW_IT", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
-            return try WebRules.shared.call("personalChange",payload:["action":"deleteCustom","state":source,"id":id]) as! [String:Any]
+            let result = try WebRules.shared.call("personalChange", payload: [
+                "action": "deleteCustom", "state": source, "id": id, "localEntries": self.localExerciseEntries
+            ]) as? [String: Any]
+            if result?["inUse"] as? Bool == true { throw APIError.response(409, self.customExerciseInUseMessage) }
+            guard let next = result?["state"] as? [String: Any] else { throw APIError.invalidResponse }
+            return next
         }
     }
 }

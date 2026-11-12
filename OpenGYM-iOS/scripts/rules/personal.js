@@ -2,20 +2,22 @@ import { t } from '../../../frontend/src/lib/i18n-core.js';
 // Native personal features use the same catalogue, units and analytics as the web client.
 import { registerCustom, EXIDX, betterWeight, isAssisted } from '../../../frontend/src/lib/exercises.js';
 import { convertStateUnit } from '../../../frontend/src/lib/units.js';
-import { inventoryFor, loadKindFor, baseWeightFor, rowLoad } from '../../../frontend/src/lib/plates.js';
+import { inventoryFor, loadKindFor, loadKindOf, baseWeightFor, rowLoad } from '../../../frontend/src/lib/plates.js';
+import { hasBarOverride } from '../../../frontend/src/lib/bar.js';
+import { isFav } from '../../../frontend/src/lib/favourites.js';
 import { eqAvailable, exAvailable, ALL_EQUIPMENT } from '../../../frontend/src/lib/equipment.js';
 import { buildPlanBundle, parsePlan, mergePlan } from '../../../frontend/src/lib/plan-share.js';
 import { buildStarterPlan } from '../../../frontend/src/lib/starter.js';
 import { normalizeMeasurementsState, MEASUREMENT_FIELDS } from '../../../frontend/src/lib/measurements.js';
-import { bestWeightForEntry, metricEntriesForExercise, metricModeForEntry, completedRepsOf, streakWeeks, workoutVolume, cleanupSg } from '../../../frontend/src/lib/history.js';
+import { bestWeightForEntry, metricEntriesForExercise, metricModeForEntry, completedRepsOf, streakWeeks, workoutVolume } from '../../../frontend/src/lib/history.js';
 import { e1rmSeries, best1RM, estimate1RM, formulaOf } from '../../../frontend/src/lib/onerm.js';
-import { currentDbLoad, workoutAs } from '../../../frontend/src/lib/dumbbells.js';
+import { currentDbLoad, dbLoadOf, workoutAs } from '../../../frontend/src/lib/dumbbells.js';
 import { maxRepsSeries } from '../../../frontend/src/lib/pyramid.js';
 import { perSetSessions, perSetLines } from '../../../frontend/src/lib/per-set.js';
 import { avgRir, toScale, displayScale } from '../../../frontend/src/lib/effort.js';
-import { loadOfWorkouts, loadOfWeeklyPlan, MUSCLES, MUSCLE_NAME, exerciseMuscleSnapshot, normalizeMuscleGroups } from '../../../frontend/src/lib/muscles.js';
+import { loadOfWorkouts, loadOfWeeklyPlan, MUSCLES, MUSCLE_NAME, normalizeMuscleGroups } from '../../../frontend/src/lib/muscles.js';
 import { fatigueOf, strengthOf } from '../../../frontend/src/lib/recovery.js';
-import { computeBalance } from '../../../frontend/src/lib/structuralBalance.js';
+import { computeBalance, overrideIdOf } from '../../../frontend/src/lib/structuralBalance.js';
 import { TEMPLATES, TEMPLATE_LIST, DEFAULT_TEMPLATE_ID } from '../../../frontend/src/lib/structuralBalanceTemplates.js';
 import { speedUnitOf, toSpeed } from '../../../frontend/src/lib/speed.js';
 import { rebuildPrHistory } from '../../../frontend/src/lib/workout-date.js';
@@ -24,8 +26,21 @@ const prepare = state => {
   const s = {unit:'kg', workouts:[], routines:[], customEx:[], bodyweight:[], exWeights:{}, week:{}, dayPlan:{}, ...state};
   registerCustom(s.customEx); s.workouts.sort((a,b)=>(a.start||0)-(b.start||0)); return s;
 };
+function customExerciseInUse(state, id, localEntries) {
+  const hasExercise = entries => Array.isArray(entries) && entries.some(entry => entry?.id === id);
+  return hasExercise(localEntries) || hasExercise(state.active?.entries)
+    || (state.routines || []).some(routine => hasExercise(routine?.ex))
+    || (state.workouts || []).some(workout => hasExercise(workout?.entries))
+    || isFav(state, id) || Boolean(state.exNotes?.[id]) || hasBarOverride(state, id)
+    || loadKindOf(state.loadKind?.[id]) !== null || dbLoadOf(state.dbLoad?.[id]) !== null
+    || Object.values(state.balanceOverrides || {}).some(value => overrideIdOf(value) === id);
+}
 export function personalInfo(input) {
-  const p=JSON.parse(input), s=prepare(p.state);
+  const p=JSON.parse(input);
+  if (p.action === 'customExerciseInUse') {
+    return JSON.stringify({inUse: customExerciseInUse(p.state, p.id, p.localEntries)});
+  }
+  const s=prepare(p.state);
   if(p.action==='customMetadata')return JSON.stringify({groups:normalizeMuscleGroups(p.exercise)});
   if (p.action === 'exerciseDefinition') {
     const exercise = EXIDX[p.id];
@@ -64,7 +79,17 @@ export function personalInfo(input) {
   throw Error(t("RULE_UNKNOWN_FEATURE" /* 未知功能 */));
 }
 export function personalChange(input){
-  const p=JSON.parse(input),s=prepare(p.state);
+  const p=JSON.parse(input);
+  if (p.action === 'deleteCustom') {
+    const state = p.state;
+    if (customExerciseInUse(state, p.id, p.localEntries)) return JSON.stringify({inUse: true});
+    if (state.customEx?.some(exercise => exercise?.id === p.id)) {
+      state.customEx = state.customEx.filter(exercise => exercise?.id !== p.id);
+      if (state.exWeights) delete state.exWeights[p.id];
+    }
+    return JSON.stringify({state});
+  }
+  const s=prepare(p.state);
   if(p.action==='unit'){
     const out=p.convert?convertStateUnit(s,p.unit):{...s,unit:p.unit};
     if(p.convert)out.bodyweight=(out.bodyweight||[]).map(row=>{
@@ -74,12 +99,6 @@ export function personalChange(input){
     return JSON.stringify(out);
   }
   if(p.action==='importPlan'){mergePlan(s,p.bundle,{schedule:p.schedule});return JSON.stringify(s);}
-  if(p.action==='deleteCustom'){
-    const ex=s.customEx.find(x=>x.id===p.id);if(!ex)return JSON.stringify(s);
-    const snapshot=exerciseMuscleSnapshot(ex);
-    for(const w of s.workouts)for(const e of w.entries||[])if(e.id===p.id){e.n=ex.n;if(!e.muscleSnapshot||!Object.keys(e.muscleSnapshot).length)e.muscleSnapshot=snapshot;}
-    s.customEx=s.customEx.filter(x=>x.id!==p.id);s.routines.forEach(r=>{r.ex=(r.ex||[]).filter(e=>e.id!==p.id);cleanupSg(r.ex);});delete s.exWeights[p.id];s.favEx=(s.favEx||[]).filter(id=>id!==p.id);return JSON.stringify(s);
-  }
   if(p.action==='deleteWorkout'){
     const removed=s.workouts.find(w=>(w.id||`${w.d}|${w.start}`)===p.id);if(!removed)return JSON.stringify(s);
     s.workouts=s.workouts.filter(w=>w!==removed);const touched=[...new Set((removed.entries||[]).map(e=>e.id))];

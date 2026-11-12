@@ -83,6 +83,26 @@ import UIKit
         XCTAssertGreaterThan(try XCTUnwrap(store.lastSync).timeIntervalSince1970, 1)
     }
 
+    func testCustomExerciseDeletionRechecksReferencesAfterRevisionConflict() async throws {
+        let store = try store()
+        let exercise = ["id": "custom", "n": "Custom exercise"]
+        var server: [String: Any] = ["customEx": [exercise]]
+        var writes = 0
+        store.state = server
+        XCTAssertNil(store.customExerciseDeletionIssue("custom"))
+        StubProtocol.handler = { request in
+            if request.httpMethod == "GET" { return (200, ["state": server, "rev": writes + 1]) }
+            writes += 1
+            server["routines"] = [["id": "remote-routine", "ex": [["id": "custom"]]]]
+            return (409, ["error": "conflict", "state": server, "rev": 2])
+        }
+        let deleted = await store.deleteCustomExercise(exercise)
+        XCTAssertFalse(deleted)
+        XCTAssertEqual(writes, 1)
+        XCTAssertEqual(store.customExercises.first?["id"] as? String, "custom")
+        XCTAssertEqual(store.editError, String(localized: "CUSTOM_EXERCISE_STILL_IN_USE", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
+    }
+
     func testOfflineFailureKeepsLocalDataAndLastSuccessfulSync() async throws {
         let store = try store()
         let lastSync = Date(timeIntervalSince1970: 1)

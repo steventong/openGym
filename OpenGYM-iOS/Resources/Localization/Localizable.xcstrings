@@ -4281,6 +4281,24 @@
         }
       }
     },
+    "CUSTOM_EXERCISE_STILL_IN_USE": {
+      "comment": "此动作仍关联着训练计划、训练记录、草稿或个人设置。请先解除关联，再删除动作。",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This exercise is still linked to a training plan, workout, draft, or personal setting. Remove the link before deleting the exercise."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此动作仍关联着训练计划、训练记录、草稿或个人设置。请先解除关联，再删除动作。"
+          }
+        }
+      }
+    },
     "CUSTOM_MEASUREMENTS": {
       "comment": "自定义项目",
       "extractionState": "manual",
@@ -14249,24 +14267,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "动作列表已变化，请重新打开顺序调整。"
-          }
-        }
-      }
-    },
-    "THE_EXERCISE_WILL_BE_REMOVED_FROM_YOUR_ROUTINES_COMPLETED_WORKOUTS_KEEP_ITS": {
-      "comment": "会从计划中移除，已完成的训练保留动作名称、肌群与组记录。",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The exercise will be removed from your routines. Completed workouts keep its name, muscles and set records."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "会从计划中移除，已完成的训练保留动作名称、肌群与组记录。"
           }
         }
       }

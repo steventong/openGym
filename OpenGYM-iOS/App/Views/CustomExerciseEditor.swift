@@ -38,12 +38,19 @@ struct CustomExerciseEditor:View {
                     Section("PRIMARY_MUSCLE_GROUPS") { ForEach(muscles,id:\.self) { muscle in Toggle(String(localized: String.LocalizationValue(muscle), table: "Muscles", bundle: AppLanguage.bundle, locale: AppLanguage.locale),isOn:muscleBinding("primaries",muscle)) } }
                     Section("SECONDARY_MUSCLES") { ForEach(muscles.filter { !(raw["primaries"] as? [String] ?? []).contains($0) },id:\.self) { muscle in Toggle(String(localized: String.LocalizationValue(muscle), table: "Muscles", bundle: AppLanguage.bundle, locale: AppLanguage.locale),isOn:muscleBinding("secondaries",muscle)) } }
                 }
-                if original != nil { Section { Button("DELETE_EXERCISE",role:.destructive) { confirmDelete = true }.disabled(store.syncing) } }
+                if let id = original?["id"] as? String {
+                    Section {
+                        Button("DELETE_EXERCISE", role: .destructive) {
+                            if let reason = store.customExerciseDeletionIssue(id) { issue = reason }
+                            else { confirmDelete = true }
+                        }.disabled(store.syncing)
+                    }
+                }
             }.operationAlert($issue).navigationTitle(LocalizedStringKey(original == nil ? "CUSTOM_EXERCISE":"EDIT_EXERCISE")).navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { dismiss() } };ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { save() }.disabled(store.syncing).accessibilityIdentifier("save-custom-exercise") } }
                 .confirmationDialog("DELETE_THIS_EXERCISE",isPresented:$confirmDelete,titleVisibility:.visible) {
                     Button("DELETE",role:.destructive) { guard let original else {return}; Task { if await store.deleteCustomExercise(original) { store.selectedExercise = nil;dismiss() } else { issue = store.editError } } }
-                } message:{Text("THE_EXERCISE_WILL_BE_REMOVED_FROM_YOUR_ROUTINES_COMPLETED_WORKOUTS_KEEP_ITS")}
+                }
         }.environment(\.inputCommitBuffer, inputBuffer)
     }
     private func text(_ key:String)->Binding<String> { Binding(get:{raw[key] as? String ?? ""},set:{raw[key] = $0; if invalidField == key { invalidField = nil }}) }

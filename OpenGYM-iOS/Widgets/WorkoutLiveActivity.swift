@@ -18,6 +18,7 @@ struct WorkoutLiveActivity: Widget {
         } dynamicIsland: { context in
             let viewModel = TrainingViewModel(content: context.state.trainingContent(systemDeadlinePassed: context.isStale))
             let content = viewModel.content
+            let title = context.state.exercise.isEmpty ? context.state.trainingName : context.state.exercise
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     TrainingExerciseTitle(title: content.exercise).padding(.leading, 12)
@@ -32,8 +33,7 @@ struct WorkoutLiveActivity: Widget {
             } compactLeading: {
                 HStack(spacing: 4) {
                     brandMark.frame(width: 22, height: 16)
-                    Text(context.state.exercise.isEmpty ? context.state.trainingName : context.state.exercise)
-                        .font(.caption2).lineLimit(1)
+                    Text(title).font(.caption2).lineLimit(1)
                 }.foregroundStyle(.green)
             } compactTrailing: {
                 if let end = context.state.restEnd {
@@ -52,7 +52,12 @@ struct WorkoutLiveActivity: Widget {
                         .minimumScaleFactor(0.75)
                         .multilineTextAlignment(.center)
                 } else {
-                    brandMark.frame(width: 22, height: 22)
+                    Text(title)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.green)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                        .multilineTextAlignment(.center)
                 }
             }
             .widgetURL(URL(string: "opengym://workout"))

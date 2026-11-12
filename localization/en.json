@@ -2318,6 +2318,7 @@
   "SECONDARY_MUSCLES": "Secondary muscles",
   "EDIT_EXERCISE": "Edit exercise",
   "DELETE_THIS_EXERCISE": "Delete this exercise?",
+  "CUSTOM_EXERCISE_STILL_IN_USE": "This exercise is still linked to a training plan, workout, draft, or personal setting. Remove the link before deleting the exercise.",
   "THE_EXERCISE_WILL_BE_REMOVED_FROM_YOUR_ROUTINES_COMPLETED_WORKOUTS_KEEP_ITS": "The exercise will be removed from your routines. Completed workouts keep its name, muscles and set records.",
   "USE_A_NAME_BETWEEN_ONE_AND_EIGHTZERO_CHARACTERS": "Use a name between 1 and 80 characters.",
   "AN_EXERCISE_WITH_THIS_NAME_ALREADY_EXISTS": "An exercise with this name already exists.",
