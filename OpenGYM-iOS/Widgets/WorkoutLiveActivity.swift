@@ -45,7 +45,15 @@ struct WorkoutLiveActivity: Widget {
                         .lineLimit(1).minimumScaleFactor(0.8)
                 }
             } minimal: {
-                brandMark.frame(width: 22, height: 22)
+                if let end = context.state.restEnd {
+                    TrainingCountdownText(end: end, presentation: .systemTimer)
+                        .font(.system(size: 11, weight: .semibold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                        .multilineTextAlignment(.center)
+                } else {
+                    brandMark.frame(width: 22, height: 22)
+                }
             }
             .widgetURL(URL(string: "opengym://workout"))
             .keylineTint(.green)
@@ -62,6 +70,14 @@ struct WorkoutLiveActivity: Widget {
 }
 
 #Preview("灵动岛 · 展开", as: .dynamicIsland(.expanded),
+    using: WorkoutActivityAttributes(account: "preview", sessionID: "preview")) {
+    WorkoutLiveActivity()
+} contentStates: {
+    WorkoutActivityAttributes.ContentState.canvas(resting: false)
+    WorkoutActivityAttributes.ContentState.canvas(resting: true)
+}
+
+#Preview("灵动岛 · 最小", as: .dynamicIsland(.minimal),
     using: WorkoutActivityAttributes(account: "preview", sessionID: "preview")) {
     WorkoutLiveActivity()
 } contentStates: {
