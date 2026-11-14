@@ -8,6 +8,7 @@ struct WorkoutView: View {
     @State private var showExerciseNote = false
     @State private var showExercisePicker = false
     @State private var exerciseOrderDraft: TrainingDraft?
+    @State private var showingCompletion = false
     var body: some View {
         NavigationStack {
             workoutContent
@@ -61,20 +62,42 @@ struct WorkoutView: View {
         GeometryReader { geometry in
             Group {
                 if let d = store.draft, !d.rawEntries.isEmpty {
-                    TrainingExercisePager(selected: min(max(0, d.activeJSON["cur"] as? Int ?? 0), d.rawEntries.count - 1),
-                        names: d.rawEntries.map(name), select: store.selectLiveEntry) { index in
-                        VStack(alignment: .leading, spacing: 20) {
-                            WorkoutNoteView(note: d.activeJSON["note"] as? String)
-                            LiveWorkoutExerciseCard(draft: d, index: index, showingNote: $showExerciseNote)
+                    // 全部组完成后，在最后一个动作之后追加“全部动作已完成”页；它不是真实动作，不写入 cur。
+                    let names = d.rawEntries.map(name)
+                    let completed = d.allSetsCompleted
+                    let current = min(max(0, d.activeJSON["cur"] as? Int ?? 0), names.count - 1)
+                    TrainingExercisePager(selected: completed && showingCompletion ? names.count : current,
+                        names: completed ? names + [String(localized: "ALL_EXERCISES_COMPLETE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)] : names,
+                        select: { index in
+                            showingCompletion = index == names.count
+                            if index < names.count { store.selectLiveEntry(index) }
+                        }) { index in
+                        if index == names.count {
+                            WorkoutExercisePrompt(icon: "checkmark.circle", message: "ALL_EXERCISES_COMPLETE",
+                                buttonTitle: "ADD_NEW_EXERCISE", buttonAccessibilityLabel: "ADD_NEW_EXERCISE",
+                                buttonIdentifier: "completed-workout-add-exercise") {
+                                store.liveInputBuffer.commitAll(); showExercisePicker = true
+                            }
+                            // 页面外层有 20pt 内边距，居中区域扣除上下两侧。
+                            .containerRelativeFrame(.vertical) { length, _ in max(0, length - 40) }
+                        } else {
+                            VStack(alignment: .leading, spacing: 20) {
+                                WorkoutNoteView(note: d.activeJSON["note"] as? String)
+                                LiveWorkoutExerciseCard(draft: d, index: index, showingNote: $showExerciseNote)
+                            }
                         }
                     }.id(d.id)
+                        // 最后一组完成时自动翻到完成页；撤销或新增组后回到动作页。
+                        .onChange(of: completed) { _, done in showingCompletion = done }
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
                             if let d = store.draft {
                                 WorkoutNoteView(note: d.activeJSON["note"] as? String)
                                 Spacer(minLength: 0)
-                                emptyWorkout
+                                WorkoutExercisePrompt(icon: "dumbbell", message: "NO_EXERCISES_YET", buttonTitle: "ADD",
+                                    buttonAccessibilityLabel: "ADD_WORKOUT_EXERCISE",
+                                    buttonIdentifier: "empty-workout-add-exercise") { showExercisePicker = true }
                                 Spacer(minLength: 0)
                             } else {
                                 planHeading(title: "START_WORKOUT", icon: "figure.strengthtraining.traditional")
@@ -128,29 +151,6 @@ struct WorkoutView: View {
             .accessibilityAddTraits(.isHeader)
     }
 
-    private var emptyWorkout: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "dumbbell")
-                .font(.system(size: 44, weight: .light))
-                .foregroundStyle(GymTheme.muted)
-                .accessibilityHidden(true)
-            Text("NO_EXERCISES_YET")
-                .font(.subheadline)
-                .foregroundStyle(GymTheme.muted)
-                .multilineTextAlignment(.center)
-            Button { showExercisePicker = true } label: {
-                Label("ADD", systemImage: "plus")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 24)
-                    .frame(minHeight: 48)
-                    .background(GymTheme.card, in: RoundedRectangle(cornerRadius: 14))
-            }.buttonStyle(.plain)
-                .accessibilityLabel("ADD_WORKOUT_EXERCISE")
-                .accessibilityIdentifier("empty-workout-add-exercise")
-        }.frame(maxWidth: .infinity)
-            .padding(.vertical, 24)
-    }
     private func name(_ entry: [String: Any]) -> String { store.exercise(entry["id"] as? String ?? "")?.titleParts.primary ?? String(localized: "CUSTOM_EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
 }
 

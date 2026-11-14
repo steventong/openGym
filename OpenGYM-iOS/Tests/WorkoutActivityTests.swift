@@ -360,6 +360,10 @@ import ActivityKit
         XCTAssertEqual(store.workoutActivityState()?.commandTitle, "完成")
         XCTAssertEqual(store.watchSnapshot().nextSet?.entry, 1)
         XCTAssertEqual(store.workoutActivityState()?.setLabel, "第 1/1 组")
+        // The next exercise starts behind a transition rest owned by that exercise.
+        XCTAssertNotNil(store.restUntil)
+        XCTAssertEqual(store.restEntry, 1)
+        XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.restCommand)))
         XCTAssertNil(store.restUntil)
         XCTAssertNil(store.performReadyActivityCommand(lastSet))
         XCTAssertEqual(store.draft?.completedSets, 2)

@@ -97,6 +97,7 @@
 		568C92942C7AD5F1CA7DD80D /* WorkoutPersonalActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DE383A8928BC4EF541415E8 /* WorkoutPersonalActions.swift */; };
 		56E7B7AD7CADE62DC7A1F957 /* PlanToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D367E34686FD7116E9FEE7EA /* PlanToolsView.swift */; };
 		579E7D5B402DAEF6321641F2 /* WorkoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E09E7AF6451F040744FDE6 /* WorkoutView.swift */; };
+		7A49CEF1D9FC459B25CEF2E6 /* WorkoutExercisePrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AF79195ED118EDC0038A9DE /* WorkoutExercisePrompt.swift */; };
 		5824351B34F29EC25D36EE93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6ECF351C6BEA9F8EC663CA2 /* Assets.xcassets */; };
 		5BD691C49EA7E5A27D1BE201 /* OpenGYMWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 32AEA6755D110B7DED1FE314 /* OpenGYMWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5F34ABCB02F64C3647915237 /* HomeWorkoutDurationLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3460F69593394509798884 /* HomeWorkoutDurationLabel.swift */; };
@@ -475,6 +476,7 @@
 		C061867E9E28B797431D6E79 /* TrainingEditorRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TrainingEditorRow.swift; sourceTree = "<group>"; };
 		C179C63FDB93FBEAFF6AD8B7 /* GymStore+Editing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "GymStore+Editing.swift"; sourceTree = "<group>"; };
 		C1E09E7AF6451F040744FDE6 /* WorkoutView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutView.swift; sourceTree = "<group>"; };
+		7AF79195ED118EDC0038A9DE /* WorkoutExercisePrompt.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutExercisePrompt.swift; sourceTree = "<group>"; };
 		C27946317CD6B75475216DB0 /* Vocabulary.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.json.xcstrings; path = Vocabulary.xcstrings; sourceTree = "<group>"; };
 		C90D8DFC309EBBAA009D9844 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		C9E3D8D837D326B8DA3448F8 /* RefreshTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RefreshTests.swift; sourceTree = "<group>"; };
@@ -929,6 +931,7 @@
 				258738E2E1FDD99DCF77BF17 /* StatsView.swift */,
 				A55E3E2CB815F93D517452CF /* Theme.swift */,
 				C1E09E7AF6451F040744FDE6 /* WorkoutView.swift */,
+				7AF79195ED118EDC0038A9DE /* WorkoutExercisePrompt.swift */,
 				3BCB9CDCED382223BC2A45AD /* TrainingExerciseEditor.swift */,
 				1FA67673C7F59C559D186485 /* ExerciseManagementControls.swift */,
 				97093FBE03E596EDF855E0E4 /* CustomExerciseEditor.swift */,
@@ -1272,6 +1275,7 @@
 				FB667ADE67439C24911F46DE /* StatsView.swift in Sources */,
 				998DBD93045BAB1A14326349 /* Theme.swift in Sources */,
 				579E7D5B402DAEF6321641F2 /* WorkoutView.swift in Sources */,
+				7A49CEF1D9FC459B25CEF2E6 /* WorkoutExercisePrompt.swift in Sources */,
 				A3EE85D7D8BE7010645A6F70 /* LocalTrainingStorage.swift in Sources */,
 				C2C37BE0D4EDA077A89A1FE1 /* TrainingInput.swift in Sources */,
 				97C592A34352F7D533B5B8BD /* HistoryForm.swift in Sources */,

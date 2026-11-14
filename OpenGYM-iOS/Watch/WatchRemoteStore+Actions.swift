@@ -15,9 +15,14 @@ extension WatchRemoteStore {
         restReminder.onError = { [weak self] message in self?.error = message }
         restReminder.start()
         restMotion.onResume = { [weak self] command in
-            guard let self, case .idle = commandState,
+            guard let self else { return }
+            guard case .idle = commandState,
                   command.account == snapshot.account, command.sessionID == snapshot.sessionID,
-                  command.revision == snapshot.revision, snapshot.restEnd != nil else { return }
+                  command.revision == snapshot.revision, snapshot.restEnd != nil else {
+                // 本次休息已记为消费，不会再次检测；丢弃必须可见。
+                WatchRestMotionService.logger.error("Rest motion command dropped before send, idle=\(self.commandState == .idle, privacy: .public) revision_match=\(command.revision == self.snapshot.revision, privacy: .public) resting=\(self.snapshot.restEnd != nil, privacy: .public)")
+                return
+            }
             send(command)
         }
         healthRecorder.onSessionStateChange = { [weak self] in self?.updateCompanionServices() }
@@ -159,7 +164,13 @@ extension WatchRemoteStore {
     private func send(_ command: WatchTrainingCommand) {
         guard !isPreview, !commandState.isSending, WCSession.default.activationState == .activated else { return }
         updateReachability()
-        guard reachable else { refresh(); return }
+        guard reachable else {
+            if command.action == "resumeFromMotion" {
+                WatchRestMotionService.logger.error("Rest motion command dropped, phone unreachable")
+            }
+            refresh()
+            return
+        }
         commandState = .sending(command)
         updateCompanionServices()
         UserDefaults.standard.set(try? JSONEncoder().encode(command), forKey: "remote.pending")
@@ -180,6 +191,9 @@ extension WatchRemoteStore {
 
     /// 超时或发送失败都进入“等待确认”；不把通信失败当作手机没有执行。
     private func commandUnconfirmed(id: String) {
+        if commandState.command?.id == id, commandState.command?.action == "resumeFromMotion" {
+            WatchRestMotionService.logger.error("Rest motion command unconfirmed (timeout or send error)")
+        }
         guard commandState.markUnconfirmed(commandID: id) else { return }
         updateCompanionServices()
         timeout?.cancel()
@@ -237,6 +251,9 @@ extension WatchRemoteStore {
         // 若前面的快照已经确认此命令，这里不会再次震动。
         if let id = message["commandID"] as? String, id == commandState.command?.id {
             let accepted = message["accepted"] as? Bool == true
+            if commandState.command?.action == "resumeFromMotion" {
+                WatchRestMotionService.logger.notice("Rest motion command reply, accepted=\(accepted, privacy: .public)")
+            }
             clearCommand()
             error = accepted ? nil : message["error"] as? String ?? String(localized: "CHECK_THE_WORKOUT_ON_YOUR_PHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
             if accepted { acknowledge() }

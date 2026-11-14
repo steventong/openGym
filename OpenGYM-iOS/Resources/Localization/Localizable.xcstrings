@@ -16845,23 +16845,6 @@
         }
       }
     },
-    "WORKOUT_ENDED": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Workout ended"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "训练已结束"
-          }
-        }
-      }
-    },
     "WORKOUT_DURATION_SYNCED_NO_LIVE_ACTIVITY_DATA_WAS_AVAILABLE_FOR_THIS_SESSION": {
       "comment": "训练时长已同步；本次没有可用的实时运动数据。",
       "extractionState": "manual",
@@ -17596,6 +17579,60 @@
           "stringUnit": {
             "state": "translated",
             "value": "已达到今日请求上限，请明天再试。"
+          }
+        }
+      }
+    },
+    "ALL_EXERCISES_COMPLETE": {
+      "comment": "全部动作已完成",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All exercises complete"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部动作已完成"
+          }
+        }
+      }
+    },
+    "ADD_NEW_EXERCISE": {
+      "comment": "添加新动作",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add new exercise"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加新动作"
+          }
+        }
+      }
+    },
+    "ADD_NEW_EXERCISES_ON_PHONE": {
+      "comment": "可在手机添加新动作",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add new exercises on your phone"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可在手机添加新动作"
           }
         }
       }

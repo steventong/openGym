@@ -45,9 +45,12 @@ extension GymStore {
             let rows = d.rawEntries[entry]["sets"] as? [[String:Any]] ?? []
             let exerciseDone = !rows.isEmpty && rows.allSatisfy { $0["done"] as? Bool == true }
             if exerciseDone {
-                // A completed exercise has no next set to rest for, including rechecked sets.
-                // Follow the shared progression rules, including superset partners and rechecks.
-                changeActive { raw in raw.removeValue(forKey: "nativeRest"); raw["cur"] = info["next"] ?? entry }
+                // 动作完成后跳到下一个动作，并用刚完成动作的休息时长作为过渡倒计时。
+                // 倒计时归属下一个动作，卡片、手表和灵动岛都显示即将开始的那一组；
+                // 全部完成或规则判定无需休息（如下一个动作先做热身组）时不计时。
+                let next = info["next"] as? Int ?? entry
+                startRest(entry: next, seconds: next == entry ? 0 : number(info["seconds"]))
+                changeActive { $0["cur"] = next }
                 return
             }
             let seconds = number(info["seconds"]); startRest(entry:entry,seconds:seconds,set:set)

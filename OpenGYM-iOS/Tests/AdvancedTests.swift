@@ -606,32 +606,41 @@ import AVFoundation
             XCTAssertEqual(restored.restUntil, deadline)
         }
     }
-    func testFinalSetClearsRestEvenWithAnotherExerciseRemaining() throws {
+    func testFinalSetStartsTransitionRestOnNextExercise() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
-        let s = state([["id": "0150", "sets": 2, "reps": 8, "weight": 20],
-                       ["id": "0025", "sets": 2, "reps": 8, "weight": 30]])
+        let s = state([["id": "0150", "sets": 2, "reps": 8, "weight": 20, "restSec": 120],
+                       ["id": "0025", "sets": 1, "reps": 8, "weight": 30, "restSec": 45]])
         let store = GymStore(userID: "rest-completion", storage: LocalTrainingStorage(root: root))
         store.state = s
         store.draft = try TrainingDraft.fromWeb(begin(s), unit: "kg")
         XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
         XCTAssertNotNil(store.restUntil)
-        XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
-        XCTAssertNil(store.restUntil)
-        XCTAssertNil(store.watchSnapshot().restEnd)
-        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 1)
 
-        // Rechecking the final set must also clear an existing timer instead of preserving it.
+        // The final set moves on to the next exercise, resting for the finished exercise's duration.
+        let before = Date()
         XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
-        store.startRest(entry: 0, seconds: 90)
-        XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
-        XCTAssertNil(store.restUntil)
+        let deadline = try XCTUnwrap(store.restUntil)
+        XCTAssertGreaterThanOrEqual(deadline.timeIntervalSince(before), 120)
+        XCTAssertLessThanOrEqual(deadline.timeIntervalSinceNow, 120)
+        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 1)
+        XCTAssertEqual(store.restEntry, 1)
+        XCTAssertNil((store.draft?.activeJSON["nativeRest"] as? [String: Any])?["set"])
+        let snapshot = store.watchSnapshot()
+        XCTAssertEqual(snapshot.restEnd, deadline)
+        XCTAssertNil(snapshot.restSet)
+        XCTAssertEqual(snapshot.nextSet?.entry, 1)
+
         let restored = GymStore(userID: "rest-completion", storage: LocalTrainingStorage(root: root))
         restored.restoreDraft()
-        XCTAssertNil(restored.restUntil)
+        XCTAssertEqual(restored.restUntil, deadline)
         XCTAssertEqual(restored.draft?.activeJSON["cur"] as? Int, 1)
+
+        // Finishing the whole workout leaves nothing to rest for.
+        XCTAssertTrue(store.liveRowAction(entry: 1, set: 0, action: ["action": "toggle"]))
+        XCTAssertNil(store.restUntil)
     }
-    func testSupersetRestsBetweenRoundsButNotAfterFinalRound() throws {
+    func testSupersetRestsBetweenRoundsAndBeforeNextExercise() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
         let configs: [[String: Any]] = [["id": "0150", "sets": 2, "reps": 8, "weight": 20],
@@ -648,8 +657,11 @@ import AVFoundation
         XCTAssertNotNil(store.restUntil)
         XCTAssertTrue(store.liveRowAction(entry: 0, set: 1, action: ["action": "toggle"]))
         XCTAssertNil(store.restUntil)
+        // The finished superset hands over to the remaining exercise through a rest countdown.
         XCTAssertTrue(store.liveRowAction(entry: 1, set: 1, action: ["action": "toggle"]))
-        XCTAssertNil(store.restUntil)
+        XCTAssertNotNil(store.restUntil)
+        XCTAssertEqual(store.restEntry, 2)
+        XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 2)
     }
 }
 

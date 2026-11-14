@@ -120,7 +120,8 @@ import UIKit
         store.startWorkTimer(entry: 0, set: 0)
         store.finishWorkTimer()
         XCTAssertNil(store.workTimer)
-        XCTAssertNil(store.restUntil)
+        XCTAssertNotNil(store.restUntil)
+        XCTAssertEqual(store.restEntry, 1)
         XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 1)
 
         XCTAssertTrue(store.liveRowAction(entry: 1, set: 0, action: ["action": "toggle"]))

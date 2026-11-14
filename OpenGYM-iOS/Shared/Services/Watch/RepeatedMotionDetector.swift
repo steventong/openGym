@@ -38,6 +38,22 @@ struct RepeatedMotionDetector {
         var quietSince: TimeInterval?
     }
 
+    /// 供上层写日志的判定过程；只记录，不参与判定。
+    struct Note: Equatable {
+        enum Kind: String { case cycle, dropped }
+        enum Reason: String {
+            case invalidSample, samplingGap, quiet, timeout, fastFlip
+            case periodOutOfRange, unbalanced, weakPeak, offAxis, cadenceChanged, amplitudeChanged
+        }
+        var kind: Kind
+        /// 已确认的完整周期数；中断时为中断前的数量。
+        var cycles: Int
+        var reason: Reason?
+        var period: TimeInterval?
+        var positivePeak: Double?
+        var negativePeak: Double?
+    }
+
     private enum Phase {
         case searching
         case tracking(Candidate)
@@ -47,17 +63,21 @@ struct RepeatedMotionDetector {
     private var phase = Phase.searching
     private var lastTimestamp: TimeInterval?
     private var filtered = Vector.zero
-    private let onset = 0.10
-    private let crossing = 0.06
+    private var pendingNote: Note?
+    /// 慢速大重量推举（约 2 秒推起、40 cm 行程）峰值仅约 0.06 g，门槛需低于该值。
+    private let onset = 0.05
+    private let crossing = 0.035
+    /// 推举顶端锁定常停 1 秒以上，加上低于 crossing 的减速段约 1.5 秒；超过该时长才视为动作中断。
+    private let quietLimit: TimeInterval = 2
 
     /// 确认三个完整周期后只返回一次整段运动的起点，而非确认时刻。
     mutating func consume(_ sample: Sample) -> TimeInterval? {
         guard sample.timestamp.isFinite, sample.acceleration.isFinite,
-              sample.recordedAt.timeIntervalSince1970.isFinite else { reset(); return nil }
+              sample.recordedAt.timeIntervalSince1970.isFinite else { noteDrop(.invalidSample); reset(); return nil }
         if case .detected = phase { return nil }
         let interval = lastTimestamp.map { sample.timestamp - $0 } ?? 0.04
-        guard interval > 0 else { reset(); return nil }
-        if interval > 0.35 { reset() }
+        guard interval > 0 else { noteDrop(.invalidSample); reset(); return nil }
+        if interval > 0.35 { noteDrop(.samplingGap); reset() }
         lastTimestamp = sample.timestamp
         let alpha = min(interval, 0.04) / (0.08 + min(interval, 0.04))
         filtered = filtered.scaled(1 - alpha).adding(sample.acceleration.scaled(alpha))
@@ -68,7 +88,8 @@ struct RepeatedMotionDetector {
 
         if filtered.length < crossing {
             if candidate.quietSince == nil { candidate.quietSince = sample.timestamp }
-            if sample.timestamp - (candidate.quietSince ?? sample.timestamp) >= 0.5 {
+            if sample.timestamp - (candidate.quietSince ?? sample.timestamp) >= quietLimit {
+                noteDrop(.quiet)
                 phase = .searching
                 return nil
             }
@@ -78,6 +99,7 @@ struct RepeatedMotionDetector {
         candidate.totalEnergy += filtered.dot(filtered)
         guard sample.timestamp - candidate.transitionAt <= 4,
               sample.timestamp - candidate.cycleStart <= 6 else {
+            noteDrop(.timeout)
             begin(at: sample.timestamp)
             return nil
         }
@@ -86,7 +108,7 @@ struct RepeatedMotionDetector {
             candidate.positivePeak = max(candidate.positivePeak, projected)
             if projected <= -crossing {
                 guard sample.timestamp - candidate.transitionAt >= 0.18 else {
-                    begin(at: sample.timestamp); return nil
+                    noteDrop(.fastFlip); begin(at: sample.timestamp); return nil
                 }
                 candidate.negative = true
                 candidate.transitionAt = sample.timestamp
@@ -100,13 +122,19 @@ struct RepeatedMotionDetector {
                 let balanced = candidate.negativePeak / max(candidate.positivePeak, onset)
                 let periodMatches = candidate.previousPeriod.map { (0.65...1.55).contains(period / $0) } ?? true
                 let amplitudeMatches = candidate.previousAmplitude.map { (0.5...2).contains(amplitude / $0) } ?? true
-                guard sample.timestamp - candidate.transitionAt >= 0.18,
-                      (0.7...6).contains(period), (0.4...2.5).contains(balanced),
-                      candidate.positivePeak >= onset, candidate.negativePeak >= onset,
-                      candidate.projectedEnergy >= candidate.totalEnergy * 0.65,
-                      periodMatches, amplitudeMatches else {
-                    begin(at: sample.timestamp); return nil
-                }
+                let rejection: Note.Reason? =
+                    sample.timestamp - candidate.transitionAt < 0.18 ? .fastFlip
+                    : !(0.7...6).contains(period) ? .periodOutOfRange
+                    : !(0.4...2.5).contains(balanced) ? .unbalanced
+                    : candidate.positivePeak < onset || candidate.negativePeak < onset ? .weakPeak
+                    : candidate.projectedEnergy < candidate.totalEnergy * 0.65 ? .offAxis
+                    : !periodMatches ? .cadenceChanged
+                    : !amplitudeMatches ? .amplitudeChanged : nil
+                let note = Note(kind: rejection == nil ? .cycle : .dropped, cycles: candidate.cycles + (rejection == nil ? 1 : 0),
+                    reason: rejection, period: period, positivePeak: candidate.positivePeak, negativePeak: candidate.negativePeak)
+                // 首个周期就不成形多为随手动作，只在周期像一次重复时才记录，避免日志被噪声刷满。
+                if rejection == nil || candidate.cycles > 0 || (0.7...6).contains(period) { pendingNote = note }
+                guard rejection == nil else { begin(at: sample.timestamp); return nil }
                 candidate.cycles += 1
                 if candidate.cycles == 3 {
                     phase = .detected
@@ -127,10 +155,22 @@ struct RepeatedMotionDetector {
         return nil
     }
 
+    /// 取出最近一条判定记录；每条只返回一次。
+    mutating func takeNote() -> Note? {
+        defer { pendingNote = nil }
+        return pendingNote
+    }
+
     mutating func reset() {
         phase = .searching
         lastTimestamp = nil
         filtered = .zero
+    }
+
+    /// 已确认至少一个周期的候选被丢弃时才记录，单次抖动不进日志。
+    private mutating func noteDrop(_ reason: Note.Reason) {
+        guard case .tracking(let candidate) = phase, candidate.cycles > 0 else { return }
+        pendingNote = Note(kind: .dropped, cycles: candidate.cycles, reason: reason)
     }
 
     private mutating func begin(at timestamp: TimeInterval) {
