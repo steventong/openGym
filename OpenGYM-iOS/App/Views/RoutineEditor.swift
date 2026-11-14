@@ -51,7 +51,7 @@ struct RoutineEditor: View {
                             }
                             BufferedTextField("EXERCISE_NOTES",text:Binding(get:{row.raw["note"] as? String ?? ""},set:{row.raw["note"] = $0})).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.font(.subheadline)
                             HStack {
-                                Button { inputBuffer.commitAll(); sorting = true } label: { Label("REORDER_EXERCISES", systemImage: "arrow.up.arrow.down").frame(minHeight: 48) }.disabled(rows.count < 2)
+                                Button { inputBuffer.commitAll(); sorting = true } label: { Label("EXERCISE_LIST", systemImage: "list.bullet").frame(minHeight: 48) }
                                 Spacer()
                                 Button(role:.destructive) { inputBuffer.commitAll(); let id = row.id; rows.removeAll { $0.id == id } } label: { Image(systemName:"minus.circle") }.accessibilityLabel("REMOVE_EXERCISE")
                             }.font(.caption).buttonStyle(.borderless)

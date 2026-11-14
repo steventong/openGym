@@ -21,6 +21,8 @@ struct WatchTrainingSnapshot: Codable, Equatable {
     var restEnd: Date?
     var restEntry: Int?
     var restExercise = ""
+    /// 旧版本快照没有该字段，解码为 nil 时按组间休息处理。
+    var restPhase: TrainingActionStatus.RestPhase? = nil
     var message = String(localized: "START_A_WORKOUT_ON_PHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     var acknowledged: [String] = []
     var setStartedAt: Date? = nil
@@ -56,7 +58,7 @@ struct WatchTrainingSnapshot: Codable, Equatable {
         case .awaitingConfirmation: return .retry
         case .idle: break
         }
-        if actionTiming.isRestAction { return .endRest }
+        if actionTiming.isRestAction { return .endRest(restPhase ?? .betweenSets) }
         if nextSet != nil { return .complete }
         if nextEntry != nil { return .next }
         return .finished
@@ -70,7 +72,9 @@ struct WatchTrainingSnapshot: Codable, Equatable {
 }
 
 enum WatchTrainingAction: Equatable {
-    case sending, retry, endRest, complete, next, finished
+    case sending, retry, complete, next, finished
+    /// 结束休息；换动作前的准备显示为“开始”。
+    case endRest(TrainingActionStatus.RestPhase)
     var title: String {
         String(localized: String.LocalizationValue(titleKey), bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     }
@@ -78,7 +82,8 @@ enum WatchTrainingAction: Equatable {
         switch self {
         case .sending: "CONFIRMING"
         case .retry: "RETRY_CONFIRMATION"
-        case .endRest: "FINISH"
+        case .endRest(.betweenSets): "FINISH"
+        case .endRest(.exercisePrep): "START"
         case .complete: "COMPLETE"
         case .next: "NEXT_EXERCISE"
         case .finished: "WORKOUT_DONE"
@@ -87,7 +92,8 @@ enum WatchTrainingAction: Equatable {
     var symbol: String {
         switch self {
         case .sending, .retry: "arrow.clockwise"
-        case .endRest: "forward.end.fill"
+        case .endRest(.betweenSets): "forward.end.fill"
+        case .endRest(.exercisePrep): "play.fill"
         case .next: "arrow.right"
         case .complete, .finished: "checkmark"
         }

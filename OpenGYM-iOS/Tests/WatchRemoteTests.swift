@@ -123,12 +123,12 @@ import XCTest
         var snapshot = store.watchSnapshot()
         XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .complete)
         snapshot.restEnd = now.addingTimeInterval(90)
-        XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .endRest)
+        XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .endRest(.betweenSets))
         XCTAssertEqual(snapshot.primaryAction(commandState: .sending(command)), .sending)
         XCTAssertEqual(snapshot.primaryAction(commandState: .awaitingConfirmation(command)), .retry)
         snapshot.restEnd = now.addingTimeInterval(-1)
         XCTAssertFalse(snapshot.isResting(at: now))
-        XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .endRest, "Expiry still waits for the phone to end rest")
+        XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .endRest(.betweenSets), "Expiry still waits for the phone to end rest")
         snapshot.restEnd = nil; snapshot.nextSet = nil; snapshot.nextEntry = 1
         XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .next)
         snapshot.nextEntry = nil

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ExerciseRestStatus: View {
     let end: Date
+    var phase: TrainingActionStatus.RestPhase = .betweenSets
 
     var body: some View {
         // Keep deadline updates local, so they cannot disturb open editor menus.
@@ -9,7 +10,7 @@ struct ExerciseRestStatus: View {
             HStack(spacing: 4) {
                 HStack(spacing: 2) {
                     Image(systemName: "timer").accessibilityHidden(true)
-                    Text("REST_BETWEEN_SETS")
+                    Text(phase == .exercisePrep ? "EXERCISE_PREP" : "REST_BETWEEN_SETS")
                 }
                 Group {
                     if context.date >= end {

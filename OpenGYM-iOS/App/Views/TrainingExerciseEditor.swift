@@ -21,6 +21,7 @@ struct TrainingExerciseEditor<ExerciseActions: View, Accessory: View>: View {
     var entryIdentity: String? = nil
     var timerRunning = false
     var restUntil: Date? = nil
+    var restPhase: TrainingActionStatus.RestPhase = .betweenSets
     var startTimer: ((Int) -> Void)? = nil
     var startRest: ((Int, Double) -> Void)? = nil
     let showDetails: () -> Void
@@ -39,7 +40,7 @@ struct TrainingExerciseEditor<ExerciseActions: View, Accessory: View>: View {
                 TrainingExerciseCard(entry: entries[selected], name: names[selected], rows: rows,
                     unit: unit, inputState: inputState, previous: previous, previousNote: previousNote,
                     identifier: identifier, entryIdentity: entryIdentity ?? String(selected), timerRunning: timerRunning,
-                    restUntil: restUntil, startTimer: startTimer, startRest: startRest, showDetails: showDetails,
+                    restUntil: restUntil, restPhase: restPhase, startTimer: startTimer, startRest: startRest, showDetails: showDetails,
                     addSet: addSet, copySet: copySet, removeSet: removeSet, editSet: editSet, undoRemove: undoRemove,
                     exerciseActions: exerciseActions, accessory: accessory)
                     .accessibilityActions {

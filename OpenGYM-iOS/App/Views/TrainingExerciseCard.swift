@@ -13,6 +13,7 @@ struct TrainingExerciseCard<ExerciseActions: View, Accessory: View>: View {
     let entryIdentity: String
     let timerRunning: Bool
     let restUntil: Date?
+    var restPhase: TrainingActionStatus.RestPhase = .betweenSets
     let startTimer: ((Int) -> Void)?
     let startRest: ((Int, Double) -> Void)?
     let showDetails: () -> Void
@@ -80,7 +81,7 @@ struct TrainingExerciseCard<ExerciseActions: View, Accessory: View>: View {
                     Color.clear.frame(maxWidth: .infinity)
                         .overlay(alignment: .center) {
                             if let restUntil {
-                                ExerciseRestStatus(end: restUntil)
+                                ExerciseRestStatus(end: restUntil, phase: restPhase)
                                     .accessibilityIdentifier("card-rest-timer")
                             }
                         }.allowsHitTesting(false)

@@ -37,6 +37,7 @@ extension GymStore {
             snapshot.restEnd = Date(timeIntervalSince1970: end)
             snapshot.restStartedAt = (rest["start"] as? Double).map(Date.init(timeIntervalSince1970:))
             snapshot.restEntry = rest["entry"] as? Int
+            snapshot.restPhase = restPhase
             if let owner = rest["entry"] as? Int, entries.indices.contains(owner) { snapshot.restExercise = watchExerciseName(entries[owner]) }
         }
         let target = entry["target"] as? [String: Any] ?? [:]

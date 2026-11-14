@@ -6045,6 +6045,24 @@
         }
       }
     },
+    "EXERCISE_PREP": {
+      "comment": "动作准备",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get ready"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "动作准备"
+          }
+        }
+      }
+    },
     "EXERCISE_PROGRESS": {
       "comment": "动作进步",
       "extractionState": "manual",
@@ -11013,24 +11031,6 @@
         }
       }
     },
-    "REORDER_EXERCISES": {
-      "comment": "调整动作顺序",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reorder exercises"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "调整动作顺序"
-          }
-        }
-      }
-    },
     "REPLACES_YOUR_WEEKLY_SCHEDULE_AND_FUTURE_DATE_OVERRIDES_EXISTING_ROUTINES_AND_WORKOUT": {
       "comment": "将替换每周安排及未来单日调整，保留已有计划和训练记录。",
       "extractionState": "manual",
@@ -15383,6 +15383,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "规律训练中"
+          }
+        }
+      }
+    },
+    "TRAINING_STATUS_EXERCISE_PREP": {
+      "comment": "动作准备",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GET READY"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "动作准备"
           }
         }
       }

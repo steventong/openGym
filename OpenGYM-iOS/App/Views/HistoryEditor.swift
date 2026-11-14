@@ -115,7 +115,7 @@ struct HistoryEditor: View {
                             exerciseSheet = nil
                         }
                     case .reorder:
-                        ExerciseOrderSheet(entries: form.entries.map(\.value), history: true, save: reorderExercises)
+                        ExerciseOrderSheet(entries: form.entries.map(\.value), save: reorderExercises)
                     }
                 }
                 .confirmationDialog("DELETE_THIS_WORKOUT",isPresented:$deleting,titleVisibility:.visible) {

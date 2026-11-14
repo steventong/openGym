@@ -10,7 +10,7 @@ extension WorkoutActivityAttributes.ContentState {
         let bundle = AppLanguage.bundle(for: language)
         let status: TrainingActionStatus?
         if let restEnd {
-            status = .rest(endsAt: restEnd)
+            status = .rest(endsAt: restEnd, phase: restPhase ?? .betweenSets)
         } else if setWeight != nil || setStartedAt != nil || command != nil {
             status = .workout(startedAt: setStartedAt)
         } else {
@@ -22,9 +22,12 @@ extension WorkoutActivityAttributes.ContentState {
             let title: String
             let symbol: String
             switch status {
-            case .rest:
+            case .rest(_, .betweenSets):
                 title = String(localized: "FINISH", bundle: bundle, locale: locale)
                 symbol = "forward.end.fill"
+            case .rest(_, .exercisePrep):
+                title = String(localized: "START", bundle: bundle, locale: locale)
+                symbol = "play.fill"
             case .workout:
                 title = commandTitle
                 symbol = "checkmark"

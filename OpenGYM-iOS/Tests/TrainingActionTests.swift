@@ -96,7 +96,7 @@ import UIKit
         store.restUntil = now.addingTimeInterval(-1)
         let snapshot = store.watchSnapshot()
         XCTAssertFalse(snapshot.isResting(at: now))
-        XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .endRest)
+        XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .endRest(.betweenSets))
         XCTAssertNil(snapshot.actionReadyAt)
         XCTAssertNotNil(store.workoutActivityState()?.restCommand)
         XCTAssertEqual(store.performWatchCommand(try watchCommand("complete"), now: now)["accepted"] as? Bool, false)
@@ -242,9 +242,12 @@ import UIKit
         AppLanguage.preferences.language = "zh"
         defer { AppLanguage.preferences.language = original }
         XCTAssertEqual(WatchTrainingAction.complete.title, "完成")
-        XCTAssertEqual(WatchTrainingAction.endRest.title, "结束")
+        XCTAssertEqual(WatchTrainingAction.endRest(.betweenSets).title, "结束")
         XCTAssertEqual(TrainingActionStatus.workout(startedAt: nil).titleKey, "TRAINING_STATUS_WORKOUT")
         XCTAssertEqual(TrainingActionStatus.rest(endsAt: now).titleKey, "TRAINING_STATUS_REST")
+        XCTAssertEqual(TrainingActionStatus.rest(endsAt: now, phase: .exercisePrep).titleKey, "TRAINING_STATUS_EXERCISE_PREP")
+        XCTAssertEqual(String(localized: "TRAINING_STATUS_EXERCISE_PREP", bundle: AppLanguage.bundle, locale: AppLanguage.locale), "动作准备")
+        XCTAssertEqual(WatchTrainingAction.endRest(.exercisePrep).title, "开始")
         XCTAssertEqual(String(localized: "TRAINING_STATUS_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), "正在训练")
         XCTAssertEqual(String(localized: "TRAINING_STATUS_REST", bundle: AppLanguage.bundle, locale: AppLanguage.locale), "组间休息")
         XCTAssertEqual(String(localized: "TRAINING_STATUS_WORKOUT", bundle: AppLanguage.bundle(for: "en"), locale: AppLanguage.locale(for: "en")), "TRAIN")

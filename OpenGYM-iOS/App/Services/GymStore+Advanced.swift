@@ -49,7 +49,7 @@ extension GymStore {
                 // 倒计时归属下一个动作，卡片、手表和灵动岛都显示即将开始的那一组；
                 // 全部完成或规则判定无需休息（如下一个动作先做热身组）时不计时。
                 let next = info["next"] as? Int ?? entry
-                startRest(entry: next, seconds: next == entry ? 0 : number(info["seconds"]))
+                startRest(entry: next, seconds: next == entry ? 0 : number(info["seconds"]), phase: .exercisePrep)
                 changeActive { $0["cur"] = next }
                 return
             }
@@ -75,11 +75,11 @@ extension GymStore {
             $0["nativeActionReadyAt"] = TrainingActionTiming.deadline(after: confirmedAt).timeIntervalSince1970
         }
     }
-    func startRest(entry:Int,seconds:Double,set:Int? = nil) {
+    func startRest(entry:Int,seconds:Double,set:Int? = nil,phase:TrainingActionStatus.RestPhase = .betweenSets) {
         changeActive { raw in
             if seconds > 0 {
                 let now = Date()
-                var rest: [String: Any] = ["entry":entry,"start":now.timeIntervalSince1970,"end":now.addingTimeInterval(seconds).timeIntervalSince1970]
+                var rest: [String: Any] = ["entry":entry,"start":now.timeIntervalSince1970,"end":now.addingTimeInterval(seconds).timeIntervalSince1970,"phase":phase.rawValue]
                 rest["set"] = set; raw["nativeRest"] = rest
             }
             else { raw.removeValue(forKey:"nativeRest") }

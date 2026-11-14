@@ -18,7 +18,7 @@ struct LiveWorkoutExerciseCard: View {
             unit: draft.unit, inputState: store.state.merging(["unit": draft.unit]) { _, new in new }, previous: previous.text, previousNote: previous.note,
             note: Binding(get: { entry["note"] as? String ?? "" }, set: { store.setLiveNote(entry: index, text: $0) }),
             identifier: "live", showsEntryPosition: false, entryIdentity: "\(draft.id)-\(entry["nativeViewID"] as? String ?? String(index))", timerRunning: store.workTimer != nil,
-            restUntil: store.restEntry == index ? store.restUntil : nil,
+            restUntil: store.restEntry == index ? store.restUntil : nil, restPhase: store.restPhase,
             startTimer: { store.startWorkTimer(entry: index, set: $0) },
             startRest: { store.startRest(entry: index, seconds: $1, set: $0) },
             showDetails: { store.selectedExercise = store.exercise(entry["id"] as? String ?? "") },

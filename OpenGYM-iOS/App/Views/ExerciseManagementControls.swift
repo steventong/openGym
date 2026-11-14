@@ -68,19 +68,18 @@ struct ExerciseManagementControls: View {
 
 }
 
+/// 动作列表：每行显示动作名和锻炼的肌肉部位，拖动调整顺序。
 /// Dragging edits only this sheet's snapshot. Apply the complete permutation once.
 struct ExerciseOrderSheet: View {
     @Environment(GymStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var entries: [[String: Any]]
-    private let history: Bool
     private let save: ([Int], [[String: Any]]) throws -> Void
     @State private var order: [Int]
     @State private var error: String?
 
-    init(entries: [[String: Any]], history: Bool = false, save: @escaping ([Int], [[String: Any]]) throws -> Void) {
+    init(entries: [[String: Any]], save: @escaping ([Int], [[String: Any]]) throws -> Void) {
         _entries = State(initialValue: entries)
-        self.history = history
         self.save = save
         _order = State(initialValue: Array(entries.indices))
     }
@@ -99,7 +98,7 @@ struct ExerciseOrderSheet: View {
                             ExerciseThumbnail(id: id ?? "", size: 44)
                             VStack(alignment: .leading, spacing: 4) {
                                 if let name { Text(name) } else { Text("EXERCISE") }
-                                if history, let muscle = muscleLabel(for: exercise, snapshot: snapshot) {
+                                if let muscle = muscleLabel(for: exercise, snapshot: snapshot) {
                                     Text(muscle).font(.caption).foregroundStyle(GymTheme.muted)
                                 }
                                 if let group = entry["sg"] as? String, !group.isEmpty {
@@ -111,7 +110,7 @@ struct ExerciseOrderSheet: View {
                     }.onMove { order.move(fromOffsets: $0, toOffset: $1) }
                 }
             }.environment(\.editMode, .constant(.active))
-                .navigationTitle(history ? Text("EXERCISE_LIST") : Text("REORDER_EXERCISES"))
+                .navigationTitle("EXERCISE_LIST")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button("CANCEL") { dismiss() } }

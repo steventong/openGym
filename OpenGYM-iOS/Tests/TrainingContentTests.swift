@@ -35,7 +35,7 @@ import Observation
         var state = activityState()
         state.restEnd = end
         state.restCommand = "rest"
-        let watch = snapshot.trainingContent(action: .endRest, disabled: false)
+        let watch = snapshot.trainingContent(action: .endRest(.betweenSets), disabled: false)
         XCTAssertEqual(watch, state.trainingContent())
         XCTAssertEqual(watch.summary?.weight, "40 kg")
         XCTAssertEqual(watch.action?.status, .rest(endsAt: end))

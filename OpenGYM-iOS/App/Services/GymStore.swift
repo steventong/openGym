@@ -58,6 +58,10 @@ import Observation
         get { guard let t = draft?.activeJSON["nativeRest"] as? [String: Any] else { return nil }; return Date(timeIntervalSince1970: number(t["end"])) }
         set { changeActive { raw in if let newValue { var rest = raw["nativeRest"] as? [String: Any] ?? [:]; rest["end"] = newValue.timeIntervalSince1970; raw["nativeRest"] = rest } else { raw.removeValue(forKey: "nativeRest") } } }
     }
+    /// 旧草稿没有 phase 字段，按组间休息处理。
+    var restPhase: TrainingActionStatus.RestPhase {
+        (draft?.activeJSON["nativeRest"] as? [String: Any])?["phase"].flatMap { $0 as? String }.flatMap(TrainingActionStatus.RestPhase.init(rawValue:)) ?? .betweenSets
+    }
     private var index: [String: Exercise] = [:]
     private var catalogue: [Exercise] = []
     private var catalogueMediaIDs: Set<String> = []

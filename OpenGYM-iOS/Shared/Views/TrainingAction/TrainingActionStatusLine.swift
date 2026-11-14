@@ -15,7 +15,7 @@ struct TrainingActionStatusLine: View {
             // 系统计时文字在已归档的 Live Activity 视图中也能继续更新。
             Group {
                 switch status {
-                case .rest(let end):
+                case .rest(let end, _):
                     TrainingCountdownText(end: end, presentation: .systemTimer)
                 case .workout(let start?):
                     Text(timerInterval: start...Date.distantFuture, countsDown: false, showsHours: false)

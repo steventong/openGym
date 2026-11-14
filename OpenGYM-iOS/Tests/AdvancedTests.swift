@@ -616,6 +616,7 @@ import AVFoundation
         store.draft = try TrainingDraft.fromWeb(begin(s), unit: "kg")
         XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
         XCTAssertNotNil(store.restUntil)
+        XCTAssertEqual(store.restPhase, .betweenSets)
 
         // The final set moves on to the next exercise, resting for the finished exercise's duration.
         let before = Date()
@@ -630,10 +631,15 @@ import AVFoundation
         XCTAssertEqual(snapshot.restEnd, deadline)
         XCTAssertNil(snapshot.restSet)
         XCTAssertEqual(snapshot.nextSet?.entry, 1)
+        // 换动作的倒计时显示为“动作准备”，按钮为“开始”。
+        XCTAssertEqual(store.restPhase, .exercisePrep)
+        XCTAssertEqual(snapshot.restPhase, .exercisePrep)
+        XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .endRest(.exercisePrep))
 
         let restored = GymStore(userID: "rest-completion", storage: LocalTrainingStorage(root: root))
         restored.restoreDraft()
         XCTAssertEqual(restored.restUntil, deadline)
+        XCTAssertEqual(restored.restPhase, .exercisePrep)
         XCTAssertEqual(restored.draft?.activeJSON["cur"] as? Int, 1)
 
         // Finishing the whole workout leaves nothing to rest for.

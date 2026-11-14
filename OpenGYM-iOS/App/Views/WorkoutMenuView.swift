@@ -14,8 +14,8 @@ struct WorkoutMenuView: View {
             Section {
                 Button("ADD_EXERCISE", systemImage: "plus", action: addExercise)
                     .accessibilityIdentifier("add-workout-exercise")
-                Button("REORDER_EXERCISES", systemImage: "arrow.up.arrow.down", action: reorderExercises)
-                    .disabled(draft.rawEntries.count < 2).accessibilityIdentifier("reorder-exercises")
+                Button("EXERCISE_LIST", systemImage: "list.bullet", action: reorderExercises)
+                    .disabled(draft.rawEntries.isEmpty).accessibilityIdentifier("reorder-exercises")
             }
             Section("WORKOUT") {
                 Button("WORKOUT_DETAILS", systemImage: "note.text", action: showDetails)

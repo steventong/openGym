@@ -363,6 +363,10 @@ import ActivityKit
         // The next exercise starts behind a transition rest owned by that exercise.
         XCTAssertNotNil(store.restUntil)
         XCTAssertEqual(store.restEntry, 1)
+        let prep = try XCTUnwrap(store.workoutActivityState()?.trainingContent().action)
+        XCTAssertEqual(prep.title, "开始")
+        XCTAssertEqual(prep.symbol, "play.fill")
+        XCTAssertEqual(prep.status.titleKey, "TRAINING_STATUS_EXERCISE_PREP")
         XCTAssertNil(store.performReadyActivityCommand(try XCTUnwrap(store.workoutActivityState()?.restCommand)))
         XCTAssertNil(store.restUntil)
         XCTAssertNil(store.performReadyActivityCommand(lastSet))

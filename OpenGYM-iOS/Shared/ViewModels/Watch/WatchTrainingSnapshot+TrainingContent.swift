@@ -7,7 +7,7 @@ extension WatchTrainingSnapshot {
         let locale = AppLanguage.locale(for: language)
         let status: TrainingActionStatus
         if let restEnd {
-            status = .rest(endsAt: restEnd)
+            status = .rest(endsAt: restEnd, phase: restPhase ?? .betweenSets)
         } else {
             status = .workout(startedAt: setStartedAt)
         }

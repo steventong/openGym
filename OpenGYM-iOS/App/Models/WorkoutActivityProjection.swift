@@ -32,7 +32,8 @@ extension GymStore {
             commandTitle: commandTitle,
             restCommand: snapshot.restEnd != nil && available ? activityCommand(snapshot, action: "skipRest", entry: restEntry ?? 0) : nil,
             setWeight: displayedRow?.weight, setDetail: displayedRow?.detail, setCompletionLabel: snapshot.setCompletionLabel, busyTitle: syncing ? String(localized: "SAVING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : nil,
-            actionReadyAt: snapshot.actionReadyAt, setStartedAt: snapshot.setStartedAt, language: AppLanguage.language)
+            actionReadyAt: snapshot.actionReadyAt, setStartedAt: snapshot.setStartedAt, language: AppLanguage.language,
+            restPhase: snapshot.restPhase)
     }
 
     private func activityCommand(_ snapshot: WatchTrainingSnapshot, action: String, entry: Int, index: Int? = nil, side: String? = nil) -> String? {
