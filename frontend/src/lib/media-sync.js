@@ -18,7 +18,7 @@
  * It also keeps the local store tidy (localMediaGc) and makes the plan's custom media local ahead
  * of time (startCustomMediaPrefetch), so a workout opened without a network still shows them.
  */
-import { referencedHashes, referencedFiles, MEDIA_MIMES } from './media-refs.js'
+import { keptHashes, referencedFiles, uploadableFiles, MEDIA_MIMES } from './media-refs.js'
 import { sniffKind } from './media-sniff.js'
 import { sha256Hex } from './sha256.js'
 import { mediaStore as sharedStore } from './media-store.js'
@@ -43,6 +43,7 @@ const RECENT_WORKOUT_POSTERS = 20
 const REJECTED = new Set(['media-too-large', 'media-type', 'media-invalid', 'media-too-long', 'proxy-too-large', 'hash-mismatch'])
 const PERSISTED_KEY = 'gym_state_v1'
 
+const hasSetMedia = w => Array.isArray(w?.entries) && w.entries.some(e => Array.isArray(e?.sets) && e.sets.some(s => Array.isArray(s?.media) && s.media.length))
 const sleep = ms => new Promise(r => setTimeout(r, ms))
 const isNetwork = e => !e || e.status == null || e.code === 'timeout' || e.code === 'network'
 
@@ -103,7 +104,9 @@ export function createMediaSync(deps = {}) {
     let cfg = st.config
     if (!cfg && typeof st.loadConfig === 'function') cfg = await st.loadConfig()
     if (!cfg?.media) { await publishPending({ usage: null }); return }
-    const files = referencedFiles(st.S)
+    // A set's form video kept on its phone, or any set video on a server that does not keep
+    // them (media.sets), is neither asked about nor sent (media-refs.js uploadableFiles).
+    const files = uploadableFiles(st.S, { sets: !!cfg.media.sets })
     const refs = files.map(f => f.hash)
     // Nothing referenced (a reset, everything deleted) forgets the last run: the same files coming
     // back from a backup within ten minutes are new to the server again, not a repeat of that run.
@@ -143,7 +146,7 @@ export function createMediaSync(deps = {}) {
     const refuse = async h => {
       await d.media.markRejected(h)
       rejected++
-      if (!rejectTold.has(h)) { rejectTold.add(h); d.toast(t("THE_SERVER_REFUSED_THE_FILE_AS_TOO_LARGE" /* 服务器因文件过大而拒绝了它。 */)) }
+      if (!rejectTold.has(h)) { rejectTold.add(h); d.toast(t('The server refused the file as too large.')) }
     }
     for (const h of missing) {
       const rec = await d.media.get(h)
@@ -167,7 +170,7 @@ export function createMediaSync(deps = {}) {
         if (code === 'media-quota') {
           if (!quotaTold) {
             quotaTold = true
-            d.toast(t("YOUR_PHOTO_AND_VIDEO_SPACE_ON_THE_SERVER_IS_FULL_COUNT_OF" /* 你在服务器上的照片和视频空间已满（{0} / {1} MB）。 */, fmtMB(Number(e.data?.usedMB) || 0), fmtMB(Number(e.data?.quotaMB) || 0)))
+            d.toast(t('Your photo and video space on the server is full ({0} of {1} MB).', fmtMB(Number(e.data?.usedMB) || 0), fmtMB(Number(e.data?.quotaMB) || 0)))
           }
           stopped = true
           break
@@ -183,9 +186,9 @@ export function createMediaSync(deps = {}) {
           if (!rejectTold.has(h)) {
             rejectTold.add(h)
             d.toast(code === 'media-type' || code === 'media-invalid'
-              ? t("THAT_FILE_TYPE_ISN_T_SUPPORTED_USE_A_PHOTO_A_GIF_OR" /* 不支持该文件类型。请使用照片、GIF，或 MP4、MOV、WebM 视频。 */)
-              : code === 'media-too-long' ? t("THAT_VIDEO_IS_TOO_LONG_MAX_COUNT_SECONDS" /* 视频太长了。最长 {0} 秒。 */, Number(e.data?.maxSec) || 60)
-                : t("THE_SERVER_REFUSED_THE_FILE_AS_TOO_LARGE" /* 服务器因文件过大而拒绝了它。 */))
+              ? t('That file type isn’t supported. Use a photo, a GIF, or an MP4, MOV or WebM video.')
+              : code === 'media-too-long' ? t('That video is too long. Max {0} seconds.', Number(e.data?.maxSec) || 60)
+                : t('The server refused the file as too large.'))
           }
           continue
         }
@@ -285,10 +288,10 @@ export function createMediaSync(deps = {}) {
     gcWaiting = false
     await withLock('opengym-media', async () => {
       const st = store.getState()
-      const live = referencedHashes(st.S)
+      const live = keptHashes(st.S)
       try {
         const raw = d.storage?.getItem(PERSISTED_KEY)
-        if (raw) for (const h of referencedHashes(JSON.parse(raw))) live.add(h)
+        if (raw) for (const h of keptHashes(JSON.parse(raw))) live.add(h)
       } catch { /* an unreadable copy keeps nothing extra */ }
       try {
         if (typeof st.stashedMediaHashes === 'function') for (const h of await st.stashedMediaHashes()) live.add(h)
@@ -296,7 +299,7 @@ export function createMediaSync(deps = {}) {
       // A second guard on a phone: the mirror is read even after boot, since a copy that failed
       // to reach localStorage lives only there and in memory, and memory may already have moved on.
       try {
-        if (d.nativeLoad) { const saved = await d.nativeLoad(); if (saved) for (const h of referencedHashes(saved)) live.add(h) }
+        if (d.nativeLoad) { const saved = await d.nativeLoad(); if (saved) for (const h of keptHashes(saved)) live.add(h) }
       } catch { return }   // the mirror could not be read: delete nothing rather than guess
       // A file an open editor holds as its draft is live too, however long the editor has been open.
       const held = r => typeof d.media.isHeld === 'function' && d.media.isHeld(r.hash)
@@ -339,8 +342,10 @@ export function createMediaSync(deps = {}) {
       ;(S?.routines || []).forEach(r => (r?.ex || []).forEach(e => { if (e?.id) ids.add(e.id) }))
       ;(S?.active?.entries || []).forEach(en => { if (en?.id) ids.add(en.id) })
       const used = { customEx: (S?.customEx || []).filter(c => c && ids.has(c.id)) }
-      const withMedia = (Array.isArray(S?.workouts) ? S.workouts : []).filter(w => Array.isArray(w?.media) && w.media.length)
-      const posters = referencedFiles({ workouts: withMedia.slice(-RECENT_WORKOUT_POSTERS) }).filter(f => f.poster)
+      const withMedia = (Array.isArray(S?.workouts) ? S.workouts : []).filter(w => (Array.isArray(w?.media) && w.media.length) || hasSetMedia(w))
+      // Set videos count as workouts with media too; one kept on the phone that filmed it is never
+      // asked for (uploadableFiles).
+      const posters = uploadableFiles({ workouts: withMedia.slice(-RECENT_WORKOUT_POSTERS) }, { sets: !!store.getState().config?.media?.sets }).filter(f => f.poster)
       return [...referencedFiles(used), ...posters]
     }
     const runPrefetch = async () => {
@@ -389,7 +394,7 @@ export function createMediaSync(deps = {}) {
     }
     let gcTimer = null
     const scheduleGc = ms => { clearTimeout(gcTimer); gcTimer = setTimeout(() => { gcTimer = null; localMediaGc().catch(() => {}) }, ms) }
-    const refsKey = S => [...referencedHashes(S)].sort().join(',')
+    const refsKey = S => [...keptHashes(S)].sort().join(',')
     let prev = store.getState()
     let prevRefs = refsKey(prev.S)
     const unsub = store.subscribe(s => {
@@ -422,6 +427,3 @@ export const syncMedia = opts => inst().syncMedia(opts)
 export const fetchToStore = (hash, expect, opts) => inst().fetchToStore(hash, expect, opts)
 export const mayFetch = hash => inst().mayFetch(hash)
 export const localMediaGc = () => inst().localMediaGc()
-export const settleMediaSync = () => inst().settle()
-/** Tests only. */
-export const _setSharedMediaSync = s => { shared = s }

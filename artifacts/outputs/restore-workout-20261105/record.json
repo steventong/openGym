@@ -1,0 +1,235 @@
+{
+  "prs": [
+    "2267"
+  ],
+  "_f": {
+    "entries": 1793285533931,
+    "prs": 1793285533931,
+    "vol": 1793285533931
+  },
+  "bw": 63.6,
+  "routineId": "mvo1cr5omsmiv",
+  "start": 1793248266392.494,
+  "routineIds": [
+    "mvo1cr5omsmiv"
+  ],
+  "id": "D3645B7D-288A-4946-BCDF-CA7C10285826",
+  "entries": [
+    {
+      "rid": "mvo1cr5omsmiv",
+      "id": "2267",
+      "sets": [
+        {
+          "done": true,
+          "w": 73,
+          "r": 15,
+          "at": 1793248480352.518
+        },
+        {
+          "done": true,
+          "w": 73,
+          "at": 1793248692335.362,
+          "r": 15
+        },
+        {
+          "r": 15,
+          "w": 73,
+          "done": true,
+          "at": 1793248883899.9539
+        }
+      ],
+      "topW": 73,
+      "target": {
+        "weight": 0,
+        "prog": "double",
+        "subs": [
+          "8375",
+          "1760"
+        ],
+        "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。先热身及递增热身组；选用熟悉的坐姿腿举机，换器械重新校准。",
+        "id": "2267",
+        "mode": "reps",
+        "repsMin": 10,
+        "restSec": 150,
+        "reps": 15,
+        "sets": 3,
+        "lastToFailure": false
+      },
+      "planned": {
+        "reps": 15,
+        "sets": 3,
+        "weight": 0,
+        "repsMin": 10
+      }
+    },
+    {
+      "rid": "mvo1cr5omsmiv",
+      "id": "1459",
+      "sets": [
+        {
+          "done": true,
+          "r": 12,
+          "at": 1793249154589.199,
+          "w": 25
+        },
+        {
+          "done": true,
+          "at": 1793249351359.238,
+          "r": 12,
+          "w": 25
+        },
+        {
+          "at": 1793249564747.088,
+          "r": 12,
+          "w": 25,
+          "done": true
+        }
+      ],
+      "topW": 25,
+      "planned": {
+        "reps": 12,
+        "sets": 3,
+        "weight": 25,
+        "repsMin": 8
+      },
+      "target": {
+        "id": "1459",
+        "note": "目标每组8–12次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量按每只哑铃记录。所填重量仅为试练起点，按当日状态调整。保持髋铰链，控制下降，按能保持稳定动作的幅度完成。",
+        "repsMin": 8,
+        "lastToFailure": false,
+        "weight": 25,
+        "mode": "reps",
+        "reps": 12,
+        "restSec": 150,
+        "subs": [
+          "0085",
+          "0196"
+        ],
+        "dbLoad": "each",
+        "sets": 3,
+        "prog": "double"
+      }
+    },
+    {
+      "rid": "mvo1cr5omsmiv",
+      "id": "0417",
+      "sets": [
+        {
+          "r": 10,
+          "w": 0,
+          "done": true
+        },
+        {
+          "r": 10,
+          "w": 0,
+          "done": true
+        },
+        {
+          "w": 0,
+          "done": true,
+          "r": 10
+        }
+      ],
+      "topW": null,
+      "target": {
+        "id": "0417",
+        "sets": 3,
+        "weight": 0,
+        "reps": 10,
+        "mode": "reps"
+      },
+      "planned": {
+        "sets": 3,
+        "reps": 10,
+        "weight": 0
+      }
+    },
+    {
+      "rid": "mvo1cr5omsmiv",
+      "id": "0472",
+      "sets": [
+        {
+          "r": 15,
+          "w": 0,
+          "done": true
+        },
+        {
+          "w": 0,
+          "done": true,
+          "r": 15
+        },
+        {
+          "r": 15,
+          "done": true,
+          "w": 0
+        }
+      ],
+      "topW": null,
+      "target": {
+        "reps": 10,
+        "sets": 3,
+        "bodyweight": true,
+        "weight": 0,
+        "mode": "reps",
+        "id": "0472"
+      },
+      "planned": {
+        "sets": 3,
+        "reps": 10,
+        "weight": 0
+      }
+    },
+    {
+      "rid": "mvo1cr5omsmiv",
+      "id": "0599",
+      "sets": [
+        {
+          "at": 1793251298667.022,
+          "done": true,
+          "w": 45,
+          "r": 15
+        },
+        {
+          "at": 1793251459756.501,
+          "done": true,
+          "w": 50,
+          "r": 15
+        },
+        {
+          "at": 1793251620401.6973,
+          "done": true,
+          "w": 50,
+          "r": 15
+        }
+      ],
+      "topW": 50,
+      "target": {
+        "weight": 45.359,
+        "prog": "double",
+        "subs": [
+          "0586",
+          "5036"
+        ],
+        "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。",
+        "id": "0599",
+        "mode": "reps",
+        "repsMin": 10,
+        "restSec": 90,
+        "reps": 15,
+        "sets": 3,
+        "lastToFailure": false
+      },
+      "planned": {
+        "reps": 15,
+        "sets": 3,
+        "weight": 0,
+        "repsMin": 10
+      }
+    }
+  ],
+  "name": "下肢基础 · 腿部与核心",
+  "vol": 7260,
+  "_ts": 1793633908161,
+  "end": 1793251633080.893,
+  "d": "2026-10-29"
+}

@@ -1,0 +1,723 @@
+[
+  {
+    "oldID": "cimpab3d1a064119d7f44d95",
+    "oldName": "窄距平行握引体向上(Chin-Ups (Narrow Parallel Grip))",
+    "standardID": "0253",
+    "standardName": "chin-ups (narrow parallel grip)",
+    "description": "对应 openGym 0253：chin-ups (narrow parallel grip)。健身房：Peak Fitness TRX。以窄距平行握、掌心相对完成引体向上。用户确认历史握法均为窄距平行握，掌心相对。OpenGym 0253中文源名含有歧义词，展示译名按实际握法修正；源名保留在核对信息和审计中。"
+  },
+  {
+    "oldID": "cimp314bcff10101fe979053",
+    "oldName": "绳索窄握前高位下拉(Cable Close Grip Front Lat Pulldown)",
+    "standardID": "1047",
+    "standardName": "cable close grip front lat pulldown",
+    "description": "对应 openGym 1047：cable close grip front lat pulldown。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐于绳索下拉器械，以窄握将握把拉向胸前。本条为绳索窄握前高位下拉（1047）；明确宽握（2291）和 MAG 握把（6392）的已确认记录独立归类，未知握法不自动推断。"
+  },
+  {
+    "oldID": "cimp72bfd0875b9eaa5e62b1",
+    "oldName": "哑铃卧推(Dumbbell Bench Press)",
+    "standardID": "0289",
+    "standardName": "dumbbell bench press",
+    "description": "对应 openGym 0289：dumbbell bench press。健身房：Peak Fitness TRX。仰卧在平凳上，控制双哑铃下降至胸部两侧，再向上推起。"
+  },
+  {
+    "oldID": "cimp54c0e58a6bcfc0979988",
+    "oldName": "哑铃飞鸟(Dumbbell Fly)",
+    "standardID": "0308",
+    "standardName": "dumbbell fly",
+    "description": "对应 openGym 0308：dumbbell fly。健身房：Peak Fitness TRX。仰卧以微屈的双臂沿弧线开合，主要完成肩关节水平内收。"
+  },
+  {
+    "oldID": "cimp079933dcca32f8e76c30",
+    "oldName": "哑铃坐姿二头弯举(Dumbbell Seated Bicep Curl)",
+    "standardID": "1677",
+    "standardName": "dumbbell seated bicep curl",
+    "description": "对应 openGym 1677：dumbbell seated bicep curl。健身房：Peak Fitness TRX。坐在训练凳上完成哑铃二头弯举。"
+  },
+  {
+    "oldID": "cimpaa6f95baf11868ce154a",
+    "oldName": "杠杆坐姿肩部推举(Lever Seated Shoulder Press)",
+    "standardID": "1454",
+    "standardName": "lever seated shoulder press",
+    "description": "对应 openGym 1454：lever seated shoulder press。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐在插销式肩推器械上，将把手从肩部附近向上推起。本条为插销式器械；挂片式肩推保留独立动作ID与历史。"
+  },
+  {
+    "oldID": "cimped007a20ae300cc80157",
+    "oldName": "绳索宽握高位下拉(Cable Wide Grip Lat Pulldown)",
+    "standardID": "2291",
+    "standardName": "cable wide grip lat pulldown",
+    "description": "对应 openGym 2291：cable wide grip lat pulldown。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。使用绳索器械宽握拉杆，将拉杆拉向胸前。按明确历史证据拆分的动作变式。"
+  },
+  {
+    "oldID": "cimp3007d60a8282a4ab7e28",
+    "oldName": "绳索V形杆坐姿划船(Cable Seated Row With V Bar)",
+    "standardID": "2661",
+    "standardName": "cable seated row with v bar",
+    "description": "对应 openGym 2661：cable seated row with v bar。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。使用V形窄握把手进行绳索坐姿划船。本轮103组历史划船已逐批确认对应2661；部分原始名称含MAG字样，原文保留。挂片式器械划船（3102）另有独立条目，新记录按实际器械和把手确认。"
+  },
+  {
+    "oldID": "cimpc8c9e0b514485c265ed1",
+    "oldName": "哑铃坐姿锤式弯举(Dumbbell Seated Hammer Curl)",
+    "standardID": "1678",
+    "standardName": "dumbbell seated hammer curl",
+    "description": "对应 openGym 1678：dumbbell seated hammer curl。健身房：Peak Fitness TRX。坐姿以掌心相对的握法完成哑铃锤式弯举。"
+  },
+  {
+    "oldID": "cimpbaa2a3937c9da2f4c1fe",
+    "oldName": "下斜卷腹(Decline Crunch)",
+    "standardID": "0277",
+    "standardName": "decline crunch",
+    "description": "对应 openGym 0277：decline crunch。健身房：Peak Fitness TRX。在下斜凳上卷起上背，使胸廓靠近骨盆的腹部屈曲动作。"
+  },
+  {
+    "oldID": "cimp1464e6bf129e402b972a",
+    "oldName": "杠杆肩部推举 v. 3(Lever Shoulder Press V. 3)",
+    "standardID": "2318",
+    "standardName": "lever shoulder press v. 3",
+    "description": "对应 openGym 2318：lever shoulder press v. 3。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。在挂片式肩推机上沿导向轨迹向上推举，训练肩部和肱三头肌。历史记录存在“加片重量”和“机器显示总重量”两种尺度，尚未确认换算关系，不直接比较两段重量趋势。\n用户确认2318挂片式器械示例；与插销式1454保持独立动作ID和历史。"
+  },
+  {
+    "oldID": "cimp07719aa9c82592b9d4b7",
+    "oldName": "绳索磁力握把高位下拉(Cable Lateral Pulldown With Mag Grip)",
+    "standardID": "6392",
+    "standardName": "cable lateral pulldown with mag grip",
+    "description": "对应 openGym 6392：cable lateral pulldown with mag grip。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐姿使用 MAG 握把进行绳索高位下拉；本次仅按明确确认的历史记录匹配。本轮已确认13组MAG握把高位下拉（6392），包括 Lat Pull Down (mag grip) 和 butterfly grip 记录；握把具体宽度未注明的保持未知。"
+  },
+  {
+    "oldID": "cimpb32d654304b8f9d43dcc",
+    "oldName": "史密斯机上斜卧推(Smith Incline Bench Press)",
+    "standardID": "0757",
+    "standardName": "smith incline bench press",
+    "description": "对应 openGym 0757：smith incline bench press。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。在上斜凳上沿史密斯机导轨将杠铃向上推起。从杠铃上斜卧推拆出，历史重量保持原记录口径。"
+  },
+  {
+    "oldID": "cimp6ad2ef69c94039618272",
+    "oldName": "哑铃单臂倾斜侧平举(Dumbbell Single Arm Leaning Lateral Raise)",
+    "standardID": "2415",
+    "standardName": "dumbbell single arm leaning lateral raise",
+    "description": "对应 openGym 2415：dumbbell single arm leaning lateral raise。健身房：Peak Fitness TRX。一手持支撑物、身体侧倾，以另一侧手臂完成哑铃侧平举。对应用户确认的2026-04-02 mermaid：一手扶固定支撑，身体倾斜，另一手侧平举；两侧按原记录依次完成。"
+  },
+  {
+    "oldID": "cimp6624c48eff55e0ed2c40",
+    "oldName": "绳索三头肌下压(V形把手)(Cable Triceps Pushdown (V-Bar))",
+    "standardID": "0241",
+    "standardName": "cable triceps pushdown (v-bar)",
+    "description": "对应 openGym 0241：cable triceps pushdown (v-bar)。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。使用高位绳索与V形把手完成肘伸下压。`short bar` 记到组记录备注中。"
+  },
+  {
+    "oldID": "cimpc1291f03c4bef1ca8c2b",
+    "oldName": "哑铃保加利亚分腿蹲(Dumbbell Bulgarian Split Squat)",
+    "standardID": "2290",
+    "standardName": "dumbbell bulgarian split squat",
+    "description": "对应 openGym 2290：dumbbell bulgarian split squat。健身房：Peak Fitness TRX。手持哑铃，后脚支撑于凳面完成保加利亚分腿蹲；各组负重以记录为准。"
+  },
+  {
+    "oldID": "cimp686e091f710d4ca67583",
+    "oldName": "哑铃罗马尼亚硬拉(Dumbbell Romanian Deadlift)",
+    "standardID": "1459",
+    "standardName": "dumbbell romanian deadlift",
+    "description": "对应 openGym 1459：dumbbell romanian deadlift。健身房：Peak Fitness TRX。手持双哑铃完成髋铰链，以臀部和腘绳肌控制下降与伸髋。"
+  },
+  {
+    "oldID": "cimp3c93127d64c84634ef90",
+    "oldName": "侧弓步(Side Lunge)",
+    "standardID": "2972",
+    "standardName": "side lunge",
+    "description": "对应 openGym 2972：side lunge。健身房：Peak Fitness TRX。向侧方迈步并屈髋屈膝，另一腿保持较伸展，再返回中间。用户确认2972侧弓步；原始负重字段X保留，不推断为0、BW或未完成。"
+  },
+  {
+    "oldID": "cimp382db394b1771306ea0f",
+    "oldName": "杠杆坐姿髋外展(Lever Seated Hip Abduction)",
+    "standardID": "0597",
+    "standardName": "lever seated hip abduction",
+    "description": "对应 openGym 0597：lever seated hip abduction。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐姿抵抗机器阻力向两侧打开大腿，训练髋外展肌群。"
+  },
+  {
+    "oldID": "cimp100924fe93f81e4d5e08",
+    "oldName": "杠铃站姿肩部推举(Barbell Standing Shoulders Press)",
+    "standardID": "5328",
+    "standardName": "barbell standing shoulders press",
+    "description": "对应 openGym 5328：barbell standing shoulders press。健身房：Peak Fitness TRX。站姿将杠铃从肩前推至头顶，训练肩部、肱三头肌和躯干稳定。历史通用名称记录为 23kg，与明确杠铃记录的 20–25kg 区间一致；`standing` 记到组记录备注中。"
+  },
+  {
+    "oldID": "cimp964a15cbdfcd52cb2c55",
+    "oldName": "史密斯杠上斜俯卧撑(Incline Push Up On A Smith Bar)",
+    "standardID": "6550",
+    "standardName": "incline push up on a smith bar",
+    "description": "对应 openGym 6550：incline push up on a smith bar。健身房：Peak Fitness TRX。数字为器械档位或高度，非kg，按约定填入重量栏。双手支撑于史密斯横杆完成俯卧撑，通过手位高度调节相对难度。"
+  },
+  {
+    "oldID": "cimp24a589b51bcc2a909dbb",
+    "oldName": "杠杆窄握坐姿划船(挂片式)(Lever Narrow Grip Seated Row (Plate Loaded))",
+    "standardID": "3102",
+    "standardName": "lever narrow grip seated row (plate loaded)",
+    "description": "对应 openGym 3102：lever narrow grip seated row (plate loaded)。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。使用挂片式坐姿划船器械，以窄握把手将阻力拉向躯干，训练背部。本条仅为挂片式窄握坐姿划船（3102）。本轮确认的绳索V形杆坐姿划船（2661）使用独立动作与历史；旧 Low Row/MAG 等名称保留于审计，不再作为本条自动匹配别名。"
+  },
+  {
+    "oldID": "cimp1be6e858bd96453f4841",
+    "oldName": "杠杆坐姿腿弯举(Lever Seated Leg Curl)",
+    "standardID": "0599",
+    "standardName": "lever seated leg curl",
+    "description": "对应 openGym 0599：lever seated leg curl。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐在腿弯举机上抵抗阻力屈膝，训练腘绳肌。"
+  },
+  {
+    "oldID": "cimpe131322bfcfce25ea8f9",
+    "oldName": "哑铃行走弓步蹲(Dumbbell Walking Lunges)",
+    "standardID": "1557",
+    "standardName": "dumbbell walking lunges",
+    "description": "对应 openGym 1557：dumbbell walking lunges。健身房：Peak Fitness TRX。手持哑铃连续迈步完成弓步蹲；前后行走等变式保留在原始记录。"
+  },
+  {
+    "oldID": "cimpe8c509734238f23049e2",
+    "oldName": "弹力带侧向行走(Band Lateral Walk)",
+    "standardID": "6607",
+    "standardName": "band lateral walk",
+    "description": "对应 openGym 6607：band lateral walk。健身房：Peak Fitness TRX。在弹力带阻力下保持浅蹲并横向迈步，训练髋外展和侧向稳定。"
+  },
+  {
+    "oldID": "cimp21356e064572493083a8",
+    "oldName": "哑铃站姿过头推举(Dumbbell Standing Overhead Press)",
+    "standardID": "0426",
+    "standardName": "dumbbell standing overhead press",
+    "description": "对应 openGym 0426：dumbbell standing overhead press。健身房：Peak Fitness TRX。站姿持哑铃从肩部推至头顶，训练肩部及肱三头肌。2026-04-12、04-17、04-24 的站姿记录；用户明确选择 OpenGym 0426。"
+  },
+  {
+    "oldID": "cimp0485718e6902da904e71",
+    "oldName": "曲杆杠铃站姿直立划船(Ez Barbell Standing Upright Row)",
+    "standardID": "7114",
+    "standardName": "ez barbell standing upright row",
+    "description": "对应 openGym 7114：ez barbell standing upright row。健身房：Peak Fitness TRX。站姿使用EZ曲杆，沿躯干向上提拉完成直立划船。EZ 杆作为器械备注；10–12.5kg 与原直立划船 10–15kg 的历史重量区间一致。"
+  },
+  {
+    "oldID": "cimpe46c96fcff52686db7db",
+    "oldName": "绳索坐姿面拉(用绳)(Cable Seated Face Pull (With Rope))",
+    "standardID": "5658",
+    "standardName": "cable seated face pull (with rope)",
+    "description": "对应 openGym 5658：cable seated face pull (with rope)。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐姿面对绳索器械，将绳把拉向面部并受控回程。"
+  },
+  {
+    "oldID": "cimpa90d11c3700cd558c6a3",
+    "oldName": "哑铃上斜弯举(Dumbbell Incline Curl)",
+    "standardID": "0318",
+    "standardName": "dumbbell incline curl",
+    "description": "对应 openGym 0318：dumbbell incline curl。健身房：Peak Fitness TRX。背靠上斜凳，上臂自然下垂完成哑铃弯举。30 度与 60 度作为凳背角度备注，不拆成重复标准动作。"
+  },
+  {
+    "oldID": "cimp76428a5a8b38599f3dcf",
+    "oldName": "杠杆坐姿飞鸟(Lever Seated Fly)",
+    "standardID": "0596",
+    "standardName": "lever seated fly",
+    "description": "对应 openGym 0596：lever seated fly。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐于飞鸟器械，以微屈手肘将两侧把手向胸前合拢。"
+  },
+  {
+    "oldID": "cimp8a7558af78ccce7b2598",
+    "oldName": "悬垂屈膝抬腿(Hanging Knee Raise)",
+    "standardID": "9819",
+    "standardName": "hanging knee raise",
+    "description": "对应 openGym 9819：hanging knee raise。健身房：Peak Fitness TRX。悬垂屈膝结合髋屈和骨盆控制，训练腹部、髋屈肌及悬垂稳定。悬垂屈膝版本（9819）；本轮按明确 knee raise、knee tuck、屈膝字样归类。一般悬垂抬腿（0472）独立保留。"
+  },
+  {
+    "oldID": "cimp525decb5a011890f7198",
+    "oldName": "杠杆腿屈伸(Lever Leg Extension)",
+    "standardID": "0585",
+    "standardName": "lever leg extension",
+    "description": "对应 openGym 0585：lever leg extension。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐姿伸直膝关节推动滚垫，主要训练股四头肌。"
+  },
+  {
+    "oldID": "cimped46606b07fa8fe069e0",
+    "oldName": "哑铃低位分腿蹲(Dumbbell Low Split Squat)",
+    "standardID": "6328",
+    "standardName": "dumbbell low split squat",
+    "description": "对应 openGym 6328：dumbbell low split squat。健身房：Peak Fitness TRX。手持哑铃完成低位分腿蹲；各组负重按原记录保留，包括BW与未注明负重。用户正式确认：仍关联动作32的14组均对应OpenGym6328哑铃低位分腿蹲；各组BW、2至5kg、未知负重和计量语义原样保留，已单独归类的5组BW不变。"
+  },
+  {
+    "oldID": "cimp5b65660e4a05f41d0544",
+    "oldName": "悬垂抬腿(Hanging Leg Raise)",
+    "standardID": "0472",
+    "standardName": "hanging leg raise",
+    "description": "对应 openGym 0472：hanging leg raise。健身房：Peak Fitness TRX。悬垂举腿结合髋屈和骨盆控制，训练腹部、髋屈肌及悬垂稳定。一般悬垂抬腿（0472），双腿保持较直；明确屈膝版本（9819）独立保留。原始 reverse grip 等附加说明不改写。"
+  },
+  {
+    "oldID": "cimp39611af44558c6253639",
+    "oldName": "罗马椅抬腿(Captains Chair Leg Raise)",
+    "standardID": "5107",
+    "standardName": "captains chair leg raise",
+    "description": "对应 openGym 5107：captains chair leg raise。健身房：Peak Fitness TRX。前臂支撑于肘托，稳定躯干并屈膝抬腿。按明确历史证据拆分的动作变式。"
+  },
+  {
+    "oldID": "cimp0eb9c31d98380f6e4a29",
+    "oldName": "徒手低位分腿蹲(Bodyweight Low Split Squat)",
+    "standardID": "6327",
+    "standardName": "bodyweight low split squat",
+    "description": "对应 openGym 6327：bodyweight low split squat。健身房：Peak Fitness TRX。徒手完成较低幅度的分腿蹲；只归入全部明确记录BW的动作实例。按明确历史证据拆分的动作变式。"
+  },
+  {
+    "oldID": "cimpa408e0d80749eb89ef07",
+    "oldName": "哑铃后撤弓步蹲(Dumbbell Rear Lunge)",
+    "standardID": "0381",
+    "standardName": "dumbbell rear lunge",
+    "description": "对应 openGym 0381：dumbbell rear lunge。健身房：Peak Fitness TRX。持哑铃向后迈步完成后撤弓步；明确垫高的历史另行分类。"
+  },
+  {
+    "oldID": "cimp30084a15d17b2684c320",
+    "oldName": "杠铃罗马尼亚硬拉(Barbell Romanian Deadlift)",
+    "standardID": "0085",
+    "standardName": "barbell romanian deadlift",
+    "description": "对应 openGym 0085：barbell romanian deadlift。健身房：Peak Fitness TRX。从站姿开始，让杠铃靠近腿部下降，再伸髋回到站立。"
+  },
+  {
+    "oldID": "cimp0a62cb479f8903a37bc4",
+    "oldName": "上斜俯卧撑(凳上)(Incline Push Up (On Bench))",
+    "standardID": "5637",
+    "standardName": "incline push up (on bench)",
+    "description": "对应 openGym 5637：incline push up (on bench)。健身房：Peak Fitness TRX。双手支撑于训练凳完成俯卧撑，通过手位高度调节相对难度。"
+  },
+  {
+    "oldID": "cimpedc49aa04805d13e53e4",
+    "oldName": "辅助平行窄握引体向上(Assisted Parallel Close Grip Pull-Up)",
+    "standardID": "0015",
+    "standardName": "assisted parallel close grip pull-up",
+    "description": "对应 openGym 0015：assisted parallel close grip pull-up。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。使用辅助机，以窄距平行握、掌心相对完成引体向上。用户确认历史握法均为窄距平行握，掌心相对。使用辅助机的记录独立保留，原辅助重量不改。"
+  },
+  {
+    "oldID": "cimpab0c7ae717e34a7ebe43",
+    "oldName": "哑铃上斜卧推(Dumbbell Incline Bench Press)",
+    "standardID": "0314",
+    "standardName": "dumbbell incline bench press",
+    "description": "对应 openGym 0314：dumbbell incline bench press。健身房：Peak Fitness TRX。背靠上斜凳，以双哑铃完成上斜胸推。"
+  },
+  {
+    "oldID": "cimpdbe295395c98066023f3",
+    "oldName": "哑铃侧平举(Dumbbell Lateral Raise)",
+    "standardID": "0334",
+    "standardName": "dumbbell lateral raise",
+    "description": "对应 openGym 0334：dumbbell lateral raise。健身房：Peak Fitness TRX。双手持哑铃向身体两侧抬臂；明确单臂及扶物倾斜单臂变式独立归类。本轮用户确认：未明确单手依次完成的历史侧平举为双手同时。明确 Single arm 的记录为0355；mermaid为2415。原有前倾、支撑等记录备注保留。"
+  },
+  {
+    "oldID": "cimp78d4d5f2b212596e263f",
+    "oldName": "杠杆坐姿反向飞鸟(Lever Seated Reverse Fly)",
+    "standardID": "0602",
+    "standardName": "lever seated reverse fly",
+    "description": "对应 openGym 0602：lever seated reverse fly。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。胸部贴于反向蝴蝶机靠垫，正握把手向后外侧打开，训练肩后束和上背。"
+  },
+  {
+    "oldID": "cimp89c8b371fa4570cc43cd",
+    "oldName": "哑铃垫高后撤弓步蹲(Dumbbell Reverse Lunge From Deficit)",
+    "standardID": "7326",
+    "standardName": "dumbbell reverse lunge from deficit",
+    "description": "对应 openGym 7326：dumbbell reverse lunge from deficit。健身房：Peak Fitness TRX。持哑铃，前脚站在垫高平台上完成后撤弓步。按明确历史证据拆分的动作变式。"
+  },
+  {
+    "oldID": "cimpe5d6d37ca6297f8d92c0",
+    "oldName": "哑铃坐姿肩部推举(平行握)(Dumbbell Seated Shoulder Press (Parallel Grip))",
+    "standardID": "0404",
+    "standardName": "dumbbell seated shoulder press (parallel grip)",
+    "description": "对应 openGym 0404：dumbbell seated shoulder press (parallel grip)。健身房：Peak Fitness TRX。坐姿持哑铃，以平行握完成过头推举；掌心略向外翻。坐姿平行握，掌心略向外翻；用户选择 OpenGym 0404。"
+  },
+  {
+    "oldID": "cimp43730220b2fcb9663953",
+    "oldName": "杠杆配重片坐姿推胸(Lever Stack Seated Chest Press)",
+    "standardID": "10671",
+    "standardName": "lever stack seated chest press",
+    "description": "对应 openGym 10671：lever stack seated chest press。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐在配重组式胸推器械上向前推举；已知挂片式历史另行分类。"
+  },
+  {
+    "oldID": "cimpf17404dcc5a6d6c43a2c",
+    "oldName": "上斜俯卧撑(Incline Push-Up)",
+    "standardID": "0493",
+    "standardName": "incline push-up",
+    "description": "对应 openGym 0493：incline push-up。健身房：Peak Fitness TRX。双手支撑于踏板完成俯卧撑，通过手位高度调节相对难度。"
+  },
+  {
+    "oldID": "cimp2be5d1c28776175a446a",
+    "oldName": "杠铃箱式深蹲(Barbell Box Squat)",
+    "standardID": "4962",
+    "standardName": "barbell box squat",
+    "description": "对应 openGym 4962：barbell box squat。健身房：Peak Fitness TRX。杠铃置于上背，受控下蹲至身后箱凳再站起。"
+  },
+  {
+    "oldID": "cimp46e27c77c2a025529851",
+    "oldName": "杠杆式髋推(插片式)(Lever Hip Thrust (Plate Loaded))",
+    "standardID": "7384",
+    "standardName": "lever hip thrust (plate loaded)",
+    "description": "对应 openGym 7384：lever hip thrust (plate loaded)。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。在挂片式臀推机上完成伸髋；中文名称保留OpenGym原文。挂片式臀推机（7384）；OpenGym中文原名“插片式”对应英文plate loaded。杠铃臀推（1060）独立归类。"
+  },
+  {
+    "oldID": "cimp6e0c4f0962fc30c7d0e7",
+    "oldName": "史密斯机深蹲(Smith Squat)",
+    "standardID": "0770",
+    "standardName": "smith squat",
+    "description": "对应 openGym 0770：smith squat。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。沿史密斯机导轨进行屈髋屈膝和站起的深蹲。"
+  },
+  {
+    "oldID": "cimp0d13a94ba364980f09c9",
+    "oldName": "杠铃上斜卧推(Barbell Incline Bench Press)",
+    "standardID": "0047",
+    "standardName": "barbell incline bench press",
+    "description": "对应 openGym 0047：barbell incline bench press。健身房：Peak Fitness TRX。在上斜凳上将自由杠铃下降至上胸附近，再受控推起。自由杠铃上斜卧推；史密斯上斜卧推单独记录。"
+  },
+  {
+    "oldID": "cimpc87d4181426bcd759149",
+    "oldName": "杠杆推胸(Lever Chest Press)",
+    "standardID": "0576",
+    "standardName": "lever chest press",
+    "description": "对应 openGym 0576：lever chest press。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。使用挂片式坐姿胸推器械，将把手向前推起。按明确历史证据拆分的动作变式。"
+  },
+  {
+    "oldID": "cimp7f3cea6072409e6c70df",
+    "oldName": "反向划船(Inverted Row)",
+    "standardID": "0499",
+    "standardName": "inverted row",
+    "description": "对应 openGym 0499：inverted row。健身房：Peak Fitness TRX。数字为器械档位或高度，非kg，按约定填入重量栏。斜悬于低杠下，以身体保持直线的自重划船。"
+  },
+  {
+    "oldID": "cimpe39d599e309da3eebd0b",
+    "oldName": "滑车哈克深蹲(Sled Hack Squat)",
+    "standardID": "0743",
+    "standardName": "sled hack squat",
+    "description": "对应 openGym 0743：sled hack squat。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。背靠哈克深蹲机滑车，在踏板上完成屈髋屈膝和蹬起。"
+  },
+  {
+    "oldID": "cimpa86a293e1e586a673cbe",
+    "oldName": "杠杆上斜锤式胸推(Lever Incline Hammer Chest Press)",
+    "standardID": "1195",
+    "standardName": "lever incline hammer chest press",
+    "description": "对应 openGym 1195：lever incline hammer chest press。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。在上斜胸推器械上，以掌心相对的锤式握法推举。"
+  },
+  {
+    "oldID": "cimpae2bfc53583cab00a91e",
+    "oldName": "哑铃单臂侧平举(Dumbbell One Arm Lateral Raise)",
+    "standardID": "0355",
+    "standardName": "dumbbell one arm lateral raise",
+    "description": "对应 openGym 0355：dumbbell one arm lateral raise。健身房：Peak Fitness TRX。单臂持哑铃完成侧平举；额外支撑及前倾细节保留在记录中。仅明确单手依次完成的侧平举记录；mermaid倾斜单臂变式为2415。"
+  },
+  {
+    "oldID": "cimp29acdec70cdf17f2abf5",
+    "oldName": "窄距平行握引体向上(Chin-Ups (Narrow Parallel Grip))",
+    "standardID": "0253",
+    "standardName": "chin-ups (narrow parallel grip)",
+    "description": "对应 openGym 0253：chin-ups (narrow parallel grip)。健身房：Peak Fitness TRX。以窄距平行握、掌心相对完成引体向上。用户确认历史握法均为窄距平行握，掌心相对。OpenGym 0253中文源名含有歧义词，展示译名按实际握法修正；源名保留在核对信息和审计中。"
+  },
+  {
+    "oldID": "cimpe4ead4316d4c6cb513bd",
+    "oldName": "杠铃深蹲(Barbell Squat)",
+    "standardID": "3593",
+    "standardName": "barbell squat",
+    "description": "对应 openGym 3593：barbell squat。健身房：Peak Fitness TRX。杠铃稳定放于上背，完成屈髋屈膝和站起的复合下肢动作。"
+  },
+  {
+    "oldID": "cimpeadc98d085de6600dee2",
+    "oldName": "杠铃臀推(Barbell Hip Thrust)",
+    "standardID": "1060",
+    "standardName": "barbell hip thrust",
+    "description": "对应 openGym 1060：barbell hip thrust。健身房：Peak Fitness TRX。上背支撑训练凳，杠铃置于髋部，通过伸髋抬起骨盆。"
+  },
+  {
+    "oldID": "cimp297ff22c76fed2c00fcc",
+    "oldName": "哑铃仰卧三头肌伸展(Dumbbell Lying Triceps Extension)",
+    "standardID": "0351",
+    "standardName": "dumbbell lying triceps extension",
+    "description": "对应 openGym 0351：dumbbell lying triceps extension。健身房：Peak Fitness TRX。仰卧训练凳，持哑铃屈伸肘部，训练肱三头肌。"
+  },
+  {
+    "oldID": "cimpaf61b72e1f68f07d4f83",
+    "oldName": "杠铃早安式体前屈(Barbell Good Morning)",
+    "standardID": "0044",
+    "standardName": "barbell good morning",
+    "description": "对应 openGym 0044：barbell good morning。健身房：Peak Fitness TRX。杠铃置于上背，通过髋部后移使躯干前倾，再伸髋站起。"
+  },
+  {
+    "oldID": "cimp018bfa5b2a00df4f3817",
+    "oldName": "杠杆坐姿肩部推举(Lever Seated Shoulder Press)",
+    "standardID": "1454",
+    "standardName": "lever seated shoulder press",
+    "description": "对应 openGym 1454：lever seated shoulder press。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。坐在插销式肩推器械上，将把手从肩部附近向上推起。本条为插销式器械；挂片式肩推保留独立动作ID与历史。"
+  },
+  {
+    "oldID": "cimpdfb007a0d833a0e22d92",
+    "oldName": "绳索窄握前高位下拉(Cable Close Grip Front Lat Pulldown)",
+    "standardID": "1047",
+    "standardName": "cable close grip front lat pulldown",
+    "description": "对应 openGym 1047：cable close grip front lat pulldown。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。坐于绳索下拉器械，以窄握将握把拉向胸前。本条为绳索窄握前高位下拉（1047）；明确宽握（2291）和 MAG 握把（6392）的已确认记录独立归类，未知握法不自动推断。"
+  },
+  {
+    "oldID": "cimpcc3ecc28448fca7cb8bc",
+    "oldName": "哑铃卧推(Dumbbell Bench Press)",
+    "standardID": "0289",
+    "standardName": "dumbbell bench press",
+    "description": "对应 openGym 0289：dumbbell bench press。健身房：DPC Club Gym。仰卧在平凳上，控制双哑铃下降至胸部两侧，再向上推起。"
+  },
+  {
+    "oldID": "cimpf882506f40e0f69ba297",
+    "oldName": "哑铃侧平举(Dumbbell Lateral Raise)",
+    "standardID": "0334",
+    "standardName": "dumbbell lateral raise",
+    "description": "对应 openGym 0334：dumbbell lateral raise。健身房：DPC Club Gym。双手持哑铃向身体两侧抬臂；明确单臂及扶物倾斜单臂变式独立归类。本轮用户确认：未明确单手依次完成的历史侧平举为双手同时。明确 Single arm 的记录为0355；mermaid为2415。原有前倾、支撑等记录备注保留。"
+  },
+  {
+    "oldID": "cimpc456defe1a112989dadb",
+    "oldName": "绳索坐姿面拉(用绳)(Cable Seated Face Pull (With Rope))",
+    "standardID": "5658",
+    "standardName": "cable seated face pull (with rope)",
+    "description": "对应 openGym 5658：cable seated face pull (with rope)。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。数字为器械档位或高度，非kg，按约定填入重量栏。坐姿面对绳索器械，将绳把拉向面部并受控回程。"
+  },
+  {
+    "oldID": "cimp73958ffa281ecb703b7a",
+    "oldName": "哑铃上斜弯举(Dumbbell Incline Curl)",
+    "standardID": "0318",
+    "standardName": "dumbbell incline curl",
+    "description": "对应 openGym 0318：dumbbell incline curl。健身房：DPC Club Gym。背靠上斜凳，上臂自然下垂完成哑铃弯举。30 度与 60 度作为凳背角度备注，不拆成重复标准动作。"
+  },
+  {
+    "oldID": "cimp165460cd8eb6517b12b1",
+    "oldName": "绳索三头肌下压(V形把手)(Cable Triceps Pushdown (V-Bar))",
+    "standardID": "0241",
+    "standardName": "cable triceps pushdown (v-bar)",
+    "description": "对应 openGym 0241：cable triceps pushdown (v-bar)。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。数字为器械档位或高度，非kg，按约定填入重量栏。使用高位绳索与V形把手完成肘伸下压。`short bar` 记到组记录备注中。"
+  },
+  {
+    "oldID": "cimp39da7c51d8718f52ffb7",
+    "oldName": "史密斯机深蹲(Smith Squat)",
+    "standardID": "0770",
+    "standardName": "smith squat",
+    "description": "对应 openGym 0770：smith squat。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。沿史密斯机导轨进行屈髋屈膝和站起的深蹲。"
+  },
+  {
+    "oldID": "cimpb2184f3f9ed4ad8d2d9a",
+    "oldName": "六角杠硬拉(Trap Bar Deadlift)",
+    "standardID": "0811",
+    "standardName": "trap bar deadlift",
+    "description": "对应 openGym 0811：trap bar deadlift。健身房：DPC Club Gym。站在六角杠内握住两侧把手，从地面通过伸膝伸髋提起负重。六角杠硬拉；负重口径按每次记录注明。"
+  },
+  {
+    "oldID": "cimp8585b3e9d32824835ce3",
+    "oldName": "杠杆腿屈伸(Lever Leg Extension)",
+    "standardID": "0585",
+    "standardName": "lever leg extension",
+    "description": "对应 openGym 0585：lever leg extension。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。坐姿伸直膝关节推动滚垫，主要训练股四头肌。"
+  },
+  {
+    "oldID": "cimp5da18513c6a77e67ecd0",
+    "oldName": "哑铃行走弓步蹲(Dumbbell Walking Lunges)",
+    "standardID": "1557",
+    "standardName": "dumbbell walking lunges",
+    "description": "对应 openGym 1557：dumbbell walking lunges。健身房：DPC Club Gym。手持哑铃连续迈步完成弓步蹲；前后行走等变式保留在原始记录。"
+  },
+  {
+    "oldID": "cimp196bdd9599477036e9a2",
+    "oldName": "悬垂抬腿(Hanging Leg Raise)",
+    "standardID": "0472",
+    "standardName": "hanging leg raise",
+    "description": "对应 openGym 0472：hanging leg raise。健身房：DPC Club Gym。悬垂举腿结合髋屈和骨盆控制，训练腹部、髋屈肌及悬垂稳定。一般悬垂抬腿（0472），双腿保持较直；明确屈膝版本（9819）独立保留。原始 reverse grip 等附加说明不改写。"
+  },
+  {
+    "oldID": "cimp057911468c7460217927",
+    "oldName": "杠杆坐姿肩部推举(Lever Seated Shoulder Press)",
+    "standardID": "1454",
+    "standardName": "lever seated shoulder press",
+    "description": "对应 openGym 1454：lever seated shoulder press。健身房：BKK W Gym。器械记录标签：BKK W Gym。坐在插销式肩推器械上，将把手从肩部附近向上推起。本条为插销式器械；挂片式肩推保留独立动作ID与历史。"
+  },
+  {
+    "oldID": "cimp758b3c161c960b36d095",
+    "oldName": "哑铃卧推(Dumbbell Bench Press)",
+    "standardID": "0289",
+    "standardName": "dumbbell bench press",
+    "description": "对应 openGym 0289：dumbbell bench press。健身房：BKK W Gym。仰卧在平凳上，控制双哑铃下降至胸部两侧，再向上推起。"
+  },
+  {
+    "oldID": "cimp30c3fdc51e4f408f45ce",
+    "oldName": "哑铃侧平举(Dumbbell Lateral Raise)",
+    "standardID": "0334",
+    "standardName": "dumbbell lateral raise",
+    "description": "对应 openGym 0334：dumbbell lateral raise。健身房：BKK W Gym。双手持哑铃向身体两侧抬臂；明确单臂及扶物倾斜单臂变式独立归类。本轮用户确认：未明确单手依次完成的历史侧平举为双手同时。明确 Single arm 的记录为0355；mermaid为2415。原有前倾、支撑等记录备注保留。"
+  },
+  {
+    "oldID": "cimp355231859c26d54c2f85",
+    "oldName": "绳索窄握前高位下拉(Cable Close Grip Front Lat Pulldown)",
+    "standardID": "1047",
+    "standardName": "cable close grip front lat pulldown",
+    "description": "对应 openGym 1047：cable close grip front lat pulldown。健身房：BKK W Gym。器械记录标签：BKK W Gym。坐于绳索下拉器械，以窄握将握把拉向胸前。本条为绳索窄握前高位下拉（1047）；明确宽握（2291）和 MAG 握把（6392）的已确认记录独立归类，未知握法不自动推断。"
+  },
+  {
+    "oldID": "cimp8d95655d7c9ecc1eb935",
+    "oldName": "哑铃单臂俯身划船(Dumbbell One Arm Bent-Over Row)",
+    "standardID": "0292",
+    "standardName": "dumbbell one arm bent-over row",
+    "description": "对应 openGym 0292：dumbbell one arm bent-over row。健身房：BKK W Gym。单臂持哑铃俯身划船，将哑铃拉向躯干后受控还原。OpenGym 0292示范为站姿俯身单臂划船。历史原文只明确单臂哑铃划船，具体支撑方式未写明，不补写到训练记录。"
+  },
+  {
+    "oldID": "cimp82bc607b7aee2fb30c80",
+    "oldName": "哑铃仰卧三头肌伸展(Dumbbell Lying Triceps Extension)",
+    "standardID": "0351",
+    "standardName": "dumbbell lying triceps extension",
+    "description": "对应 openGym 0351：dumbbell lying triceps extension。健身房：BKK W Gym。仰卧训练凳，持哑铃屈伸肘部，训练肱三头肌。"
+  },
+  {
+    "oldID": "cimp13e8135381ca08ae1603",
+    "oldName": "绳索V形杆坐姿划船(Cable Seated Row With V Bar)",
+    "standardID": "2661",
+    "standardName": "cable seated row with v bar",
+    "description": "对应 openGym 2661：cable seated row with v bar。健身房：BKK W Gym。器械记录标签：BKK W Gym。使用V形窄握把手进行绳索坐姿划船。本轮103组历史划船已逐批确认对应2661；部分原始名称含MAG字样，原文保留。挂片式器械划船（3102）另有独立条目，新记录按实际器械和把手确认。"
+  },
+  {
+    "oldID": "cimpdf3b2fde88072a9bccfc",
+    "oldName": "杠杆坐姿卷腹(Lever Seated Crunch)",
+    "standardID": "1452",
+    "standardName": "lever seated crunch",
+    "description": "对应 openGym 1452：lever seated crunch。健身房：BKK W Gym。器械记录标签：BKK W Gym。坐于卷腹器械，使胸廓靠近骨盆完成躯干屈曲。"
+  },
+  {
+    "oldID": "cimpc7e551fa6c203d1b1a8b",
+    "oldName": "杠杆配重片坐姿推胸(Lever Stack Seated Chest Press)",
+    "standardID": "10671",
+    "standardName": "lever stack seated chest press",
+    "description": "对应 openGym 10671：lever stack seated chest press。健身房：BKK W Gym。器械记录标签：BKK W Gym。坐在配重组式胸推器械上向前推举；已知挂片式历史另行分类。"
+  },
+  {
+    "oldID": "cimpb32062d3f8c5bb103c37",
+    "oldName": "杠杆坐姿飞鸟(Lever Seated Fly)",
+    "standardID": "0596",
+    "standardName": "lever seated fly",
+    "description": "对应 openGym 0596：lever seated fly。健身房：BKK W Gym。器械记录标签：BKK W Gym。坐于飞鸟器械，以微屈手肘将两侧把手向胸前合拢。"
+  },
+  {
+    "oldID": "cimpb3084693c52faf37de4b",
+    "oldName": "杠杆坐姿水平腿举(Lever Seated Horizontal Leg Press)",
+    "standardID": "3768",
+    "standardName": "lever seated horizontal leg press",
+    "description": "对应 openGym 3768：lever seated horizontal leg press。健身房：BKK Marriott Surawongse Gym。器械记录标签：BKK Marriott Surawongse Gym。坐于水平腿举器械，通过髋膝伸展推动阻力。"
+  },
+  {
+    "oldID": "cimpe1ba482fa4ef404a3593",
+    "oldName": "哑铃罗马尼亚硬拉(Dumbbell Romanian Deadlift)",
+    "standardID": "1459",
+    "standardName": "dumbbell romanian deadlift",
+    "description": "对应 openGym 1459：dumbbell romanian deadlift。健身房：BKK Marriott Surawongse Gym。手持双哑铃完成髋铰链，以臀部和腘绳肌控制下降与伸髋。"
+  },
+  {
+    "oldID": "cimp4648f7642c82b94a4558",
+    "oldName": "哑铃卧推(Dumbbell Bench Press)",
+    "standardID": "0289",
+    "standardName": "dumbbell bench press",
+    "description": "对应 openGym 0289：dumbbell bench press。健身房：BKK Marriott Surawongse Gym。仰卧在平凳上，控制双哑铃下降至胸部两侧，再向上推起。"
+  },
+  {
+    "oldID": "cimpf16cd773ace0d2380567",
+    "oldName": "绳索窄握前高位下拉(Cable Close Grip Front Lat Pulldown)",
+    "standardID": "1047",
+    "standardName": "cable close grip front lat pulldown",
+    "description": "对应 openGym 1047：cable close grip front lat pulldown。健身房：BKK Marriott Surawongse Gym。器械记录标签：BKK Marriott Surawongse Gym。坐于绳索下拉器械，以窄握将握把拉向胸前。本条为绳索窄握前高位下拉（1047）；明确宽握（2291）和 MAG 握把（6392）的已确认记录独立归类，未知握法不自动推断。"
+  },
+  {
+    "oldID": "cimp997e7cf78642fb9b5756",
+    "oldName": "绳索V形杆坐姿划船(Cable Seated Row With V Bar)",
+    "standardID": "2661",
+    "standardName": "cable seated row with v bar",
+    "description": "对应 openGym 2661：cable seated row with v bar。健身房：BKK Marriott Surawongse Gym。器械记录标签：BKK Marriott Surawongse Gym。使用V形窄握把手进行绳索坐姿划船。本轮103组历史划船已逐批确认对应2661；部分原始名称含MAG字样，原文保留。挂片式器械划船（3102）另有独立条目，新记录按实际器械和把手确认。"
+  },
+  {
+    "oldID": "cimpb2bd032118b939b4dcd8",
+    "oldName": "哑铃侧平举(Dumbbell Lateral Raise)",
+    "standardID": "0334",
+    "standardName": "dumbbell lateral raise",
+    "description": "对应 openGym 0334：dumbbell lateral raise。健身房：BKK Marriott Surawongse Gym。双手持哑铃向身体两侧抬臂；明确单臂及扶物倾斜单臂变式独立归类。本轮用户确认：未明确单手依次完成的历史侧平举为双手同时。明确 Single arm 的记录为0355；mermaid为2415。原有前倾、支撑等记录备注保留。"
+  },
+  {
+    "oldID": "cimp76912157c79c7810a09f",
+    "oldName": "悬垂屈膝抬腿(Hanging Knee Raise)",
+    "standardID": "9819",
+    "standardName": "hanging knee raise",
+    "description": "对应 openGym 9819：hanging knee raise。健身房：BKK Marriott Surawongse Gym。悬垂屈膝结合髋屈和骨盆控制，训练腹部、髋屈肌及悬垂稳定。悬垂屈膝版本（9819）；本轮按明确 knee raise、knee tuck、屈膝字样归类。一般悬垂抬腿（0472）独立保留。"
+  },
+  {
+    "oldID": "cimp8c0675e03986e0586718",
+    "oldName": "杠杆配重片坐姿推胸(Lever Stack Seated Chest Press)",
+    "standardID": "10671",
+    "standardName": "lever stack seated chest press",
+    "description": "对应 openGym 10671：lever stack seated chest press。健身房：BKK Marriott Surawongse Gym。器械记录标签：BKK Marriott Surawongse Gym。坐在配重组式胸推器械上向前推举；已知挂片式历史另行分类。"
+  },
+  {
+    "oldID": "cimp726850c8e1b33c0c98b5",
+    "oldName": "杠杆坐姿水平腿举(Lever Seated Horizontal Leg Press)",
+    "standardID": "3768",
+    "standardName": "lever seated horizontal leg press",
+    "description": "对应 openGym 3768：lever seated horizontal leg press。健身房：BKK W Gym。器械记录标签：BKK W Gym。坐于水平腿举器械，通过髋膝伸展推动阻力。"
+  },
+  {
+    "oldID": "cimp67ea3bb8cd1282db08d6",
+    "oldName": "哑铃罗马尼亚硬拉(Dumbbell Romanian Deadlift)",
+    "standardID": "1459",
+    "standardName": "dumbbell romanian deadlift",
+    "description": "对应 openGym 1459：dumbbell romanian deadlift。健身房：BKK W Gym。手持双哑铃完成髋铰链，以臀部和腘绳肌控制下降与伸髋。"
+  },
+  {
+    "oldID": "cimp55c16a488640c4a514ae",
+    "oldName": "绳索坐姿面拉(用绳)(Cable Seated Face Pull (With Rope))",
+    "standardID": "5658",
+    "standardName": "cable seated face pull (with rope)",
+    "description": "对应 openGym 5658：cable seated face pull (with rope)。健身房：BKK W Gym。器械记录标签：BKK W Gym。坐姿面对绳索器械，将绳把拉向面部并受控回程。"
+  },
+  {
+    "oldID": "cimp94ac05f77a5b3d6bfe5c",
+    "oldName": "杠杆坐姿水平腿举(Lever Seated Horizontal Leg Press)",
+    "standardID": "3768",
+    "standardName": "lever seated horizontal leg press",
+    "description": "对应 openGym 3768：lever seated horizontal leg press。健身房：Peak Fitness TRX。器械记录标签：Peak Fitness TRX。坐于水平腿举器械，通过髋膝伸展推动阻力。"
+  },
+  {
+    "oldID": "cimpe6717c75017ad3782e69",
+    "oldName": "窄距平行握引体向上(Chin-Ups (Narrow Parallel Grip))",
+    "standardID": "0253",
+    "standardName": "chin-ups (narrow parallel grip)",
+    "description": "对应 openGym 0253：chin-ups (narrow parallel grip)。健身房：DPC Club Gym。以窄距平行握、掌心相对完成引体向上。用户确认历史握法均为窄距平行握，掌心相对。OpenGym 0253中文源名含有歧义词，展示译名按实际握法修正；源名保留在核对信息和审计中。"
+  },
+  {
+    "oldID": "cimpf638ad56f1370e8f315c",
+    "oldName": "窄距平行握引体向上(Chin-Ups (Narrow Parallel Grip))",
+    "standardID": "0253",
+    "standardName": "chin-ups (narrow parallel grip)",
+    "description": "对应 openGym 0253：chin-ups (narrow parallel grip)。健身房：DPC Club Gym。以窄距平行握、掌心相对完成引体向上。用户确认历史握法均为窄距平行握，掌心相对。OpenGym 0253中文源名含有歧义词，展示译名按实际握法修正；源名保留在核对信息和审计中。"
+  },
+  {
+    "oldID": "cimp521e4967e763a2306a3a",
+    "oldName": "绳索V形杆坐姿划船(Cable Seated Row With V Bar)",
+    "standardID": "2661",
+    "standardName": "cable seated row with v bar",
+    "description": "对应 openGym 2661：cable seated row with v bar。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。使用V形窄握把手进行绳索坐姿划船。本轮103组历史划船已逐批确认对应2661；部分原始名称含MAG字样，原文保留。挂片式器械划船（3102）另有独立条目，新记录按实际器械和把手确认。"
+  },
+  {
+    "oldID": "cimp0dd9f6c581e9b9fa1445",
+    "oldName": "杠杆坐姿水平腿举(Lever Seated Horizontal Leg Press)",
+    "standardID": "3768",
+    "standardName": "lever seated horizontal leg press",
+    "description": "对应 openGym 3768：lever seated horizontal leg press。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。坐于水平腿举器械，通过髋膝伸展推动阻力。"
+  },
+  {
+    "oldID": "cimp58a47d194e72a3123b4c",
+    "oldName": "杠杆俯卧腿弯举(Lever Lying Leg Curl)",
+    "standardID": "0586",
+    "standardName": "lever lying leg curl",
+    "description": "对应 openGym 0586：lever lying leg curl。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。俯卧于腿弯举机，保持骨盆贴垫并屈膝带动滚垫，训练腘绳肌。"
+  },
+  {
+    "oldID": "cimp209d8520dd6b637fbf50",
+    "oldName": "哑铃坐姿肩部推举(平行握)(Dumbbell Seated Shoulder Press (Parallel Grip))",
+    "standardID": "0404",
+    "standardName": "dumbbell seated shoulder press (parallel grip)",
+    "description": "对应 openGym 0404：dumbbell seated shoulder press (parallel grip)。健身房：DPC Club Gym。坐姿持哑铃，以平行握完成过头推举；掌心略向外翻。坐姿平行握，掌心略向外翻；用户选择 OpenGym 0404。"
+  },
+  {
+    "oldID": "cimpa84f3625357597b8a5f2",
+    "oldName": "哑铃仰卧三头肌伸展(Dumbbell Lying Triceps Extension)",
+    "standardID": "0351",
+    "standardName": "dumbbell lying triceps extension",
+    "description": "对应 openGym 0351：dumbbell lying triceps extension。健身房：DPC Club Gym。仰卧训练凳，持哑铃屈伸肘部，训练肱三头肌。"
+  },
+  {
+    "oldID": "cimp070959d8f0af9fcb9a0d",
+    "oldName": "杠杆坐姿卷腹(Lever Seated Crunch)",
+    "standardID": "1452",
+    "standardName": "lever seated crunch",
+    "description": "对应 openGym 1452：lever seated crunch。健身房：DPC Club Gym。器械记录标签：DPC Club Gym。坐于卷腹器械，使胸廓靠近骨盆完成躯干屈曲。"
+  }
+]

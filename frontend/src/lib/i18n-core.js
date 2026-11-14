@@ -1,6 +1,3 @@
-import english from '../../../localization/en.json' with { type: 'json' }
-import legacyValues from '../../../localization/metadata/legacy-values.json' with { type: 'json' }
-
 // Runtime-agnostic core of the i18n module: state, constants and readers (t, dateLocale,
 // instrFor, exerciseNameFor, getLang). Plain Node-loadable — the browser-only pieces
 // (import.meta.glob lazy
@@ -10,7 +7,7 @@ export const LANGS = {
   en: 'English', de: 'Deutsch', 'de-CH': 'Deutsch (Schweiz)', es: 'Español', fr: 'Français',
   it: 'Italiano', pt: 'Português (Portugal)', 'pt-BR': 'Português (Brasil)', pl: 'Polski',
   tr: 'Türkçe', ru: 'Русский', uk: 'Українська', zh: '简体中文', 'zh-TW': '繁體中文',
-  ko: '한국어', hi: 'हिन्दी', bn: 'বাংলা', th: 'ไทย', hu: 'Magyar', ar: 'العربية'
+  ko: '한국어', hi: 'हिन्दी', bn: 'বাংলা', th: 'ไทย', hu: 'Magyar', sv: 'Svenska', ar: 'العربية'
 }
 // Languages with exercise instructions / names, generated from catalogue/i18n by
 // scripts/catalogue/build.mjs. A pack can be partial; what it lacks shows in English.
@@ -21,7 +18,7 @@ export const RTL_LANGS = new Set(['ar'])
 export const DATE_LOCALES = {
   en: 'en-GB', de: 'de-DE', 'de-CH': 'de-CH', es: 'es-ES', fr: 'fr-FR', it: 'it-IT',
   pt: 'pt-PT', 'pt-BR': 'pt-BR',
-  pl: 'pl-PL', tr: 'tr-TR', ru: 'ru-RU', uk: 'uk-UA', zh: 'zh-CN', 'zh-TW': 'zh-TW', ko: 'ko-KR', hi: 'hi-IN', bn: 'bn-BD-u-nu-latn', th: 'th-TH', hu: 'hu-HU', ar: 'ar-u-nu-latn'
+  pl: 'pl-PL', tr: 'tr-TR', ru: 'ru-RU', uk: 'uk-UA', zh: 'zh-CN', 'zh-TW': 'zh-TW', ko: 'ko-KR', hi: 'hi-IN', bn: 'bn-BD-u-nu-latn', th: 'th-TH', hu: 'hu-HU', sv: 'sv-SE', ar: 'ar-u-nu-latn'
 }
 
 // Locales derived from another language by a pure text transform rather than carried as their
@@ -77,25 +74,35 @@ export const getLang = () => lang
 export const dateLocale = () => DATE_LOCALES[lang] || 'en-GB'
 export const getVersion = () => version
 
-// 使用大写下划线 key 读取 JSON，并替换 {0}、{1} 等占位符。
+// Translate a source string; {0},{1}… are replaced with args (also on the English fallback).
 export function t(s, ...args) {
-  if (s == null) return ''
-  const key = legacyValues[s] || s
-  let v = dict[key] || dict[s] || dict[english[key]] || english[key] || s
+  let v = dict[s] || s
   // A plural key (an object of forms, read by tn()) reached through plain t() — a call site
   // that was not moved to tn(). Pick a form rather than crash on replaceAll.
   if (v && typeof v === 'object') {
     const forms = v
     v = (typeof args[0] === 'number' && forms[pluralCategory(args[0])]) || forms.other || forms.many || forms.one || s
   }
-  return v.replace(/\{(\d+)\}/g, (match, index) => index < args.length ? String(args[index]) : match)
+  for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', args[i])
+  return v
 }
 
-// 兼容目录、历史导入、服务器错误的原始值；业务数据不随语言改变。
-export const englishText = key => english[key] || key || ''
-export const translateValue = (value, ...args) => t(value, ...args)
+/* ------------------------------------------------------------------ plurals --
+   English has two forms and the source strings are the keys, so a count used to be
+   written `t(n === 1 ? '{0} set' : '{0} sets', n)` and every pack inherited that
+   two-way split. Russian, Ukrainian and Polish have three (1 подход, 2 подхода,
+   5 подходов) and Arabic six, so those packs could only pick the least wrong of two
+   — "2 подходов" — or dodge the grammar entirely, which is why the Russian pack
+   reads "Упражнений: {0}" where a person would say "2 упражнения".
 
-// JSON 可提供 CLDR 复数形式；英文通过单复数 key 选择，其他语言使用自身规则。
+   The rule itself comes from the platform, the same way fmtAgo takes relative time
+   from Intl.RelativeTimeFormat: no pack carries a rule, only its own forms. A pack
+   answers a plural key with either a plain string (unchanged, still correct for every
+   two-form language) or an object keyed by CLDR category:
+
+     '{0} sets': { one: '{0} подход', few: '{0} подхода', many: '{0} подходов' }
+
+   Keys stay the English plural, so a pack that says nothing new behaves as before. */
 const pluralCategory = n => {
   try { return new Intl.PluralRules(dateLocale()).select(n) }
   catch { return n === 1 ? 'one' : 'other' }
@@ -107,16 +114,30 @@ const pluralCategory = n => {
  * forms of the target language, falling back through `other` to the English pair.
  */
 export function tn(one, other, n, ...rest) {
-  const forms = dict[legacyValues[other] || other] || dict[other] || dict[english[other]]
+  const forms = dict[other]
   if (forms && typeof forms === 'object') {
     const form = forms[pluralCategory(n)] || forms.other || forms.many || forms.one
     if (form) {
       let v = form
       const args = [n, ...rest]
-      return v.replace(/\{(\d+)\}/g, (match, index) => index < args.length ? String(args[index]) : match)
+      for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', args[i])
+      return v
     }
   }
   return t(n === 1 ? one : other, n, ...rest)
+}
+
+/**
+ * tn() with the count shown as `shown` (the number formatted for the language: "1,234", "3,5")
+ * while `n` still picks the form. The rest of the arguments are {1}, {2}… as in tn().
+ */
+export function tnf(one, other, n, shown, ...rest) {
+  const forms = dict[other]
+  let v = forms && typeof forms === 'object' ? (forms[pluralCategory(n)] || forms.other || forms.many || forms.one) : null
+  if (!v) v = (n === 1 ? dict[one] : (typeof forms === 'string' ? forms : null)) || (n === 1 ? one : other)
+  const args = [shown, ...rest]
+  for (let i = 0; i < args.length; i++) v = v.replaceAll('{' + i + '}', args[i])
+  return v
 }
 
 // The English steps and descriptions of 5,000+ exercises are too big to sit in the bundle every
@@ -206,8 +227,15 @@ export const exerciseNameFor = ex => {
   return translated.toLocaleLowerCase(lang) === ex.n.toLocaleLowerCase('en')
       || !enParens
     ? translated
-    : `${translated} (${ex.n})`
+    : `${translated} ${englishInParens(ex.n)}`
 }
+
+// In a right-to-left language the English title in brackets is a left-to-right run inside
+// right-to-left text. Left loose, its closing bracket took the paragraph's direction wherever the
+// name broke across two lines, and the second line began with it turned round: "(Lunge". A
+// first-strong isolate (U+2068 … U+2069) lays the brackets out with the words they hold. The marks
+// are invisible and travel with the name to the watch, the widgets and Apple Health.
+const englishInParens = n => (RTL_LANGS.has(baseLang(lang)) ? `\u2068(${n})\u2069` : `(${n})`)
 
 // Exercise-name packs written in the language's own casing. German capitalises its nouns and
 // lower-cases the adjectives in front of them ("Assistiertes hängendes Knieheben"), which

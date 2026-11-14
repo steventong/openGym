@@ -7,12 +7,10 @@ import { nativeFetch } from './capacitor-fetch.js'
 export const IS_APPLE = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)
 export const IS_ANDROID = /Android/.test(navigator.userAgent)
 export const BIO = IS_APPLE ? 'Face ID / Touch ID' : IS_ANDROID ? 'fingerprint or face unlock' : 'your fingerprint, face or PIN'
-export const VAULT = IS_APPLE ? 'iCloud Keychain' : IS_ANDROID ? 'Google Password Manager' : 'your password manager'
-// The same phrases in the UI language. They go into translated sentences ("confirm with {0}"),
-// so the English constants above left an English phrase in the middle of every other language.
+// The same phrase in the UI language. It goes into translated sentences ("confirm with {0}"),
+// so the English constant above left an English phrase in the middle of every other language.
 // Functions, not constants: the pack is loaded after this module is.
-export const bio = () => (IS_APPLE ? t("FACE_ID_TOUCH_ID" /* 面容 ID / 触控 ID */) : IS_ANDROID ? t("FINGERPRINT_OR_FACE_UNLOCK" /* 指纹或人脸解锁 */) : t("YOUR_FINGERPRINT_FACE_OR_PIN" /* 你的指纹、面容或 PIN 码 */))
-export const vault = () => (IS_APPLE ? t("ICLOUD_KEYCHAIN" /* iCloud 钥匙串 */) : IS_ANDROID ? t("GOOGLE_PASSWORD_MANAGER" /* Google 密码管理工具 */) : t("YOUR_PASSWORD_MANAGER" /* 你的密码管理器 */))
+export const bio = () => (IS_APPLE ? t('Face ID / Touch ID') : IS_ANDROID ? t('fingerprint or face unlock') : t('your fingerprint, face or PIN'))
 // PublicKeyCredential is the WebAuthn-specific capability signal. Do not also gate the UI on
 // navigator.credentials: some browsers expose WebAuthn while that generic Credential Management
 // API check produces a false negative (notably Chrome on iOS). The real create/get calls still run
@@ -33,6 +31,10 @@ export function setAccessHeaders(h, origin) { accessHeaders = Object.assign({}, 
 const originOf = base => { try { return new URL(base).origin } catch { return '' } }
 const accessFor = base => (base && accessOrigin && originOf(base) === accessOrigin ? accessHeaders : {})
 const remoteHeaders = () => Object.assign({}, accessFor(remoteBase), remoteToken ? { Authorization: 'Bearer ' + remoteToken } : {})
+// The paired server and what a request to it carries (the token, an Access service token for that
+// origin), for the phone's background check (lib/nudge-check.js), which runs with no WebView and
+// so has to be handed them. null when this is not a paired phone.
+export const remoteAuth = () => (remoteBase && remoteToken ? { base: remoteBase, headers: remoteHeaders() } : null)
 
 export { appBase }
 
@@ -46,6 +48,14 @@ const TIMEOUT_GET_MS = 20000
 const TIMEOUT_MS = 60000
 
 const failure = (message, code, status) => Object.assign(new Error(message), { code, status })
+// The message an error answer is shown with. The server's English `error`, except a write the
+// origin check refused (or a passkey made at another address): a self-hoster whose ORIGIN is not
+// the address they opened only ever saw "cross-origin request refused", and nobody could tell
+// what to change. The answer names ORIGIN, so the sentence can too (api/verify-error.js).
+function refusal(status, body) {
+  if (body && body.code === 'origin-mismatch') return t('This server only takes changes made at {0}. If you opened openGym at another address, whoever runs the server can set ORIGIN and RP_ID to match it (the self-hosting guide shows how).', String(body.expected || '?'))
+  return (body && body.error) || ('HTTP ' + status)
+}
 
 export async function api(path, opts) {
   const { timeout, ...init } = opts || {}
@@ -54,7 +64,7 @@ export async function api(path, opts) {
   // server, which answers ANY path, PUT included, with index.html and a 200, so a push "landed"
   // there and the change was marked as synced while the server never saw it. status 0, not
   // undefined: this is not "offline", and the store must not show it as such.
-  if (MOBILE && !remoteBase) throw failure(t("THIS_PHONE_IS_NOT_CONNECTED_TO_A_SERVER" /* 这部手机没有连接到任何服务器。 */), 'not-paired', 0)
+  if (MOBILE && !remoteBase) throw failure(t('This phone is not connected to a server.'), 'not-paired', 0)
   const headers = Object.assign({ 'Content-Type': 'application/json' }, init.headers, remoteHeaders())
   // A paired phone has an absolute base of its own; everyone else is relative to where the app
   // is served, so a subpath deployment reaches its own API instead of the proxy's root.
@@ -70,7 +80,7 @@ async function request(url, init, ms) {
   const ctl = typeof AbortController === 'function' ? new AbortController() : null
   let timer = null
   const expired = new Promise((_, reject) => {
-    if (ms > 0) timer = setTimeout(() => { if (ctl) ctl.abort(); reject(failure(t("THE_SERVER_DID_NOT_ANSWER_IN_TIME" /* 服务器没有及时响应。 */), 'timeout')) }, ms)
+    if (ms > 0) timer = setTimeout(() => { if (ctl) ctl.abort(); reject(failure(t('The server did not answer in time.'), 'timeout')) }, ms)
   })
   const answer = exchange(url, ctl ? Object.assign({}, init, { signal: ctl.signal }) : init)
   answer.catch(() => {})   // it may still settle after the timeout has answered; nobody is listening then
@@ -90,8 +100,8 @@ async function exchange(url, init) {
   try { data = await r.json() } catch { parsed = false }
   const body = parsed && data && typeof data === 'object' ? data : null
   // The body rides along on the error: a 409 from /api/data carries the server's document.
-  if (!r.ok) { const e = new Error((body && body.error) || ('HTTP ' + r.status)); e.status = r.status; e.data = body || {}; throw e }
-  if (!body) throw failure(t("THE_SERVER_ANSWERED_WITH_SOMETHING_OTHER_THAN_OPENGYM_DATA" /* 服务器返回的不是 openGym 数据。 */), 'bad-response', r.status)
+  if (!r.ok) { const e = new Error(refusal(r.status, body)); e.status = r.status; e.data = body || {}; throw e }
+  if (!body) throw failure(t('The server answered with something other than openGym data.'), 'bad-response', r.status)
   return body
 }
 
@@ -115,8 +125,8 @@ export function beacon(path, body) {
 
 const mediaUrl = path => (remoteBase ? remoteBase + path : appBase().replace(/\/$/, '') + path)
 const mediaHeaders = remoteHeaders
-const notPaired = () => failure(t("THIS_PHONE_IS_NOT_CONNECTED_TO_A_SERVER" /* 这部手机没有连接到任何服务器。 */), 'not-paired', 0)
-const timedOut = () => failure(t("THE_SERVER_DID_NOT_ANSWER_IN_TIME" /* 服务器没有及时响应。 */), 'timeout')
+const notPaired = () => failure(t('This phone is not connected to a server.'), 'not-paired', 0)
+const timedOut = () => failure(t('The server did not answer in time.'), 'timeout')
 
 /**
  * GET a file as a Blob (lib/media-sync.js fetchToStore, which checks its hash before keeping it).
@@ -147,7 +157,7 @@ export async function apiBlob(path, { expectSize, idleMs = 30000, fetchImpl = gl
     if (!r.ok) {
       let body = null
       try { body = await r.json() } catch { /* not JSON: a proxy's page */ }
-      throw Object.assign(new Error((body && body.error) || 'HTTP ' + r.status), { status: r.status, code: (body && body.code) || 'http', data: body || {} })
+      throw Object.assign(new Error(refusal(r.status, body)), { status: r.status, code: (body && body.code) || 'http', data: body || {} })
     }
     const announced = Number(r.headers?.get?.('content-length'))
     if (Number.isFinite(announced) && announced > max) { ctl?.abort(); throw tooBig(r.status) }
@@ -201,11 +211,11 @@ export function apiUpload(path, blob, mime, { onProgress, idleMs = 60000, XHR = 
       if (body && typeof body !== 'object') body = null
       if (xhr.status >= 200 && xhr.status < 300) {
         if (body) resolve(body)
-        else reject(failure(t("THE_SERVER_ANSWERED_WITH_SOMETHING_OTHER_THAN_OPENGYM_DATA" /* 服务器返回的不是 openGym 数据。 */), 'bad-response', xhr.status))
+        else reject(failure(t('The server answered with something other than openGym data.'), 'bad-response', xhr.status))
         return
       }
       if (xhr.status === 413 && !body) { reject(failure('HTTP 413', 'proxy-too-large', 413)); return }
-      const e = Object.assign(new Error((body && body.error) || 'HTTP ' + xhr.status), { status: xhr.status, code: (body && body.code) || 'http', data: body || {} })
+      const e = Object.assign(new Error(refusal(xhr.status, body)), { status: xhr.status, code: (body && body.code) || 'http', data: body || {} })
       if (xhr.status === 429) {
         const header = Number(xhr.getResponseHeader && xhr.getResponseHeader('Retry-After'))
         e.retryAfter = Number(body && body.retryAfter) || (Number.isFinite(header) && header > 0 ? header : 60)
@@ -271,23 +281,23 @@ async function whyUnreachable(base, ms) {
   // answer at all leaves the CORS explanation.
   const answer = reached ? await healthAnswer(base, ms) : null
   if (answer === 'front') {
-    return failure(t("THAT_ADDRESS_ANSWERS_BUT_A_LOGIN_PAGE_OR_PROXY_RULE_REPLIED_INSTEAD" /* 该地址有响应，但回应的是登录页面或代理规则，而不是 openGym。请让 /api/ 原样直达 openGym。参见 docs/SELF_HOSTING.md 中的“Phone app and COR */), 'proxy-answered')
+    return failure(t('That address answers, but a login page or proxy rule replied instead of openGym. Let /api/ through to openGym unchanged. See “Phone app and CORS” in docs/SELF_HOSTING.md.'), 'proxy-answered')
   }
   if (answer === 'other') {
-    return failure(t("THAT_ADDRESS_ANSWERS_BUT_IT_ISN_T_AN_OPENGYM_SERVER_CHECK_THE" /* 该地址有响应，但不是 openGym 服务器。请检查网址。 */), 'not-opengym')
+    return failure(t('That address answers, but it isn’t an openGym server. Check the URL.'), 'not-opengym')
   }
   if (reached) {
     const origin = globalThis.location?.origin || 'https://localhost'
-    return failure(t("YOUR_SERVER_WAS_REACHED_BUT_IT_REFUSED_THE_APP_S_REQUEST_CORS" /* 已连接到你的服务器，但它拒绝了应用的请求（CORS）。如果 Traefik 等反向代理会添加 CORS 头，请让来自 {0} 的请求原样转发到 openGym。参见 docs/SELF_HOSTING */, origin), 'cors')
+    return failure(t('Your server was reached, but it refused the app’s request (CORS). If a reverse proxy such as Traefik adds CORS headers, let requests from {0} through to openGym unchanged. See “Phone app and CORS” in docs/SELF_HOSTING.md.', origin), 'cors')
   }
   // An address typed without a scheme is tried as https://. A home server on plain http gives
   // that try nothing to talk to, while the phone's browser, which tries http, opens it (#428).
   let u = null
   try { u = new URL(base) } catch { /* said as it is below */ }
   if (u && u.protocol === 'https:' && looksLocal(u.hostname)) {
-    return failure(t("COULD_NOT_REACH_COUNT_OVER_HTTPS_IF_YOUR_SERVER_RUNS_ON_PLAIN" /* 无法通过 https:// 连接 {0}。如果你的服务器使用普通 http（在家里很常见），请改为输入 http://{0}。 */, hostOfBase(base)), 'unreachable')
+    return failure(t('Could not reach {0} over https://. If your server runs on plain http (common at home), type http://{0} instead.', hostOfBase(base)), 'unreachable')
   }
-  return failure(t("COULD_NOT_REACH_COUNT_CHECK_THE_ADDRESS_AND_THAT_THIS_PHONE_CAN" /* 无法连接到 {0}。请检查地址，以及这部手机能否访问它。 */, hostOfBase(base)), 'unreachable')
+  return failure(t('Could not reach {0}. Check the address and that this phone can reach it.', hostOfBase(base)), 'unreachable')
 }
 
 // An address that only makes sense on a home network: a private or link-local IP, a name
@@ -320,14 +330,14 @@ export async function pairRedeem(serverBase, code, { probeMs = PROBE_MS } = {}) 
   } catch (e) {
     // A wrong, spent or expired code is the one refusal a person can fix, and the server says it
     // in English only ('invalid or expired code'), so it is said here in the UI language.
-    if (e && e.status === 400) throw failure(t("THAT_CODE_DIDN_T_WORK_CODES_LAST_FIVE_MINUTES_AND_WORK_ONCE" /* 这个代码没用。代码只在 5 分钟内有效，且只能用一次，换个新的吧。 */), 'pair-invalid', 400)
+    if (e && e.status === 400) throw failure(t('That code didn’t work. Codes last 5 minutes and work once, so grab a fresh one.'), 'pair-invalid', 400)
     // The server answered (any status) or did not answer in time: that error says it already.
     if (e && (e.status != null || e.code)) throw e
     throw await whyUnreachable(serverBase, probeMs)
   }
   // Anything that is not a pairing would be saved as one — and the phone would then send every
   // change to a server that never gave it a token.
-  if (!data.token || !data.user) throw failure(t("THE_SERVER_ANSWERED_WITH_SOMETHING_OTHER_THAN_OPENGYM_DATA" /* 服务器返回的不是 openGym 数据。 */), 'bad-response', 200)
+  if (!data.token || !data.user) throw failure(t('The server answered with something other than openGym data.'), 'bad-response', 200)
   return data
 }
 
@@ -369,10 +379,11 @@ function credToJSON(cred) {
 // is shown as it came.
 export function passkeyError(e, fallback) {
   switch (e?.data?.code) {
-    case 'invite': return t("THAT_INVITE_CODE_IS_NOT_VALID" /* 这个邀请码无效。 */)
-    case 'unknown-credential': return t("THIS_SERVER_DOESN_T_KNOW_THAT_PASSKEY_MAKE_A_PROFILE_FIRST" /* 这个服务器不认识这个通行密钥。请先创建个人资料。 */)
-    case 'disabled': return t("THIS_ACCOUNT_HAS_BEEN_DISABLED" /* 此账户已被停用。 */)
-    case 'challenge-expired': return t("THAT_TOOK_A_LITTLE_TOO_LONG_GIVE_IT_ANOTHER_GO" /* 花的时间有点太长了。再试一次吧。 */)
+    case 'invite': return t('That invite code is not valid.')
+    case 'unknown-credential': return t('This server doesn’t know that passkey. Make a profile first.')
+    case 'disabled': return t('This account has been disabled.')
+    case 'challenge-expired': return t('That took a little too long. Give it another go.')
+    case 'origin-mismatch': return refusal(e.status, e.data)
   }
   return e?.message || fallback
 }

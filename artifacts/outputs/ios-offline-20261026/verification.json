@@ -1,0 +1,17 @@
+{
+  "tests": 42,
+  "failures": 0,
+  "testResult": "/tmp/opengym-offline-verified.xcresult",
+  "simulator": "iPhone 17 Pro Max iOS 26.5",
+  "uiVerified": [
+    "single exercise selector",
+    "card rest timer",
+    "switching retains set values",
+    "top-right save menu",
+    "history form empty numeric input persisted and restored after termination",
+    "routine reorder button",
+    "Apple Health settings switch"
+  ],
+  "healthKitOnDeviceVerified": false,
+  "installedOnUsersPhone": false
+}

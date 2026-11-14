@@ -9,11 +9,12 @@
 //
 // Like the demo build, MOBILE is replaced at build time, so all of this folds away in
 // web bundles; the Capacitor plugins are only ever imported behind it.
-import { t, tn , translateValue } from './i18n-core.js'
+import { t, tn } from './i18n-core.js'
 import { isoOf, todayISO } from './format.js'
 import { effectiveRoutineIds } from './history.js'
 import { NUDGE_COPY, lineIndex, nudgeFor, nudgeMinute, toneOf } from './nudge.js'
 import { excusedOn } from './day-notes.js'
+import { stateJson } from './state-json.js'
 
 export const MOBILE = import.meta.env.VITE_MOBILE === '1'
 
@@ -33,20 +34,52 @@ export async function isAndroid() {
   }
 }
 
+// 'android' or 'ios' inside the phone app, null anywhere else: for what both native shells do,
+// each its own way (the rest alert: RestAlertPlugin.java and RestAlertPlugin.swift).
+export async function nativePlatform() {
+  if (!MOBILE) return null
+  try {
+    const { Capacitor } = await import('@capacitor/core')
+    const p = Capacitor.getPlatform()
+    return p === 'android' || p === 'ios' ? p : null
+  } catch (e) {
+    return null
+  }
+}
+
 const FILE = 'opengym-state.json'
+
+// Written whole to a second file first and then moved over the first, so a write cut short (the
+// app killed mid-write, the battery gone) never leaves a half file where the last good copy was.
+// A move that did not finish leaves the new copy under FILE_NEW: whichever of the two parses and
+// is the later one (`_ts`) is the copy.
+const FILE_NEW = 'opengym-state.next.json'
 
 export async function nativeLoad() {
   try {
     const { Filesystem, Directory, Encoding } = await import('@capacitor/filesystem')
-    const r = await Filesystem.readFile({ path: FILE, directory: Directory.Data, encoding: Encoding.UTF8 })
-    return JSON.parse(r.data)
+    const read = async path => {
+      try { return JSON.parse((await Filesystem.readFile({ path, directory: Directory.Data, encoding: Encoding.UTF8 })).data) } catch { return null }
+    }
+    const main = await read(FILE)
+    const next = typeof Filesystem.rename === 'function' ? await read(FILE_NEW) : null
+    if (next && typeof next === 'object' && (!main || (Number(next._ts) || 0) > (Number(main._ts) || 0))) return next
+    return main
   } catch (e) { return null }   // first launch, or unreadable — localStorage copy takes over
 }
 
 export async function nativeSave(state) {
   try {
     const { Filesystem, Directory, Encoding } = await import('@capacitor/filesystem')
-    await Filesystem.writeFile({ path: FILE, directory: Directory.Data, data: JSON.stringify(state), encoding: Encoding.UTF8 })
+    const data = stateJson(state)
+    if (typeof Filesystem.rename === 'function') {
+      try {
+        await Filesystem.writeFile({ path: FILE_NEW, directory: Directory.Data, data, encoding: Encoding.UTF8 })
+        await Filesystem.rename({ from: FILE_NEW, to: FILE, directory: Directory.Data, toDirectory: Directory.Data })
+        return
+      } catch { /* the plain write below */ }
+    }
+    await Filesystem.writeFile({ path: FILE, directory: Directory.Data, data, encoding: Encoding.UTF8 })
   } catch (e) { /* keep the localStorage copy */ }
 }
 
@@ -72,18 +105,45 @@ export async function writeJsonFile(name, data) {
   } catch (e) { /* not a Capacitor build, or the write failed — the caller's in-memory copy stands */ }
 }
 
+// Where the pairing lives. It holds the session token, so on iOS it stays out of iCloud and
+// computer backups: Library/NoCloud (Directory.LibraryNoCloud) is excluded from them, where
+// Documents (Directory.Data on iOS) is not. Android keeps it in the app's files and excludes it
+// by name in backup_rules.xml / data_extraction_rules.xml. A restored iPhone is paired again,
+// the same as an Android phone moved through a cloud backup.
+async function remoteDir() {
+  const { Directory } = await import('@capacitor/filesystem')
+  return (await nativePlatform()) === 'ios' ? Directory.LibraryNoCloud : Directory.Data
+}
+
 export async function loadRemoteFile() {
   try {
     const { Filesystem, Directory, Encoding } = await import('@capacitor/filesystem')
+    const directory = await remoteDir()
+    try {
+      const r = await Filesystem.readFile({ path: REMOTE_FILE, directory, encoding: Encoding.UTF8 })
+      return JSON.parse(r.data)
+    } catch (e) {
+      if (directory === Directory.Data) throw e
+    }
+    // An iPhone paired before the move: its pairing is still in Documents. Moved once, then the
+    // backed-up copy is gone.
     const r = await Filesystem.readFile({ path: REMOTE_FILE, directory: Directory.Data, encoding: Encoding.UTF8 })
-    return JSON.parse(r.data)
+    const data = JSON.parse(r.data)
+    await Filesystem.writeFile({ path: REMOTE_FILE, directory, data: JSON.stringify(data), encoding: Encoding.UTF8, recursive: true })
+    try { await Filesystem.deleteFile({ path: REMOTE_FILE, directory: Directory.Data }) } catch { /* moved; the old copy is only stale */ }
+    return data
   } catch (e) { return null }   // never decided yet
 }
 
 export async function saveRemoteFile(data) {
   try {
-    const { Filesystem, Directory, Encoding } = await import('@capacitor/filesystem')
-    await Filesystem.writeFile({ path: REMOTE_FILE, directory: Directory.Data, data: JSON.stringify(data), encoding: Encoding.UTF8 })
+    const { Filesystem, Encoding } = await import('@capacitor/filesystem')
+    const directory = await remoteDir()
+    await Filesystem.writeFile({ path: REMOTE_FILE, directory, data: JSON.stringify(data), encoding: Encoding.UTF8, recursive: true })
+    // The plugin marks Library/NoCloud as excluded from backup each time it looks the folder up,
+    // which does nothing while the folder does not exist yet: the first write creates it, so
+    // one more lookup marks it now rather than on the next launch.
+    if (directory !== (await import('@capacitor/filesystem')).Directory.Data) await Filesystem.stat({ path: REMOTE_FILE, directory })
   } catch (e) { /* worst case: onboarding asks again next launch */ }
 }
 
@@ -116,14 +176,14 @@ export function buildReminderNotifications(S, now = new Date()) {
     // so it is reminded every day (the app re-syncs these after every workout and on open).
     const dayRoutines = effectiveRoutineIds(state, iso, iso).map(id => routines.find(x => x.id === id)).filter(Boolean)
     if (!dayRoutines.length) continue
-    const label = dayRoutines.length <= 2 ? dayRoutines.map(r => r.name).join(' + ') : tn("COUNT_ROUTINE" /* {0} 个训练计划 */, "COUNT_ROUTINES" /* {0} 个训练计划 */, dayRoutines.length)
+    const label = dayRoutines.length <= 2 ? dayRoutines.map(r => r.name).join(' + ') : tn('{0} routine', '{0} routines', dayRoutines.length)
     const at = new Date(day)
     at.setHours(hour, minute, 0, 0)
     if (at <= now) continue
     notifications.push({
       id: REMINDER_ID_BASE + offset,
-      title: t("WORKOUT_DAY" /* 训练日 */),
-      body: t("COUNT_IS_ON_THE_PLAN_TODAY_LET_S_GO" /* 今天的计划是{0}。冲吧！ */, label),
+      title: t('Workout day'),
+      body: t('{0} is on the plan today. Let’s go!', label),
       schedule: { at, allowWhileIdle: true },
     })
   }
@@ -155,14 +215,14 @@ export function buildNudgeNotifications(S, now = new Date()) {
     const ids = nudgeFor(S, iso)
     if (!ids) continue
     const names = ids.map(id => routines.find(x => x.id === id)?.name).filter(Boolean)
-    const label = names.length && names.length <= 2 ? names.join(' + ') : tn("COUNT_ROUTINE" /* {0} 个训练计划 */, "COUNT_ROUTINES" /* {0} 个训练计划 */, ids.length)
+    const label = names.length && names.length <= 2 ? names.join(' + ') : tn('{0} routine', '{0} routines', ids.length)
     const when = new Date(day)
     when.setHours(Math.floor(at / 60), at % 60, 0, 0)
     if (when <= now) continue
     notifications.push({
       id: NUDGE_ID_BASE + offset,
-      title: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(copy.title),
-      body: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(copy.lines[lineIndex(iso, copy.lines.length)], label),
+      title: t(copy.title),
+      body: t(copy.lines[lineIndex(iso, copy.lines.length)], label),
       schedule: { at: when, allowWhileIdle: true },
     })
   }
@@ -174,6 +234,9 @@ export function buildNudgeNotifications(S, now = new Date()) {
 // may just have been edited. `interactive` gates the OS permission prompt to the Settings toggle;
 // a background resync never pops a dialog.
 export async function syncReminder(S, interactive = false) {
+  // The gym reminder (lib/gym-reminder.js) decides on the phone whether to go off, from what it
+  // was last told about today: told again here, after every save and on every return to the app.
+  if (MOBILE) import('./gym-reminder.js').then(m => m.pushGymStatus(S)).catch(() => {})
   try {
     const { LocalNotifications } = await import('@capacitor/local-notifications')
     await LocalNotifications.cancel({ notifications: [
@@ -182,12 +245,15 @@ export async function syncReminder(S, interactive = false) {
       ...Array.from({ length: NUDGE_WINDOW_DAYS }, (_, d) => ({ id: NUDGE_ID_BASE + d })),
     ] }).catch(() => {})
     const r = S.reminder
-    if (!r?.on) return true
+    // The background check (lib/nudge-check.js) follows what is scheduled: nothing, nothing to check.
+    const check = notifications => import('./nudge-check.js').then(m => m.armNudgeCheck(S, notifications)).catch(() => {})
+    if (!r?.on) { await check([]); return true }
     let perm = await LocalNotifications.checkPermissions()
     if (perm.display !== 'granted' && interactive) perm = await LocalNotifications.requestPermissions()
-    if (perm.display !== 'granted') return false
+    if (perm.display !== 'granted') { await check([]); return false }
     const notifications = [...buildReminderNotifications(S), ...buildNudgeNotifications(S)]
     if (notifications.length) await LocalNotifications.schedule({ notifications })
+    await check(notifications)
     return true
   } catch (e) { return false }
 }
@@ -255,10 +321,14 @@ export async function shareExportBlob(blob, filename) {
 // platform renders the PDF, so no PDF library rides in the bundle. The local `Print` plugin is
 // registered natively (android MainActivity, ios PrintPlugin.m); on the web build this file's
 // callers gate on MOBILE and never reach here.
-export async function printHtml(html, name) {
+// `paper` ('a4' | 'letter') is the size the sheet starts on (lib/print-doc.js paperFor); Android
+// uses it, iOS takes the printer's or the region's own default. `footer` is the bottom line the
+// iOS plugin draws itself, since WebKit has no @page margin boxes: { left, page } with {0}/{1}
+// in `page` for the page number and the page count.
+export async function printHtml(html, name, { paper = 'a4', footer } = {}) {
   const { registerPlugin } = await import('@capacitor/core')
   const Print = registerPlugin('Print')
-  await Print.printHtml({ html, name })
+  await Print.printHtml({ html, name, paper, ...(footer ? { footer } : {}) })
 }
 
 // "Auto-backup on changes" (Settings): a dated snapshot dropped into Documents/openGym/ —

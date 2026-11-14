@@ -23,6 +23,6 @@ describe('catalogue/browse', () => {
     const row = md.split('\n').find(l => /^\| \[\d+\]/.test(l))
     const id = /^\| \[(\d+)\]\(\.\.\/exercises\/(\d+)\.json\)/.exec(row)
     expect(id && id[1]).toBe(id && id[2])
-    expect(row).toContain(`[picture](../media/thumbnails/${id[1]}.webp)`)
+    expect(row).toContain(`[picture](../media/still/${id[1]}.webp)`)
   })
 })

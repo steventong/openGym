@@ -7,16 +7,31 @@ export const todayISO = () => {
 export const isoOf = d =>
   d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
 
-export const DAYN = ["SUNDAY" /* 星期日 */, "MONDAY" /* 星期一 */, "TUESDAY" /* 星期二 */, "WEDNESDAY" /* 星期三 */, "THURSDAY" /* 星期四 */, "FRIDAY" /* 星期五 */, "SATURDAY" /* 星期六 */]
-export const DAYS = ["SU" /* 日 */, "MO" /* 一 */, "TU" /* 二 */, "WE" /* 三 */, "TH" /* 四 */, "FR" /* 五 */, "SA" /* 六 */]
-export const MONTHS = ["JAN" /* 1月 */, "FEB" /* 2月 */, "MAR" /* 3月 */, "APR" /* 4月 */, "MAY" /* 5月 */, "JUN" /* 6月 */, "JUL" /* 7月 */, "AUG" /* 8月 */, "SEP" /* 9月 */, "OCT" /* 10月 */, "NOV" /* 11月 */, "DEC" /* 12月 */]
-export const MONTHS_LONG = ["JANUARY" /* 一月 */, "FEBRUARY" /* 二月 */, "MARCH" /* 三月 */, "APRIL" /* 四月 */, "MAY" /* 5月 */, "JUNE" /* 六月 */, "JULY" /* 七月 */, "AUGUST" /* 八月 */, "SEPTEMBER" /* 九月 */, "OCTOBER" /* 十月 */, "NOVEMBER" /* 十一月 */, "DECEMBER" /* 十二月 */]
+export const DAYN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+export const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+export const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
+// toLocaleDateString / toLocaleString build a new Intl formatter on every call, which is most of
+// what a long list of dates and weights costs (History with 400 workouts: ~430 ms in fmtDate
+// alone). The formatters are kept per locale and options; their output is the same text.
+const formatters = new Map()
+const formatter = (Kind, locale, options) => {
+  const key = Kind.name + '|' + locale + '|' + (options ? JSON.stringify(options) : '')
+  let f = formatters.get(key)
+  if (!f) { f = new Kind(locale, options); formatters.set(key, f) }
+  return f
+}
+const DATE_SHORT = { day: 'numeric', month: 'short' }
+const DATE_LONG = { weekday: 'short', day: 'numeric', month: 'short' }
+const DATE_SHORT_Y = { ...DATE_SHORT, year: 'numeric' }
+const DATE_LONG_Y = { ...DATE_LONG, year: 'numeric' }
 export function fmtDate(iso, long, withYear = false) {
   const d = new Date(iso + 'T12:00:00')
-  const options = long ? { weekday: 'short', day: 'numeric', month: 'short' } : { day: 'numeric', month: 'short' }
-  if (withYear) options.year = 'numeric'
-  return d.toLocaleDateString(dateLocale(), options)
+  const options = long ? (withYear ? DATE_LONG_Y : DATE_LONG) : (withYear ? DATE_SHORT_Y : DATE_SHORT)
+  // An unreadable date says "Invalid Date" as it always did; a formatter would throw instead.
+  if (Number.isNaN(d.getTime())) return d.toLocaleDateString(dateLocale(), options)
+  return formatter(Intl.DateTimeFormat, dateLocale(), options).format(d)
 }
 // A span of days, e.g. an import's first and last workout. The year is shown when the span
 // crosses one or lies outside the current year: "3 Feb – 21 Dec" over two years read as one.
@@ -30,7 +45,7 @@ export function fmtDateRange(from, to, long, now = new Date()) {
 // In the UI language: the Latin h, m and min stood inside Arabic and Ukrainian rows.
 export function fmtDur(ms) {
   const m = Math.floor(ms / 60000)
-  return m >= 60 ? t("COUNT_H_COUNT_M" /* {0} 小时 {1} 分钟 */, Math.floor(m / 60), m % 60) : t("COUNT_MIN" /* {0} 分钟 */, m)
+  return m >= 60 ? t('{0}h {1}m', Math.floor(m / 60), m % 60) : t('{0} min', m)
 }
 // Imported history has no clock — an unknown duration is left out rather than shown as "0 min".
 export const durPart = ms => (ms >= 60000 ? [fmtDur(ms)] : [])
@@ -57,20 +72,37 @@ export const setWeightDecimals = n => { decimals = n === 2 ? 2 : 1 }
 export const weightDecimals = () => decimals
 export const fmtNum = n => {
   const p = decimals === 2 ? 100 : 10
-  return (Math.round(n * p) / p).toLocaleString(dateLocale(), { maximumFractionDigits: decimals })
+  // `+ 0` turns a -0 into 0: a change that rounds away ("-0.03") printed "-0".
+  return formatter(Intl.NumberFormat, dateLocale(), decimals === 2 ? NUM_2 : NUM_1).format(Math.round(n * p) / p + 0)
+}
+const NUM_1 = { maximumFractionDigits: 1 }
+const NUM_2 = { maximumFractionDigits: 2 }
+// A number as an input field shows it: two places at most, and a hair off a clean value (the step,
+// or a whole or half number) shown as that value. 44.996 lb, a CSV round trip of a lb set stored in
+// kg (#657), reads 45; 20.4117 kg, an exercise unpinned from lb, reads 20.41. Display only: the
+// field keeps the stored number until it is edited.
+export function cleanNum(v, step) {
+  const n = Number(v)
+  if (v == null || v === '' || typeof v === 'boolean' || !Number.isFinite(n)) return v
+  for (const s of [step, 0.5]) {
+    if (!(s > 0)) continue
+    const c = Math.round(n / s) * s
+    if (Math.abs(n - c) < 0.01) return Math.round(c * 100) / 100 + 0
+  }
+  return Math.round(n * 100) / 100 + 0
 }
 // Plate sizes keep their quarter: 1.25 and 21.25 are real numbers on a plate and a bar.
-export const fmtPlate = n => (Math.round(n * 100) / 100).toLocaleString(dateLocale())
+export const fmtPlate = n => formatter(Intl.NumberFormat, dateLocale()).format(Math.round(n * 100) / 100)
 // Volume stays in the profile's unit throughout: the old shorthand turned anything over
 // 10 000 into "t", which is wrong for a pound profile and made one list mix "18.8t" with
 // "7'535 kg" — two numbers you can't compare at a glance.
 export const fmtVol = (v, unit) => fmtNum(v) + ' ' + unit
 // Plural forms come from the pack via tn(): three forms in Russian, two in English.
-export const exCount = n => tn("COUNT_EXERCISE" /* {0} 个动作 */, "COUNT_EXERCISES" /* {0} 个动作 */, n)
-export const routineCount = n => tn("COUNT_ROUTINE" /* {0} 个训练计划 */, "COUNT_ROUTINES" /* {0} 个训练计划 */, n)
-export const changeCount = n => tn("COUNT_CHANGE" /* {0} 项更改 */, "COUNT_CHANGES" /* {0} 项更改 */, n)
+export const exCount = n => tn('{0} exercise', '{0} exercises', n)
+export const routineCount = n => tn('{0} routine', '{0} routines', n)
+export const changeCount = n => tn('{0} change', '{0} changes', n)
 // The Sets tile of the finish summary: all the sets logged, then how many of them were work sets.
-export const setsWorkCount = (n, work) => tn("COUNT_SET_COUNT_WORK" /* {0} 组 · {1} 工作 */, "COUNT_SETS_COUNT_WORK" /* {0} 组 · {1} 工作 */, n, work)
+export const setsWorkCount = (n, work) => tn('{0} set · {1} work', '{0} sets · {1} work', n, work)
 
 // "5 minutes ago", "yesterday", "now" — in the UI language, from the platform's own rules
 // (Intl.RelativeTimeFormat), so no pack has to carry a word for every unit and plural. Used for
@@ -133,13 +165,28 @@ export function startOfWeek(iso, ws = MONDAY) {
  * to be an ISO week number, and being one would be a liability here: "2026-35" is defined
  * Monday-first, and there is no Sunday-first equivalent to fall back to.
  */
-export const weekKey = (iso, ws = MONDAY) => isoOf(startOfWeek(iso, ws))
+//
+// Memoised: Home's streak and week tally and Stats' weekly charts ask it for every workout on
+// every render, and each call parses a Date. The answer only depends on the calendar date and
+// the week start (noon local, so not on the time zone), so a string date is safe to remember.
+const weekKeys = new Map()
+export const weekKey = (iso, ws = MONDAY) => {
+  if (typeof iso !== 'string') return isoOf(startOfWeek(iso, ws))
+  const k = ws + '|' + iso
+  let v = weekKeys.get(k)
+  if (v === undefined) {
+    if (weekKeys.size >= 20000) weekKeys.clear()
+    v = isoOf(startOfWeek(iso, ws))
+    weekKeys.set(k, v)
+  }
+  return v
+}
 
 export const localTZ = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC' } catch { return 'UTC' } }
 
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
 // What each accent is called, for a screen reader (Settings' swatches carry no text).
-export const ACCENT_NAMES = { lime: "GREEN" /* 绿色 */, sky: "BLUE" /* 蓝色 */, orange: "ORANGE" /* 橙色 */, violet: "PURPLE" /* 紫色 */, pink: "PINK" /* 粉色 */, red: "RED" /* 红色 */, teal: "TEAL" /* 青色 */, gold: "YELLOW" /* 黄色 */ }
+export const ACCENT_NAMES = { lime: 'Green', sky: 'Blue', orange: 'Orange', violet: 'Purple', pink: 'Pink', red: 'Red', teal: 'Teal', gold: 'Yellow' }
 export const ACCENTS = { lime: '#30d158', sky: '#0a84ff', orange: '#ff9f0a', violet: '#bf5af2', pink: '#ff375f', red: '#ff453a', teal: '#40c8e0', gold: '#ffd60a' }
 // Text drawn on top of that swatch. Matches the --on-acc values in index.css.
 export const ACCENT_INK = { lime: '#000000', sky: '#ffffff', orange: '#000000', violet: '#ffffff', pink: '#ffffff', red: '#ffffff', teal: '#000000', gold: '#000000' }

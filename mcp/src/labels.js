@@ -1,4 +1,3 @@
-import { englishText } from '../../frontend/src/lib/i18n-core.js'
 // Formatting glue between lib helpers (which speak {0}/{1} templates) and the JSON returned
 // to the LLM.
 import { MUSCLE_NAME, MUSCLES } from '../../frontend/src/lib/muscles.js'
@@ -33,11 +32,11 @@ export function exLine(cfg, unit) {
 }
 
 export function muscleName(slug) {
-  return englishText(MUSCLE_NAME[slug]) || slug
+  return MUSCLE_NAME[slug] || slug
 }
 
 export function policyName(policy) {
-  return englishText(POLICY_NAME[policy]) || policy
+  return POLICY_NAME[policy] || policy
 }
 
 export function friendlyDate(iso) {

@@ -19,6 +19,8 @@ import com.getcapacitor.annotation.CapacitorPlugin;
  *   await RestAlert.schedule({ id, at, title, sound, tone, classic, vibrate, channelId, visibility, importance, localOnly });
  *   await RestAlert.cancel({ id });
  *   await RestAlert.buzz({ pattern: [200, 100, 200] });   // navigator.vibrate's shape, as an alarm
+ *   await RestAlert.speak({ text, lang, rate, flush });   // a spoken cue, music ducks (SpeechCue)
+ *   await RestAlert.hush();
  */
 @CapacitorPlugin(name = "RestAlert")
 public class RestAlertPlugin extends Plugin {
@@ -72,17 +74,17 @@ public class RestAlertPlugin extends Plugin {
         }
         RestAlert.setAccentColor((int) number(call, "accent", 0xFF30D158L), (int) number(call, "ink", 0xFF000000L));
         RestAlert.setLabels(
-                call.getString("pause", ctx.getString(R.string.localized_pause)),
-                call.getString("resume", ctx.getString(R.string.localized_resume)),
-                call.getString("minus", ctx.getString(R.string.localized_rest_minus)),
-                call.getString("plus", ctx.getString(R.string.localized_rest_plus)),
-                call.getString("skip", ctx.getString(R.string.localized_skip))
+                call.getString("pause", "Pause"),
+                call.getString("resume", "Resume"),
+                call.getString("minus", "\u2212 15s"),
+                call.getString("plus", "+ 15s"),
+                call.getString("skip", "Skip")
         );
         RestAlert.schedule(
                 ctx.getApplicationContext(),
                 at,
                 (int) number(call, "id", RestAlert.NOTIFICATION_ID),
-                call.getString("title", ctx.getString(R.string.localized_rest_complete)),
+                call.getString("title", "Rest over"),
                 !Boolean.FALSE.equals(call.getBoolean("sound", Boolean.TRUE)),
                 // Settings → Sound (#306): the sound by name; a page from before it sends only `classic`.
                 call.getString("tone", Boolean.TRUE.equals(call.getBoolean("classic", Boolean.FALSE)) ? "classic" : "chime"),
@@ -92,8 +94,12 @@ public class RestAlertPlugin extends Plugin {
                 call.getString("visibility", "public"),
                 call.getString("importance", "high"),
                 Boolean.TRUE.equals(call.getBoolean("localOnly", Boolean.FALSE)),
-                call.getString("countdownTitle", ctx.getString(R.string.localized_rest)),
-                number(call, "totalMs", 0)
+                call.getString("countdownTitle", "Rest"),
+                number(call, "totalMs", 0),
+                // Timed holds that run themselves: the alerts after this one, and whether this one
+                // shows the rest's countdown card (a count-in or a hold does not).
+                cuesOf(call),
+                !Boolean.FALSE.equals(call.getBoolean("countdown", Boolean.TRUE))
         );
         call.resolve();
     }
@@ -135,6 +141,30 @@ public class RestAlertPlugin extends Plugin {
             return;
         }
         RestAlert.playNow(ctx.getApplicationContext(), call.getString("kind", "chime"));
+        call.resolve();
+    }
+
+    /**
+     * A spoken cue in the phone's voice (lib/spoken-cues.js): { text, lang, rate, flush }. Music
+     * ducks for it and comes back up (SpeechCue). Rejected when the phone has no voice to use.
+     */
+    @PluginMethod
+    public void speak(PluginCall call) {
+        Context ctx = getContext();
+        String text = call.getString("text", "");
+        if (ctx == null || text == null || text.isEmpty()) {
+            call.reject("nothing to say");
+            return;
+        }
+        Double rate = call.getDouble("rate");
+        boolean ok = SpeechCue.speak(ctx, text, call.getString("lang", ""), rate == null ? 1f : rate.floatValue(), Boolean.TRUE.equals(call.getBoolean("flush", false)));
+        if (ok) call.resolve();
+        else call.reject("no voice");
+    }
+
+    @PluginMethod
+    public void hush(PluginCall call) {
+        SpeechCue.hush();
         call.resolve();
     }
 
@@ -185,6 +215,13 @@ public class RestAlertPlugin extends Plugin {
             try { ctx.startService(i); } catch (Exception ignored) { /* no rest running */ }
         }
         call.resolve();
+    }
+
+    /** The `cues` array ({ dt, title }) as JSON for the alarm's intent, or "" for none. */
+    private static String cuesOf(PluginCall call) {
+        JSArray cues = call.getArray("cues");
+        if (cues == null || cues.length() == 0) return "";
+        return cues.toString();
     }
 
     // PluginCall.getLong only accepts a Long, and a JS timestamp often arrives as a Double

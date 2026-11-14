@@ -1,0 +1,21 @@
+{
+  "status": "restored_verified",
+  "account": "Steven",
+  "origin": "https://opengym.neltavin.com",
+  "id": "D3645B7D-288A-4946-BCDF-CA7C10285826",
+  "date": "2026-10-29",
+  "name": "下肢基础 · 腿部与核心",
+  "entries": 5,
+  "sets": 15,
+  "durationMinutes": 56.1114733194987,
+  "previousCount": 77,
+  "count": 78,
+  "previousRev": 125,
+  "revision": 126,
+  "allOtherContentPreserved": true,
+  "restorationMarker": -1793839870286,
+  "backup": "/data/backups/restore-workout-20261105-2026-11-05T00-51-10-069Z",
+  "backupSha256": "aa303415bac7d497346adc2acf4c5e0d0eff44c4217c4508bbfacf31a5e5a5c7",
+  "source": "opengym-backup-2026-11-03.json",
+  "verifiedAt": "2026-11-05T00:51:11.030Z"
+}

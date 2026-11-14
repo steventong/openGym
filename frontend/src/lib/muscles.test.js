@@ -1,4 +1,3 @@
-import { t } from './i18n-core.js'
 import { describe, it, expect } from 'vitest'
 import { EXIDX, EXDB, smOf } from './exercises.js'
 import { LANGS, DERIVED_LOCALES } from './i18n-core.js'
@@ -18,7 +17,15 @@ describe('multi-muscle exercise metadata', () => {
   it('uses explicit multi-group metadata when present and supports legacy single groups', () => {
     expect(muscleGroupsOf({ muscleGroups: ['chest', 'pectorals', 'triceps'] })).toEqual(['chest', 'triceps'])
     expect(muscleGroupsOf({ tg: 'chest' })).toEqual(['chest'])
-    expect(t(MUSCLE_NAME.chest)).toBe('Chest')
+    expect(MUSCLE_NAME.chest).toBe('Chest')
+  })
+
+  // The map has no lats region of its own: they count as the upper back, so its name has to say so
+  // or the lats read as missing from Stats and the custom-exercise picker (#607).
+  it('counts the lats as the upper back and names them there', () => {
+    expect(muscleGroupsOf({ tg: 'lats', sm: ['latissimus dorsi'] })).toEqual(['upper-back'])
+    expect(loadOf([{ id: 'inline', ex: { primaries: ['lats'] }, sets: 3 }])).toEqual({ 'upper-back': 3 })
+    expect(MUSCLE_NAME['upper-back']).toMatch(/\blats\b/i)
   })
 
   it('falls back to the legacy body-part map when an optional multi-group field is empty', () => {
@@ -115,6 +122,17 @@ describe('catalogue secondary additions', () => {
     expect(smOf(raw)).toContain('rear deltoids')
     // the alias collapses onto the deltoids slug in the canonical muscle map
     expect(musclesOf(raw)).toHaveProperty('deltoids')
+  })
+
+  it('credits the lower back on the deadlift variants the muscle map does not carry (#693)', () => {
+    for (const id of ['4133', '10189']) {
+      const raw = EXDB.find(e => e.id === id)
+      // the generated rows name no back muscle at all
+      expect([...raw.sm, raw.tg, raw.mg].join(' ')).not.toMatch(/back|spine|lats|traps/)
+      expect(smOf(raw)).toContain('lower back')
+      expect(muscleGroupsOf(EXIDX[id])).toContain('lower-back')
+      expect(musclesOf(EXIDX[id])).toHaveProperty('lower-back', 0.4)
+    }
   })
 })
 
@@ -283,7 +301,7 @@ describe('muscle balance windows and ranking', () => {
 // language. The Library list showed "Cardiovascular system" untranslated for every cardio
 // exercise (QA copy): the packs only ever had the dataset's own lowercase spelling.
 describe('MUSCLE_NAME as i18n keys', () => {
-  const packs = import.meta.glob(['../../../localization/*.json', '!../../../localization/en.json', '!../../../localization/metadata/legacy-values.json'], { eager: true })
+  const packs = import.meta.glob('../locales/*.js', { eager: true })
   // One pack per non-English language, except a derived locale such as de-CH — counted from
   // LANGS rather than hardcoded, so adding a language cannot silently shrink this check.
   const packCount = Object.keys(LANGS).filter(code => code !== 'en' && !DERIVED_LOCALES[code]).length
@@ -293,5 +311,26 @@ describe('MUSCLE_NAME as i18n keys', () => {
       const missing = Object.values(MUSCLE_NAME).filter(name => !(name in mod.default))
       expect(missing, file).toEqual([])
     }
+  })
+})
+
+// Catalogue answers are remembered for Stats (muscleWeightsOf/musclesOf run per entry of every
+// workout); what a caller gets is still its own object, and anything not built in is read fresh.
+describe('remembered catalogue muscles', () => {
+  it('hands out an equal copy each time, so a caller changing it changes nothing', () => {
+    const ex = EXIDX['0025']
+    const a = musclesOf(ex), b = muscleWeightsOf(ex)
+    expect(Object.keys(a).length).toBeGreaterThan(0)
+    a.chest = 99; b.chest = 99; a.made_up = 1
+    expect(musclesOf(ex)).not.toBe(a)
+    expect(musclesOf(ex)).toEqual(musclesOf({ ...ex }))
+    expect(muscleWeightsOf(ex)).toEqual(muscleWeightsOf({ ...ex }))
+  })
+
+  it('reads an exercise of your own again after you edit it', () => {
+    const own = { id: 'c-q1', n: 'Mine', tg: 'pectorals' }
+    expect(Object.keys(musclesOf(own))).toEqual(['chest'])
+    own.tg = 'biceps'
+    expect(Object.keys(musclesOf(own))).toEqual(['biceps'])
   })
 })

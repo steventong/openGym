@@ -29,9 +29,9 @@ export function useBackupFolder(enabled = true) {
 /* The Auto-backup row's subtitle names where the copies go: the chosen folder once there is one,
    not Documents/openGym regardless (Android QA). `keep` is AUTO_BACKUP_KEEP. */
 export function autoBackupSubtitle(folder, keep) {
-  if (folder?.uri && folder.label) return t("SAVES_A_DATED_COPY_TO_COUNT_AFTER_FINISHING_A_WORKOUT_OR_EDITING" /* 每次完成训练或修改计划后，在“{0}”中保存一份带日期的副本，并保留最新的 {1} 份。 */, folder.label, keep)
-  if (folder?.uri) return t("SAVES_A_DATED_COPY_TO_THE_FOLDER_YOU_CHOSE_AFTER_FINISHING_A" /* 每次完成训练或修改计划后，在你选择的文件夹中保存一份带日期的副本，并保留最新的 {0} 份。 */, keep)
-  return t("SAVES_A_DATED_COPY_TO_DOCUMENTS_OPENGYM_AFTER_FINISHING_A_WORKOUT_OR" /* 完成训练或编辑计划后，会在「文档/openGym」中保存一份带日期的副本，并保留最近的 {0} 份。可以让同步应用指向该文件夹，或手动复制出来。 */, keep)
+  if (folder?.uri && folder.label) return t('Saves a dated copy to “{0}” after finishing a workout or editing a routine, and keeps the newest {1}.', folder.label, keep)
+  if (folder?.uri) return t('Saves a dated copy to the folder you chose after finishing a workout or editing a routine, and keeps the newest {0}.', keep)
+  return t('Saves a dated copy to Documents/openGym after finishing a workout or editing a routine, and keeps the newest {0}. Point a sync app at that folder, or copy it out by hand.', keep)
 }
 
 export default function BackupFolderRow() {
@@ -42,18 +42,18 @@ export default function BackupFolderRow() {
     try {
       const next = await chooseBackupFolder()
       if (next) setFolder(next)
-    } catch (e) { useUI.getState().toast(t("THIS_FOLDER_CAN_T_BE_USED_FOR_BACKUPS" /* 此文件夹无法用于备份。 */)) }
+    } catch (e) { useUI.getState().toast(t('This folder can’t be used for backups.')) }
   }
   const useDefault = async () => { setFolder(await resetBackupFolder()) }
 
   return <>
-    <Row icon="folder" iconTint="var(--blue)" title={t("BACKUP_FOLDER" /* 备份文件夹 */)}
-      subtitle={folder.uri ? (folder.label || t("CHOSEN_FOLDER" /* 所选文件夹 */)) : DEFAULT_FOLDER} accessory="chevron" onClick={choose} />
+    <Row icon="folder" iconTint="var(--blue)" title={t('Backup folder')}
+      subtitle={folder.uri ? (folder.label || t('Chosen folder')) : DEFAULT_FOLDER} accessory="chevron" onClick={choose} />
     {folder.lost && <Row icon="warning" iconTint="var(--orange)" className="backup-lost"
       title={folder.lostLabel
-        ? t("OPENGYM_CAN_NO_LONGER_WRITE_TO_COUNT_SO_COPIES_GO_TO_DOCUMENTS" /* openGym 无法再写入“{0}”，所以副本会重新保存到 Documents/openGym。重新选择该文件夹即可改回。 */, folder.lostLabel)
-        : t("OPENGYM_CAN_NO_LONGER_WRITE_TO_THE_CHOSEN_FOLDER_SO_COPIES_GO" /* openGym 无法再写入所选文件夹，所以副本会重新保存到 Documents/openGym。重新选择该文件夹即可改回。 */)} />}
-    {(folder.uri || folder.lost) && <Row icon="reset" iconTint="var(--label-3)" title={t("USE_DEFAULT_FOLDER" /* 使用默认文件夹 */)}
+        ? t('openGym can no longer write to “{0}”, so copies go to Documents/openGym again. Choose the folder again to switch back.', folder.lostLabel)
+        : t('openGym can no longer write to the chosen folder, so copies go to Documents/openGym again. Choose the folder again to switch back.')} />}
+    {(folder.uri || folder.lost) && <Row icon="reset" iconTint="var(--label-3)" title={t('Use default folder')}
       subtitle={DEFAULT_FOLDER} onClick={useDefault} />}
   </>
 }

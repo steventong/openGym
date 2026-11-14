@@ -1,0 +1,28 @@
+{
+  "status": "imported_and_synced_verified",
+  "account": "Steven",
+  "revision": 42,
+  "customExercises": 0,
+  "standardTargets": 65,
+  "migratedHistoryEntries": 428,
+  "workouts": 75,
+  "sets": 1322,
+  "routines": 4,
+  "contentMatchesMigration": true,
+  "all103CustomIDsHaveDeletionStamps": true,
+  "automaticallyRecomputedBestWeights": [
+    "1047",
+    "1557",
+    "2661",
+    "5658",
+    "10671",
+    "0318",
+    "0334",
+    "0289",
+    "0241",
+    "0596",
+    "0585",
+    "0404",
+    "0351"
+  ]
+}

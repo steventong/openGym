@@ -14,13 +14,12 @@
 //
 // Only today and the days before can take a note. A note on a future day reads as permission to
 // skip it, and the issue asked for nothing that nudges towards procrastination.
-import { t } from './i18n-core.js'
 import { NOTE_MAX } from './history.js'
 import { todayISO } from './format.js'
 
 /** The quick picks, in the order the sheet shows them. Labels are English source strings. */
 export const DAY_NOTE_TAGS = ['sick', 'travel', 'rest', 'injured']
-export const DAY_NOTE_LABEL = { sick: "SICK" /* 生病 */, travel: "TRAVELLING" /* 出行 */, rest: "REST_DAY" /* 休息日 */, injured: "INJURED" /* 受伤 */ }
+export const DAY_NOTE_LABEL = { sick: 'Sick', travel: 'Travelling', rest: 'Rest day', injured: 'Injured' }
 // Icons the set already has (components/Icon.jsx): under the weather, away, asleep, ouch.
 export const DAY_NOTE_ICON = { sick: 'cloud', travel: 'globe', rest: 'moon', injured: 'warning' }
 
@@ -55,7 +54,7 @@ export function withDayNote(map, iso, note, now = Date.now()) {
 }
 
 /** The label a note reads as in a list or a tooltip: its quick pick, its text, or both. */
-export function dayNoteLine(note, tr = t) {
+export function dayNoteLine(note, tr = s => s) {
   if (!note) return ''
   const label = note.tag ? tr(DAY_NOTE_LABEL[note.tag]) : ''
   return label && note.text ? `${label} · ${note.text}` : label || note.text

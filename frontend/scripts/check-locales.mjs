@@ -10,16 +10,9 @@
 // The reference is the union of all locales, not one blessed file: a key added to a
 // single locale then flags the other ten instead of passing unnoticed.
 
-import { readdirSync, existsSync } from 'node:fs'
+import { readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-
-// 新仓库使用共享 JSON；保留下面的独立旧格式校验，供迁移工具和旧测试夹具使用。
-const sharedCheck = new URL('../../scripts/localization/check.mjs', import.meta.url)
-if (existsSync(sharedCheck)) {
-  await import(sharedCheck.href)
-  process.exit(process.exitCode || 0)
-}
 
 const localesDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'locales')
 const files = readdirSync(localesDir).filter(f => f.endsWith('.js')).sort()

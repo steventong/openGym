@@ -18,6 +18,7 @@ import { isWarmupRow } from './workout-model.js'
 import { best1RM } from './onerm.js'
 import { fmtNum } from './format.js'
 import { planHash } from './coach.js'
+import { waitingProposal } from '../../../api/coach/core/pending.js'
 import { t } from './i18n.js'
 
 const DELAY = 2200      // long enough to see "the Coach is thinking…", short enough to forgive
@@ -55,25 +56,25 @@ function buildReview(S) {
   if (swapTo) changes.push({
     id: 'd1', type: 'swap-exercise', target: { routineId: routine.id, exId: first.id },
     before: EXIDX[first.id]?.n || first.id, after: { id: swapTo.id, name: swapTo.n },
-    why: t("EVERY_TOP_SET_ON_THIS_ONE_CAME_IN_AT_RPE_NINE_FIVE" /* 这个动作的主要组连续三次训练都在 RPE 9.5 或以上，而重量没有变化。把动作换掉四周，通常比死磕同一个动作更快突破平台期。 */)
+    why: t('Every top set on this one came in at RPE 9.5 or above for three sessions and the weight has not moved. Swapping the movement for four weeks usually breaks that stall faster than grinding the same one.')
   })
   if (second) changes.push({
     id: 'd2', type: 'sets', target: { routineId: routine.id, exId: second.id },
     before: second.sets ?? 3, after: Math.max(1, (second.sets ?? 3) - 1),
-    why: t("SESSIONS_HAVE_BEEN_RUNNING_ABOUT_FIFTEEN_MINUTES_OVER_THIS_IS_THE_ACCESSORY" /* 训练时间大约超出了十五分钟。这个辅助动作少做一组损失最小。 */)
+    why: t('Sessions have been running about fifteen minutes over. This is the accessory with the least to lose from one set fewer.')
   })
   if (other) changes.push({
     id: 'd3', type: 'week', target: { weekday: 6 }, before: null, after: other.id,
-    why: t("YOU_HAVE_MOVED_THIS_SESSION_TO_SATURDAY_THREE_WEEKS_RUNNING_BETTER_THE" /* 你已经连续三周把这次训练挪到周六了。与其每次都手动改，不如直接写进计划。 */)
+    why: t('You have moved this session to Saturday three weeks running. Better the plan says so than that you keep overriding it.')
   })
 
   return {
     id: 'demo-review', kind: 'review', createdAt: Date.now(), expiresAt: Date.now() + 864e5,
     planHash: planHash(S), iteration: 1,
-    summary: t("THREE_THINGS_WORTH_CHANGING_AND_ONE_WORTH_KNOWING_ABOUT_EVERYTHING_ELSE_IS" /* 有三处值得调整，还有一件值得知道。其他一切都很好：深蹲和拉的动作都在按计划进步。 */),
+    summary: t('Three things worth changing, and one worth knowing about. Everything else is working: the squat and the pulls are both progressing on schedule.'),
     evidence: { from: sessions[0]?.d || iso(new Date(Date.now() - 28 * 864e5)), to: sessions.at(-1)?.d || iso(new Date()), sessions: sessions.length || 9 },
     changes,
-    notes: [t("BODY_WEIGHT_HAS_BEEN_FLAT_FOR_FOUR_WEEKS_WHILE_THE_GOAL_IS" /* 目标是增重，但体重已经四周没动了。这是厨房的问题，不是训练的问题。拖后腿的不是计划。 */)]
+    notes: [t('Body weight has been flat for four weeks while the goal is to gain. That’s a kitchen problem, not a training one. The plan isn’t what’s holding it back.')]
   }
 }
 
@@ -85,21 +86,21 @@ function buildPlan(S, intake) {
   const mk = (id, name, sets, reps, why) => ({ id, sets, reps, mode: 'reps', why })
   const routines = [
     {
-      id: 'dr1', name: t("FULL_BODY_A_A" /* 全身 A */), emoji: '💪', prog: 'linear',
-      why: t("THE_TWO_BIG_LOWER_BODY_AND_PRESSING_PATTERNS_FIRST_WHILE_YOU_ARE" /* 趁体力充沛时，先做下肢和推这两个大模式。 */),
+      id: 'dr1', name: t('Full body A'), emoji: '💪', prog: 'linear',
+      why: t('The two big lower-body and pressing patterns first, while you are fresh.'),
       ex: [
-        mk(pick('upper legs', eq)?.id, null, 3, 8, t("THE_MAIN_LOWER_BODY_DRIVER_WHERE_MOST_OF_THE_STRENGTH_COMES_FROM" /* 下肢的主力动作，大部分力量都来自这里。 */)),
-        mk(pick('chest', eq)?.id, null, 3, 10, t("HORIZONTAL_PRESSING_THE_OTHER_HALF_OF_THE_SESSION" /* 水平推，训练的另一半。 */)),
-        mk(pick('back', eq)?.id, null, 3, 10, t("A_PULL_FOR_EVERY_PRESS_SO_THE_SHOULDERS_STAY_BALANCED" /* 每个推的动作都配一个拉的动作，让肩部保持平衡。 */))
+        mk(pick('upper legs', eq)?.id, null, 3, 8, t('The main lower-body driver, where most of the strength comes from.')),
+        mk(pick('chest', eq)?.id, null, 3, 10, t('Horizontal pressing, the other half of the session.')),
+        mk(pick('back', eq)?.id, null, 3, 10, t('A pull for every press, so the shoulders stay balanced.'))
       ].filter(e => e.id)
     },
     {
-      id: 'dr2', name: t("FULL_BODY_B" /* 全身 B */), emoji: '🏋️', prog: 'linear',
-      why: t("THE_SAME_PATTERNS_DIFFERENT_VARIATIONS_ENOUGH_OVERLAP_TO_PROGRESS_ENOUGH_DIFFERENCE_TO" /* 相同的模式，不同的变式：重叠得够多才能进步，差异够大才能保持新鲜。 */),
+      id: 'dr2', name: t('Full body B'), emoji: '🏋️', prog: 'linear',
+      why: t('The same patterns, different variations: enough overlap to progress, enough difference to stay fresh.'),
       ex: [
-        mk(pick('upper legs', eq)?.id, null, 3, 10, t("SAME_PATTERN_HIGHER_REPS_THAN_DAY_A" /* 相同的动作模式，次数比 A 日更多。 */)),
-        mk(pick('shoulders', eq)?.id, null, 3, 10, t("VERTICAL_PRESSING" /* 垂直推。 */)),
-        mk(pick('upper arms', eq)?.id, null, 3, 12, t("DIRECT_ARM_WORK_SINCE_YOU_ASKED_FOR_IT" /* 直接的手臂训练，因为你要求了。 */))
+        mk(pick('upper legs', eq)?.id, null, 3, 10, t('Same pattern, higher reps than day A.')),
+        mk(pick('shoulders', eq)?.id, null, 3, 10, t('Vertical pressing.')),
+        mk(pick('upper arms', eq)?.id, null, 3, 12, t('Direct arm work, since you asked for it.'))
       ].filter(e => e.id)
     }
   ]
@@ -108,11 +109,11 @@ function buildPlan(S, intake) {
   return {
     id: 'demo-plan', kind: 'create', createdAt: Date.now(), expiresAt: Date.now() + 864e5, iteration: 1,
     planHash: planHash(S),
-    summary: t("A_TWO_DAY_ROTATION_ACROSS_THREE_SESSIONS_A_WEEK_BUILT_AROUND_THE" /* 根据你列出的器械，安排为每周三次训练、两天轮换。先做复合动作，每个推配一个拉，并让两天之间有足够的重叠，确保任何部位都不会两周得不到训练。 */),
+    summary: t('A two-day rotation across three sessions a week, built around the equipment you listed. Compounds first, one pull for every press, and enough overlap between the days that nothing goes two weeks without being trained.'),
     bundle: {
-      opengym_plan: 1, name: t("COACH_PLAN" /* 教练计划 */),
-      summary: t("A_TWO_DAY_ROTATION_ACROSS_THREE_SESSIONS_A_WEEK_BUILT_AROUND_THE" /* 根据你列出的器械，安排为每周三次训练、两天轮换。先做复合动作，每个推配一个拉，并让两天之间有足够的重叠，确保任何部位都不会两周得不到训练。 */),
-      basedOn: (S.workouts || []).length ? t("BASED_ON_THE_TRAINING_ALREADY_IN_THIS_DEMO_PROFILE" /* 基于此演示档案中已有的训练。 */) : t("NO_TRAINING_HISTORY_YET_SO_STARTING_CONSERVATIVELY" /* 还没有训练记录，所以先保守开始。 */),
+      opengym_plan: 1, name: t('Coach plan'),
+      summary: t('A two-day rotation across three sessions a week, built around the equipment you listed. Compounds first, one pull for every press, and enough overlap between the days that nothing goes two weeks without being trained.'),
+      basedOn: (S.workouts || []).length ? t('Based on the training already in this demo profile.') : t('No training history yet, so starting conservatively.'),
       week, routines, customEx: []
     }
   }
@@ -136,19 +137,19 @@ function buildDebrief(S, workoutId) {
   const complete = planned > 0 && done >= planned
   const score = complete ? (prs ? 9 : 8) : 7
   const highlights = [
-    complete ? t("EVERY_PLANNED_SET_DONE_COUNT_OF_COUNT" /* 计划的组全部完成：{0}/{1}。 */, done, planned) : t("COUNT_OF_COUNT_PLANNED_SETS_DONE" /* 计划的 {1} 组已完成 {0} 组。 */, done, planned),
-    t("COUNT_COUNT_MOVED_IN_TOTAL" /* 总共举起 {0} {1}。 */, fmtNum(vol), S.unit)
+    complete ? t('Every planned set done: {0} of {1}.', done, planned) : t('{0} of {1} planned sets done.', done, planned),
+    t('{0} {1} moved in total.', fmtNum(vol), S.unit)
   ]
-  if (prs) highlights.push(t("COUNT_NEW_PERSONAL_RECORDS" /* {0} 项新个人纪录。 */, prs))
-  const watch = minutes && minutes > 80 ? [t("COUNT_MINUTES_IS_LONG_REST_PERIODS_MAY_BE_CREEPING_UP" /* {0} 分钟有点长了。组间休息可能在悄悄变长。 */, minutes)] : [t("TOP_SETS_LOGGED_WITHOUT_AN_EFFORT_RATING_ADD_RIR_SO_THE_NEXT" /* 主要组没有记录费力程度；加上 RIR，下次审查才知道有多吃力。 */)]
-  const nextTime = [complete ? t("ADD_THE_NEXT_LOAD_STEP_ON_THE_MAIN_LIFT" /* 主项动作加到下一个重量档。 */) : t("REPEAT_THE_SAME_LOADS_AND_GET_EVERY_SET" /* 重复同样的重量，完成每一组。 */), t("KEEP_THE_SESSION_UNDER_AN_HOUR_AND_A_QUARTER" /* 把训练控制在一小时一刻钟以内。 */)]
+  if (prs) highlights.push(t('{0} new personal records.', prs))
+  const watch = minutes && minutes > 80 ? [t('{0} minutes is long. Rest periods may be creeping up.', minutes)] : [t('Top sets logged without an effort rating; add RIR so the next review can read how hard they were.')]
+  const nextTime = [complete ? t('Add the next load step on the main lift.') : t('Repeat the same loads and get every set.'), t('Keep the session under an hour and a quarter.')]
   return {
     id: 'demo-debrief', kind: 'debrief', createdAt: Date.now(), expiresAt: Date.now() + 864e5,
     planHash: planHash(S), iteration: 1,
     workout: { id: w.id, d: w.d, name: w.name || null, minutes, vol, sets: done, prs },
     summary: complete
-      ? t("A_CLEAN_SESSION_EVERYTHING_ON_THE_SHEET_GOT_DONE_AND_THE_LOADS" /* 一次干净的训练：计划上的都完成了，重量也守住了。从内部看，进步就是这个样子：平淡无奇，一再重复。 */)
-      : t("MOST_OF_THE_WORK_GOT_DONE_ONE_OR_TWO_SETS_FELL_SHORT" /* 大部分都完成了。有一两组没达标，偶尔一次没关系。如果下次同样的组还没做到，那才是信号。 */),
+      ? t('A clean session: everything on the sheet got done and the loads held. This is exactly what progress looks like from the inside: unremarkable, repeated.')
+      : t('Most of the work got done. One or two sets fell short, which is fine once. It only becomes a signal if the same sets miss next time.'),
     score, highlights, watch, nextTime
   }
 }
@@ -171,7 +172,7 @@ export function demoCohort(S) {
 export const demoStatus = () => ({ job, pending, cap: { used: 0, limit: 0 }, lastError })
 
 function start(kind, make) {
-  if (job) throw Object.assign(new Error(t("THE_COACH_IS_ALREADY_THINKING_ABOUT_YOUR_TRAINING" /* 教练已经在思考你的训练了。 */)), { status: 409 })
+  if (job) throw Object.assign(new Error(t('The Coach is already thinking about your training.')), { status: 409 })
   job = { id: 'demo-' + kind, kind, state: 'running', startedAt: Date.now() }
   lastError = null
   clearTimeout(timer)
@@ -191,7 +192,7 @@ export const demoReview = S => {
   // Refused before the job starts, the way demoDebrief refuses with no workout: without a
   // two-exercise routine buildReview has nothing to aim at, and a job that runs the whole wait
   // and ends with neither a proposal nor an error reads as the Coach ignoring you.
-  if (!reviewable(S)) throw Object.assign(new Error(t("THERE_S_NO_ROUTINE_TO_REVIEW_YET_BUILD_ONE_WITH_AT_LEAST" /* 还没有可点评的训练计划。先创建一个至少包含两个动作的计划。 */)), { status: 409, code: 'noroutine' })
+  if (!reviewable(S)) throw Object.assign(new Error(t('There’s no routine to review yet. Build one with at least two exercises first.')), { status: 409, code: 'noroutine' })
   return start('review', () => buildReview(S))
 }
 export const demoPlan = (S, intake) => start('create', () => buildPlan(S, intake))
@@ -200,14 +201,45 @@ export const demoPlan = (S, intake) => start('create', () => buildPlan(S, intake
 // went back to Mon/Wed/Fri whatever days were chosen at intake.
 export const demoRefine = S => start('create', () => {
   const p = buildPlan(S, S.coach?.profile || null)
-  return { ...p, iteration: (pending?.iteration || 1) + 1, summary: t("REVISED_AS_YOU_ASKED_EVERYTHING_YOU_DID_NOT_QUESTION_IS_EXACTLY_AS" /* 已按你的要求修改。你没有提出疑问的部分完全保持原样。 */) + ' ' + p.summary }
+  return { ...p, iteration: (pending?.iteration || 1) + 1, summary: t('Revised as you asked. Everything you did not question is exactly as it was.') + ' ' + p.summary }
 })
 export const demoDebrief = (S, workoutId) => {
-  if (!(S.workouts || []).some(w => w && w.d)) throw Object.assign(new Error(t("THERE_S_NO_WORKOUT_TO_LOOK_AT_YET_LOG_ONE_FIRST" /* 还没有可查看的训练。先记录一次吧。 */)), { status: 409, code: 'noworkout' })
+  if (!(S.workouts || []).some(w => w && w.d)) throw Object.assign(new Error(t('There’s no workout to look at yet. Log one first.')), { status: 409, code: 'noworkout' })
   return start('debrief', () => buildDebrief(S, workoutId))
 }
-export const demoResolve = () => { pending = null; return { ok: true } }
+// The demo has no model behind it: a question gets a sample answer that says so.
+export const demoAsk = (S, text) => start('ask', () => ({
+  id: 'demo-ask-' + Date.now().toString(36), kind: 'ask', createdAt: Date.now(), expiresAt: Date.now() + 864e5,
+  planHash: planHash(S), iteration: 1, prev: waitingProposal(pending),
+  answer: t('This is the demo, so there is no AI model behind me. On your own server I answer questions like “{0}” with your plan, your last sessions and the workout you are doing right now.', String(text || '').slice(0, 80)),
+}))
+// "Ask the Coach" mid-workout: a canned answer aimed at the exercise asked about, with the same
+// change types and fields a real one carries, so ticking and applying them runs the real code.
+export const demoAdapt = (S, { today, entry, reason, activeId } = {}) => start('adapt', () => {
+  const en = today?.entries?.[entry]
+  const open = (en?.sets || []).filter(x => !x.warmup && !x.done).length
+  const name = EXIDX[en?.id]?.n || ''
+  const inSession = new Set((today?.entries || []).map(e => e.id))
+  const like = EXDB.find(e => e.tg === EXIDX[en?.id]?.tg && e.id !== en?.id && !inSession.has(e.id) && /dumbbell|cable|lever/.test(e.eq || ''))
+  const at = { entry, exId: en?.id }
+  const changes = !en || !open ? []
+    : reason === 'pain' ? [
+      ...(like ? [{ id: 'a0', type: 'swap', ...at, to: like.id, toName: like.n, why: t('It pinches, so the sets you have left go to a movement that loads the same muscle from a kinder angle.') }]
+        : [{ id: 'a0', type: 'weight', ...at, pct: -20, why: t('It pinches, so lighter for the rest of it. Stop if it still hurts.') }]),
+    ]
+      : reason === 'great' ? [{ id: 'a0', type: 'weight', ...at, pct: 5, why: t('You feel strong, so a little more on the bar for what is left. Not a new max, just a nudge.') }]
+        : reason === 'busy' && !(en.sets || []).some(x => x.done) ? [{ id: 'a0', type: 'move', ...at, place: 'last', why: t('The rack is taken, so do it at the end. The rest of the session does not need it.') }]
+          : [{ id: 'a0', type: 'sets', ...at, sets: Math.max(0, open - 1), before: open, why: t('One set less keeps the session doable today and still counts.') }]
+  return {
+    id: 'demo-adapt-' + Date.now().toString(36), kind: 'adapt', createdAt: Date.now(), expiresAt: Date.now() + 864e5,
+    planHash: planHash(S), iteration: 1, prev: waitingProposal(pending), activeId: activeId || null,
+    focus: en ? { entry, exId: en.id, name, reason: reason || 'other' } : null,
+    summary: t('This is the demo, so there is no AI model behind me. On your own server I read your session and suggest changes like these.'),
+    changes,
+  }
+})
+export const demoResolve = () => { pending = pending?.kind === 'ask' || pending?.kind === 'adapt' ? waitingProposal(pending.prev) : null; return { ok: true } }
 export const demoDisclosure = () => ({
-  provider: 'demo', providerLabel: t("THE_CONFIGURED_AI_PROVIDER" /* 已配置的 AI 提供方 */),
+  provider: 'demo', providerLabel: t('the configured AI provider'),
   categories: ['plan', 'training', 'bodyweight', 'profile', 'prefs'], version: 1
 })

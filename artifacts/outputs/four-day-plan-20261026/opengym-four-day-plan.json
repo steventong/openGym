@@ -1,0 +1,340 @@
+{
+  "opengym_plan": 1,
+  "exported": "2026-10-26",
+  "name": "上半身优先四练 · 4–6周起始方案",
+  "unit": "kg",
+  "week": {
+    "1": [
+      "upper-a"
+    ],
+    "3": [
+      "lower-base"
+    ],
+    "5": [
+      "upper-b"
+    ],
+    "6": [
+      "weekend"
+    ]
+  },
+  "routines": [
+    {
+      "id": "upper-a",
+      "name": "上肢 A · 胸背基础",
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "0289",
+          "mode": "reps",
+          "sets": 3,
+          "reps": 12,
+          "repsMin": 8,
+          "weight": 15,
+          "restSec": 150,
+          "prog": "double",
+          "lastToFailure": false,
+          "dbLoad": "each",
+          "note": "目标每组8–12次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量按每只哑铃记录。所填重量仅为试练起点，按当日状态调整。先热身5–8分钟，再做递增热身组；热身不计入正式组。"
+        },
+        {
+          "id": "2661",
+          "mode": "reps",
+          "sets": 3,
+          "reps": 12,
+          "repsMin": 8,
+          "weight": 40,
+          "restSec": 150,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组8–12次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。所填重量仅为试练起点，按当日状态调整。参考Peak同台器械；换器械重新校准。"
+        },
+        {
+          "id": "1047",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 40,
+          "restSec": 120,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。所填重量仅为试练起点，按当日状态调整。参考Peak同台器械；换器械重新校准。"
+        },
+        {
+          "id": "0334",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 20,
+          "repsMin": 12,
+          "weight": 5,
+          "restSec": 75,
+          "prog": "double",
+          "lastToFailure": false,
+          "dbLoad": "each",
+          "note": "目标每组12–20次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量按每只哑铃记录。所填重量仅为试练起点，按当日状态调整。"
+        },
+        {
+          "id": "0200",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 0,
+          "restSec": 75,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。"
+        },
+        {
+          "id": "0318",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 7.5,
+          "restSec": 90,
+          "prog": "double",
+          "lastToFailure": false,
+          "dbLoad": "each",
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量按每只哑铃记录。所填重量仅为试练起点，按当日状态调整。"
+        }
+      ],
+      "prog": "double"
+    },
+    {
+      "id": "lower-base",
+      "name": "下肢基础 · 腿部与核心",
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "2267",
+          "mode": "reps",
+          "sets": 3,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 0,
+          "restSec": 150,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。先热身及递增热身组；选用熟悉的坐姿腿举机，换器械重新校准。"
+        },
+        {
+          "id": "1459",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 12,
+          "repsMin": 8,
+          "weight": 20,
+          "restSec": 150,
+          "prog": "double",
+          "lastToFailure": false,
+          "dbLoad": "each",
+          "note": "目标每组8–12次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量按每只哑铃记录。所填重量仅为试练起点，按当日状态调整。保持髋铰链，控制下降，按能保持稳定动作的幅度完成。"
+        },
+        {
+          "id": "0599",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 0,
+          "restSec": 90,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。"
+        },
+        {
+          "id": "0605",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 20,
+          "repsMin": 12,
+          "weight": 0,
+          "restSec": 75,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组12–20次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。"
+        },
+        {
+          "id": "9819",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 0,
+          "restSec": 75,
+          "prog": "off",
+          "lastToFailure": false,
+          "bodyweight": true,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。先以自重完成，避免摆动。"
+        }
+      ],
+      "prog": "double"
+    },
+    {
+      "id": "upper-b",
+      "name": "上肢 B · 胸背与肩",
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "0314",
+          "mode": "reps",
+          "sets": 3,
+          "reps": 12,
+          "repsMin": 8,
+          "weight": 10,
+          "restSec": 150,
+          "prog": "double",
+          "lastToFailure": false,
+          "dbLoad": "each",
+          "note": "目标每组8–12次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量按每只哑铃记录。所填重量仅为试练起点，按当日状态调整。凳角约15–30度；新增动作先轻重量熟悉，做递增热身组。"
+        },
+        {
+          "id": "1047",
+          "mode": "reps",
+          "sets": 3,
+          "reps": 12,
+          "repsMin": 8,
+          "weight": 40,
+          "restSec": 150,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组8–12次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。所填重量仅为试练起点，按当日状态调整。参考Peak同台器械；换器械重新校准。"
+        },
+        {
+          "id": "0576",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 0,
+          "restSec": 120,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。"
+        },
+        {
+          "id": "2661",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 40,
+          "restSec": 120,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。所填重量仅为试练起点，按当日状态调整。参考Peak同台器械；换器械重新校准。"
+        },
+        {
+          "id": "0404",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 12,
+          "repsMin": 8,
+          "weight": 10,
+          "restSec": 120,
+          "prog": "double",
+          "lastToFailure": false,
+          "dbLoad": "each",
+          "note": "目标每组8–12次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量按每只哑铃记录。所填重量仅为试练起点，按当日状态调整。坐姿平行握，沿用熟悉的握法。"
+        },
+        {
+          "id": "0200",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 0,
+          "restSec": 75,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。"
+        }
+      ],
+      "prog": "double"
+    },
+    {
+      "id": "weekend",
+      "name": "周末补充 · 腿肩臂",
+      "emoji": "barbell",
+      "ex": [
+        {
+          "id": "2267",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 0,
+          "restSec": 150,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。周六或周日选一天；先热身，沿用周三同台器械及合适负荷。"
+        },
+        {
+          "id": "0599",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 0,
+          "restSec": 90,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。"
+        },
+        {
+          "id": "0334",
+          "mode": "reps",
+          "sets": 3,
+          "reps": 20,
+          "repsMin": 12,
+          "weight": 5,
+          "restSec": 75,
+          "prog": "double",
+          "lastToFailure": false,
+          "dbLoad": "each",
+          "note": "目标每组12–20次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量按每只哑铃记录。所填重量仅为试练起点，按当日状态调整。肩部未恢复或热身表现下降时减一组。"
+        },
+        {
+          "id": "0602",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 20,
+          "repsMin": 12,
+          "weight": 0,
+          "restSec": 75,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组12–20次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。肩部未恢复时减一组；不强求做到力竭。"
+        },
+        {
+          "id": "0294",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 7.5,
+          "restSec": 90,
+          "prog": "double",
+          "lastToFailure": false,
+          "dbLoad": "each",
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量按每只哑铃记录。所填重量仅为试练起点，按当日状态调整。若周日练且影响周一表现，可减一组。"
+        },
+        {
+          "id": "1452",
+          "mode": "reps",
+          "sets": 2,
+          "reps": 15,
+          "repsMin": 10,
+          "weight": 0,
+          "restSec": 75,
+          "prog": "double",
+          "lastToFailure": false,
+          "note": "目标每组10–15次；保留约2次余力，前两周可保留2–3次。所有组达到上限且动作稳定后，再增加最小可用重量。重量尚待首练校准，0不代表要求空载；选择可在范围内完成且保留余力的重量。"
+        }
+      ],
+      "prog": "double"
+    }
+  ],
+  "customEx": []
+}

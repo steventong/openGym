@@ -270,6 +270,14 @@ describe('AdminCoach — removing the stored credential (irreversible: the key i
     expect(sent('/api/admin/coach/disconnect')).toHaveLength(before + 1)
     expect(mocks.toast).toHaveBeenCalledWith('Credential removed')
   })
+
+  // The button wore `danger` as a bare prop, which Button handed to the DOM as an attribute:
+  // no red, and a React warning on every render.
+  it('the Remove button itself is red, like every other destructive button', async () => {
+    await mount()
+    expect(btn('Remove').classList.contains('danger')).toBe(true)
+    expect(btn('Remove').hasAttribute('danger')).toBe(false)
+  })
 })
 
 describe('AdminCoach — switching provider', () => {
@@ -681,11 +689,11 @@ describe('AdminCoach — what the card refuses to show', () => {
       ],
     })
     await mount()
-    expect(host.textContent).toContain('now')
-    expect(host.textContent).toContain('added 3 days ago')
+    expect(host.textContent).toContain('just now')
+    expect(host.textContent).toContain('added 3 d ago')
     const rows = [...host.querySelectorAll('.adm-log-row')].map(r => r.textContent)
-    expect(rows[0]).toContain('5 minutes ago')
-    expect(rows[1]).toContain('3 hours ago')
+    expect(rows[0]).toContain('5 min ago')
+    expect(rows[1]).toContain('3 h ago')
     expect(rows[1]).not.toContain(' s')    // ms: 0 must not print "0 s"
 
     mocks.routes['/api/admin/coach'] = status({ lastSuccess: null })

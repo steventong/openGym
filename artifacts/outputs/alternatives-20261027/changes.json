@@ -1,0 +1,347 @@
+[
+  {
+    "routine": "上肢 A · 胸背基础",
+    "exerciseId": "0289",
+    "exercise": "dumbbell bench press",
+    "alternatives": [
+      {
+        "id": "0576",
+        "name": "lever chest press"
+      },
+      {
+        "id": "0662",
+        "name": "push-up"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 A · 胸背基础",
+    "exerciseId": "2661",
+    "exercise": "cable seated row with v bar",
+    "alternatives": [
+      {
+        "id": "1350",
+        "name": "lever seated row"
+      },
+      {
+        "id": "0293",
+        "name": "dumbbell bent over row"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 A · 胸背基础",
+    "exerciseId": "1047",
+    "exercise": "cable close grip front lat pulldown",
+    "alternatives": [
+      {
+        "id": "0579",
+        "name": "lever front pulldown"
+      },
+      {
+        "id": "0017",
+        "name": "assisted pull-up"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 A · 胸背基础",
+    "exerciseId": "0334",
+    "exercise": "dumbbell lateral raise",
+    "alternatives": [
+      {
+        "id": "0584",
+        "name": "lever lateral raise"
+      },
+      {
+        "id": "0192",
+        "name": "cable one arm lateral raise"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 A · 胸背基础",
+    "exerciseId": "0200",
+    "exercise": "cable pushdown (with rope attachment)",
+    "alternatives": [
+      {
+        "id": "0351",
+        "name": "dumbbell lying triceps extension"
+      },
+      {
+        "id": "0607",
+        "name": "lever triceps extension"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 A · 胸背基础",
+    "exerciseId": "0318",
+    "exercise": "dumbbell incline curl",
+    "alternatives": [
+      {
+        "id": "0294",
+        "name": "dumbbell biceps curl"
+      },
+      {
+        "id": "0031",
+        "name": "barbell curl"
+      }
+    ]
+  },
+  {
+    "routine": "下肢基础 · 腿部与核心",
+    "exerciseId": "2267",
+    "exercise": "lever seated leg press",
+    "alternatives": [
+      {
+        "id": "8375",
+        "name": "lever angled leg press"
+      },
+      {
+        "id": "1760",
+        "name": "dumbbell goblet squat"
+      }
+    ]
+  },
+  {
+    "routine": "下肢基础 · 腿部与核心",
+    "exerciseId": "1459",
+    "exercise": "dumbbell romanian deadlift",
+    "alternatives": [
+      {
+        "id": "0085",
+        "name": "barbell romanian deadlift"
+      },
+      {
+        "id": "0196",
+        "name": "cable pull through (with rope)"
+      }
+    ]
+  },
+  {
+    "routine": "下肢基础 · 腿部与核心",
+    "exerciseId": "0599",
+    "exercise": "lever seated leg curl",
+    "alternatives": [
+      {
+        "id": "0586",
+        "name": "lever lying leg curl"
+      },
+      {
+        "id": "5036",
+        "name": "exercise ball leg curl"
+      }
+    ]
+  },
+  {
+    "routine": "下肢基础 · 腿部与核心",
+    "exerciseId": "0605",
+    "exercise": "lever standing calf raise",
+    "alternatives": [
+      {
+        "id": "0417",
+        "name": "dumbbell standing calf raise"
+      },
+      {
+        "id": "0594",
+        "name": "lever seated calf raise"
+      }
+    ]
+  },
+  {
+    "routine": "下肢基础 · 腿部与核心",
+    "exerciseId": "9819",
+    "exercise": "hanging knee raise",
+    "alternatives": [
+      {
+        "id": "0872",
+        "name": "reverse crunch"
+      },
+      {
+        "id": "1163",
+        "name": "lying leg raise"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 B · 胸背与肩",
+    "exerciseId": "0314",
+    "exercise": "dumbbell incline bench press",
+    "alternatives": [
+      {
+        "id": "1299",
+        "name": "lever incline chest press"
+      },
+      {
+        "id": "0757",
+        "name": "smith incline bench press"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 B · 胸背与肩",
+    "exerciseId": "1047",
+    "exercise": "cable close grip front lat pulldown",
+    "alternatives": [
+      {
+        "id": "0579",
+        "name": "lever front pulldown"
+      },
+      {
+        "id": "0017",
+        "name": "assisted pull-up"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 B · 胸背与肩",
+    "exerciseId": "0576",
+    "exercise": "lever chest press",
+    "alternatives": [
+      {
+        "id": "0289",
+        "name": "dumbbell bench press"
+      },
+      {
+        "id": "0662",
+        "name": "push-up"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 B · 胸背与肩",
+    "exerciseId": "2661",
+    "exercise": "cable seated row with v bar",
+    "alternatives": [
+      {
+        "id": "1350",
+        "name": "lever seated row"
+      },
+      {
+        "id": "0293",
+        "name": "dumbbell bent over row"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 B · 胸背与肩",
+    "exerciseId": "0404",
+    "exercise": "dumbbell seated shoulder press (parallel grip)",
+    "alternatives": [
+      {
+        "id": "2962",
+        "name": "lever seated hammer grip shoulder press"
+      },
+      {
+        "id": "0427",
+        "name": "dumbbell standing palms in press"
+      }
+    ]
+  },
+  {
+    "routine": "上肢 B · 胸背与肩",
+    "exerciseId": "0200",
+    "exercise": "cable pushdown (with rope attachment)",
+    "alternatives": [
+      {
+        "id": "0351",
+        "name": "dumbbell lying triceps extension"
+      },
+      {
+        "id": "0607",
+        "name": "lever triceps extension"
+      }
+    ]
+  },
+  {
+    "routine": "周末补充 · 腿肩臂",
+    "exerciseId": "2267",
+    "exercise": "lever seated leg press",
+    "alternatives": [
+      {
+        "id": "8375",
+        "name": "lever angled leg press"
+      },
+      {
+        "id": "1760",
+        "name": "dumbbell goblet squat"
+      }
+    ]
+  },
+  {
+    "routine": "周末补充 · 腿肩臂",
+    "exerciseId": "0599",
+    "exercise": "lever seated leg curl",
+    "alternatives": [
+      {
+        "id": "0586",
+        "name": "lever lying leg curl"
+      },
+      {
+        "id": "5036",
+        "name": "exercise ball leg curl"
+      }
+    ]
+  },
+  {
+    "routine": "周末补充 · 腿肩臂",
+    "exerciseId": "0334",
+    "exercise": "dumbbell lateral raise",
+    "alternatives": [
+      {
+        "id": "0584",
+        "name": "lever lateral raise"
+      },
+      {
+        "id": "0192",
+        "name": "cable one arm lateral raise"
+      }
+    ]
+  },
+  {
+    "routine": "周末补充 · 腿肩臂",
+    "exerciseId": "0602",
+    "exercise": "lever seated reverse fly",
+    "alternatives": [
+      {
+        "id": "0383",
+        "name": "dumbbell reverse fly"
+      },
+      {
+        "id": "0225",
+        "name": "cable standing cross-over high reverse fly"
+      }
+    ]
+  },
+  {
+    "routine": "周末补充 · 腿肩臂",
+    "exerciseId": "0294",
+    "exercise": "dumbbell biceps curl",
+    "alternatives": [
+      {
+        "id": "0031",
+        "name": "barbell curl"
+      },
+      {
+        "id": "0868",
+        "name": "cable curl"
+      }
+    ]
+  },
+  {
+    "routine": "周末补充 · 腿肩臂",
+    "exerciseId": "1452",
+    "exercise": "lever seated crunch",
+    "alternatives": [
+      {
+        "id": "0175",
+        "name": "cable kneeling crunch"
+      },
+      {
+        "id": "0274",
+        "name": "crunch floor"
+      }
+    ]
+  }
+]

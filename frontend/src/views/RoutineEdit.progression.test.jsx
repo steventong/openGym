@@ -1,4 +1,3 @@
-import { t } from '../lib/i18n-core.js'
 // @vitest-environment happy-dom
 // Issue #294: "Progression" (with its "No automatic progression" choice) and the switch below it
 // read like two settings for the same thing. They are not, and the screen now says how.
@@ -57,11 +56,11 @@ describe('routine progression wording (#294)', () => {
 
   it('says under the section what the chosen progression does, "no automatic progression" included', () => {
     renderRoutine({ prog: 'off' })
-    expect(note()).toBe(t(POLICY_DESC.off) + ' Applies to every exercise in this routine that does not set its own rule.')
+    expect(note()).toBe(POLICY_DESC.off + ' Applies to every exercise in this routine that does not set its own rule.')
     act(() => root.unmount())
     container.remove()
     renderRoutine({})
-    expect(note().startsWith(t(POLICY_DESC.linear))).toBe(true)
+    expect(note().startsWith(POLICY_DESC.linear)).toBe(true)
   })
 
   it('once it is a deload routine, says the progression choice does not apply to it', () => {

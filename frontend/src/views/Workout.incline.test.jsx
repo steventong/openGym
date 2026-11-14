@@ -86,11 +86,11 @@ describe('the incline column', () => {
 
   it('has its own stepper in the focus view', () => {
     mount(TREADMILL, [{ min: 20, speed: 5, incline: 4, done: false }], { workoutView: 'focus' })
-    const inc = container.querySelector('[data-stepper="incline"] button[aria-label="Increase"]')
+    const inc = container.querySelector('button[aria-label="Increase incline"]')
     expect(inc).not.toBe(null)
     act(() => inc.click())
     expect(stored().incline).toBe(4.5)
     mount(BIKE, [{ min: 20, speed: 25, done: false }], { workoutView: 'focus' })
-    expect(container.querySelector('[data-stepper="incline"] button[aria-label="Increase"]')).toBe(null)
+    expect(container.querySelector('button[aria-label="Increase incline"]')).toBe(null)
   })
 })

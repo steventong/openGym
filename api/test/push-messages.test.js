@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { dayReminderPush, restTimerPush, testPush } from '../push-messages.js';
+import { dayReminderPush, restTimerPush, routineEmoji, testPush } from '../push-messages.js';
 
 test('localizes every server-generated notification in pt-BR', () => {
   assert.deepEqual(restTimerPush('pt-BR'), {
@@ -26,8 +26,25 @@ test('keeps the existing English copy as the fallback', () => {
   assert.equal(testPush(undefined).body, 'Test notification ✅ This is what alerts look like.');
 });
 
-test('Chinese rest and workout notifications come from the shared copy', () => {
-  assert.deepEqual(restTimerPush('zh'), { title: '休息结束', body: '准备好后开始下一组。', tag: 'rest-timer' });
-  assert.equal(dayReminderPush('zh', { name: '上肢 A', emoji: '💪' }).title, '💪 今天训练：上肢 A');
-  assert.match(testPush('zh').body, /测试通知/);
+// Routines stopped storing a literal emoji when the glyph picker landed: `emoji` now holds an
+// icon key the app renders as an SVG. A notification has no SVG, so before this the reminder
+// read "dumbbell Push today" — the key's own name, on the lock screen.
+test('renders a routine glyph key as an emoji, never as its name', () => {
+  assert.equal(routineEmoji('dumbbell'), '🏋️');
+  assert.equal(routineEmoji('figureRun'), '🏃');
+  assert.equal(routineEmoji('legs'), '🦵');
+  assert.equal(
+    dayReminderPush('pt-BR', { name: 'Costas e Bíceps', emoji: 'dumbbell' }).title,
+    '🏋️ Costas e Bíceps hoje',
+  );
+});
+
+test('leaves a literal emoji alone and falls back for anything else', () => {
+  assert.equal(routineEmoji('💪'), '💪');
+  assert.equal(routineEmoji('🏋️‍♀️'), '🏋️‍♀️');
+  // An icon key the picker no longer offers is still ASCII, so it falls back to the default
+  // rather than reaching the phone as a word.
+  assert.equal(routineEmoji('trophy'), '🏋️');
+  assert.equal(routineEmoji(''), '🏋️');
+  assert.equal(routineEmoji(undefined), '🏋️');
 });

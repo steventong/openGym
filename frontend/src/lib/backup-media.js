@@ -22,6 +22,7 @@ import { referencedFiles, normalizeMediaRef, workoutMediaOf, cleanUrl, MEDIA_MIM
 import { sniffKind } from './media-sniff.js'
 import { sha256Hex } from './sha256.js'
 import { mediaStore } from './media-store.js'
+import { setVideosOf } from './set-videos.js'
 import { DEFAULT_LIMITS, MB } from './media-limits.js'
 import { t } from './i18n-core.js'
 
@@ -41,7 +42,7 @@ Do not unpack and re-zip it: the app reads zips that are stored, not compressed.
 `
 
 /** The media refs and links of an imported state — each custom exercise's picture and link, each
- *  logged workout's photos and videos — kept only where they pass the same checks as anywhere
+ *  logged workout's photos and videos, each set's form video — kept only where they pass the same checks as anywhere
  *  else (a workout's list also deduplicated, but not capped: workoutMediaOf caps what shows);
  *  the rest of the state is left as it is. Mutates and returns it. */
 export function sanitizeCustomMedia(state) {
@@ -51,7 +52,16 @@ export function sanitizeCustomMedia(state) {
     if ('url' in c) { const u = cleanUrl(c.url); if (u) c.url = u; else delete c.url }
   }
   for (const w of Array.isArray(state?.workouts) ? state.workouts : []) {
-    if (!w || typeof w !== 'object' || !('media' in w)) continue
+    if (!w || typeof w !== 'object') continue
+    // A set's form video (lib/set-videos.js): the same checks, one video per set.
+    for (const e of Array.isArray(w.entries) ? w.entries : []) {
+      for (const st of Array.isArray(e?.sets) ? e.sets : []) {
+        if (!st || typeof st !== 'object' || !('media' in st)) continue
+        const v = setVideosOf(st)
+        if (v.length) st.media = v; else delete st.media
+      }
+    }
+    if (!('media' in w)) continue
     // Every ref that passes, not only the ones shown: a file with more than the cap keeps them
     // all, and the workout shows the first WORKOUT_MEDIA_MAX as it would anywhere else.
     const list = workoutMediaOf(w, Infinity)
@@ -90,9 +100,9 @@ const notBackup = () => Object.assign(new Error('not an openGym backup'), { code
  * a developer ('not-zip', a JSON.parse complaint) and used to be toasted as they were.
  */
 export function backupImportError(e) {
-  if (e?.code === 'compressed') return t("THAT_ZIP_WAS_REPACKED_IMPORT_THE_ORIGINAL_BACKUP_FILE" /* 这个 zip 被重新打包过。请导入原始备份文件。 */)
-  if (e?.code === 'not-backup' || e?.code === 'not-zip' || e?.code === 'encrypted' || e instanceof SyntaxError) return t("THAT_FILE_ISN_T_AN_OPENGYM_BACKUP" /* 这个文件不是 openGym 备份。 */)
-  return t("COULDN_T_READ_THAT_FILE" /* 无法读取这个文件。 */)
+  if (e?.code === 'compressed') return t('That zip was repacked. Import the original backup file.')
+  if (e?.code === 'not-backup' || e?.code === 'not-zip' || e?.code === 'encrypted' || e instanceof SyntaxError) return t('That file isn’t an openGym backup.')
+  return t('Couldn’t read that file.')
 }
 
 /**

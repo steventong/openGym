@@ -46,10 +46,14 @@ export function fmtDuration(sec, { off = null } = {}) {
  */
 export function durationText(sec, { off = null } = {}) {
   const { m, s } = splitDuration(sec)
-  if (!m && !s) return off != null ? off : tn("COUNT_SECOND" /* {0} 秒 */, "COUNT_SECONDS" /* {0} 秒 */, 0)
-  return [m ? tn("COUNT_MINUTE" /* {0} 分钟 */, "COUNT_MINUTES" /* {0} 分钟 */, m) : null, s ? tn("COUNT_SECOND" /* {0} 秒 */, "COUNT_SECONDS" /* {0} 秒 */, s) : null]
+  if (!m && !s) return off != null ? off : tn('{0} second', '{0} seconds', 0)
+  return [m ? tn('{0} minute', '{0} minutes', m) : null, s ? tn('{0} second', '{0} seconds', s) : null]
     .filter(Boolean).join(' ')
 }
 
 /** The rest timer's own wording for a row or a preview: "1:30" or "Off". */
-export const fmtRest = sec => fmtDuration(sec, { off: t("OFF" /* 关 */) })
+export const fmtRest = sec => fmtDuration(sec, { off: t('Off') })
+
+/** Where a rest wheel opens (#735): on the rest of its own, else on the one that applies without
+ *  it, so the dials show the break you'd actually get instead of sitting at 0:00. */
+export const restWheelValue = (own, applies) => (own > 0 ? Math.round(own) : applies > 0 ? Math.round(applies) : 0)

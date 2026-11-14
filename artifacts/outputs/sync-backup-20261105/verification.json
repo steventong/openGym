@@ -1,0 +1,12 @@
+{
+  "tests": 105,
+  "failures": 0,
+  "testResult": "/tmp/opengym-sync-backup-tests-fixed.xcresult",
+  "localizationCheck": "passed",
+  "simulatorBackupCount": 2,
+  "sampleFile": "server-2026-11-05T01-01-11.106Z-182CA461-6E35-4389-A9A8-C53B5A67D997.json",
+  "fullResponsePreserved": true,
+  "uiInteraction": "not verified: Device Hub did not attach the booted simulator display",
+  "deviceInstall": "not performed",
+  "sourceCommit": "3134063a6e2656b449e6d0b556334602ca49d45d"
+}

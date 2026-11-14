@@ -1,0 +1,458 @@
+{
+  "status": "updated_verified",
+  "workouts": 74,
+  "counts": {
+    "PT训练": 50,
+    "自由训练": 24
+  },
+  "priorRevision": 16,
+  "revision": 17,
+  "backup": "/data/backups/notes-20261025/state-LhEb0Tg3gzidmdnz-before-mode-titles-2026-10-25T08-26-26-156Z.json",
+  "changes": [
+    {
+      "id": "iw0f9db13855ab002baa62",
+      "date": "2026-03-27",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw18dea5e212cb744f1d5f",
+      "date": "2026-03-30",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwbf84ad489b4b6a14a66b",
+      "date": "2026-04-02",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwfcb1486b0d7516d8ccd2",
+      "date": "2026-04-05",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwb1304f44d84ea0ce03ab",
+      "date": "2026-04-08",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwe7c5885cd97558b09edf",
+      "date": "2026-04-10",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw52c2ec89b1fb936ed3d0",
+      "date": "2026-04-12",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw8fce76716cf322b03472",
+      "date": "2026-04-14",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwfc3d841aba4036929d0e",
+      "date": "2026-04-15",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw509216f06f632ad4bdb8",
+      "date": "2026-04-17",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwf0d4f218982159059643",
+      "date": "2026-04-21",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw1e4fa06171b7071fd93c",
+      "date": "2026-04-22",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw96c0ad6040af53a03c08",
+      "date": "2026-04-24",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw45858b384c3543160e92",
+      "date": "2026-04-27",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw175eb64583e46483024e",
+      "date": "2026-04-28",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw1d0a7c0c8f9e43d68b33",
+      "date": "2026-05-05",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwd139870853feb58fe669",
+      "date": "2026-05-07",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw9d78d80aaae8e5d8a97e",
+      "date": "2026-05-08",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw90ab33901e42a1c3c76a",
+      "date": "2026-05-11",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwfa65914ad02f724e6dc9",
+      "date": "2026-05-13",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw7b298bff5e9f226952c7",
+      "date": "2026-05-15",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwac385185470a9e08b417",
+      "date": "2026-05-19",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwe3db761a5cc04f8601dd",
+      "date": "2026-05-21",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwb26a06ce516b5f092698",
+      "date": "2026-05-23",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iwb2a970881fa0c81e965f",
+      "date": "2026-05-25",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwd344a91b39d5e4141fbd",
+      "date": "2026-05-28",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iwb73cec65144a4bba9dad",
+      "date": "2026-06-04",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw76f588aa05872d9e9e1a",
+      "date": "2026-06-10",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw82e1e4d72cf6f97ea016",
+      "date": "2026-06-11",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwedabba3b93ad9f8e3edf",
+      "date": "2026-06-12",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw9a5c24229f2e0e59bc10",
+      "date": "2026-06-14",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw941417f09a00da990fe2",
+      "date": "2026-06-15",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw503681012454a68dd0b2",
+      "date": "2026-06-19",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwb3f962210663c215a6eb",
+      "date": "2026-06-23",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwe0fa2c173d2809fbb7dc",
+      "date": "2026-06-29",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw1c480f17cc952b4df013",
+      "date": "2026-07-01",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwb6975a9df042455e6738",
+      "date": "2026-07-03",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw923b65d6d25a4abd82df",
+      "date": "2026-07-06",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw55203c90c9a5be07e543",
+      "date": "2026-07-08",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw6245f5e15b2c1c232d6b",
+      "date": "2026-07-10",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwff87e190f9cabd66c4d4",
+      "date": "2026-07-22",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwb9b28cf0c5538f50a34f",
+      "date": "2026-07-30",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwa489b1398719e3d89770",
+      "date": "2026-08-05",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw81f586683b8177e31232",
+      "date": "2026-08-07",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwcceacedcdf147136b4ca",
+      "date": "2026-08-10",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwbe0a45c90e49339b8be0",
+      "date": "2026-08-11",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwdb933380dd94dd7f14b3",
+      "date": "2026-08-13",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw62297b6d3e6ba2b65199",
+      "date": "2026-08-17",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw89ae3ee16dc640905bea",
+      "date": "2026-08-19",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw17eb0430cfa073350019",
+      "date": "2026-08-21",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw5ba5b9b4ddaba7f71c71",
+      "date": "2026-08-24",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iwb9fef1137a7f08196a76",
+      "date": "2026-08-27",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw2f6949df30f8f0ab2a74",
+      "date": "2026-08-28",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw8535626bf17aa4ebdb99",
+      "date": "2026-08-31",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw7561565cf241d1b4afda",
+      "date": "2026-09-02",
+      "before": "历史训练",
+      "after": "PT训练"
+    },
+    {
+      "id": "iw99f6936dff7a6cadfc61",
+      "date": "2026-09-05",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw5857b609e66c9982365b",
+      "date": "2026-09-07",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw4946a2647c1e548c41f6",
+      "date": "2026-09-09",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw465a30ac6e3d8347165b",
+      "date": "2026-09-12",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw2fc1714caba3ee861b06",
+      "date": "2026-09-13",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iwd78268ad290a56fe741b",
+      "date": "2026-09-15",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw7c3e996e502f081ce07d",
+      "date": "2026-09-19",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw793b165011e294ded68e",
+      "date": "2026-09-21",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iwd820ffbc02d9f8c5acae",
+      "date": "2026-09-22",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iwdb072f8c6eb0f98fdddf",
+      "date": "2026-09-24",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw6ada43cd2be84715be85",
+      "date": "2026-09-29",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw5bd78fd20a4fed8be737",
+      "date": "2026-10-01",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw0c99ccf5caaac925fc02",
+      "date": "2026-10-08",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw12fb09f3e28933a15589",
+      "date": "2026-10-11",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw3e1528c1a6367cf35525",
+      "date": "2026-10-13",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw424615ee6c90b85c9678",
+      "date": "2026-10-15",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw52dc5be066d1751c4521",
+      "date": "2026-10-17",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw3ecc5f084a764cead2ac",
+      "date": "2026-10-20",
+      "before": "历史训练",
+      "after": "自由训练"
+    },
+    {
+      "id": "iw9d22a4afac2705d6b474",
+      "date": "2026-10-22",
+      "before": "历史训练",
+      "after": "自由训练"
+    }
+  ],
+  "verifiedAt": "2026-10-25T08:26:26.799Z"
+}

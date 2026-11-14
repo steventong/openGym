@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { exOr } from '../lib/exercises.js'
-import { t, exerciseNameFor, exerciseNameClass , translateValue } from '../lib/i18n.js'
+import { t, exerciseNameFor, exerciseNameClass } from '../lib/i18n.js'
 import Icon from '../components/Icon.jsx'
 import { Button, Segmented } from '../components/ui.jsx'
 import { exercisePicker, bwSheet } from '../sheets.jsx'
@@ -38,17 +38,17 @@ export default function StructuralBalance() {
   // Headed by what a pick does here, like the routine editor's Replace (#110): the picker's own
   // heading is "Add exercise".
   const changeExercise = role => {
-    const picker = exercisePicker(ex => { setOverride(role, ex.id); picker.close() }, { title: t("SWAP_EXERCISE" /* 更换动作 */) })
+    const picker = exercisePicker(ex => { setOverride(role, ex.id); picker.close() }, { title: t('Change exercise') })
   }
 
   return <>
-    <div className="hdr"><button className="iconbtn" onClick={() => nav('/stats')} aria-label={t("STATS" /* 统计 */)}><Icon name="chevronLeft" /></button>
-      <div style={{ flex: 1, marginInlineStart: 12 }}><h1>{t("STRUCTURAL_BALANCE" /* 结构平衡 */)}</h1>
-        <div className="sub">{t("COMPARE_YOUR_LIFTS_AGAINST_A_PUBLISHED_RATIO_TABLE_TO_FIND_THE_WEAK" /* 将你的动作成绩与已发布的比例表对比，找出最薄弱的环节。 */)}</div></div></div>
+    <div className="hdr"><button className="iconbtn" data-back="/stats" onClick={() => nav('/stats')} aria-label={t('Stats')}><Icon name="chevronLeft" /></button>
+      <div style={{ flex: 1, marginInlineStart: 12 }}><h1>{t('Structural balance')}</h1>
+        <div className="sub">{t('Compare your lifts against a published ratio table to find the weak link.')}</div></div></div>
 
     <Segmented className="seg-range" value={templateId}
       onChange={id => update(s => { s.balanceTemplate = id })}
-      options={TEMPLATE_LIST.map(tpl => ({ value: tpl.id, label: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(tpl.label) }))} />
+      options={TEMPLATE_LIST.map(tpl => ({ value: tpl.id, label: t(tpl.label) }))} />
 
     <div className="card">
       {results.map(r => {
@@ -69,26 +69,26 @@ export default function StructuralBalance() {
                   a label is cut off mid-word instead, and what goes is its reps and "each hand" —
                   what the standard asks for. So here the name wraps. */}
               <span className="nm" style={{ minWidth: 0, whiteSpace: 'normal', overflowWrap: 'anywhere' }}>
-                <span style={{ display: 'block' }}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(role.label)}</span>
+                <span style={{ display: 'block' }}>{t(role.label)}</span>
                 <span className="small dim" style={{ display: 'block' }}>
-                  <span className={exId ? exerciseNameClass(exOr(exId)) : ''} data-exercise-name>{name}</span>{r.isOverridden ? ` · ${t("CUSTOM_A" /* 自定义 */)}` : ''}
+                  <span className={exId ? exerciseNameClass(exOr(exId)) : ''} data-exercise-name>{name}</span>{r.isOverridden ? ` · ${t('Custom')}` : ''}
                 </span>
                 {r.needsBodyweight && <span className="small" data-needs-bodyweight style={{ display: 'block', color: 'var(--label-2)' }}>
-                  {t("LOG_YOUR_BODY_WEIGHT_TO_SCORE_THIS_LIFT" /* 记录你的体重以评估这个动作。 */)}
+                  {t('Log your body weight to score this lift.')}
                 </span>}
                 {r.needsAnchor && <span className="small" data-needs-anchor style={{ display: 'block', color: 'var(--label-2)' }}>
-                  {t("LOG_THE_ANCHOR_LIFT_TO_SCORE_THIS_ONE" /* 记录锚点动作以评估这个动作。 */)}
+                  {t('Log the anchor lift to score this one.')}
                 </span>}
               </span>
               <span className="v" style={{ textAlign: 'end', flexShrink: 0 }}>
-                <span style={{ color: STATUS_COLOR[r.status] }}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(view.label)}</span>
+                <span style={{ color: STATUS_COLOR[r.status] }}>{t(view.label)}</span>
                 <span className="dim small" style={{ display: 'block' }}>{valueText}</span>
               </span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {r.needsBodyweight && <Button size="sm" variant="ghost" icon="plus" onClick={() => bwSheet()}>{t("LOG_BODY_WEIGHT" /* 记录体重 */)}</Button>}
-              <Button size="sm" variant="ghost" icon="pencil" onClick={() => changeExercise(role)}>{t("SWAP_EXERCISE" /* 更换动作 */)}</Button>
-              {r.isOverridden && <Button size="sm" variant="ghost" onClick={() => clearOverride(role)}>{t("USE_DEFAULT_EXERCISE" /* 使用默认动作 */)}</Button>}
+              {r.needsBodyweight && <Button size="sm" variant="ghost" icon="plus" onClick={() => bwSheet()}>{t('Log body weight')}</Button>}
+              <Button size="sm" variant="ghost" icon="pencil" onClick={() => changeExercise(role)}>{t('Change exercise')}</Button>
+              {r.isOverridden && <Button size="sm" variant="ghost" onClick={() => clearOverride(role)}>{t('Use default exercise')}</Button>}
             </div>
           </div>
         )

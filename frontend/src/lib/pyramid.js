@@ -50,7 +50,7 @@ export function flatFromPyramid(list) {
 
 /** "12 · 8 · 6 · Max · 12" */
 export function pyramidLabel(list) {
-  return list.map(v => (v === PYRAMID_MAX ? t("MAX" /* 力竭次数 */) : String(v))).join(' · ')
+  return list.map(v => (v === PYRAMID_MAX ? t('Max') : String(v))).join(' · ')
 }
 
 // An extra set added mid-session copies the last target.

@@ -41,7 +41,7 @@ describe('RestTimer Ready and overtime display', () => {
 
     expect(host.querySelector('#timer .t').textContent).toBe('Ready')
     expect(host.querySelector('#timer .t').getAttribute('role')).toBe('status')
-    expect(host.querySelector('#timer .skip .on').textContent).toBe('End rest')
+    expect(host.querySelector('#timer .skip .on').textContent).toBe('Dismiss')
     expect(useUI.getState().timer.forIdx).toBe(4)
 
     act(() => root.render(null))
@@ -58,7 +58,7 @@ describe('RestTimer Ready and overtime display', () => {
     act(() => vi.advanceTimersByTime(5000))
 
     expect(host.querySelector('#timer .t').textContent).toBe('+0:03')
-    expect(host.querySelector('#timer .bar i').style.width).toBe('0%')
+    expect(host.querySelector('#timer .bar i').style.transform).toBe('scaleX(0)')
   })
 })
 

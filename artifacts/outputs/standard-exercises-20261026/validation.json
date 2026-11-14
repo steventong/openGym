@@ -1,0 +1,470 @@
+{
+  "customBefore": 103,
+  "customAfter": 0,
+  "standardTargets": 65,
+  "migratedEntries": 428,
+  "workouts": 75,
+  "routines": 4,
+  "sets": 1322,
+  "allSetPayloadsUnchanged": true,
+  "allTargetsValidatedAgainstCatalogue": true,
+  "unresolvedCustomReferences": [],
+  "weightCollisions": [
+    {
+      "oldID": "cimp314bcff10101fe979053",
+      "standardID": "1047",
+      "candidate": {
+        "w": 46,
+        "d": "2026-05-19"
+      },
+      "existing": {
+        "w": 45,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp72bfd0875b9eaa5e62b1",
+      "standardID": "0289",
+      "candidate": {
+        "w": 22.5,
+        "d": "2026-03-27"
+      },
+      "existing": {
+        "w": 15,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp3007d60a8282a4ab7e28",
+      "standardID": "2661",
+      "candidate": {
+        "w": 45,
+        "d": "2026-09-22"
+      },
+      "existing": {
+        "w": 45,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimpa90d11c3700cd558c6a3",
+      "standardID": "0318",
+      "candidate": {
+        "w": 10,
+        "d": "2026-10-20"
+      },
+      "existing": {
+        "w": 7.5,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimpdbe295395c98066023f3",
+      "standardID": "0334",
+      "candidate": {
+        "w": 7.5,
+        "d": "2026-09-19"
+      },
+      "existing": {
+        "w": 5,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp018bfa5b2a00df4f3817",
+      "standardID": "1454",
+      "candidate": {
+        "w": 20,
+        "d": "2026-08-31"
+      },
+      "existing": {
+        "w": 36,
+        "d": "2026-09-29"
+      }
+    },
+    {
+      "oldID": "cimpdfb007a0d833a0e22d92",
+      "standardID": "1047",
+      "candidate": {
+        "w": 42,
+        "d": "2026-08-31"
+      },
+      "existing": {
+        "w": 45,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimpcc3ecc28448fca7cb8bc",
+      "standardID": "0289",
+      "candidate": {
+        "w": 15,
+        "d": "2026-10-17"
+      },
+      "existing": {
+        "w": 15,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimpf882506f40e0f69ba297",
+      "standardID": "0334",
+      "candidate": {
+        "w": 7.5,
+        "d": "2026-10-08"
+      },
+      "existing": {
+        "w": 5,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimpc456defe1a112989dadb",
+      "standardID": "5658",
+      "candidate": {
+        "w": 9,
+        "d": "2026-08-31"
+      },
+      "existing": {
+        "w": 25,
+        "d": "2026-05-19"
+      }
+    },
+    {
+      "oldID": "cimp73958ffa281ecb703b7a",
+      "standardID": "0318",
+      "candidate": {
+        "w": 10,
+        "d": "2026-10-17"
+      },
+      "existing": {
+        "w": 7.5,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp165460cd8eb6517b12b1",
+      "standardID": "0241",
+      "candidate": {
+        "w": 7,
+        "d": "2026-08-31"
+      },
+      "existing": {
+        "w": 17.5,
+        "d": "2026-06-04"
+      }
+    },
+    {
+      "oldID": "cimp8585b3e9d32824835ce3",
+      "standardID": "0585",
+      "candidate": {
+        "w": 33,
+        "d": "2026-09-05"
+      },
+      "existing": {
+        "w": 46,
+        "d": "2026-07-01"
+      }
+    },
+    {
+      "oldID": "cimp5da18513c6a77e67ecd0",
+      "standardID": "1557",
+      "candidate": {
+        "w": 7.5,
+        "d": "2026-09-05"
+      },
+      "existing": {
+        "w": 12.5,
+        "d": "2026-08-11"
+      }
+    },
+    {
+      "oldID": "cimp057911468c7460217927",
+      "standardID": "1454",
+      "candidate": {
+        "w": 30,
+        "d": "2026-09-07"
+      },
+      "existing": {
+        "w": 36,
+        "d": "2026-09-29"
+      }
+    },
+    {
+      "oldID": "cimp758b3c161c960b36d095",
+      "standardID": "0289",
+      "candidate": {
+        "w": 12.5,
+        "d": "2026-09-15"
+      },
+      "existing": {
+        "w": 15,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp30c3fdc51e4f408f45ce",
+      "standardID": "0334",
+      "candidate": {
+        "w": 6,
+        "d": "2026-09-07"
+      },
+      "existing": {
+        "w": 5,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp355231859c26d54c2f85",
+      "standardID": "1047",
+      "candidate": {
+        "w": 45,
+        "d": "2026-09-15"
+      },
+      "existing": {
+        "w": 45,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp82bc607b7aee2fb30c80",
+      "standardID": "0351",
+      "candidate": {
+        "w": 5,
+        "d": "2026-09-09"
+      },
+      "existing": {
+        "w": 7.5,
+        "d": "2026-10-15"
+      }
+    },
+    {
+      "oldID": "cimp13e8135381ca08ae1603",
+      "standardID": "2661",
+      "candidate": {
+        "w": 45,
+        "d": "2026-09-09"
+      },
+      "existing": {
+        "w": 45,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimpc7e551fa6c203d1b1a8b",
+      "standardID": "10671",
+      "candidate": {
+        "w": 35,
+        "d": "2026-09-15"
+      },
+      "existing": {
+        "w": 32,
+        "d": "2026-10-13"
+      }
+    },
+    {
+      "oldID": "cimpb32062d3f8c5bb103c37",
+      "standardID": "0596",
+      "candidate": {
+        "w": 15,
+        "d": "2026-09-09"
+      },
+      "existing": {
+        "w": 20,
+        "d": "2026-09-02"
+      }
+    },
+    {
+      "oldID": "cimpe1ba482fa4ef404a3593",
+      "standardID": "1459",
+      "candidate": {
+        "w": 22.5,
+        "d": "2026-09-12"
+      },
+      "existing": {
+        "w": 25,
+        "d": "2026-09-19"
+      }
+    },
+    {
+      "oldID": "cimp4648f7642c82b94a4558",
+      "standardID": "0289",
+      "candidate": {
+        "w": 12.5,
+        "d": "2026-09-12"
+      },
+      "existing": {
+        "w": 15,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimpf16cd773ace0d2380567",
+      "standardID": "1047",
+      "candidate": {
+        "w": 45,
+        "d": "2026-09-12"
+      },
+      "existing": {
+        "w": 45,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp997e7cf78642fb9b5756",
+      "standardID": "2661",
+      "candidate": {
+        "w": 45,
+        "d": "2026-09-12"
+      },
+      "existing": {
+        "w": 45,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimpb2bd032118b939b4dcd8",
+      "standardID": "0334",
+      "candidate": {
+        "w": 7.5,
+        "d": "2026-09-12"
+      },
+      "existing": {
+        "w": 5,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp8c0675e03986e0586718",
+      "standardID": "10671",
+      "candidate": {
+        "w": 32,
+        "d": "2026-09-12"
+      },
+      "existing": {
+        "w": 32,
+        "d": "2026-10-13"
+      }
+    },
+    {
+      "oldID": "cimp726850c8e1b33c0c98b5",
+      "standardID": "3768",
+      "candidate": {
+        "w": 50,
+        "d": "2026-09-15"
+      },
+      "existing": {
+        "w": 32,
+        "d": "2026-09-12"
+      }
+    },
+    {
+      "oldID": "cimp67ea3bb8cd1282db08d6",
+      "standardID": "1459",
+      "candidate": {
+        "w": 22,
+        "d": "2026-09-15"
+      },
+      "existing": {
+        "w": 25,
+        "d": "2026-09-19"
+      }
+    },
+    {
+      "oldID": "cimp55c16a488640c4a514ae",
+      "standardID": "5658",
+      "candidate": {
+        "w": 25,
+        "d": "2026-09-15"
+      },
+      "existing": {
+        "w": 9,
+        "d": "2026-08-31"
+      }
+    },
+    {
+      "oldID": "cimp94ac05f77a5b3d6bfe5c",
+      "standardID": "3768",
+      "candidate": {
+        "w": 73,
+        "d": "2026-10-15"
+      },
+      "existing": {
+        "w": 50,
+        "d": "2026-09-15"
+      }
+    },
+    {
+      "oldID": "cimp521e4967e763a2306a3a",
+      "standardID": "2661",
+      "candidate": {
+        "w": 42,
+        "d": "2026-10-08"
+      },
+      "existing": {
+        "w": 45,
+        "d": "2026-10-26"
+      }
+    },
+    {
+      "oldID": "cimp0dd9f6c581e9b9fa1445",
+      "standardID": "3768",
+      "candidate": {
+        "w": 65,
+        "d": "2026-10-11"
+      },
+      "existing": {
+        "w": 73,
+        "d": "2026-10-15"
+      }
+    },
+    {
+      "oldID": "cimp209d8520dd6b637fbf50",
+      "standardID": "0404",
+      "candidate": {
+        "w": 12.5,
+        "d": "2026-10-17"
+      },
+      "existing": {
+        "w": 12.5,
+        "d": "2026-10-20"
+      }
+    },
+    {
+      "oldID": "cimpa84f3625357597b8a5f2",
+      "standardID": "0351",
+      "candidate": {
+        "w": 5,
+        "d": "2026-10-17"
+      },
+      "existing": {
+        "w": 7.5,
+        "d": "2026-10-15"
+      }
+    },
+    {
+      "oldID": "cimp070959d8f0af9fcb9a0d",
+      "standardID": "1452",
+      "candidate": {
+        "w": 30,
+        "d": "2026-10-17"
+      },
+      "existing": {
+        "w": 25,
+        "d": "2026-09-15"
+      }
+    },
+    {
+      "oldID": "cimp6e0c4f0962fc30c7d0e7",
+      "standardID": "0770",
+      "candidate": {
+        "w": 10,
+        "d": "2026-07-01"
+      },
+      "existing": {
+        "w": 25,
+        "d": "2026-09-05"
+      }
+    }
+  ]
+}

@@ -1,0 +1,3524 @@
+{
+  "workouts": [
+    {
+      "id": "iw0f9db13855ab002baa62",
+      "date": "2026-03-27",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n27/3\n\nChin up\n80kg 10\n70kg 12\n\n\nLat Pull Down (machine)\n32kg × 12\n36kg × 12\n41kg × 8\n\nChest Press (DB)\n5kg × 12\n5kg × 15\n20kg x 15\n20kg x 12\n22.5kg x 7\n\nChest Fly (DB)\n5kg × 12\n5kg × 11\n5kg × 10\n\nBicep curl \n5kg 15\n7.5kg 10\n7.5kg 7",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpab3d1a064119d7f44d95",
+          "before": "第1、2组：握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录",
+          "after": "第1、2组：握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimp72bfd0875b9eaa5e62b1",
+          "before": "第1、2、3、4、5组：重量为每手单只哑铃重量；双手各持一只同时卧推；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3、4、5组：重量为每手单只哑铃重量；\n双手各持一只同时卧推；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iw18dea5e212cb744f1d5f",
+      "date": "2026-03-30",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n未完成动作：Push Ups (x)：用户确认：x 表示做不到，本次未做；无完成训练组。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n未完成动作：Push Ups (x)：用户确认：x 表示做不到，本次未做；\n无完成训练组。\n\n原始记录：\n30/3\n\nShoulder Press Machine (pin loaded)\n18kg 10\n23kg 9(left weaker)\n18kg 13(left)\n14kg 10\n\nPush Ups (x)\n\nLat Pull Down (wide grip)\n25kg × 12\n25kg × 15\n27.5kg × 12\n30kg x 15\n\nSeated Cable Row\n15kg × 10(warmup)\n17.5kg × 15\n20kg × 15\n22.5kg x 15\n\nBicep curl hammer curl\n5kg 15\n5kg 15\n5kg 15\n\nDecline sit up \n11\n7",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpaa6f95baf11868ce154a",
+          "before": "第1、4组：重量口径未注明，按原值记录\n第2组：left weaker；重量口径未注明，按原值记录\n第3组：left；重量口径未注明，按原值记录",
+          "after": "第1、4组：重量口径未注明，按原值记录\n第2组：left weaker；\n重量口径未注明，按原值记录\n第3组：left；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1组：warmup；按用户已确认规则：未明确其他把手的绳索坐姿划船归入2661；原始名字保留；热身，按普通组记录；重量口径未注明，按原值记录\n第2、3、4组：按用户已确认规则：未明确其他把手的绳索坐姿划船归入2661；原始名字保留；重量口径未注明，按原值记录",
+          "after": "第1组：warmup；\n按用户已确认规则：未明确其他把手的绳索坐姿划船归入2661；\n原始名字保留；\n热身，按普通组记录；\n重量口径未注明，按原值记录\n第2、3、4组：按用户已确认规则：未明确其他把手的绳索坐姿划船归入2661；\n原始名字保留；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwbf84ad489b4b6a14a66b",
+      "date": "2026-04-02",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n2/4\n\nShoulder Press Machine (plate loaded)\n27kg 6\n23kg 8\n23kg 7\n18kg 12\n\nLat Pull Down (mag grip)\n20kg x 15\n22.5kg × 15\n25kg × 15\n27.5kg × 15\n\nIncline chest press smith \n20kg x 12\n25kg × 12\n30kg × 5\n27.5kg × 6\n\nSide Lateral Raises (mermaid)\n2.5kg × 20\n2.5kg × 20\n2.5kg × 20\n\nTricep push down short bar \n10kg 20\n12.5kg 10\n12.5kg 10",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimp07719aa9c82592b9d4b7",
+          "before": "第1、2、3、4组：用户确认：使用 MAG 握把，不是直杆；OpenGym 6392；重量口径未注明，按原值记录",
+          "after": "第1、2、3、4组：用户确认：使用 MAG 握把，不是直杆；\nOpenGym 6392；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimp6ad2ef69c94039618272",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；单手完成，两侧均做完算一组；原始变式：Side Lateral Raises (mermaid)；未写明的支撑细节不推断；用户逐次确认：2415 哑铃单臂倾斜侧平举；原始动作名保留；每手重量；单侧按原次数计一次；分侧完成，左右次数未知，不补造左右记录；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n单手完成，两侧均做完算一组；\n原始变式：Side Lateral Raises (mermaid)；\n未写明的支撑细节不推断；\n用户逐次确认：2415 哑铃单臂倾斜侧平举；\n原始动作名保留；\n每手重量；\n单侧按原次数计一次；\n分侧完成，左右次数未知，不补造左右记录；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iwfcb1486b0d7516d8ccd2",
+      "date": "2026-04-05",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录 1：\nBulgarian split squat\nBW 10\n2.5kg 10(partial)\n2.5kg 10(partial)\n2.5kg 10(full range)\n\nDumbell Romanian deadlift \n5kg 10\n5kg 10\n5kg 10\n5kg 10\n\nSide lunges \nX 12\nX 12\nX 12\n\nHip abduction\n35kg 15\n35kg 15\n35kg 15\n35kg 15\n\n原始记录 2：\n05/04 \nBulgarian split squat\n5kg 15\n5kg 15\n5kg 15\n\nDumbell Romanian deadlift\n10kg 15\n10kg 15\n10kg 15\n10kg 15",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimpc1291f03c4bef1ca8c2b",
+          "before": "第1、2组：partial；重量口径未注明，按原值记录\n第3组：full range；重量口径未注明，按原值记录\n第4、5、6组：重量口径未注明，按原值记录",
+          "after": "第1、2组：partial；\n重量口径未注明，按原值记录\n第3组：full range；\n重量口径未注明，按原值记录\n第4、5、6组：重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimp3c93127d64c84634ef90",
+          "before": "第1、2、3组：负重标识：X；未记负重，0占位",
+          "after": "第1、2、3组：负重标识：X；\n未记负重，0占位"
+        }
+      ]
+    },
+    {
+      "id": "iwb1304f44d84ea0ce03ab",
+      "date": "2026-04-08",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录 1：\n06/04\nChin up\n70kg 15\n70kg 15\n70kg 15\n\nShoulder press\n23kg 10\n23kg 10\n23kg 10\n\nlat pull down\n27.5kg 15\n27.5kg 15\n27.5kg 15\n27.5kg 15\n\n原始记录 2：\n8/4\n\nShoulder Press Machine (pin loaded)\n18kg × 12\n23kg × 10\n23kg x 9.5(left)\n18kg x 15(left)\n\nBarbell Push Up\nLevel 7.5 12\nLevel 7.5 12\nLevel 7.5 12\n\nSeated machine row \n2.5kg 15\n3.75kg 15\n5kg 15\n\nLat Pull Down (wide grip)\n27.5kg × 12\n30kg × 12\n30kg × 12\n32.5kg × 8–1\n\nTricep push down \n12.5kg 10\n12.5kg 12\n12.5kg 12\n\nHammer Curl db (bench supported)\n6kg × 12\n6kg × 12\n5kg × 15\n\nChin up \n60kg 12\n60kg 12(max)",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpab3d1a064119d7f44d95",
+          "before": "第1、2、3、4组：握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录\n第5组：max；握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录",
+          "after": "第1、2、3、4组：握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录\n第5组：max；\n握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpaa6f95baf11868ce154a",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：left；次数9.5→9；重量口径未注明，按原值记录\n第4组：left；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：left；\n次数9.5→9；\n重量口径未注明，按原值记录\n第4组：left；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 8,
+          "id": "cimpc8c9e0b514485c265ed1",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时弯举；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时弯举；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iwe7c5885cd97558b09edf",
+      "date": "2026-04-10",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10/4\n\nLeg curl\n60lbs 15\n70lbs 15\n70lbs 15\n70lbs 15\n\nWalking lunges \n5kg each hand - 13 steps x 2 \n5kg each hand - 15 steps x 2 \n5kg each hand - 15 steps x 2 \n5kg each hand - 15 steps x 2 \n\nRomanian deadlift dumbell\n5kg each hand 15\n7kg each hand 15\n7kg each hand 15\n \ncrab walk \nRed band 13\nRed band 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1be6e858bd96453f4841",
+          "before": "第1组：60lbs→27.216kg；重量口径未注明，按原值记录\n第2、3、4组：70lbs→31.751kg；重量口径未注明，按原值记录",
+          "after": "第1组：60lbs→27.216kg；\n重量口径未注明，按原值记录\n第2、3、4组：70lbs→31.751kg；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimpe131322bfcfce25ea8f9",
+          "before": "第1、2、3、4组：steps x 2；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3、4组：steps x 2；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 3,
+          "id": "cimpe8c509734238f23049e2",
+          "before": "第1、2组：弹力带：Red；重量栏0占位，不代表零阻力",
+          "after": "第1、2组：弹力带：Red；\n重量栏0占位，不代表零阻力"
+        }
+      ]
+    },
+    {
+      "id": "iw52c2ec89b1fb936ed3d0",
+      "date": "2026-04-12",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n12/4\n\nChin up \n70kg 15\n70kg 15\n\nShoulder press standing dumbbell \n5kg 15\n5kg 15\n5kg 15\n\nlat pull down\n25kg 10\n27.5kg 12\n30kg 10\n30kg 10\n\nLow row mag bar\n22.5kg 15\n25kg 15\n27.5kg 12\n\nUpright row\n10kg 15\n10kg 15 \n10kg 15\n\nFace pull \n15kg 15\n17.5kg 20\n20kg 15\n\nBicep curl hammer \n5kg 15\n5kg 15\n5kg 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpab3d1a064119d7f44d95",
+          "before": "第1、2组：握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录",
+          "after": "第1、2组：握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp21356e064572493083a8",
+          "before": "第1、2、3组：站姿；用户确认 OpenGym 0426；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：站姿；\n用户确认 OpenGym 0426；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始动作名保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始动作名保留；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw8fce76716cf322b03472",
+      "date": "2026-04-14",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n14/2\n\nShoulder Press Machine (plate loaded)\n2.5kg × 12\n2.5kg × 12\n1.25kg x 8(left dropped)\nReduce to x weights for 3 sets*\n\nSmith machine BB Push Ups\nLevel 3 15\nLevel 2 14\nLevel 2 8\nLast sets do level 3\n\nSeated machine row\n5kg 12\n7.5kg 12\n7.5kg 15\n\nTricep push down 👍🏻 \n12.5kg 15\n12.5kg 15\n12.5kg 15\n*progress to 15kg next week  \n\nDumbell bicep Curl (30 degree incline)\n5kg × 15\n5kg × 15\n5kg × 15\n*progress 6kg next week  \n\nMermaid fly \n3kg 15\n3kg 15\n3kg 15\n\nKnee tuck(squat rack)\n15\n6",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1464e6bf129e402b972a",
+          "before": "第1、2组：Reduce to x weights for 3 sets*；重量口径未注明，按原值记录\n第3组：left dropped；Reduce to x weights for 3 sets*；重量口径未注明，按原值记录",
+          "after": "第1、2组：Reduce to x weights for 3 sets*；\n重量口径未注明，按原值记录\n第3组：left dropped；\nReduce to x weights for 3 sets*；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp964a15cbdfcd52cb2c55",
+          "before": "第1组：Last sets do level 3；档位/高度3，非kg\n第2、3组：Last sets do level 3；档位/高度2，非kg",
+          "after": "第1组：Last sets do level 3；\n档位/高度3，非kg\n第2、3组：Last sets do level 3；\n档位/高度2，非kg"
+        },
+        {
+          "index": 3,
+          "id": "cimp6624c48eff55e0ed2c40",
+          "before": "第1、2、3组：*progress to 15kg next week；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：*progress to 15kg next week；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimpa90d11c3700cd558c6a3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时弯举\n*progress 6kg next week；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时弯举\n*progress 6kg next week；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iwfc3d841aba4036929d0e",
+      "date": "2026-04-15",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n15/4\n\nLeg extension \n27kg 12\n27kg 12\n27kg 12\n27kg 12\n\nWalking lunges \n7.5kg each hand - 13 steps x 2 \n7.5kg each hand - 15 steps x 2 \n7.5kg each hand - 15 steps x 2 \n\nRomanian deadlift dumbell\n5kg each hand 15\n10kg each hand 15\n12.5kg each hand 15\n12.5kg each hand 15\n \ncrab walk\nRed band 15\nRed band 15\nOrange band 12 \n\nATG lunges\n8",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimpe131322bfcfce25ea8f9",
+          "before": "第1、2、3组：steps x 2；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3组：steps x 2；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 3,
+          "id": "cimpe8c509734238f23049e2",
+          "before": "第1、2组：弹力带：Red；重量栏0占位，不代表零阻力\n第3组：弹力带：Orange；重量栏0占位，不代表零阻力",
+          "after": "第1、2组：弹力带：Red；\n重量栏0占位，不代表零阻力\n第3组：弹力带：Orange；\n重量栏0占位，不代表零阻力"
+        }
+      ]
+    },
+    {
+      "id": "iw509216f06f632ad4bdb8",
+      "date": "2026-04-17",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n12/4\n\nChin up \n70kg 6\n60kg 15\n60kg 15(try 50kg next)\n\nShoulder press standing dumbbell \n5kg 15\n5kg 15\n5kg 15\n\nMachine lat pull down\n36kg 15\n41kg 10\n41kg 10\n36kg 12\n\nLow row mag bar\n27.5kg 13\n27.5kg 13\n27.5kg 15\n\nUpright row\n10kg 15\n12.5kg 15\n12.5kg 15 \n\nFace pull \n20kg 15\n20kg 15\n20kg 15\n\nHanging abs raises \nHanging 8\nElbow prop knee straight 15\nElbow prop knee straight 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpab3d1a064119d7f44d95",
+          "before": "第1、2组：握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录\n第3组：try 50kg next；握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录",
+          "after": "第1、2组：握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录\n第3组：try 50kg next；\n握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp21356e064572493083a8",
+          "before": "第1、2、3组：站姿；用户确认 OpenGym 0426；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：站姿；\n用户确认 OpenGym 0426；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始动作名保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始动作名保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 6,
+          "id": "cimp5b65660e4a05f41d0544",
+          "before": "第1组：用户确认：一般悬垂抬腿；未明确屈膝，匹配 OpenGym 0472；负重标识：Hanging；未记负重，0占位\n第2、3组：Elbow prop knee straight；用户确认：一般悬垂抬腿；未明确屈膝，匹配 OpenGym 0472；未记负重，0占位",
+          "after": "第1组：用户确认：一般悬垂抬腿；\n未明确屈膝，匹配 OpenGym 0472；\n负重标识：Hanging；\n未记负重，0占位\n第2、3组：Elbow prop knee straight；\n用户确认：一般悬垂抬腿；\n未明确屈膝，匹配 OpenGym 0472；\n未记负重，0占位"
+        }
+      ]
+    },
+    {
+      "id": "iwf0d4f218982159059643",
+      "date": "2026-04-21",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n21/4\n\nShoulder Press Machine (plate loaded)\n2.5kg × 12\n2.5kg × 12\n2.5kg x 10.5\n\nSmith machine BB Push Ups\nLevel 1 10\nLevel 1 10\nLevel 2 10\n\nSeated machine row\n10kg 12\n10kg 12\n10kg 12\n\nChin up\n50kg 8\n50kg 8\n60kg 15\n\nMermaid fly \n3kg 16\n3kg 16\n3kg 16\n\nKnee tuck elbow prop \n17\n18\n12",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1464e6bf129e402b972a",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：次数10.5→10；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：次数10.5→10；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpab3d1a064119d7f44d95",
+          "before": "第1、2、3组：握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw1e4fa06171b7071fd93c",
+      "date": "2026-04-22",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n22/4\n\nLeg curl \n70lbs 15\n80lbs 15 👍🏻 \n80lbs 15\n80lbs 15\n\nWalking lunges (forward and reverse)\n8kg each hand - 15-18 steps x 2 \n8kg each hand - 15-18 steps x 2 \n8kg each hand - 15-18 steps x 2 \n8kg each hand - 15-18 steps x 2 \n\n\nRomanian deadlift dumbell\n12.5kg each hand 15\n12.5kg each hand 15\n12.5kg each hand 15\n\ncrab walk\nOrange band 15\nOrange band 15\n\nATG lunges\nBW 10\nBW 10",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1be6e858bd96453f4841",
+          "before": "第1组：70lbs→31.751kg；重量口径未注明，按原值记录\n第2、3、4组：80lbs→36.287kg；重量口径未注明，按原值记录",
+          "after": "第1组：70lbs→31.751kg；\n重量口径未注明，按原值记录\n第2、3、4组：80lbs→36.287kg；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimpe131322bfcfce25ea8f9",
+          "before": "第1、2、3、4组：steps x 2；次数15-18→15；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3、4组：steps x 2；\n次数15-18→15；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 3,
+          "id": "cimpe8c509734238f23049e2",
+          "before": "第1、2组：弹力带：Orange；重量栏0占位，不代表零阻力",
+          "after": "第1、2组：弹力带：Orange；\n重量栏0占位，不代表零阻力"
+        }
+      ]
+    },
+    {
+      "id": "iw96c0ad6040af53a03c08",
+      "date": "2026-04-24",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n24/4\n\nChin up \n60kg 5\n50kg 8\n50kg 8\n\nShoulder press standing dumbbell \n6kg 12\n6kg 12\n6kg 15\n\nMachine lat pull down\n41kg 12\n41kg 12\n41kg 15\n\nUpright row\n15kg 15\n15kg 15\n15kg 15\n\nFace pull \n20kg 15\n20kg 15\n20kg 15\n\nTricep push down \n15kg 12\n15kg 13\n15kg 15(16 next time)\n\nHanging abs raises \nHanging 12\nHanging 12(assisted)\nHanging 13(assisted)",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpab3d1a064119d7f44d95",
+          "before": "第1、2、3组：握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp21356e064572493083a8",
+          "before": "第1、2、3组：站姿；用户确认 OpenGym 0426；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：站姿；\n用户确认 OpenGym 0426；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 5,
+          "id": "cimp6624c48eff55e0ed2c40",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：16 next time；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：16 next time；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 6,
+          "id": "cimp5b65660e4a05f41d0544",
+          "before": "第1组：用户确认：一般悬垂抬腿；未明确屈膝，匹配 OpenGym 0472；负重标识：Hanging；未记负重，0占位\n第2、3组：assisted；用户确认：一般悬垂抬腿；未明确屈膝，匹配 OpenGym 0472；负重标识：Hanging；未记负重，0占位",
+          "after": "第1组：用户确认：一般悬垂抬腿；\n未明确屈膝，匹配 OpenGym 0472；\n负重标识：Hanging；\n未记负重，0占位\n第2、3组：assisted；\n用户确认：一般悬垂抬腿；\n未明确屈膝，匹配 OpenGym 0472；\n负重标识：Hanging；\n未记负重，0占位"
+        }
+      ]
+    },
+    {
+      "id": "iw45858b384c3543160e92",
+      "date": "2026-04-27",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n27/4\n\nShoulder Press Machine (plate loaded)\n2.5kg × 15\n3.75kg × 15\n3.75kg × 12(max)\n\nSmith machine BB Push Ups\nLevel 1 12\nLevel 1 10\nLevel 2 9.5\n\nLow row mag bar  \n30kg 12\n30kg 15\n30kg 15\n\nLat pull down wide bar \n32.5kg 10\n32.5kg 12\n30.5kg 15\n\nMermaid fly \n3kg 16\n3kg 16\n3kg 16\n\nBicep curl(incline 60 degree)\n6kg 12\n6kg 12\n6kg 15(7.5kg next)\n\nKnee tuck elbow prop \n20\n20\n20",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1464e6bf129e402b972a",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：max；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：max；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp964a15cbdfcd52cb2c55",
+          "before": "第1、2组：档位/高度1，非kg\n第3组：次数9.5→9；档位/高度2，非kg",
+          "after": "第1、2组：档位/高度1，非kg\n第3组：次数9.5→9；\n档位/高度2，非kg"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始动作名保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始动作名保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 5,
+          "id": "cimpa90d11c3700cd558c6a3",
+          "before": "第1、2组：重量为每手单只哑铃重量；双手各持一只同时弯举；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组\n第3组：7.5kg next；重量为每手单只哑铃重量；双手各持一只同时弯举；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2组：重量为每手单只哑铃重量；\n双手各持一只同时弯举；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组\n第3组：7.5kg next；\n重量为每手单只哑铃重量；\n双手各持一只同时弯举；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iw175eb64583e46483024e",
+      "date": "2026-04-28",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n27/4\n\nLeg curl \n80lbs 15\n80lbs 15\n80lbs 15\n80lbs 15\n\nWalking lunges (forward and reverse)\n10kg each hand - 15 x 2 \n10kg each hand - 15 x 2 \n10kg each hand - 15 x 2 \n10kg each hand - 15 x 2 \n\n\nRomanian deadlift dumbell\n15kg each hand 10\n15kg each hand 12\n15kg each hand 15 👍🏻 \n\ncrab walk\nOrange band 20\nOrange band 20\nOrange band 20\n\nATG lunges\nBW Elevated heels  10\nBW Elevated heels  10\nBW Elevated heels  10",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1be6e858bd96453f4841",
+          "before": "第1、2、3、4组：80lbs→36.287kg；重量口径未注明，按原值记录",
+          "after": "第1、2、3、4组：80lbs→36.287kg；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimpe131322bfcfce25ea8f9",
+          "before": "第1、2、3、4组：x 2；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3、4组：x 2；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 2,
+          "id": "cimp686e091f710d4ca67583",
+          "before": "第1、2组：每手/每只重量，双只参与训练量\n第3组：👍🏻；每手/每只重量，双只参与训练量",
+          "after": "第1、2组：每手/每只重量，双只参与训练量\n第3组：👍🏻；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 3,
+          "id": "cimpe8c509734238f23049e2",
+          "before": "第1、2、3组：弹力带：Orange；重量栏0占位，不代表零阻力",
+          "after": "第1、2、3组：弹力带：Orange；\n重量栏0占位，不代表零阻力"
+        },
+        {
+          "index": 4,
+          "id": "cimp0eb9c31d98380f6e4a29",
+          "before": "第1、2、3组：Elevated heels；自重，0表示未记录额外负重",
+          "after": "第1、2、3组：Elevated heels；\n自重，0表示未记录额外负重"
+        }
+      ]
+    },
+    {
+      "id": "iw1d0a7c0c8f9e43d68b33",
+      "date": "2026-05-05",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n5/5\n\nReverse lunges \nX 15\n5kg 15\n5kg 15\n5kg 15\n\nBarbell RDL \n20kg  - 15 \n25kg  - 12\n25kg  - 15 \n30kg  - 12\n\nATG lunges\n2kg Elevated heels  10\n2kg Elevated heels  10\n2kg Elevated heels  12",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpa408e0d80749eb89ef07",
+          "before": "第1组：负重标识：X；未记负重，0占位",
+          "after": "第1组：负重标识：X；\n未记负重，0占位"
+        },
+        {
+          "index": 3,
+          "id": "cimped46606b07fa8fe069e0",
+          "before": "第1、2、3组：Elevated heels；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：Elevated heels；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwd139870853feb58fe669",
+      "date": "2026-05-07",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n7/5\n\nReverse lunges \n5kg 10\n8kg 10\n8kg 10\n8kg 12\n\nBarbell RDL \n30kg  - 15\n40kg  - 12\n40kg  - 12\n\nATG lunges\n3kg Elevated heels  12\n3kg Elevated heels  12\n3kg Elevated heels  12\n\nLeg extension machine\n27kg 10\n27kg 10\n27kg 10",
+      "entries": [
+        {
+          "index": 2,
+          "id": "cimped46606b07fa8fe069e0",
+          "before": "第1、2、3组：Elevated heels；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：Elevated heels；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw9d78d80aaae8e5d8a97e",
+      "date": "2026-05-08",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n8/5\n\nShoulder Press Machine (plate loaded)\n3.75kg × 12\n3.75kg × 12\n3.75kg × 12\n\nBench push ups(bench press bench) *next week change to chest press \n10\n8\n5\n\nLow row mag bar  \n32.5kg 12\n32.5kg 12\n32.5kg 12\n\nLat pull down wide bar \n32.5kg 12\n32.5kg 12\n32.5kg 12\n\nMermaid fly \n3kg 17\n3kg 17\n3kg 17\n\nBicep curl(incline 60 degree)\n7.5kg 10(aim 8 next time)\n7.5kg 7\n7.5kg 6\n\nKnee tuck hanging \n10\n10\n10",
+      "entries": [
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始动作名保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始动作名保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 5,
+          "id": "cimpa90d11c3700cd558c6a3",
+          "before": "第1组：aim 8 next time；重量为每手单只哑铃重量；双手各持一只同时弯举；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组\n第2、3组：重量为每手单只哑铃重量；双手各持一只同时弯举；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1组：aim 8 next time；\n重量为每手单只哑铃重量；\n双手各持一只同时弯举；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组\n第2、3组：重量为每手单只哑铃重量；\n双手各持一只同时弯举；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iw90ab33901e42a1c3c76a",
+      "date": "2026-05-11",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n11/5\n\nShoulder Press Machine (plate loaded)\n3.75kg × 15\n5kg × 12\n5kg × 8 \n\nBench Push Ups\n15\n11\n5 max\n\nLow row mag bar  \n30kg 12\n30kg 15\n30kg 15\n\nLat pull down wide bar \n32.5kg 15\n35kg 10\n35kg 15\n\nMermaid fly \n3kg 16\n3kg 16\n3kg 16\n\nBicep curl(incline 60 degree)\n7.5kg 12\n7.5kg 12\n7.5kg 8\n\nDecline sit ups \nBW 10\nBW 10\nBW 5",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimp0a62cb479f8903a37bc4",
+          "before": "第1、2组：未记负重，0占位\n第3组：max；未记负重，0占位",
+          "after": "第1、2组：未记负重，0占位\n第3组：max；\n未记负重，0占位"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始动作名保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始动作名保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 5,
+          "id": "cimpa90d11c3700cd558c6a3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时弯举；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时弯举；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iwfa65914ad02f724e6dc9",
+      "date": "2026-05-13",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\nWang Lin\n\nReverse lunges \nBW 10\n8kg 10\n8kg 12\n8kg 12\n\nBarbell RDL \n40kg  - 12\n45kg  - 12\n40kg  - 15\n\nATG lunges\n4kg Elevated heels  10\n4kg Elevated heels  10\n4kg Elevated heels  12\n\nHip abduction \n35kg 15\n35kg 15\n35kg 15\n\nLeg extension machine\n32kg 12\n32kg 12\n32kg 15",
+      "entries": [
+        {
+          "index": 3,
+          "id": "cimped46606b07fa8fe069e0",
+          "before": "第1、2、3组：Elevated heels；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：Elevated heels；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw7b298bff5e9f226952c7",
+      "date": "2026-05-15",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n15/5\n\nAssisted Chin up \n50kg 10\n50kg 10\n50kg 12\n\nIncline dumbell chest press \n7.5kg 10\n7.5kg 12\n7.5kg 15\n\nLow Row close grip\n15kg 15\n1.5kg 15\n20kg 16\n\nLateral raises standing \n2.5kg 15\n2.5kg 15\n2.5kg 15\n\nRear delt fly \n9kg 20\n14kg 15\n14kg 15\n\nTricep push down \n15kg 16\n15kg 16\n1.5kg 15\n\nHanging abs raises \nHanging 10\nHanging 10\nHanging 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpedc49aa04805d13e53e4",
+          "before": "第1、2、3组：握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimpab0c7ae717e34a7ebe43",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时卧推；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时卧推；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录\n第2组：The surrounding sets are 15kg and 20kg; 1.5kg is a dropped-digit typo.；用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录\n第2组：The surrounding sets are 15kg and 20kg; 1.5kg is a dropped-digit typo.；\n用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 5,
+          "id": "cimp6624c48eff55e0ed2c40",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：The surrounding sets are 15kg; 1.5kg is a dropped-digit typo.；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：The surrounding sets are 15kg; 1.5kg is a dropped-digit typo.；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 6,
+          "id": "cimp5b65660e4a05f41d0544",
+          "before": "第1、2、3组：用户确认：一般悬垂抬腿；未明确屈膝，匹配 OpenGym 0472；负重标识：Hanging；未记负重，0占位",
+          "after": "第1、2、3组：用户确认：一般悬垂抬腿；\n未明确屈膝，匹配 OpenGym 0472；\n负重标识：Hanging；\n未记负重，0占位"
+        }
+      ]
+    },
+    {
+      "id": "iwac385185470a9e08b417",
+      "date": "2026-05-19",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n19/5\n\nShoulder Press Machine (plate loaded)\n5kg 10\n5kg 12\n5kg 13\n\nBench Push Ups\n12\n8\n11\n\nLow row close grip\n32.5kg 12\n32.5kg 12\n32.5kg 12\n\nLat pull down machine\n46kg 10\n46kg 10\n46kg 15(increase next week)\n\nRear delt fly\n9kg 15\n14kg 12\n14kg 12\n\nFace pull\n25kg 12\n25kg 12\n25kg 15\n\nHanging leg raises\n10\n10\n10",
+      "entries": [
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimp314bcff10101fe979053",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：increase next week；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：increase next week；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwe3db761a5cc04f8601dd",
+      "date": "2026-05-21",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n21/5\n\nReverse lunges (higher set up)\n8kg 12\n8kg 12\n8kg 12\n\nBarbell RDL \n20kg warm up 10\n45kg  - 12\n45kg  - 12\n45kg  - 12\n\nATG lunges\nWarm up BW 10 each leg\n5kg Elevated heels  10\n5kg Elevated heels  11\n5kg Elevated heels  12\n\nHip abduction \n45kg 20\n45kg 20\n45kg 20\n\nLeg extension machine\n36kg 10\n36kg 15\n36kg 15",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimp30084a15d17b2684c320",
+          "before": "第1组：warm up；热身，按普通组记录；重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录",
+          "after": "第1组：warm up；\n热身，按普通组记录；\n重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimped46606b07fa8fe069e0",
+          "before": "第1组：warm up; each leg；热身，按普通组记录；自重，0表示未记录额外负重",
+          "after": "第1组：warm up; each leg；\n热身，按普通组记录；\n自重，0表示未记录额外负重"
+        },
+        {
+          "index": 3,
+          "id": "cimped46606b07fa8fe069e0",
+          "before": "第1、2、3组：Elevated heels；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：Elevated heels；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwb26a06ce516b5f092698",
+      "date": "2026-05-23",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n23/05\n\n自己练习\n\nshoulder press 9kg\n12 12 12 15\n\nchest press 12kg\n12 15 15 15\n\nDecline Sit Up 自重\n10 10 9\n\nLateral Raise 2.5kg\n17 17 17\n\nIncline Dumbbell Curl 7.5kg\n10 10 9\n\nLat Pull Down 35kg\n15 15 15\n\nSeated Row 35kg\n15 12 12\n\nHanging Leg Raise 自重\n12 12 12",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3、4组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、2、3、4组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 4,
+          "id": "cimpa90d11c3700cd558c6a3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时弯举；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时弯举；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        },
+        {
+          "index": 6,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwb2a970881fa0c81e965f",
+      "date": "2026-05-25",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n25/5\n\nShoulder Press db(new)\n5kg 10\n7.5kg 15\n7.5kg 15\n7.5kg 12(max)\n\nBench Push Ups\n12 good form 👍🏻 \n12\n10\n\nLow row close grip  \n32.5kg 12\n32.5kg 12\n32.5kg 12\n\nLat pull down cable wide grip(combo set 1)\n32.5kg 15\n35kg 12\n35kg 12\n\nLateral raises (combo set 1)\n2.5kg 25\n3kg 20\n3kg\n\nRear delt fly(combo set 2)\n14kg 12\n14kg 12(partial last 2)\n9kg 18\n\nTricep push down(combo set 2)\n15kg 17\n15kg 12\n12.5kg 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录\n第4组：max；坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录\n第4组：max；\n坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp0a62cb479f8903a37bc4",
+          "before": "第1组：good form 👍🏻；未记负重，0占位\n第2、3组：未记负重，0占位",
+          "after": "第1组：good form 👍🏻；\n未记负重，0占位\n第2、3组：未记负重，0占位"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 5,
+          "id": "cimp78d4d5f2b212596e263f",
+          "before": "第1、3组：重量口径未注明，按原值记录\n第2组：partial last 2；重量口径未注明，按原值记录",
+          "after": "第1、3组：重量口径未注明，按原值记录\n第2组：partial last 2；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwd344a91b39d5e4141fbd",
+      "date": "2026-05-28",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n28/05\n\n自己练习\n\nShoulder press 5kg\n12 12 12\n\nBench push ups\n12 12 12\n\nLow row close grip 35kg\n15 12 12\n\nTriceps press 15kg\n12 12 12",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：low row close grip；用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：low row close grip；\n用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwb73cec65144a4bba9dad",
+      "date": "2026-06-04",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n4/6\n\nShoulder Press db(2nd time)\n5kg 10\n8kg 12\n8kg 12\n8kg 15\n\nStep board Push Ups( new)\n15\n12\n9\n\nLow row close grip  \n32.5kg 15\n32.5kg 15\n32.5kg 12\n\nLat pull down cable wide grip\n35kg 12\n35kg 12\n1.5kg 13(new)\n\nLateral raises \n4kg 20\n4kg 20\n4kg 20\n\nRear delt fly\n9kg 13\n14kg 13\n14kg 13\n\nTricep push down\n1.5kg 15\n17.5kg 10\n15kg 10",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3、4组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、2、3、4组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimped007a20ae300cc80157",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：The surrounding sets are 35kg and the note says this is a new progression; 1.5kg is a dropped-digit typo.；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：The surrounding sets are 35kg and the note says this is a new progression; 1.5kg is a dropped-digit typo.；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 6,
+          "id": "cimp6624c48eff55e0ed2c40",
+          "before": "第1组：The following set is 17.5kg and the historical range is 15–17.5kg; 1.5kg is a dropped-digit typo.；重量口径未注明，按原值记录\n第2、3组：重量口径未注明，按原值记录",
+          "after": "第1组：The following set is 17.5kg and the historical range is 15–17.5kg; 1.5kg is a dropped-digit typo.；\n重量口径未注明，按原值记录\n第2、3组：重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw76f588aa05872d9e9e1a",
+      "date": "2026-06-10",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10/06\n\n自己练习\n\nShoulder press db\n7.5kg\n15\n15\n15\n15\n\nBench push ups\n12\n12\n10\n\nLow row close grip\n32.5kg\n15\n15\n15\n\nLat pull down\n35 kg\n15\n15\n15\n\nLateral raises\n3kg\n20\n20\n20\n\nRear delt fly\n14kg\n13\n13\n13",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3、4组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、2、3、4组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：low row close grip；用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：low row close grip；\n用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iw82e1e4d72cf6f97ea016",
+      "date": "2026-06-11",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n6/5\n\nBox squat \nStepper highest setting\n15kg plate x 1 , 10kg plate x 1\n30kg 10\n40kg 10\n40kg 10\n\nBarbell RDL \n20kg warm up 10\n40kg  - 10\n40kg  - 12\n40kg  - 12\n\nHip abduction \n60kg 15\n60kg 15\n60kg 15\n\nLeg extension\n32kg 15\n32kg 15\n32kg 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp2be5d1c28776175a446a",
+          "before": "第1、2、3组：设置：Stepper highest setting\n15kg plate x 1 , 10kg plate x 1；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：设置：Stepper highest setting\n15kg plate x 1 , 10kg plate x 1；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp30084a15d17b2684c320",
+          "before": "第1组：warm up；热身，按普通组记录；重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录",
+          "after": "第1组：warm up；\n热身，按普通组记录；\n重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwedabba3b93ad9f8e3edf",
+      "date": "2026-06-12",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n12/6\n\nShoulder Press db(3)\n10kg 10\n10kg 10\n10kg 10\n\nStep board Push Ups(lower)\n10\n10\n10 👍🏻 \n\nFace pull two ropes \n25kg 15\n25kg 15\n25kg 15\n\nLow row close grip  \n35kg 10\n35kg 10\n35kg 12\n\nLat pull down cable wide grip\n37.5kg 10\n37.5kg 10\n37.5kg 12\n\nTricep push down \n17.5kg 12\n17.5kg 11\n17.5kg 8",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimpf17404dcc5a6d6c43a2c",
+          "before": "第1、2组：未记负重，0占位\n第3组：👍🏻；未记负重，0占位",
+          "after": "第1、2组：未记负重，0占位\n第3组：👍🏻；\n未记负重，0占位"
+        },
+        {
+          "index": 3,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw9a5c24229f2e0e59bc10",
+      "date": "2026-06-14",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n14/06\n\n自己练习\n\nLat pull down\n35kg\n12\n12\n15\n\nLow row close grip\n32.5kg\n12\n12\n15\n\nShoulder press db\n7.5kg\n15\n15\n15",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：low row close grip；用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：low row close grip；\n用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw941417f09a00da990fe2",
+      "date": "2026-06-15",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n15/6\n\nBox squat \n(Stepper second highest setting)\n(15kg plate x 2)\n\n45kg 8(max)\n42.5kg 10\n42.5kg 12\n\nBarbell RDL \n40kg warm up 6\n45kg  - 10\n42.5kg  - 12\n42.5kg  - 15 👍🏻 \n\nHip abduction \n65kg 15\n65kg 15\n65kg 15\n\nLeg extension\n36kg 15\n41kg 15\n41kg 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp2be5d1c28776175a446a",
+          "before": "第1组：max；设置：(Stepper second highest setting)\n(15kg plate x 2)；重量口径未注明，按原值记录\n第2、3组：设置：(Stepper second highest setting)\n(15kg plate x 2)；重量口径未注明，按原值记录",
+          "after": "第1组：max；\n设置：(Stepper second highest setting)\n(15kg plate x 2)；\n重量口径未注明，按原值记录\n第2、3组：设置：(Stepper second highest setting)\n(15kg plate x 2)；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp30084a15d17b2684c320",
+          "before": "第1组：warm up；热身，按普通组记录；重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录",
+          "after": "第1组：warm up；\n热身，按普通组记录；\n重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw503681012454a68dd0b2",
+      "date": "2026-06-19",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n19/6\n\nShoulder Press db(4)\n10kg 12\n10kg 11(supported)\n7.5kg 15\n\nStep board Push Ups(lower)\n11\n8\n9\n\nEz bar upright row \n10kg 15\n12.5kg 15\n12.5kg 15\n\nWide lat pull down\n35kg 15\n37.5kg 15\n37.5kg 15 👍🏻 \n\nLow row mag grip  \n37.5kg 12\n37.5kg 15\n37.5kg 15\n\nHanging knee raises \n15\n15\n15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录\n第2组：supported；坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录\n第2组：supported；\n坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始MAG字样保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始MAG字样保留；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwb3f962210663c215a6eb",
+      "date": "2026-06-23",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n21/6\n\nBox squat \n(Stepper highest setting)\n(10kg plate x 1,15kg x 1)\n47.5kg 10\n47.5kg 10\n47.5kg 10\n\nBarbell RDL \n40kg warm up 6\n45kg  - 12\n45kg  - 12\n40kg  - 15\n\nHip abduction \n70kg 15\n70kg 15\n70kg 15\n\nLeg extension\n41kg 16\n41kg 16\n41kg 16",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp2be5d1c28776175a446a",
+          "before": "第1、2、3组：设置：(Stepper highest setting)\n(10kg plate x 1,15kg x 1)；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：设置：(Stepper highest setting)\n(10kg plate x 1,15kg x 1)；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp30084a15d17b2684c320",
+          "before": "第1组：warm up；热身，按普通组记录；重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录",
+          "after": "第1组：warm up；\n热身，按普通组记录；\n重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwe0fa2c173d2809fbb7dc",
+      "date": "2026-06-29",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n29/5\n\nShoulder Press db(4)\n10kg 12\n10kg 12\n10kg 10\n\nStep board Push Ups\nHighest setting 1 13\nHighest setting 1 13\n2 stepper 12\n\nWide lat pull down \n40kg 12\n40kg 12\n40kg 12\n\nLow row mag grip  \n40kg 10\n37.5kg 10\n35kg 12\n\nLateral raises wall supported \n5kg 20\n5kg 20\n5kg 20\n\nHanging knee raises \n15\n12\n10",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimpf17404dcc5a6d6c43a2c",
+          "before": "第1、2组：Highest setting 1；未记负重，0占位\n第3组：stepper 12；未记负重，0占位",
+          "after": "第1、2组：Highest setting 1；\n未记负重，0占位\n第3组：stepper 12；\n未记负重，0占位"
+        },
+        {
+          "index": 3,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始MAG字样保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始MAG字样保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；原始变式：Lateral raises wall supported；未写明的支撑细节不推断；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n原始变式：Lateral raises wall supported；\n未写明的支撑细节不推断；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iw1c480f17cc952b4df013",
+      "date": "2026-07-01",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n1/7\n\nHip thrust \n10kg 15\n20kg 12\n20kg 15\n\nRDL\n47.5kg 12\n47.5kg 12\n45kg 12\n\n\nSmith squat \n10kg 10\n10kg 12\n10kg 12\n\nHip abduction \n75kg 20\n75kg 20\n75kg 20\n\nLeg extension\n46kg 15\n46kg 15\n46kg 15",
+      "entries": []
+    },
+    {
+      "id": "iwb6975a9df042455e6738",
+      "date": "2026-07-03",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n2/7\n\nShoulder press plate loaded\n23kg 14(failure)\n25.5kg 19\n23kg 9\n\nIncline chest press barbell \n20kg 10\n25kg 15\n27.5kg 10(max)\n25kg 11 \n\nMachine chest press plate loaded \n5kg 15\n7.5kg 15\n10kg 10(light supported)\n\nAustralian pull up\nLevel 11 15\nLevel 10 15\nLevel 9 15\n\nTricep push down (tired)\n17.5kg 9\n15kg 8\n10kg 20",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1464e6bf129e402b972a",
+          "before": "第1组：failure；重量口径未注明，按原值记录\n第2、3组：重量口径未注明，按原值记录",
+          "after": "第1组：failure；\n重量口径未注明，按原值记录\n第2、3组：重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp0d13a94ba364980f09c9",
+          "before": "第1、2、4组：重量口径未注明，按原值记录\n第3组：max；重量口径未注明，按原值记录",
+          "after": "第1、2、4组：重量口径未注明，按原值记录\n第3组：max；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimpc87d4181426bcd759149",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：light supported；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：light supported；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw923b65d6d25a4abd82df",
+      "date": "2026-07-06",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n6/7\n\nShoulder Press db(5)\n10kg 13\n10kg 13\n10kg 9\n\nStep board Push Ups\n(1)Highest setting 19\n(1)Highest setting 10\n(1)Highest setting 9\n*can progress to lower next week  \n\nWide lat pull down \n42.5kg 15(max)\n42.5kg 10\n40kg 12\n\nLow row Mag grip\n40kg 12\n40kg 12(good)\n37.5kg 15\n\nLateral raises wall supported \n5kg 25\n5kg 25\n5kg 25",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimpf17404dcc5a6d6c43a2c",
+          "before": "第1、2、3组：1; Highest setting；*can progress to lower next week；未记负重，0占位",
+          "after": "第1、2、3组：1; Highest setting；\n*can progress to lower next week；\n未记负重，0占位"
+        },
+        {
+          "index": 2,
+          "id": "cimped007a20ae300cc80157",
+          "before": "第1组：max；重量口径未注明，按原值记录\n第2、3组：重量口径未注明，按原值记录",
+          "after": "第1组：max；\n重量口径未注明，按原值记录\n第2、3组：重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始MAG字样保留；重量口径未注明，按原值记录\n第2组：good；用户逐次确认：2661 绳索V形杆坐姿划船；原始MAG字样保留；重量口径未注明，按原值记录",
+          "after": "第1、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始MAG字样保留；\n重量口径未注明，按原值记录\n第2组：good；\n用户逐次确认：2661 绳索V形杆坐姿划船；\n原始MAG字样保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；原始变式：Lateral raises wall supported；未写明的支撑细节不推断；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n原始变式：Lateral raises wall supported；\n未写明的支撑细节不推断；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iw55203c90c9a5be07e543",
+      "date": "2026-07-08",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n8/7\n\nHip thrust\n20kg 10(warm up）\n30kg 12\n35kg 12\n35kg 15\n\nRDL BB\n20kg 10\n50kg 12\n50kg 12\n55kg 12\n\nHack squat\n10kg 12\n10kg 12\n15kg 12 (max)\n\nHip abduction\n80kg 20\n80kg 20\n80kg 20",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp46e27c77c2a025529851",
+          "before": "第1组：warm up；热身，按普通组记录；重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录",
+          "after": "第1组：warm up；\n热身，按普通组记录；\n重量口径未注明，按原值记录\n第2、3、4组：重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimpe39d599e309da3eebd0b",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：max；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：max；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw6245f5e15b2c1c232d6b",
+      "date": "2026-07-10",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10/7\n\nShoulder press barbell\n20kg 10\n20kg 10\n20kg 8\n\nIncline chest press plate loaded\n3.75kg 10\n3.75kg 12(left struggle)\n3.75kg 12(left struggle)\n\nAustralian pull up\nLevel 9 20\nLevel 8 20\nLevel 8 12\n\nSingle arm lateral raises\n5kg 20\n5kg 20\n5kg 20\n\nRear delt fly\n14kg 18\n18kg 10\n16.5kg 15(till failure)",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimpa86a293e1e586a673cbe",
+          "before": "第1组：重量口径未注明，按原值记录\n第2、3组：left struggle；重量口径未注明，按原值记录",
+          "after": "第1组：重量口径未注明，按原值记录\n第2、3组：left struggle；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpae2bfc53583cab00a91e",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；单手完成，两侧均做完算一组；每手重量；单侧按原次数计一次；分侧完成，左右次数未知，不补造左右记录；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n单手完成，两侧均做完算一组；\n每手重量；\n单侧按原次数计一次；\n分侧完成，左右次数未知，不补造左右记录；\n两侧算一组"
+        },
+        {
+          "index": 4,
+          "id": "cimp78d4d5f2b212596e263f",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：till failure；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：till failure；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwff87e190f9cabd66c4d4",
+      "date": "2026-07-22",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n22/7\n\nChin up\nYellow 10\nRed 3\nYellow 4.5\n\nStanding barbell press\n20kg 10\n20kg 10\n20kg 9\n\nIncline chest press\n3.75kg 12\n3.75kg 11\n3.75kg 12\n\nAustralian pull up\nSmith 3 15\nSmith 2 15\nSmith 2 15\n\nLateral raises\n6kg 15-20\n6kg 15-20\n6kg 15-20",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp29acdec70cdf17f2abf5",
+          "before": "第1组：握法：窄距平行握，掌心相对（用户确认）；弹力带：Yellow；重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；弹力带：Red；重量栏0占位，不代表零阻力\n第3组：握法：窄距平行握，掌心相对（用户确认）；次数4.5→4；弹力带：Yellow；重量栏0占位，不代表零阻力",
+          "after": "第1组：握法：窄距平行握，掌心相对（用户确认）；\n弹力带：Yellow；\n重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；\n弹力带：Red；\n重量栏0占位，不代表零阻力\n第3组：握法：窄距平行握，掌心相对（用户确认）；\n次数4.5→4；\n弹力带：Yellow；\n重量栏0占位，不代表零阻力"
+        },
+        {
+          "index": 4,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iwb9b28cf0c5538f50a34f",
+      "date": "2026-07-30",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n30/7\n\nChin up\nYellow 5（warm up)\ngrey 6.5\ngrey 4.5\nYellow 6\n\nStanding barbell press\n20kg 10\n20kg 10\n20kg 12\n\nIncline chest press\n3.75kg 13\n3.75kg 12\n3.75kg 10\n\nLateral raises lean forward\n6kg 20\n6kg 20\n6kg 20\n\nHanging knee raises\n20\n20",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp29acdec70cdf17f2abf5",
+          "before": "第1组：warm up；握法：窄距平行握，掌心相对（用户确认）；热身，按普通组记录；弹力带：Yellow；重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；次数6.5→6；弹力带：grey；重量栏0占位，不代表零阻力\n第3组：握法：窄距平行握，掌心相对（用户确认）；次数4.5→4；弹力带：grey；重量栏0占位，不代表零阻力\n第4组：握法：窄距平行握，掌心相对（用户确认）；弹力带：Yellow；重量栏0占位，不代表零阻力",
+          "after": "第1组：warm up；\n握法：窄距平行握，掌心相对（用户确认）；\n热身，按普通组记录；\n弹力带：Yellow；\n重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；\n次数6.5→6；\n弹力带：grey；\n重量栏0占位，不代表零阻力\n第3组：握法：窄距平行握，掌心相对（用户确认）；\n次数4.5→4；\n弹力带：grey；\n重量栏0占位，不代表零阻力\n第4组：握法：窄距平行握，掌心相对（用户确认）；\n弹力带：Yellow；\n重量栏0占位，不代表零阻力"
+        },
+        {
+          "index": 3,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；原始变式：Lateral raises lean forward；未写明的支撑细节不推断；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n原始变式：Lateral raises lean forward；\n未写明的支撑细节不推断；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iwa489b1398719e3d89770",
+      "date": "2026-08-05",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n5/8\n\nChin up\nChin up assisted warm up 50kg  10\nGrey 5\nGrey 3.5\nYellow\n\nStanding barbell press\n20kg 12\n22.5kg 12\n22.5kg 9\n\nIncline chest press\n5kg 10\n5kg 10(supported)\n3.75kg 12\n\nAustralian pull up(squat rack)\nLevel  7 15\nLevel  7 15\nLevel  7 15w\n\nLateral raises lean forward\n6kg 20\n6kg 20\n6kg 20\n\nHanging knee raises\n18(straight)\n15(straight)\n15(straight)",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpab3d1a064119d7f44d95",
+          "before": "第1组：assisted warm up；握法：窄距平行握，掌心相对（用户确认）；热身，按普通组记录；重量口径未注明，按原值记录",
+          "after": "第1组：assisted warm up；\n握法：窄距平行握，掌心相对（用户确认）；\n热身，按普通组记录；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp29acdec70cdf17f2abf5",
+          "before": "第1组：握法：窄距平行握，掌心相对（用户确认）；弹力带：Grey；重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；次数3.5→3；弹力带：Grey；重量栏0占位，不代表零阻力",
+          "after": "第1组：握法：窄距平行握，掌心相对（用户确认）；\n弹力带：Grey；\n重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；\n次数3.5→3；\n弹力带：Grey；\n重量栏0占位，不代表零阻力"
+        },
+        {
+          "index": 3,
+          "id": "cimpa86a293e1e586a673cbe",
+          "before": "第1、3组：重量口径未注明，按原值记录\n第2组：supported；重量口径未注明，按原值记录",
+          "after": "第1、3组：重量口径未注明，按原值记录\n第2组：supported；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 5,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；原始变式：Lateral raises lean forward；未写明的支撑细节不推断；每手/每只重量，双只参与训练量；双手同时；两侧算一组\n第3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；原始��式：Lateral raises lean forward；未写明的支撑细节不推断；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n原始变式：Lateral raises lean forward；\n未写明的支撑细节不推断；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组\n第3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n原始��式：Lateral raises lean forward；\n未写明的支撑细节不推断；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 6,
+          "id": "cimp8a7558af78ccce7b2598",
+          "before": "第1、2、3组：straight；未记负重，0占位",
+          "after": "第1、2、3组：straight；\n未记负重，0占位"
+        }
+      ]
+    },
+    {
+      "id": "iw81f586683b8177e31232",
+      "date": "2026-08-07",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n7/8\n\nLeg curl\n90lbs 15\n100lbs 15\n110lbs 15\n\nBB Back squat\n20kg 10\n30kg 8\n\n40kg 10\n37.5kg 10\n37.5kg 10\n\nRDL BB\n30kg 10\n40kg 5\n50kg 2\n\n55kg 10\n50kg 10\n45kg 12\n\nHip abduction\n85kg 15\n85kg 15\n85kg 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1be6e858bd96453f4841",
+          "before": "第1组：90lbs→40.823kg；重量口径未注明，按原值记录\n第2组：100lbs→45.359kg；重量口径未注明，按原值记录\n第3组：110lbs→49.895kg；重量口径未注明，按原值记录",
+          "after": "第1组：90lbs→40.823kg；\n重量口径未注明，按原值记录\n第2组：100lbs→45.359kg；\n重量口径未注明，按原值记录\n第3组：110lbs→49.895kg；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwcceacedcdf147136b4ca",
+      "date": "2026-08-10",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10/8\n\nStanding barbell press\n25kg 8\n25kg 6\n22.5kg 10\n\nIncline chest press\n5kg 12\n5kg 10\n5kg 11(light supported)\n\nAustralian pull up(squat rack)\nLevel  6 15\nLevel  6 15\nLevel  6 15\n\nLateral raises side leaning\n7kg 20\n7kg 20\n7kg 20\n\nFace pull\n25kg 18\n25kg 18\n25kg 20",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimpa86a293e1e586a673cbe",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：light supported；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：light supported；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iwbe0a45c90e49339b8be0",
+      "date": "2026-08-11",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n11/8\n\nLeg curl\n110lbs 15\n100lbs 15\n110lbs 15\n\nWalking lunges\n10kg 2 rounds\n12.5kg 2 rounds\n12.5kg 2 rounds\n\nBarbell hip thrust\n30kg 15\n60kg 10\n50kg 10\n50kg 15\n\nHack squat\n10kg 10\n10kg 10\n10kg 10\n\nHip abduction\n85kg 15\n85kg 15\n85kg 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1be6e858bd96453f4841",
+          "before": "第1、3组：110lbs→49.895kg；重量口径未注明，按原值记录\n第2组：100lbs→45.359kg；重量口径未注明，按原值记录",
+          "after": "第1、3组：110lbs→49.895kg；\n重量口径未注明，按原值记录\n第2组：100lbs→45.359kg；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwdb933380dd94dd7f14b3",
+      "date": "2026-08-13",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n13/8\n\nChin up\nYellow 10\nGrey 4.5\nYellow 5\n\nChest press incline\n5kg 12\n7.5kg 10\n7.5kg 8\n\nChest fly\n9kg 15\n14kg 15\n14kg 15\n\nHanging knee raises straighter\n15\n15\n15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp29acdec70cdf17f2abf5",
+          "before": "第1、3组：握法：窄距平行握，掌心相对（用户确认）；弹力带：Yellow；重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；次数4.5→4；弹力带：Grey；重量栏0占位，不代表零阻力",
+          "after": "第1、3组：握法：窄距平行握，掌心相对（用户确认）；\n弹力带：Yellow；\n重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；\n次数4.5→4；\n弹力带：Grey；\n重量栏0占位，不代表零阻力"
+        }
+      ]
+    },
+    {
+      "id": "iw62297b6d3e6ba2b65199",
+      "date": "2026-08-17",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n17/8\n\npin loaded shoulder press\n23kg 20\n27kg 12\n30.5kg 10\n30.5kg 8\n\nIncline chest press\n6.25kg 10(left)\n6.25kg 10(left)\n5kg 10\n\nChest fly\n14kg 15\n18kg 12\n18kg 10\n\nLateral raises bench supported\n5kg 20\n5kg 20\n5kg 20\n\nLat pull down butterfly grip\n40kg 12\n42.5kg 10\n42.5kg 10\n\nFace pull\n25kg 18\n25kg 18\n25kg 18",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimpa86a293e1e586a673cbe",
+          "before": "第1、2组：left；重量口径未注明，按原值记录\n第3组：重量口径未注明，按原值记录",
+          "after": "第1、2组：left；\n重量口径未注明，按原值记录\n第3组：重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；原始变式：Lateral raises bench supported；未写明的支撑细节不推断；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n原始变式：Lateral raises bench supported；\n未写明的支撑细节不推断；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 4,
+          "id": "cimp07719aa9c82592b9d4b7",
+          "before": "第1、2、3组：用户逐次确认：6392 绳索磁力握把高位下拉；原始动作名保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：6392 绳索磁力握把高位下拉；\n原始动作名保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 5,
+          "id": "cimpe46c96fcff52686db7db",
+          "before": "第1、2、3组：The latest WhatsApp export marks the message as edited and shows 15 reps for all three Face Pull sets.；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：The latest WhatsApp export marks the message as edited and shows 15 reps for all three Face Pull sets.；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw89ae3ee16dc640905bea",
+      "date": "2026-08-19",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n19/8\n\nLeg curl\n115lbs 15\n115lbs 15\n115lbs 15\n\nWalking lunges （forward reverse)\n12.5kg 2 rounds\n12.5kg 2 rounds\n12.5kg 2 rounds\n\nBack squat\n45kg 5\n40kg 10\n35kg 8(chest and butt up)\n\nBarbell RDL\n40kg 10\n60kg 10\n55kg 10\n50kg 10",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1be6e858bd96453f4841",
+          "before": "第1、2、3组：115lbs→52.163kg；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：115lbs→52.163kg；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimpe4ead4316d4c6cb513bd",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：chest and butt up；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：chest and butt up；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimp30084a15d17b2684c320",
+          "before": "第1、2、3组：重量口径未注明，按原值记录\n第4组：The latest WhatsApp export marks the message as edited and shows 12 reps for the final set.；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：重量口径未注明，按原值记录\n第4组：The latest WhatsApp export marks the message as edited and shows 12 reps for the final set.；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw17eb0430cfa073350019",
+      "date": "2026-08-21",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n21/8\n\nChin up(squat rack)\nPull up Yellow 9\nGrey 6\nYellow 4.5\nYellow 6\n\nChest press incline\n7.5kg 15\n7.5kg 12\n7.5kg 12\n\nLow row mag (narrow)\n40kg 15\n40kg 15\n40kg 15\n\nSingle arm lateral\n6kg 20\n6kg 20\n6kg 20\n\nTricep skull crusher\n5kg 15\n5kg 10\n5kg 10\n\nHanging knee raises straight leg reverse grip\n15\n15 use chalk\n16 use chalk",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp29acdec70cdf17f2abf5",
+          "before": "第1组：pull up；握法：窄距平行握，掌心相对（用户确认）；弹力带：Yellow；重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；弹力带：Grey；重量栏0占位，不代表零阻力\n第3组：握法：窄距平行握，掌心相对（用户确认）；次数4.5→4；弹力带：Yellow；重量栏0占位，不代表零阻力\n第4组：握法：窄距平行握，掌心相对（用户确认）；弹力带：Yellow；重量栏0占位，不代表零阻力",
+          "after": "第1组：pull up；\n握法：窄距平行握，掌心相对（用户确认）；\n弹力带：Yellow；\n重量栏0占位，不代表零阻力\n第2组：握法：窄距平行握，掌心相对（用户确认）；\n弹力带：Grey；\n重量栏0占位，不代表零阻力\n第3组：握法：窄距平行握，掌心相对（用户确认）；\n次数4.5→4；\n弹力带：Yellow；\n重量栏0占位，不代表零阻力\n第4组：握法：窄距平行握，掌心相对（用户确认）；\n弹力带：Yellow；\n重量栏0占位，不代表零阻力"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始MAG字样保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始MAG字样保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpae2bfc53583cab00a91e",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；单手完成，两侧均做完算一组；每手重量；单侧按原次数计一次；分侧完成，左右次数未知，不补造左右记录；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n单手完成，两侧均做完算一组；\n每手重量；\n单侧按原次数计一次；\n分侧完成，左右次数未知，不补造左右记录；\n两侧算一组"
+        },
+        {
+          "index": 5,
+          "id": "cimp5b65660e4a05f41d0544",
+          "before": "第1组：未记负重，0占位\n第2、3组：use chalk；未记负重，0占位",
+          "after": "第1组：未记负重，0占位\n第2、3组：use chalk；\n未记负重，0占位"
+        }
+      ]
+    },
+    {
+      "id": "iw5ba5b9b4ddaba7f71c71",
+      "date": "2026-08-24",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n24/8\n\npin loaded shoulder press\n30.5kg 15\n30.5kg 12\n30.5kg 12(left)\n\nFlat db bench press\n7.5kg 10\n10kg 12\n10kg 10\n\nLat pull down butterfly grip\n42.5kg 15\n42.5kg 12\n42.5kg 12\n\nLateral raises bench supported\n5kg 25\n6kg 20\n6kg 20\n\nChest fly\n18kg 12\n18kg 13\n18kg 10",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpaa6f95baf11868ce154a",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：left；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：left；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp72bfd0875b9eaa5e62b1",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时卧推；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时卧推；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        },
+        {
+          "index": 2,
+          "id": "cimp07719aa9c82592b9d4b7",
+          "before": "第1、2、3组：用户逐次确认：6392 绳索磁力握把高位下拉；原始动作名保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：6392 绳索磁力握把高位下拉；\n原始动作名保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；原始变式：Lateral raises bench supported；未写明的支撑细节不推断；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n原始变式：Lateral raises bench supported；\n未写明的支撑细节不推断；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 4,
+          "id": "cimp76428a5a8b38599f3dcf",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：The latest WhatsApp export marks the message as edited and shows 12 reps for the final set.；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：The latest WhatsApp export marks the message as edited and shows 12 reps for the final set.；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwb9fef1137a7f08196a76",
+      "date": "2026-08-27",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n27/8\n\nLeg curl\n115lbs 15\n120lbs 15\n\nBack squat \n45kg 10\n45kg 10\n40kg 12\n\nBarbell good morning \n20kg 12\n35kg 12\n40kg 12( struggle)",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp1be6e858bd96453f4841",
+          "before": "第1组：115lbs→52.163kg；重量口径未注明，按原值记录\n第2组：120lbs→54.431kg；重量口径未注明，按原值记录",
+          "after": "第1组：115lbs→52.163kg；\n重量口径未注明，按原值记录\n第2组：120lbs→54.431kg；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimpaf61b72e1f68f07d4f83",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：struggle；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：struggle；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw2f6949df30f8f0ab2a74",
+      "date": "2026-08-28",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n28/8\n\nChin up\nBW 3.5\nBW 2\nChin up Yellow 10\n\nBb incline bench press\n30kg 12\n30kg 12\n30kg 12\n\nLow row mag (narrow)\n42.5kg 15\n42.5kg 15\n42.5kg 15\n\nTricep push down \n15kg 15\n15kg 15\n15kg 15\n\nHanging knee raises straight leg reverse grip \n17\n13",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpab3d1a064119d7f44d95",
+          "before": "第1组：握法：窄距平行握，掌心相对（用户确认）；次数3.5→3；自重，0表示未记录额外负重\n第2组：握法：窄距平行握，掌心相对（用户确认）；自重，0表示未记录额外负重",
+          "after": "第1组：握法：窄距平行握，掌心相对（用户确认）；\n次数3.5→3；\n自重，0表示未记录额外负重\n第2组：握法：窄距平行握，掌心相对（用户确认）；\n自重，0表示未记录额外负重"
+        },
+        {
+          "index": 1,
+          "id": "cimp29acdec70cdf17f2abf5",
+          "before": "第1组：pull up；握法：窄距平行握，掌心相对（用户确认）；弹力带：Yellow；重量栏0占位，不代表零阻力",
+          "after": "第1组：pull up；\n握法：窄距平行握，掌心相对（用户确认）；\n弹力带：Yellow；\n重量栏0占位，不代表零阻力"
+        },
+        {
+          "index": 3,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；原始MAG字样保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：2661 绳索V形杆坐姿划船；\n原始MAG字样保留；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw8535626bf17aa4ebdb99",
+      "date": "2026-08-31",
+      "before": "健身房：DPC Club Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：DPC Club Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n插销式器械肩推\n20kg 10\n15kg 10\n15kg 12\n\n\n高位下拉 42kg\n12/12/12\n\n\n哑铃卧推\n12/12/15\n\n\n哑铃侧平举 5kg\n25/25/5\n\n face pull \n8档 15/20\n9档 20\n\n上斜哑铃弯举 7.5kg\n12/12/12\n\n绳索下压 7档\n20/12/15",
+      "entries": [
+        {
+          "index": 2,
+          "id": "cimpcc3ecc28448fca7cb8bc",
+          "before": "第1、2、3组：用户补充哑铃卧推重量：10kg；重量为每手单只哑铃重量；双手各持一只同时卧推；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：用户补充哑铃卧推重量：10kg；\n重量为每手单只哑铃重量；\n双手各持一只同时卧推；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        },
+        {
+          "index": 3,
+          "id": "cimpf882506f40e0f69ba297",
+          "before": "第1、2组：哑铃；重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组\n第3组：用户纠正：侧平举写错了最后一组25；哑铃；重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2组：哑铃；\n重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组\n第3组：用户纠正：侧平举写错了最后一组25；\n哑铃；\n重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 5,
+          "id": "cimp73958ffa281ecb703b7a",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时弯举；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时弯举；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        },
+        {
+          "index": 6,
+          "id": "cimp165460cd8eb6517b12b1",
+          "before": "第1、2、3组：绳索；档位/高度7，非kg",
+          "after": "第1、2、3组：绳索；\n档位/高度7，非kg"
+        }
+      ]
+    },
+    {
+      "id": "iw7561565cf241d1b4afda",
+      "date": "2026-09-02",
+      "before": "健身房：Peak Fitness TRX。训练方式：教练带练。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：教练带练。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n2/9\n\npin loaded shoulder press \n32kg 15\n34kg 10\n34kg 10\n\nFlat db bench press \n12.5kg 8\n12.5kg 7\n10kg 15\n\nLat pull down butterfly grip\n45kg 10\n45kg 12\n45kg 12\n\nLateral raises bench supported \n6kg 25\n6kg 25\n6kg 25\n\nTricep push down\n17.5kg 15\n17.5kg 15\n17.5kg 11(till failure)\n\nChest fly\n18kg 16\n20kg 10\n20kg 10",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimp72bfd0875b9eaa5e62b1",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时卧推；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时卧推；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        },
+        {
+          "index": 2,
+          "id": "cimp07719aa9c82592b9d4b7",
+          "before": "第1、2、3组：用户逐次确认：6392 绳索磁力握把高位下拉；原始动作名保留；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户逐次确认：6392 绳索磁力握把高位下拉；\n原始动作名保留；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；原始变式：Lateral raises bench supported；未写明的支撑细节不推断；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n原始变式：Lateral raises bench supported；\n未写明的支撑细节不推断；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 4,
+          "id": "cimp6624c48eff55e0ed2c40",
+          "before": "第1、2组：重量口径未注明，按原值记录\n第3组：till failure；重量口径未注明，按原值记录",
+          "after": "第1、2组：重量口径未注明，按原值记录\n第3组：till failure；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw99f6936dff7a6cadfc61",
+      "date": "2026-09-05",
+      "before": "健身房：DPC Club Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：DPC Club Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n9.5 \n史密斯机深蹲\n不知道空杆质量 配重20kg\n10 / 10\n25kg\n10\n\n\n六角杠硬拉\n不知道空杆质量 配重20kg\n10\n25kg\n10 / 15\n\n坐姿腿屈伸\n33 15/15/15\n\n\n行走弓步 7.5kg\n15 15\n\n悬垂举腿\n15 15 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp39da7c51d8718f52ffb7",
+          "before": "第1、2、3组：仅配重，不含未知空杆质量；设置：仅配重；空杆质量未知；仅配重，不含杆重；未知杆重不补算；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：仅配重，不含未知空杆质量；\n设置：仅配重；\n空杆质量未知；\n仅配重，不含杆重；\n未知杆重不补算；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimpb2184f3f9ed4ad8d2d9a",
+          "before": "第1、2、3组：仅配重，不含未知空杆质量；设置：仅配重；空杆质量未知；仅配重，不含杆重；未知杆重不补算；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：仅配重，不含未知空杆质量；\n设置：仅配重；\n空杆质量未知；\n仅配重，不含杆重；\n未知杆重不补算；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 2,
+          "id": "cimp8585b3e9d32824835ce3",
+          "before": "第1、2、3组：用户确认重量：33kg；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认重量：33kg；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw5857b609e66c9982365b",
+      "date": "2026-09-07",
+      "before": "健身房：BKK W Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：BKK W Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n9.7\n\nshoulder press 30kg\n12 12 12\n\n哑铃卧推\n9kg 12\n10kg 12 12\n\n侧平举6kg\n25 25 25\n\n高位下拉  40kg\n12 12 12",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp057911468c7460217927",
+          "before": "第1、2、3组：插销式，用户后续确认；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：插销式，用户后续确认；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp758b3c161c960b36d095",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时卧推；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时卧推；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        },
+        {
+          "index": 2,
+          "id": "cimp30c3fdc51e4f408f45ce",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        }
+      ]
+    },
+    {
+      "id": "iw4946a2647c1e548c41f6",
+      "date": "2026-09-09",
+      "before": "健身房：BKK W Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：BKK W Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n9.9\n\n插销 shoulder press 30kg\n10 10 12\n\n哑铃卧推 10kg\n12 12 12\n\n高位下拉 40kg\n15 12 12\n\n单臂哑铃划船 10kg\n15 15 15\n\n哑铃侧平举 6kg\n25 25 25\n\n哑铃仰卧臂屈伸 5kg\n12 12 15\n\nlow row\n40kg 15 15\n45kg 15\n\nabdominal crunch 20kg\n15 15 15\n\nChest Press\n15kg 15 15 15\n20kg 15\n\n\npectoral machine 15kg\n15 15 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp057911468c7460217927",
+          "before": "第1、2、3组：插销式；设置：插销式；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：插销式；\n设置：插销式；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 1,
+          "id": "cimp758b3c161c960b36d095",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时卧推；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时卧推；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        },
+        {
+          "index": 3,
+          "id": "cimp8d95655d7c9ecc1eb935",
+          "before": "第1、2、3组：单臂；每侧次数未另行注明；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：单臂；\n每侧次数未另行注明；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimp30c3fdc51e4f408f45ce",
+          "before": "第1、2、3组：哑铃；重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：哑铃；\n重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 5,
+          "id": "cimp82bc607b7aee2fb30c80",
+          "before": "第1、2、3组：哑铃；每手5kg，一手一只；设置：哑铃；每手重量；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3组：哑铃；\n每手5kg，一手一只；\n设置：哑铃；\n每手重量；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 6,
+          "id": "cimp13e8135381ca08ae1603",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 7,
+          "id": "cimpdf3b2fde88072a9bccfc",
+          "before": "第1、2、3组：坐姿卷腹机，用户确认；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：坐姿卷腹机，用户确认；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 8,
+          "id": "cimpc7e551fa6c203d1b1a8b",
+          "before": "第1、2、3、4组：坐姿向前推；插销式器械，用户确认；设置：插销式；重量口径未注明，按原值记录",
+          "after": "第1、2、3、4组：坐姿向前推；\n插销式器械，用户确认；\n设置：插销式；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 9,
+          "id": "cimpb32062d3f8c5bb103c37",
+          "before": "第1、2、3组：器械夹胸，双臂由两侧向胸前合拢，用户确认；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：器械夹胸，双臂由两侧向胸前合拢，用户确认；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw465a30ac6e3d8347165b",
+      "date": "2026-09-12",
+      "before": "健身房：BKK Marriott Surawongse Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：BKK Marriott Surawongse Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n记录 09.12\n\n\n\nleg press\n32kg 12 12 15\n\n哑铃罗马尼亚硬拉 22.5kg*2\n12 12 12\n\n哑铃卧推\n10kg*2   12 \n12.5kg*2  12 12\n\n高位下拉 lat pull 45kg\n12 12 11\n\nseated row\n39kg 12\n45kg 12 12\n\n\n哑铃侧平举\n5kg*2 30\n7.5kg*2 20 20\n\n\n屈膝收腹 自重\n15 15 15\n\nchest press 32kg\n12 12 10",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimpe1ba482fa4ef404a3593",
+          "before": "第1、2、3组：设置：双哑铃；每手重量；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3组：设置：双哑铃；\n每手重量；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 2,
+          "id": "cimp4648f7642c82b94a4558",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手各持一只同时卧推；设置：双哑铃；每手重量；每手/每只重量，双只参与训练量；双手同时；双手同时一次；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手各持一只同时卧推；\n设置：双哑铃；\n每手重量；\n每手/每只重量，双只参与训练量；\n双手同时；\n双手同时一次；\n两侧算一组"
+        },
+        {
+          "index": 4,
+          "id": "cimp997e7cf78642fb9b5756",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 5,
+          "id": "cimpb2bd032118b939b4dcd8",
+          "before": "第1、2、3组：重量为每手单只哑铃重量；双手同时完成，两侧均做完算一组；设置：双哑铃；每手重量；每手/每只重量，双只参与训练量；双手同时；两侧算一组",
+          "after": "第1、2、3组：重量为每手单只哑铃重量；\n双手同时完成，两侧均做完算一组；\n设置：双哑铃；\n每手重量；\n每手/每只重量，双只参与训练量；\n双手同时；\n两侧算一组"
+        },
+        {
+          "index": 7,
+          "id": "cimp8c0675e03986e0586718",
+          "before": "第1、2、3组：插销式器械胸推，用户确认；设置：插销式；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：插销式器械胸推，用户确认；\n设置：插销式；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw2fc1714caba3ee861b06",
+      "date": "2026-09-13",
+      "before": "健身房：BKK Marriott Surawongse Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：BKK Marriott Surawongse Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n添加记录 9.13\n\nleg press\n32kg 12 12 12\n\nseated row\n45kg 12 12 12\n\n哑铃卧推\n12.5kg*2 12 12",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimp997e7cf78642fb9b5756",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwd78268ad290a56fe741b",
+      "date": "2026-09-15",
+      "before": "健身房：BKK W Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：BKK W Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n9.15 W 健身房\n\n\nleg press\n30kg 12 \n40kg 12\n50kg 12\n\n哑铃罗马尼亚硬拉\n12.5kg×2 12\n20kg×2 12\n22kg×2 15\n\n哑铃卧推\n12.5kg×2  12 12 12\n\nlat pulldown\n45kg 12\n40kg 12 12\n\nlow row\n40kg 12\n45kg 12 15\n\nface pull\n25kg 15 15 15\n\nabdominal crunch\n25kg 15 15 15\n\nchest press\n35kg 12 12 12",
+      "entries": [
+        {
+          "index": 4,
+          "id": "cimp13e8135381ca08ae1603",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 7,
+          "id": "cimpc7e551fa6c203d1b1a8b",
+          "before": "第1、2、3组：插销式器械胸推，用户确认；设置：插销式；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：插销式器械胸推，用户确认；\n设置：插销式；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw7c3e996e502f081ce07d",
+      "date": "2026-09-19",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n0919 \n\n记录\nLeg Press（腿举）\n45kg 12\n50kg 12 15\n\n\nDumbbell Chest Press（哑铃卧推）\n12.5kg ×2\n12 12 12\n\nLat Pull Down（高位下拉）\n42kg 12 12 12\n\n\nDumbbell Romanian Deadlift（哑铃罗马尼亚硬拉）\n22.5kg *2\n12 \n25kg *2\n12 12\n\nLow Row（低位划船）\n42kg\n12 12 12\n\nShoulder Press（器械肩推）\n25kg 12 9 5\n\nLateral Raise（侧平举）\n7.5kg 20 20 20\n\nKnee Tuck（屈膝收腹）\n15 15 15",
+      "entries": [
+        {
+          "index": 4,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 6,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：用户本轮确认：双手同时完成侧平举；重量口径未注明，按原值记录；双手同时",
+          "after": "第1、2、3组：用户本轮确认：双手同时完成侧平举；\n重量口径未注明，按原值记录；\n双手同时"
+        }
+      ]
+    },
+    {
+      "id": "iw793b165011e294ded68e",
+      "date": "2026-09-21",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n09.21\npeak fitness\n\n窄距引体向上\n自重 4\nyellow 12\ngray 6\n\nleg press\n46kg 12\n55kg 12 15\n\n哑铃罗马尼亚硬拉\n22.5kg*2 15 15\n25kg*2 15\n\nleg curl\n120lbs 15\n110lbs 15 15 😰\n\nlat pulldown\n40kg 15 15 15\n\n\n悬垂举腿\n15 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpab3d1a064119d7f44d95",
+          "before": "第1组：窄距；掌心相对，用户确认；自重，0表示未记录额外负重",
+          "after": "第1组：窄距；\n掌心相对，用户确认；\n自重，0表示未记录额外负重"
+        },
+        {
+          "index": 1,
+          "id": "cimp29acdec70cdf17f2abf5",
+          "before": "第1组：窄距；掌心相对，用户确认；弹力带：yellow；重量栏0占位，不代表零阻力\n第2组：窄距；掌心相对，用户确认；弹力带：gray；重量栏0占位，不代表零阻力",
+          "after": "第1组：窄距；\n掌心相对，用户确认；\n弹力带：yellow；\n重量栏0占位，不代表零阻力\n第2组：窄距；\n掌心相对，用户确认；\n弹力带：gray；\n重量栏0占位，不代表零阻力"
+        },
+        {
+          "index": 4,
+          "id": "cimp1be6e858bd96453f4841",
+          "before": "第1组：120lbslbs→54.431kg；重量口径未注明，按原值记录\n第2、3组：😰；110lbslbs→49.895kg；重量口径未注明，按原值记录",
+          "after": "第1组：120lbslbs→54.431kg；\n重量口径未注明，按原值记录\n第2、3组：😰；\n110lbslbs→49.895kg；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iwd820ffbc02d9f8c5acae",
+      "date": "2026-09-22",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n09.22\npeak fitness trx\n\nDumbbell Chest Press（哑铃卧推）\n平板 12.5kg*2 12 12 12\n\nPin-Loaded Shoulder Press（插销式器械肩推）\n32kg 12 12 11\n\nSeated Row（坐姿划船）\n45kg 12 12 12\n\nLateral Raise（侧平举）\n7kg*2 20 25 25\n\nIncline Dumbbell Curl（上斜哑铃弯举）\n60度 7.5kg*2 12 12 12\n\nLat Pull Down（高位下拉）\n45kg 12 15 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimp72bfd0875b9eaa5e62b1",
+          "before": "第1、2、3组：设置：平板；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3组：设置：平板；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 2,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 3,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：用户本轮确认：双手同时完成侧平举；每手/每只重量，双只参与训练量；双手同时",
+          "after": "第1、2、3组：用户本轮确认：双手同时完成侧平举；\n每手/每只重量，双只参与训练量；\n双手同时"
+        },
+        {
+          "index": 4,
+          "id": "cimpa90d11c3700cd558c6a3",
+          "before": "第1、2、3组：设置：60度；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3组：设置：60度；\n每手/每只重量，双只参与训练量"
+        }
+      ]
+    },
+    {
+      "id": "iwdb072f8c6eb0f98fdddf",
+      "date": "2026-09-24",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n记录 09.24\nPeak\n\n哑铃罗马尼亚硬拉\n25kg*2\n12 12 12\n\nLeg Press\n55kg 12\n64kg 12 15\n\nLeg Curl\n100lbs\n15 15 15\n\n悬垂举腿\n15 15 15",
+      "entries": [
+        {
+          "index": 2,
+          "id": "cimp1be6e858bd96453f4841",
+          "before": "第1、2、3组：100lbslbs→45.359kg；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：100lbslbs→45.359kg；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw6ada43cd2be84715be85",
+      "date": "2026-09-29",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n9.29\npeak\n\n哑铃卧推\n12.5kg*2 12 12 12\n\n\nLow Row（低位划船）\n45kg 12 12 12\n\n\nLat Pull Down（高位下拉）\n45kg 12 12 12\n\nPin-Loaded Shoulder Press（插销式器械肩推）\n32kg 12\n36kg 12 8\n\n\nLateral Raise（侧平举）\n7.5kg*2 20 20 20\n\n\nIncline Dumbbell Curl（上斜哑铃弯举）\n7.5kg*2 12 12 12",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：用户本轮确认：双手同时完成侧平举；每手/每只重量，双只参与训练量；双手同时",
+          "after": "第1、2、3组：用户本轮确认：双手同时完成侧平举；\n每手/每只重量，双只参与训练量；\n双手同时"
+        }
+      ]
+    },
+    {
+      "id": "iw5bd78fd20a4fed8be737",
+      "date": "2026-10-01",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10.1\npeak\n\nDumbbell Romanian Deadlift（哑铃罗马尼亚硬拉）\n25kg*2\n12 12 12\n\nDumbbell Chest Press（哑铃卧推）\n12.5kg *2\n12 12 12\n\nLat Pull Down（高位下拉）\n45kg\n12 12 12\n\nLow Row（低位划船）\n45kg\n12 12 12\n\nHanging Leg Raise（悬垂举腿）\n自重\n15 15 15",
+      "entries": [
+        {
+          "index": 3,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw0c99ccf5caaac925fc02",
+      "date": "2026-10-08",
+      "before": "健身房：DPC Club Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：DPC Club Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10.8\nparkcity club\n\nDumbbell Chest Press（哑铃卧推）\n12.5kg *2\n12 12 12\n\n引体向上 窄距 \n自重 5\n弹力带 8\n\n\nLow Row（低位划船）\n42kg\n15 15 15\n\nLat Pull Down（高位下拉）\n42kg\n12 12 12\n\nPin-Loaded Shoulder Press（插销式器械肩推）\n20kg\n12 12 12\n\nLateral Raise（侧平举）\n7.5kg*2\n20 20 20\n\nIncline Dumbbell Curl（上斜哑铃弯举）\n7.5kg*2\n12 12 12",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimpe6717c75017ad3782e69",
+          "before": "第1组：窄距；掌心相对，用户确认；自重，0表示未记录额外负重",
+          "after": "第1组：窄距；\n掌心相对，用户确认；\n自重，0表示未记录额外负重"
+        },
+        {
+          "index": 2,
+          "id": "cimpf638ad56f1370e8f315c",
+          "before": "第1组：窄距；掌心相对，用户确认；弹力带：弹力带；重量栏0占位，不代表零阻力",
+          "after": "第1组：窄距；\n掌心相对，用户确认；\n弹力带：弹力带；\n重量栏0占位，不代表零阻力"
+        },
+        {
+          "index": 3,
+          "id": "cimp521e4967e763a2306a3a",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 6,
+          "id": "cimpf882506f40e0f69ba297",
+          "before": "第1、2、3组：用户本轮确认：双手同时完成侧平举；每手/每只重量，双只参与训练量；双手同时",
+          "after": "第1、2、3组：用户本轮确认：双手同时完成侧平举；\n每手/每只重量，双只参与训练量；\n双手同时"
+        }
+      ]
+    },
+    {
+      "id": "iw12fb09f3e28933a15589",
+      "date": "2026-10-11",
+      "before": "健身房：DPC Club Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：DPC Club Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10.11\ndpc club gym\n\n窄距引体向上\n自重 6\n灰色弹力带 8 6\n\nleg press\n65kg 12 12 12\n\nleg curl\n俯卧\n39kg 12\n46kg 12\n39kg 12\n\nDumbbell Chest Press（哑铃卧推）\n12.5kg*2\n12 12 12\n\nIncline Dumbbell Curl（上斜哑铃弯举）\n7.5kg*2\n12 12 12\n\nHanging Leg Raise（悬垂举腿）\n15 15 15",
+      "entries": [
+        {
+          "index": 0,
+          "id": "cimpe6717c75017ad3782e69",
+          "before": "第1组：窄距；掌心相对，用户确认；自重，0表示未记录额外负重",
+          "after": "第1组：窄距；\n掌心相对，用户确认；\n自重，0表示未记录额外负重"
+        },
+        {
+          "index": 1,
+          "id": "cimpf638ad56f1370e8f315c",
+          "before": "第1、2组：窄距；掌心相对，用户确认；弹力带：灰色弹力带；重量栏0占位，不代表零阻力",
+          "after": "第1、2组：窄距；\n掌心相对，用户确认；\n弹力带：灰色弹力带；\n重量栏0占位，不代表零阻力"
+        },
+        {
+          "index": 3,
+          "id": "cimp58a47d194e72a3123b4c",
+          "before": "第1、2、3组：俯卧；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：俯卧；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw3e1528c1a6367cf35525",
+      "date": "2026-10-13",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10.13\npeak\n\n\nDumbbell Romanian Deadlift（哑铃罗马尼亚硬拉）\n25kg*2\n12 12 12\n\nDumbbell Chest Press（哑铃卧推）\n12.5kg*2\n12 12 12\n\nmachine chest press\n32kg 12 10 7\n27kg 10\n\nLat Pull Down（高位下拉）\n45kg 15 15 15\n\nLow Row（低位划船）\n45kg 15 15 15\n\nPin-Loaded Shoulder Press（插销式器械肩推）\n27kg 12\n32kg 12 10 8",
+      "entries": [
+        {
+          "index": 4,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw424615ee6c90b85c9678",
+      "date": "2026-10-15",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10.15\npeak\n\nLeg Press（腿举）\n64kg 12\n73kg 12 15\n\nDumbbell Romanian Deadlift（哑铃罗马尼亚硬拉）\n25kg*2 12 12 12\n\nDumbbell Chest Press（哑铃卧推）\n12.5kg*2\n12 12 12\n\nDumbbell Shoulder Press 哑铃肩推\n10kg*2 12 12 12\n\nIncline Dumbbell Curl（上斜哑铃弯举）\n7.5kg*2 12 12 12\n\nTriceps Skull Crusher（仰卧臂屈伸）\n7.5kg*2 12\n5kg*2 15 15\n\nLow Row（低位划船）\n45kg 15 15 15\n\nHip Abduction（髋外展机）\n80kg 15 15 15",
+      "entries": [
+        {
+          "index": 3,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 6,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw52dc5be066d1751c4521",
+      "date": "2026-10-17",
+      "before": "健身房：DPC Club Gym。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：DPC Club Gym。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10.17\n\ndpc club gym\n\nDumbbell Chest Press（哑铃卧推）\n12.5kg*2 12 12\n15kg*2 12\n\n\nDumbbell Shoulder Press（哑铃肩推）\n10kg*2 12 12\n12.5kg*2 12\n\nIncline Dumbbell Curl（上斜哑铃弯举）\n7.5kg*2 12\n10kg*2 10 9\n\nTriceps Skull Crusher（仰卧臂屈伸）\n5kg*2 12 12 12\n\nAbdominal Crunch 坐姿卷腹\n30kg 15 15 15\n\nLat Pull Down（高位下拉）\n42kg 12 12 12\n\nLow Row（低位划船）\n42kg 12 12 15",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimp209d8520dd6b637fbf50",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 6,
+          "id": "cimp521e4967e763a2306a3a",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw3ecc5f084a764cead2ac",
+      "date": "2026-10-20",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10.20\npeak fitness\n\nDumbbell Chest Press（哑铃卧推）\n12.5kg*2 12\n15kg*2 12 12\n\nDumbbell Shoulder Press（哑铃肩推）\n10kg*2 12\n12.5kg*2 10 10\n\nIncline Dumbbell Curl（上斜哑铃弯举）\n10kg*2 12 9 7\n\nAssisted Chin-Up（辅助引体向上）\n40kg 12 10 10\n\nLow Row（低位划船）\n40kg 15 15 15\n\nLeg Press（腿举）\n73kg 15 15 15",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 3,
+          "id": "cimpedc49aa04805d13e53e4",
+          "before": "第1、2、3组：握法：窄距平行握，掌心相对（用户确认）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：握法：窄距平行握，掌心相对（用户确认）；\n重量口径未注明，按原值记录"
+        },
+        {
+          "index": 4,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    },
+    {
+      "id": "iw9d22a4afac2705d6b474",
+      "date": "2026-10-22",
+      "before": "健身房：Peak Fitness TRX。训练方式：自己练习。时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。",
+      "after": "健身房：Peak Fitness TRX。\n训练方式：自己练习。\n时间统一为12:00–13:30（UTC+08:00），并非实际测量时长。\n\n原始记录：\n10.22\npeak\n\nDumbbell Chest Press（哑铃卧推）\n15kg*2 12 12 12\n\nDumbbell Shoulder Press（哑铃肩推）\n12.5kg*2 11 9 10\n\nIncline Dumbbell Curl（上斜哑铃弯举）\n10kg*2 10 10 7\n\nLateral Raise（侧平举）\n7.5kg*2 20 20 20 😮‍💨\n\nLat Pull Down（高位下拉）\n45kg 12 12 12\n\nHip Abduction（髋外展机）\n75kg 15\n70kg 15 15\n80kg 15\n\nLow Row（低位划船）\n45kg 12 12 12\n\nHanging Leg Raise（悬垂举腿）\n15 15",
+      "entries": [
+        {
+          "index": 1,
+          "id": "cimpe5d6d37ca6297f8d92c0",
+          "before": "第1、2、3组：坐姿平行握；掌心略向外翻；用户确认 OpenGym 0404；每手/每只重量，双只参与训练量",
+          "after": "第1、2、3组：坐姿平行握；\n掌心略向外翻；\n用户确认 OpenGym 0404；\n每手/每只重量，双只参与训练量"
+        },
+        {
+          "index": 3,
+          "id": "cimpdbe295395c98066023f3",
+          "before": "第1、2、3组：😮‍💨；用户本轮确认：双手同时完成侧平举；每手/每只重量，双只参与训练量；双手同时",
+          "after": "第1、2、3组：😮‍💨；\n用户本轮确认：双手同时完成侧平举；\n每手/每只重量，双只参与训练量；\n双手同时"
+        },
+        {
+          "index": 6,
+          "id": "cimp3007d60a8282a4ab7e28",
+          "before": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；重量口径未注明，按原值记录",
+          "after": "第1、2、3组：用户确认：绳索V形把手坐姿划船（OpenGym 2661）；\n重量口径未注明，按原值记录"
+        }
+      ]
+    }
+  ],
+  "exNotes": [
+    {
+      "id": "cimpab3d1a064119d7f44d95",
+      "before": "健身房：Peak Fitness TRX；标准动作 0253。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0253。"
+    },
+    {
+      "id": "cimp314bcff10101fe979053",
+      "before": "健身房：Peak Fitness TRX；标准动作 1047。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 1047。"
+    },
+    {
+      "id": "cimp72bfd0875b9eaa5e62b1",
+      "before": "健身房：Peak Fitness TRX；标准动作 0289。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0289。"
+    },
+    {
+      "id": "cimp54c0e58a6bcfc0979988",
+      "before": "健身房：Peak Fitness TRX；标准动作 0308。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0308。"
+    },
+    {
+      "id": "cimp079933dcca32f8e76c30",
+      "before": "健身房：Peak Fitness TRX；标准动作 1677。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 1677。"
+    },
+    {
+      "id": "cimpaa6f95baf11868ce154a",
+      "before": "健身房：Peak Fitness TRX；标准动作 1454。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 1454。"
+    },
+    {
+      "id": "cimped007a20ae300cc80157",
+      "before": "健身房：Peak Fitness TRX；标准动作 2291。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 2291。"
+    },
+    {
+      "id": "cimp3007d60a8282a4ab7e28",
+      "before": "健身房：Peak Fitness TRX；标准动作 2661。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 2661。"
+    },
+    {
+      "id": "cimpc8c9e0b514485c265ed1",
+      "before": "健身房：Peak Fitness TRX；标准动作 1678。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 1678。"
+    },
+    {
+      "id": "cimpbaa2a3937c9da2f4c1fe",
+      "before": "健身房：Peak Fitness TRX；标准动作 0277。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0277。"
+    },
+    {
+      "id": "cimp1464e6bf129e402b972a",
+      "before": "健身房：Peak Fitness TRX；标准动作 2318。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 2318。"
+    },
+    {
+      "id": "cimp07719aa9c82592b9d4b7",
+      "before": "健身房：Peak Fitness TRX；标准动作 6392。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 6392。"
+    },
+    {
+      "id": "cimpb32d654304b8f9d43dcc",
+      "before": "健身房：Peak Fitness TRX；标准动作 0757。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0757。"
+    },
+    {
+      "id": "cimp6ad2ef69c94039618272",
+      "before": "健身房：Peak Fitness TRX；标准动作 2415。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 2415。"
+    },
+    {
+      "id": "cimp6624c48eff55e0ed2c40",
+      "before": "健身房：Peak Fitness TRX；标准动作 0241。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0241。"
+    },
+    {
+      "id": "cimpc1291f03c4bef1ca8c2b",
+      "before": "健身房：Peak Fitness TRX；标准动作 2290。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 2290。"
+    },
+    {
+      "id": "cimp686e091f710d4ca67583",
+      "before": "健身房：Peak Fitness TRX；标准动作 1459。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 1459。"
+    },
+    {
+      "id": "cimp3c93127d64c84634ef90",
+      "before": "健身房：Peak Fitness TRX；标准动作 2972。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 2972。"
+    },
+    {
+      "id": "cimp382db394b1771306ea0f",
+      "before": "健身房：Peak Fitness TRX；标准动作 0597。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0597。"
+    },
+    {
+      "id": "cimp100924fe93f81e4d5e08",
+      "before": "健身房：Peak Fitness TRX；标准动作 5328。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 5328。"
+    },
+    {
+      "id": "cimp964a15cbdfcd52cb2c55",
+      "before": "健身房：Peak Fitness TRX；标准动作 6550。重量栏为档位/高度，非kg。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 6550。\n重量栏为档位/高度，非kg。"
+    },
+    {
+      "id": "cimp24a589b51bcc2a909dbb",
+      "before": "健身房：Peak Fitness TRX；标准动作 3102。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 3102。"
+    },
+    {
+      "id": "cimp1be6e858bd96453f4841",
+      "before": "健身房：Peak Fitness TRX；标准动作 0599。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0599。"
+    },
+    {
+      "id": "cimpe131322bfcfce25ea8f9",
+      "before": "健身房：Peak Fitness TRX；标准动作 1557。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 1557。"
+    },
+    {
+      "id": "cimpe8c509734238f23049e2",
+      "before": "健身房：Peak Fitness TRX；标准动作 6607。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 6607。"
+    },
+    {
+      "id": "cimp21356e064572493083a8",
+      "before": "健身房：Peak Fitness TRX；标准动作 0426。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0426。"
+    },
+    {
+      "id": "cimp0485718e6902da904e71",
+      "before": "健身房：Peak Fitness TRX；标准动作 7114。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 7114。"
+    },
+    {
+      "id": "cimpe46c96fcff52686db7db",
+      "before": "健身房：Peak Fitness TRX；标准动作 5658。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 5658。"
+    },
+    {
+      "id": "cimpa90d11c3700cd558c6a3",
+      "before": "健身房：Peak Fitness TRX；标准动作 0318。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0318。"
+    },
+    {
+      "id": "cimp76428a5a8b38599f3dcf",
+      "before": "健身房：Peak Fitness TRX；标准动作 0596。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0596。"
+    },
+    {
+      "id": "cimp8a7558af78ccce7b2598",
+      "before": "健身房：Peak Fitness TRX；标准动作 9819。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 9819。"
+    },
+    {
+      "id": "cimp525decb5a011890f7198",
+      "before": "健身房：Peak Fitness TRX；标准动作 0585。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0585。"
+    },
+    {
+      "id": "cimped46606b07fa8fe069e0",
+      "before": "健身房：Peak Fitness TRX；标准动作 6328。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 6328。"
+    },
+    {
+      "id": "cimp5b65660e4a05f41d0544",
+      "before": "健身房：Peak Fitness TRX；标准动作 0472。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0472。"
+    },
+    {
+      "id": "cimp39611af44558c6253639",
+      "before": "健身房：Peak Fitness TRX；标准动作 5107。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 5107。"
+    },
+    {
+      "id": "cimp0eb9c31d98380f6e4a29",
+      "before": "健身房：Peak Fitness TRX；标准动作 6327。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 6327。"
+    },
+    {
+      "id": "cimpa408e0d80749eb89ef07",
+      "before": "健身房：Peak Fitness TRX；标准动作 0381。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0381。"
+    },
+    {
+      "id": "cimp30084a15d17b2684c320",
+      "before": "健身房：Peak Fitness TRX；标准动作 0085。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0085。"
+    },
+    {
+      "id": "cimp0a62cb479f8903a37bc4",
+      "before": "健身房：Peak Fitness TRX；标准动作 5637。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 5637。"
+    },
+    {
+      "id": "cimpedc49aa04805d13e53e4",
+      "before": "健身房：Peak Fitness TRX；标准动作 0015。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0015。"
+    },
+    {
+      "id": "cimpab0c7ae717e34a7ebe43",
+      "before": "健身房：Peak Fitness TRX；标准动作 0314。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0314。"
+    },
+    {
+      "id": "cimpdbe295395c98066023f3",
+      "before": "健身房：Peak Fitness TRX；标准动作 0334。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0334。"
+    },
+    {
+      "id": "cimp78d4d5f2b212596e263f",
+      "before": "健身房：Peak Fitness TRX；标准动作 0602。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0602。"
+    },
+    {
+      "id": "cimp89c8b371fa4570cc43cd",
+      "before": "健身房：Peak Fitness TRX；标准动作 7326。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 7326。"
+    },
+    {
+      "id": "cimpe5d6d37ca6297f8d92c0",
+      "before": "健身房：Peak Fitness TRX；标准动作 0404。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0404。"
+    },
+    {
+      "id": "cimp43730220b2fcb9663953",
+      "before": "健身房：Peak Fitness TRX；标准动作 10671。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 10671。"
+    },
+    {
+      "id": "cimpf17404dcc5a6d6c43a2c",
+      "before": "健身房：Peak Fitness TRX；标准动作 0493。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0493。"
+    },
+    {
+      "id": "cimp2be5d1c28776175a446a",
+      "before": "健身房：Peak Fitness TRX；标准动作 4962。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 4962。"
+    },
+    {
+      "id": "cimp46e27c77c2a025529851",
+      "before": "健身房：Peak Fitness TRX；标准动作 7384。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 7384。"
+    },
+    {
+      "id": "cimp6e0c4f0962fc30c7d0e7",
+      "before": "健身房：Peak Fitness TRX；标准动作 0770。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0770。"
+    },
+    {
+      "id": "cimp0d13a94ba364980f09c9",
+      "before": "健身房：Peak Fitness TRX；标准动作 0047。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0047。"
+    },
+    {
+      "id": "cimpc87d4181426bcd759149",
+      "before": "健身房：Peak Fitness TRX；标准动作 0576。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0576。"
+    },
+    {
+      "id": "cimp7f3cea6072409e6c70df",
+      "before": "健身房：Peak Fitness TRX；标准动作 0499。重量栏为档位/高度，非kg。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0499。\n重量栏为档位/高度，非kg。"
+    },
+    {
+      "id": "cimpe39d599e309da3eebd0b",
+      "before": "健身房：Peak Fitness TRX；标准动作 0743。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0743。"
+    },
+    {
+      "id": "cimpa86a293e1e586a673cbe",
+      "before": "健身房：Peak Fitness TRX；标准动作 1195。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 1195。"
+    },
+    {
+      "id": "cimpae2bfc53583cab00a91e",
+      "before": "健身房：Peak Fitness TRX；标准动作 0355。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0355。"
+    },
+    {
+      "id": "cimp29acdec70cdf17f2abf5",
+      "before": "健身房：Peak Fitness TRX；标准动作 0253。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0253。"
+    },
+    {
+      "id": "cimpe4ead4316d4c6cb513bd",
+      "before": "健身房：Peak Fitness TRX；标准动作 3593。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 3593。"
+    },
+    {
+      "id": "cimpeadc98d085de6600dee2",
+      "before": "健身房：Peak Fitness TRX；标准动作 1060。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 1060。"
+    },
+    {
+      "id": "cimp297ff22c76fed2c00fcc",
+      "before": "健身房：Peak Fitness TRX；标准动作 0351。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0351。"
+    },
+    {
+      "id": "cimpaf61b72e1f68f07d4f83",
+      "before": "健身房：Peak Fitness TRX；标准动作 0044。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 0044。"
+    },
+    {
+      "id": "cimp018bfa5b2a00df4f3817",
+      "before": "健身房：DPC Club Gym；标准动作 1454。",
+      "after": "健身房：DPC Club Gym；\n标准动作 1454。"
+    },
+    {
+      "id": "cimpdfb007a0d833a0e22d92",
+      "before": "健身房：DPC Club Gym；标准动作 1047。",
+      "after": "健身房：DPC Club Gym；\n标准动作 1047。"
+    },
+    {
+      "id": "cimpcc3ecc28448fca7cb8bc",
+      "before": "健身房：DPC Club Gym；标准动作 0289。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0289。"
+    },
+    {
+      "id": "cimpf882506f40e0f69ba297",
+      "before": "健身房：DPC Club Gym；标准动作 0334。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0334。"
+    },
+    {
+      "id": "cimpc456defe1a112989dadb",
+      "before": "健身房：DPC Club Gym；标准动作 5658。重量栏为档位/高度，非kg。",
+      "after": "健身房：DPC Club Gym；\n标准动作 5658。\n重量栏为档位/高度，非kg。"
+    },
+    {
+      "id": "cimp73958ffa281ecb703b7a",
+      "before": "健身房：DPC Club Gym；标准动作 0318。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0318。"
+    },
+    {
+      "id": "cimp165460cd8eb6517b12b1",
+      "before": "健身房：DPC Club Gym；标准动作 0241。重量栏为档位/高度，非kg。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0241。\n重量栏为档位/高度，非kg。"
+    },
+    {
+      "id": "cimp39da7c51d8718f52ffb7",
+      "before": "健身房：DPC Club Gym；标准动作 0770。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0770。"
+    },
+    {
+      "id": "cimpb2184f3f9ed4ad8d2d9a",
+      "before": "健身房：DPC Club Gym；标准动作 0811。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0811。"
+    },
+    {
+      "id": "cimp8585b3e9d32824835ce3",
+      "before": "健身房：DPC Club Gym；标准动作 0585。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0585。"
+    },
+    {
+      "id": "cimp5da18513c6a77e67ecd0",
+      "before": "健身房：DPC Club Gym；标准动作 1557。",
+      "after": "健身房：DPC Club Gym；\n标准动作 1557。"
+    },
+    {
+      "id": "cimp196bdd9599477036e9a2",
+      "before": "健身房：DPC Club Gym；标准动作 0472。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0472。"
+    },
+    {
+      "id": "cimp057911468c7460217927",
+      "before": "健身房：BKK W Gym；标准动作 1454。",
+      "after": "健身房：BKK W Gym；\n标准动作 1454。"
+    },
+    {
+      "id": "cimp758b3c161c960b36d095",
+      "before": "健身房：BKK W Gym；标准动作 0289。",
+      "after": "健身房：BKK W Gym；\n标准动作 0289。"
+    },
+    {
+      "id": "cimp30c3fdc51e4f408f45ce",
+      "before": "健身房：BKK W Gym；标准动作 0334。",
+      "after": "健身房：BKK W Gym；\n标准动作 0334。"
+    },
+    {
+      "id": "cimp355231859c26d54c2f85",
+      "before": "健身房：BKK W Gym；标准动作 1047。",
+      "after": "健身房：BKK W Gym；\n标准动作 1047。"
+    },
+    {
+      "id": "cimp8d95655d7c9ecc1eb935",
+      "before": "健身房：BKK W Gym；标准动作 0292。",
+      "after": "健身房：BKK W Gym；\n标准动作 0292。"
+    },
+    {
+      "id": "cimp82bc607b7aee2fb30c80",
+      "before": "健身房：BKK W Gym；标准动作 0351。",
+      "after": "健身房：BKK W Gym；\n标准动作 0351。"
+    },
+    {
+      "id": "cimp13e8135381ca08ae1603",
+      "before": "健身房：BKK W Gym；标准动作 2661。",
+      "after": "健身房：BKK W Gym；\n标准动作 2661。"
+    },
+    {
+      "id": "cimpdf3b2fde88072a9bccfc",
+      "before": "健身房：BKK W Gym；标准动作 1452。",
+      "after": "健身房：BKK W Gym；\n标准动作 1452。"
+    },
+    {
+      "id": "cimpc7e551fa6c203d1b1a8b",
+      "before": "健身房：BKK W Gym；标准动作 10671。",
+      "after": "健身房：BKK W Gym；\n标准动作 10671。"
+    },
+    {
+      "id": "cimpb32062d3f8c5bb103c37",
+      "before": "健身房：BKK W Gym；标准动作 0596。",
+      "after": "健身房：BKK W Gym；\n标准动作 0596。"
+    },
+    {
+      "id": "cimpb3084693c52faf37de4b",
+      "before": "健身房：BKK Marriott Surawongse Gym；标准动作 3768。",
+      "after": "健身房：BKK Marriott Surawongse Gym；\n标准动作 3768。"
+    },
+    {
+      "id": "cimpe1ba482fa4ef404a3593",
+      "before": "健身房：BKK Marriott Surawongse Gym；标准动作 1459。",
+      "after": "健身房：BKK Marriott Surawongse Gym；\n标准动作 1459。"
+    },
+    {
+      "id": "cimp4648f7642c82b94a4558",
+      "before": "健身房：BKK Marriott Surawongse Gym；标准动作 0289。",
+      "after": "健身房：BKK Marriott Surawongse Gym；\n标准动作 0289。"
+    },
+    {
+      "id": "cimpf16cd773ace0d2380567",
+      "before": "健身房：BKK Marriott Surawongse Gym；标准动作 1047。",
+      "after": "健身房：BKK Marriott Surawongse Gym；\n标准动作 1047。"
+    },
+    {
+      "id": "cimp997e7cf78642fb9b5756",
+      "before": "健身房：BKK Marriott Surawongse Gym；标准动作 2661。",
+      "after": "健身房：BKK Marriott Surawongse Gym；\n标准动作 2661。"
+    },
+    {
+      "id": "cimpb2bd032118b939b4dcd8",
+      "before": "健身房：BKK Marriott Surawongse Gym；标准动作 0334。",
+      "after": "健身房：BKK Marriott Surawongse Gym；\n标准动作 0334。"
+    },
+    {
+      "id": "cimp76912157c79c7810a09f",
+      "before": "健身房：BKK Marriott Surawongse Gym；标准动作 9819。",
+      "after": "健身房：BKK Marriott Surawongse Gym；\n标准动作 9819。"
+    },
+    {
+      "id": "cimp8c0675e03986e0586718",
+      "before": "健身房：BKK Marriott Surawongse Gym；标准动作 10671。",
+      "after": "健身房：BKK Marriott Surawongse Gym；\n标准动作 10671。"
+    },
+    {
+      "id": "cimp726850c8e1b33c0c98b5",
+      "before": "健身房：BKK W Gym；标准动作 3768。",
+      "after": "健身房：BKK W Gym；\n标准动作 3768。"
+    },
+    {
+      "id": "cimp67ea3bb8cd1282db08d6",
+      "before": "健身房：BKK W Gym；标准动作 1459。",
+      "after": "健身房：BKK W Gym；\n标准动作 1459。"
+    },
+    {
+      "id": "cimp55c16a488640c4a514ae",
+      "before": "健身房：BKK W Gym；标准动作 5658。",
+      "after": "健身房：BKK W Gym；\n标准动作 5658。"
+    },
+    {
+      "id": "cimp94ac05f77a5b3d6bfe5c",
+      "before": "健身房：Peak Fitness TRX；标准动作 3768。",
+      "after": "健身房：Peak Fitness TRX；\n标准动作 3768。"
+    },
+    {
+      "id": "cimpe6717c75017ad3782e69",
+      "before": "健身房：DPC Club Gym；标准动作 0253。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0253。"
+    },
+    {
+      "id": "cimpf638ad56f1370e8f315c",
+      "before": "健身房：DPC Club Gym；标准动作 0253。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0253。"
+    },
+    {
+      "id": "cimp521e4967e763a2306a3a",
+      "before": "健身房：DPC Club Gym；标准动作 2661。",
+      "after": "健身房：DPC Club Gym；\n标准动作 2661。"
+    },
+    {
+      "id": "cimp0dd9f6c581e9b9fa1445",
+      "before": "健身房：DPC Club Gym；标准动作 3768。",
+      "after": "健身房：DPC Club Gym；\n标准动作 3768。"
+    },
+    {
+      "id": "cimp58a47d194e72a3123b4c",
+      "before": "健身房：DPC Club Gym；标准动作 0586。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0586。"
+    },
+    {
+      "id": "cimp209d8520dd6b637fbf50",
+      "before": "健身房：DPC Club Gym；标准动作 0404。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0404。"
+    },
+    {
+      "id": "cimpa84f3625357597b8a5f2",
+      "before": "健身房：DPC Club Gym；标准动作 0351。",
+      "after": "健身房：DPC Club Gym；\n标准动作 0351。"
+    },
+    {
+      "id": "cimp070959d8f0af9fcb9a0d",
+      "before": "健身房：DPC Club Gym；标准动作 1452。",
+      "after": "健身房：DPC Club Gym；\n标准动作 1452。"
+    }
+  ],
+  "source": {
+    "path": "/Users/tongwanglin/Workspace/fitness-logs/outputs/01a16bcd-c62d-75a2-aac0-36c8ac1ef5ca/Fitness_Log_完整明细_2026-10-25.xlsx",
+    "sha256": "4ac5cd1ddedba8e441baa1009e22a83aafd853ecb44bea39f9cd66c893c2643d"
+  },
+  "evidence": [
+    {
+      "sessionId": 1,
+      "date": "2026-03-27",
+      "sourceHash": "5f54ed162c8b9645a2ed81bfb349db44d20ce307d5095ae0e9ff117006f88c0c",
+      "excelRows": [
+        5,
+        7
+      ],
+      "originalCharacters": 231,
+      "selectedRange": [
+        0,
+        231
+      ],
+      "selectedSha256": "87b317de30de27ec8bb1aeebd96aa8744e9f24610a8bb3b3cd9ba08e713fbd18"
+    },
+    {
+      "sessionId": 2,
+      "date": "2026-03-30",
+      "sourceHash": "b7b5f21a666bd198cd1f6d55c06c7493a3a0060aa17178ece431dfad5a1cba65",
+      "excelRows": [
+        8,
+        10
+      ],
+      "originalCharacters": 311,
+      "selectedRange": [
+        0,
+        311
+      ],
+      "selectedSha256": "8037473a28c9337d9f0ac2c99f6fa6c6bfc5ffbbbc03fc73e44d6ad4d10b8c73"
+    },
+    {
+      "sessionId": 3,
+      "date": "2026-04-02",
+      "sourceHash": "6f3d19ab3a3539564b2202ca45a15b035ea24b00e9884510c00339d9e7f9761b",
+      "excelRows": [
+        11,
+        13
+      ],
+      "originalCharacters": 330,
+      "selectedRange": [
+        0,
+        330
+      ],
+      "selectedSha256": "ac1eab3c8edd0268a0ec385b8b28f1c0cb7d763d041c9936bf2c59539567d4d6"
+    },
+    {
+      "sessionId": 4,
+      "date": "2026-04-05",
+      "sourceHash": "7df6c7e90ac6618cea02247175572895541caebab133de246e3d58cd842f4add",
+      "excelRows": [
+        14,
+        16
+      ],
+      "originalCharacters": 216,
+      "selectedRange": [
+        0,
+        216
+      ],
+      "selectedSha256": "7158b9e8913e3580ca927069b7b2b1e5660c11fd58f8bbea9cf1c12b7e2caaf8"
+    },
+    {
+      "sessionId": 5,
+      "date": "2026-04-05",
+      "sourceHash": "ef3d8062c9cc6581410caf39aef15cadf00c3d040b29f49111e453bea9fbfe05",
+      "excelRows": [
+        17,
+        18
+      ],
+      "originalCharacters": 108,
+      "selectedRange": [
+        0,
+        108
+      ],
+      "selectedSha256": "1fc7baa62301e0a96c0a1ce60a2bb1ac9566beb10b1dc0629efb40859e49dd53"
+    },
+    {
+      "sessionId": 6,
+      "date": "2026-04-08",
+      "sourceHash": "a6b8edae801000cc7c4c7c0356d206eb67388706d88b4146bf90b444cb9c9b4f",
+      "excelRows": [
+        19,
+        20
+      ],
+      "originalCharacters": 132,
+      "selectedRange": [
+        0,
+        132
+      ],
+      "selectedSha256": "ae0c25801107558623d0ed2fb0e271d95543e1130c90b3fcd065094a2c55ce5a"
+    },
+    {
+      "sessionId": 7,
+      "date": "2026-04-08",
+      "sourceHash": "78b8e0fc7f13954913538b78725ad9ac2fa2474ee0db8f5e6d49d2b6e4a0ee4d",
+      "excelRows": [
+        21,
+        24
+      ],
+      "originalCharacters": 409,
+      "selectedRange": [
+        0,
+        409
+      ],
+      "selectedSha256": "dbb3681427bf1be4672d635ceb808123c18f6c0f8c8bce34d80f51f90dd3eb2e"
+    },
+    {
+      "sessionId": 8,
+      "date": "2026-04-10",
+      "sourceHash": "6ec169276871c184639b60b63a2fba9119820b1a3ac7f08286920ea1f58bfb19",
+      "excelRows": [
+        25,
+        27
+      ],
+      "originalCharacters": 302,
+      "selectedRange": [
+        0,
+        302
+      ],
+      "selectedSha256": "f6e070073b2d8e012c943426e5add06e086b1798db54de05ace13728fdfa1693"
+    },
+    {
+      "sessionId": 9,
+      "date": "2026-04-12",
+      "sourceHash": "6d2fb313d153ee1977a8f6e645610ae241c98972bbbd0921d09dd09aebd583df",
+      "excelRows": [
+        28,
+        31
+      ],
+      "originalCharacters": 297,
+      "selectedRange": [
+        0,
+        297
+      ],
+      "selectedSha256": "0eb352bf1cc2b4e493b8f193f1abe8242458d08e5c2022b2d7bfc4ff63e45e31"
+    },
+    {
+      "sessionId": 10,
+      "date": "2026-04-14",
+      "sourceHash": "7616e0ca99d9fa747fbb25273d4c34a70bec4421825fe44b306d45f9bffebb3a",
+      "excelRows": [
+        32,
+        35
+      ],
+      "originalCharacters": 485,
+      "selectedRange": [
+        0,
+        485
+      ],
+      "selectedSha256": "0744d0f52965f065a64219466168053fd6cd72fb65bb19eac1e6b97cf57b77df"
+    },
+    {
+      "sessionId": 11,
+      "date": "2026-04-15",
+      "sourceHash": "e78162cfb84bc2d8d020b80f442b2bdde5d3bb65e06eb540cc4d79f0e66ae8f6",
+      "excelRows": [
+        36,
+        38
+      ],
+      "originalCharacters": 333,
+      "selectedRange": [
+        0,
+        333
+      ],
+      "selectedSha256": "778e38172828a0c162ae21a3325d20dca47103bde1a28aedbd1cc3f637d56db1"
+    },
+    {
+      "sessionId": 12,
+      "date": "2026-04-17",
+      "sourceHash": "cb2fe27de9157f3b0c695842fe09dbc75cd1654eb69de8a0bfea68fa950c03ad",
+      "excelRows": [
+        39,
+        42
+      ],
+      "originalCharacters": 375,
+      "selectedRange": [
+        0,
+        375
+      ],
+      "selectedSha256": "ac9be2b949d933b7f00e72bab3437a6c93ddb0ec5be39964118ec1983990095c"
+    },
+    {
+      "sessionId": 13,
+      "date": "2026-04-21",
+      "sourceHash": "c0cd5945c2c433a8e496cf4d2d9595635e91749f372295640d8dfa69f4c9b57f",
+      "excelRows": [
+        43,
+        46
+      ],
+      "originalCharacters": 280,
+      "selectedRange": [
+        0,
+        280
+      ],
+      "selectedSha256": "dd86d44f8f329930e7da6f77eace64e8fe8852fe75badf2a206ca515191f7d1f"
+    },
+    {
+      "sessionId": 14,
+      "date": "2026-04-22",
+      "sourceHash": "c83e576117a9ccdbef9a61cbb5697743c0279110ba6f190ffa3e38256e273544",
+      "excelRows": [
+        47,
+        49
+      ],
+      "originalCharacters": 378,
+      "selectedRange": [
+        0,
+        378
+      ],
+      "selectedSha256": "a84ee4690a7b3663973337a5b9d4555b952e80633b406287ca991592ad7d849f"
+    },
+    {
+      "sessionId": 15,
+      "date": "2026-04-24",
+      "sourceHash": "b2eb4993e81dd64909e71ffe76da304251845410184f288d30aab915353d4475",
+      "excelRows": [
+        50,
+        53
+      ],
+      "originalCharacters": 342,
+      "selectedRange": [
+        0,
+        342
+      ],
+      "selectedSha256": "d1dfdc4b4c0a1211142baeca567d15f024441774df484431780eb566e3112d0e"
+    },
+    {
+      "sessionId": 16,
+      "date": "2026-04-27",
+      "sourceHash": "809f67b33a7f2e150a66e3757862d9a9d813eeeaaff01db5261047bf9c0c7cbb",
+      "excelRows": [
+        54,
+        57
+      ],
+      "originalCharacters": 373,
+      "selectedRange": [
+        0,
+        373
+      ],
+      "selectedSha256": "88e304f8f8928c4b1d6483ece244e93f308693dd7963b20ce5b35b1bc8e47a3f"
+    },
+    {
+      "sessionId": 17,
+      "date": "2026-04-28",
+      "sourceHash": "31f9870009c8156b8dfe00e817fa9e264337feaf802ad1baca86ecdf73ff77ea",
+      "excelRows": [
+        58,
+        60
+      ],
+      "originalCharacters": 409,
+      "selectedRange": [
+        0,
+        409
+      ],
+      "selectedSha256": "684833ccb88cd0bf903993f35c4e028eb4cf70d3c106680513114831a80fe4e3"
+    },
+    {
+      "sessionId": 18,
+      "date": "2026-05-05",
+      "sourceHash": "1a7f64d549b9e731bd6defca7d64664abf0cdf215b49da668dd3d1ded7ed2045",
+      "excelRows": [
+        61,
+        62
+      ],
+      "originalCharacters": 187,
+      "selectedRange": [
+        0,
+        187
+      ],
+      "selectedSha256": "cb8d659d68e08b362c0a5294e9f0895fa0960f5f126259e547b434e8523e7fb4"
+    },
+    {
+      "sessionId": 19,
+      "date": "2026-05-07",
+      "sourceHash": "e6f266827e802e82eb3bf383e3c88326dc3b1a897cad64195a6807039815cfd4",
+      "excelRows": [
+        63,
+        65
+      ],
+      "originalCharacters": 223,
+      "selectedRange": [
+        0,
+        223
+      ],
+      "selectedSha256": "f65004c5cf4749c74666cd788a4f8e45ebe2dc9c1b151c782a1bcb5e68949b96"
+    },
+    {
+      "sessionId": 20,
+      "date": "2026-05-08",
+      "sourceHash": "de47f6b48b260aeb494e0a5c44e461aaf2ae608cd2742853688d206970996fff",
+      "excelRows": [
+        66,
+        69
+      ],
+      "originalCharacters": 395,
+      "selectedRange": [
+        0,
+        395
+      ],
+      "selectedSha256": "64498485f92cb053e8680085805feec2293e685677aa3374a20cf2219c54db5e"
+    },
+    {
+      "sessionId": 21,
+      "date": "2026-05-11",
+      "sourceHash": "626b2763b86793c480cced3c86e3a8192d3f9e18772b0566d1ae98c31ea51ab1",
+      "excelRows": [
+        70,
+        73
+      ],
+      "originalCharacters": 322,
+      "selectedRange": [
+        0,
+        322
+      ],
+      "selectedSha256": "fc12c66134a20e2c0161167756d117501a1b770900f8854f2651a856a465a408"
+    },
+    {
+      "sessionId": 22,
+      "date": "2026-05-13",
+      "sourceHash": "8f2d9f991e8c18726ff881f1165f2c5be93b7dc875b4f22eebe0a0937d8fef4e",
+      "excelRows": [
+        74,
+        76
+      ],
+      "originalCharacters": 267,
+      "selectedRange": [
+        0,
+        267
+      ],
+      "selectedSha256": "bc48d67bd6b1fc82b4cbd665dc2c99fc8427de1047cd8427ae1ac2e73a454f16"
+    },
+    {
+      "sessionId": 23,
+      "date": "2026-05-15",
+      "sourceHash": "7c49281066f8a81f87bdc5b8bd37d07770bfac96d6fded349b9a65f245d4ea4e",
+      "excelRows": [
+        77,
+        80
+      ],
+      "originalCharacters": 339,
+      "selectedRange": [
+        0,
+        339
+      ],
+      "selectedSha256": "ca2d12804b835238744b856533aa3a461fb9b791dc592691a8e93b1b44794c46"
+    },
+    {
+      "sessionId": 24,
+      "date": "2026-05-19",
+      "sourceHash": "43a3352c5dd3a6454076d948cf20aed8a9afd1b158ea4d057a87277a268f61db",
+      "excelRows": [
+        81,
+        84
+      ],
+      "originalCharacters": 307,
+      "selectedRange": [
+        0,
+        307
+      ],
+      "selectedSha256": "5464143bd01fa84733c6ffb9c91ada2840381fe3bb082b1a2160621761601a59"
+    },
+    {
+      "sessionId": 25,
+      "date": "2026-05-21",
+      "sourceHash": "40ab5c7ffed20e5653de1caf99410967c95904724e62f0def1e146439d411d11",
+      "excelRows": [
+        85,
+        87
+      ],
+      "originalCharacters": 311,
+      "selectedRange": [
+        0,
+        311
+      ],
+      "selectedSha256": "6940f637114d11388a688963b4cbd6c4c1799c53d30a559b137de95e9a51c0f2"
+    },
+    {
+      "sessionId": 26,
+      "date": "2026-05-23",
+      "sourceHash": "930ff8e672ef2f5073818d57bf2cd4e365871de2409ed63b98f814f51bf1c282",
+      "excelRows": [
+        88,
+        90
+      ],
+      "originalCharacters": 253,
+      "selectedRange": [
+        0,
+        253
+      ],
+      "selectedSha256": "5b00510b9d7699212b0d0d34a3dfb9ef4aba21655b3112d9c025a0465fe999ad"
+    },
+    {
+      "sessionId": 27,
+      "date": "2026-05-25",
+      "sourceHash": "35eadaaf27c018f351aaaa8e81fc771fbbd9efb9bb7531990523a2531670e7f1",
+      "excelRows": [
+        91,
+        94
+      ],
+      "originalCharacters": 402,
+      "selectedRange": [
+        0,
+        402
+      ],
+      "selectedSha256": "0c3623e65c50e55bba9efe77699c235e4d58e8113dff003fee119da07ebe627e"
+    },
+    {
+      "sessionId": 28,
+      "date": "2026-05-28",
+      "sourceHash": "05d547405abc46fb3326e5111eee87afce6f91a17f1d07f1f83db1c80b969988",
+      "excelRows": [
+        95,
+        96
+      ],
+      "originalCharacters": 128,
+      "selectedRange": [
+        0,
+        128
+      ],
+      "selectedSha256": "3460feef30a5e4e8c69a8c03f238a19c926052e4e9e209666c690506a315a20d"
+    },
+    {
+      "sessionId": 29,
+      "date": "2026-06-04",
+      "sourceHash": "3bc6ee8ec11397365fcfcc30c4d715e40b121c2b19dcba3d5721caf6e4c5e168",
+      "excelRows": [
+        97,
+        100
+      ],
+      "originalCharacters": 329,
+      "selectedRange": [
+        0,
+        329
+      ],
+      "selectedSha256": "89d9f820b35a23d920a5918ffb2536f07ae46bda87c1c01370feeb58be7cdb13"
+    },
+    {
+      "sessionId": 30,
+      "date": "2026-06-10",
+      "sourceHash": "dd4948519a925d149f0a0004fb96ead97f1d2a32c200dc5c0266be9e0b5f685d",
+      "excelRows": [
+        101,
+        104
+      ],
+      "originalCharacters": 197,
+      "selectedRange": [
+        0,
+        197
+      ],
+      "selectedSha256": "7153db7245b602f0b2edc02e70f9829e4d1db91ec941a3548485de4a469fe9aa"
+    },
+    {
+      "sessionId": 31,
+      "date": "2026-06-11",
+      "sourceHash": "eecce216fe366c0546179ce236db430cb2442a0c414eda28ad42b3d905a25858",
+      "excelRows": [
+        105,
+        107
+      ],
+      "originalCharacters": 237,
+      "selectedRange": [
+        0,
+        237
+      ],
+      "selectedSha256": "3661065453fd1f9082f98a086d1f09350c6db05b7234b6f01f9a70e64941bbdc"
+    },
+    {
+      "sessionId": 32,
+      "date": "2026-06-12",
+      "sourceHash": "02b87baf0a6093fe6caad15711f64440727af36a97b5d0e61b759b2100e11db0",
+      "excelRows": [
+        108,
+        111
+      ],
+      "originalCharacters": 292,
+      "selectedRange": [
+        0,
+        292
+      ],
+      "selectedSha256": "0ef002a00449afdd2a184e24afb2d16436af2795e964ae7c8237ffacc9a0b6d3"
+    },
+    {
+      "sessionId": 33,
+      "date": "2026-06-14",
+      "sourceHash": "2b34a6244a66bd4ead193f2f7bff7e210b002f9e762b964bd0f5f221e8dc7af6",
+      "excelRows": [
+        112,
+        114
+      ],
+      "originalCharacters": 110,
+      "selectedRange": [
+        0,
+        110
+      ],
+      "selectedSha256": "50700d1eecf8255e4aab08ce77a74ece44cc4c0347f09ecf96907a33cf49873f"
+    },
+    {
+      "sessionId": 34,
+      "date": "2026-06-15",
+      "sourceHash": "df2aa26f0bdced1d6a4ba2755555e6a08a844852b583fd10810c1eff458a255f",
+      "excelRows": [
+        115,
+        117
+      ],
+      "originalCharacters": 248,
+      "selectedRange": [
+        0,
+        248
+      ],
+      "selectedSha256": "8fc3adb6c6e9f2d5df51bdf4f5cb7aa08f8fe62e9fd379db9c6b1c2573e033b4"
+    },
+    {
+      "sessionId": 35,
+      "date": "2026-06-19",
+      "sourceHash": "4c64817fc24666a4b22549ffc28c9187e53d89a92e290fd4ef18aed279cbc443",
+      "excelRows": [
+        118,
+        121
+      ],
+      "originalCharacters": 279,
+      "selectedRange": [
+        0,
+        279
+      ],
+      "selectedSha256": "caa0d4076bfb6045b07e1f91b620d22927dd55aacbc018b2e8f241f5ad7200fd"
+    },
+    {
+      "sessionId": 36,
+      "date": "2026-06-23",
+      "sourceHash": "09c3f2c7bdb992aec60cb0375beecdb9c9cd287243b29e7c97db78ccbb9a7f60",
+      "excelRows": [
+        122,
+        124
+      ],
+      "originalCharacters": 239,
+      "selectedRange": [
+        0,
+        239
+      ],
+      "selectedSha256": "bca65ac94c534a9507da22ad79362c6b5a2ba6d1b88f058498a79d7de63cae58"
+    },
+    {
+      "sessionId": 37,
+      "date": "2026-06-29",
+      "sourceHash": "824cd61c4a5b380b35b66b1c36a418872f638178e251d9514352f3e71bc02db3",
+      "excelRows": [
+        125,
+        128
+      ],
+      "originalCharacters": 301,
+      "selectedRange": [
+        0,
+        301
+      ],
+      "selectedSha256": "7935ee906ef9eba1472904e1c2eddfcd0679a602061e9982c0cfbc28ee2f8898"
+    },
+    {
+      "sessionId": 38,
+      "date": "2026-07-01",
+      "sourceHash": "95e6e4aaf5f65f8391e3a21b9183e5a7e9ac4fd940ad8be55de9ff662abba825",
+      "excelRows": [
+        129,
+        131
+      ],
+      "originalCharacters": 191,
+      "selectedRange": [
+        0,
+        191
+      ],
+      "selectedSha256": "afb2ae357ba1783d7c67af41fa01dfef6e0fe8892bf75604d6281ba31e96bb8a"
+    },
+    {
+      "sessionId": 39,
+      "date": "2026-07-03",
+      "sourceHash": "d14fc2a7aa2adf8e8b095a532430510ecd4aac81c4e6bcae7a808382a1425bde",
+      "excelRows": [
+        132,
+        134
+      ],
+      "originalCharacters": 317,
+      "selectedRange": [
+        0,
+        317
+      ],
+      "selectedSha256": "24606b07fbfbb2c0d4cf598e2a096dca143294f7323328e7fee9a7ade0db21e5"
+    },
+    {
+      "sessionId": 40,
+      "date": "2026-07-06",
+      "sourceHash": "49fc154dfd0f3e7cdc5731a1ebf32e588164cf1277fee4c4e9f77802cde92bff",
+      "excelRows": [
+        135,
+        137
+      ],
+      "originalCharacters": 326,
+      "selectedRange": [
+        0,
+        326
+      ],
+      "selectedSha256": "803254332620a5a52448ea68e24834e0274dd5e725b7192be75e42bfa8b96cd1"
+    },
+    {
+      "sessionId": 41,
+      "date": "2026-07-08",
+      "sourceHash": "5707c1c236f7b5e26b9b598fb75b63925d2702598c0337388d24342230ad2008",
+      "excelRows": [
+        138,
+        140
+      ],
+      "originalCharacters": 177,
+      "selectedRange": [
+        0,
+        177
+      ],
+      "selectedSha256": "1ecec6d515043aed8637f0ee911100cd742a66db7d45cf2f23cd6c73c96ab40d"
+    },
+    {
+      "sessionId": 42,
+      "date": "2026-07-10",
+      "sourceHash": "61e96117726fdb1f1e4703e330bce1caf6473ec6435be36006200dadc037486b",
+      "excelRows": [
+        141,
+        143
+      ],
+      "originalCharacters": 301,
+      "selectedRange": [
+        0,
+        301
+      ],
+      "selectedSha256": "54379e87d2e8baabe33e8b7b261715ef46e07d00edaa4480eefc5268a0f4ce85"
+    },
+    {
+      "sessionId": 43,
+      "date": "2026-07-22",
+      "sourceHash": "d85d55bca984a8385b4f4e1093ece28ae9864b7097c8de03e9673d4960935dbc",
+      "excelRows": [
+        144,
+        146
+      ],
+      "originalCharacters": 237,
+      "selectedRange": [
+        0,
+        237
+      ],
+      "selectedSha256": "80450908f0b10e485dadd70e0ab4240a2b38e43d3db14b240514375349fc5f2b"
+    },
+    {
+      "sessionId": 44,
+      "date": "2026-07-30",
+      "sourceHash": "6ab496add941c7b2bd2627f8754ce3f35277fc3742c2d887014d844fd5776a8d",
+      "excelRows": [
+        147,
+        149
+      ],
+      "originalCharacters": 234,
+      "selectedRange": [
+        0,
+        234
+      ],
+      "selectedSha256": "fa78085a9e92ee4d165b0b9f7de42ab8307448f65d0fb7802a89185168143b9e"
+    },
+    {
+      "sessionId": 45,
+      "date": "2026-08-05",
+      "sourceHash": "1e8e926aa70afcef8ab8d011ccf02fa9e04cb6f9527ab7193f6384556e6a7e66",
+      "excelRows": [
+        150,
+        153
+      ],
+      "originalCharacters": 355,
+      "selectedRange": [
+        0,
+        355
+      ],
+      "selectedSha256": "351d8240360e261f40453aab2810444aa15edf8615543da82c8c2ad4c43392a2"
+    },
+    {
+      "sessionId": 46,
+      "date": "2026-08-07",
+      "sourceHash": "9a36fb556436a84d65bc715072ef7564d56a25eccaf715cb346d9b461f00f626",
+      "excelRows": [
+        154,
+        156
+      ],
+      "originalCharacters": 195,
+      "selectedRange": [
+        0,
+        195
+      ],
+      "selectedSha256": "3d64d8884a29886f5681a9f319fb8f6fa35cb439248600493f9a6787134d522d"
+    },
+    {
+      "sessionId": 52,
+      "date": "2026-08-10",
+      "sourceHash": "fb603bdbe23d36742fc0024b303a5baa6eb506dbc27efaa7347043e4b60d5837",
+      "excelRows": [
+        157,
+        159
+      ],
+      "originalCharacters": 264,
+      "selectedRange": [
+        0,
+        264
+      ],
+      "selectedSha256": "bc2f7bae95b46bd1eae7d3d24519918e5bd9b8c13429d7519feaf5ee31312fa0"
+    },
+    {
+      "sessionId": 53,
+      "date": "2026-08-11",
+      "sourceHash": "bde8cb85fe22b977b7e199a256368c62c508bbb6114d70d8c03ef5c189ea6915",
+      "excelRows": [
+        160,
+        162
+      ],
+      "originalCharacters": 233,
+      "selectedRange": [
+        0,
+        233
+      ],
+      "selectedSha256": "2745a40797bfea5e91f88e9745aa7794a0e839f1acdc377c365f906215355d97"
+    },
+    {
+      "sessionId": 47,
+      "date": "2026-08-13",
+      "sourceHash": "02ff0724c03060648a97c229dd74a4a0fa0960ed8d712c10eb6c70a2af946751",
+      "excelRows": [
+        163,
+        165
+      ],
+      "originalCharacters": 161,
+      "selectedRange": [
+        0,
+        161
+      ],
+      "selectedSha256": "9ef07fa071cdb837f5d0dc63c92e1db5cf2554184ddae494b8cc1378b11542ff"
+    },
+    {
+      "sessionId": 48,
+      "date": "2026-08-17",
+      "sourceHash": "1b9e6c95007fce02dc6799ca2d728feb6502ad8d570b1d6682042751489327bc",
+      "excelRows": [
+        166,
+        169
+      ],
+      "originalCharacters": 307,
+      "selectedRange": [
+        0,
+        307
+      ],
+      "selectedSha256": "2211df27ed2b66b9647c7537160c127a9b43b64fe1d03267874cf72bddf81e24"
+    },
+    {
+      "sessionId": 49,
+      "date": "2026-08-19",
+      "sourceHash": "14481ce5979019b88965826659077d8259fb68a4b85c400c69fc0efa8a969c58",
+      "excelRows": [
+        170,
+        172
+      ],
+      "originalCharacters": 224,
+      "selectedRange": [
+        0,
+        224
+      ],
+      "selectedSha256": "4be86e99707dfaf6267a8f8b16892195dce97d557c872b4a15d82dda91a4d4fc"
+    },
+    {
+      "sessionId": 50,
+      "date": "2026-08-21",
+      "sourceHash": "caae85e160cc85fe7c57680f33bd6d53267154e914008410204d8ba1461443a3",
+      "excelRows": [
+        173,
+        176
+      ],
+      "originalCharacters": 323,
+      "selectedRange": [
+        0,
+        323
+      ],
+      "selectedSha256": "011997631b8868419bea140efe52ae45315b72149f514df6ba4656a92fd41a62"
+    },
+    {
+      "sessionId": 51,
+      "date": "2026-08-24",
+      "sourceHash": "ac7b00d0461991e9cf8bfc4871212dc3ce8dd5dcb02d37bcae23db303eb3aaa6",
+      "excelRows": [
+        177,
+        179
+      ],
+      "originalCharacters": 261,
+      "selectedRange": [
+        0,
+        261
+      ],
+      "selectedSha256": "1ed5f26d375062221c9bdb7d7da087c2ffdf14b1fa37eb1ab8dd7c2c326dd9ac"
+    },
+    {
+      "sessionId": 58,
+      "date": "2026-08-27",
+      "sourceHash": "89f0daa6fb527f8bfecdec96e4eb224fa29b9d714c517c2ebefc8ff90647e40a",
+      "excelRows": [
+        180,
+        181
+      ],
+      "originalCharacters": 129,
+      "selectedRange": [
+        0,
+        129
+      ],
+      "selectedSha256": "78a0cd1735fb1ad484e9cd6e33a033f7be75f38153f0e5426324ea94664c43c5"
+    },
+    {
+      "sessionId": 59,
+      "date": "2026-08-28",
+      "sourceHash": "8d6bafa53a84c526983674726b421902228f8c359e666161763f01ab3d2197a9",
+      "excelRows": [
+        182,
+        184
+      ],
+      "originalCharacters": 240,
+      "selectedRange": [
+        0,
+        240
+      ],
+      "selectedSha256": "c4d27c50d221cdd74f42ad9ec8918a3cc355b7dc29a542fa010a57e69ecf5a74"
+    },
+    {
+      "sessionId": 121,
+      "date": "2026-08-31",
+      "sourceHash": "0a1676eeb75803228917f074300ac15d45f6bbbc90c8d06d33f72a3896f87d69",
+      "excelRows": [
+        185,
+        187
+      ],
+      "originalCharacters": 157,
+      "selectedRange": [
+        0,
+        157
+      ],
+      "selectedSha256": "80459a8b16e07f79cae6311092a210e81c4344e9561a4f557835620cf4e995ba"
+    },
+    {
+      "sessionId": 120,
+      "date": "2026-09-02",
+      "sourceHash": "947df30e555ceafcfaec7b20644d0905eda392e4a2418fb4cd719f806d7dd1f5",
+      "excelRows": [
+        188,
+        191
+      ],
+      "originalCharacters": 308,
+      "selectedRange": [
+        0,
+        308
+      ],
+      "selectedSha256": "6a993cda6b901cd4c8a86a6e6bbe7aa662adde6f4f42172f7d341735d4b5c1e3"
+    },
+    {
+      "sessionId": 122,
+      "date": "2026-09-05",
+      "sourceHash": "90031c0ebce713ebf5f77c6500fd56d6fc7b2801629828e6e4da8e018324dfe3",
+      "excelRows": [
+        192,
+        194
+      ],
+      "originalCharacters": 134,
+      "selectedRange": [
+        0,
+        134
+      ],
+      "selectedSha256": "9f1b36b43c3a5d312a7cdf3c16c877b9b491ae89f37ac38a48f559d6ad5bc615"
+    },
+    {
+      "sessionId": 123,
+      "date": "2026-09-07",
+      "sourceHash": "317032ca1550ccdb72abfa586b8718c86be74826e1248e88339a599ad20e608a",
+      "excelRows": [
+        195,
+        196
+      ],
+      "originalCharacters": 95,
+      "selectedRange": [
+        0,
+        95
+      ],
+      "selectedSha256": "112dfd28bacc6160b68a8ed4a77821cce40bb40a7c177845a07d1fc7a4e4585f"
+    },
+    {
+      "sessionId": 124,
+      "date": "2026-09-09",
+      "sourceHash": "ca7cc64a03cb026470782dda163b469b8f2d6f05dbf431f0f662c01793652993",
+      "excelRows": [
+        197,
+        200
+      ],
+      "originalCharacters": 268,
+      "selectedRange": [
+        0,
+        268
+      ],
+      "selectedSha256": "af7fd8e84c919e66c1afa70c11552fc38b5b29a3324229546ba0caf34456b5a0"
+    },
+    {
+      "sessionId": 125,
+      "date": "2026-09-12",
+      "sourceHash": "e303b32503e41958419fad6694d3bd34c6667aa1b2e4524a2579b30d4978e01f",
+      "excelRows": [
+        201,
+        204
+      ],
+      "originalCharacters": 235,
+      "selectedRange": [
+        0,
+        235
+      ],
+      "selectedSha256": "f39abec87b9e3043fc4f985039a1f0cb50eedaa09f94896bd10f3ac9e0885ff0"
+    },
+    {
+      "sessionId": 127,
+      "date": "2026-09-13",
+      "sourceHash": "1a1fe9db4f6c5c83188a1c84b0d79725565ddd3e32d8a8a4c9d56f5a97dc12c0",
+      "excelRows": [
+        205,
+        205
+      ],
+      "originalCharacters": 81,
+      "selectedRange": [
+        0,
+        81
+      ],
+      "selectedSha256": "fa5d5415f1f495623f100fcbdd8170152f1737886eb9d46b2c83c33c2e655f2d"
+    },
+    {
+      "sessionId": 128,
+      "date": "2026-09-15",
+      "sourceHash": "2dd1a841ea0a37ca9ae47b0d5701b9d2fc939d9ba370bed9f288cce00a362769",
+      "excelRows": [
+        206,
+        209
+      ],
+      "originalCharacters": 259,
+      "selectedRange": [
+        0,
+        259
+      ],
+      "selectedSha256": "2995a23a453468797b5cab1857d682b5f69899efe482ac181dc061e7900beef0"
+    },
+    {
+      "sessionId": 131,
+      "date": "2026-09-19",
+      "sourceHash": "b7d86ed0db1ad854d1687d803b7fcb2b4ad3772537bfdae16acaef93ff7f3572",
+      "excelRows": [
+        210,
+        213
+      ],
+      "originalCharacters": 316,
+      "selectedRange": [
+        0,
+        316
+      ],
+      "selectedSha256": "3bc95f88d6c0f033d7d7ec3b21b4ac0940bb8743549699c29cabb50601654218"
+    },
+    {
+      "sessionId": 132,
+      "date": "2026-09-21",
+      "sourceHash": "704d679f5d1ab660361f3472ebc421a6f9e71341c79ebf663b22174b1a03353d",
+      "excelRows": [
+        214,
+        216
+      ],
+      "originalCharacters": 194,
+      "selectedRange": [
+        0,
+        194
+      ],
+      "selectedSha256": "469b815fd6388034cc69a2661d203a43d7ff02eff050e9f88bf7fade6bbae39a"
+    },
+    {
+      "sessionId": 133,
+      "date": "2026-09-22",
+      "sourceHash": "7d590339a54ef36d3354ec8202859637cba39cc0270cb1ed657c6d4c8b58d21d",
+      "excelRows": [
+        217,
+        218
+      ],
+      "originalCharacters": 275,
+      "selectedRange": [
+        0,
+        275
+      ],
+      "selectedSha256": "5c748125dcf346fc3eadae072542f6c01d3fa07b8673eb1285ced4ccd175d9df"
+    },
+    {
+      "sessionId": 134,
+      "date": "2026-09-24",
+      "sourceHash": "ac7f39b0bf033efa213350a7ab242777d0379239d12b58cb04436af45fc43273",
+      "excelRows": [
+        219,
+        220
+      ],
+      "originalCharacters": 112,
+      "selectedRange": [
+        0,
+        112
+      ],
+      "selectedSha256": "be8059ce26fd1967a4f6d83196123571b2910cfd8424af223b2e71f5ebb843b8"
+    },
+    {
+      "sessionId": 135,
+      "date": "2026-09-29",
+      "sourceHash": "ed1995eb394a908709da763efe1fd7bda5ade7ae4593b5a33c999851950441b1",
+      "excelRows": [
+        221,
+        223
+      ],
+      "originalCharacters": 242,
+      "selectedRange": [
+        0,
+        242
+      ],
+      "selectedSha256": "eaa0bf532eda89c761724617e74a91d2c449fa5f0e1f9716770644a947340f37"
+    },
+    {
+      "sessionId": 136,
+      "date": "2026-10-01",
+      "sourceHash": "a2d991bbe8ef00a442864352cc36cdf99ea7807dc49e3484a1efcf4f9cc94b23",
+      "excelRows": [
+        224,
+        226
+      ],
+      "originalCharacters": 213,
+      "selectedRange": [
+        0,
+        213
+      ],
+      "selectedSha256": "1d6ed922ae8d31debb3d306f00edf12ef26fd3576b72a0fd577ab92346a3e58f"
+    },
+    {
+      "sessionId": 137,
+      "date": "2026-10-08",
+      "sourceHash": "f12c8557ea29bf4e8c19943b4b42361308b132c9a6cf7fa05287e04f20cc2830",
+      "excelRows": [
+        227,
+        230
+      ],
+      "originalCharacters": 289,
+      "selectedRange": [
+        0,
+        289
+      ],
+      "selectedSha256": "1454b6b40f50f9cb921dd8e0e04be5c354ee7d0e2e89e07bc076ce35d996e552"
+    },
+    {
+      "sessionId": 138,
+      "date": "2026-10-11",
+      "sourceHash": "25374af6619ad51220a994f77cbf478540fab637bb135d85892334093f0e29c9",
+      "excelRows": [
+        232,
+        240
+      ],
+      "originalCharacters": 867,
+      "selectedRange": [
+        0,
+        234
+      ],
+      "selectedSha256": "8f59c184e9207b849472c8ddfcca2c98993e61060896d60dfa9e9a6dfbc145bd"
+    },
+    {
+      "sessionId": 139,
+      "date": "2026-10-13",
+      "sourceHash": "adf3a20400fafdce68ddc4c44455f0403738a6bb58040f0d10f0ef34950630bb",
+      "excelRows": [
+        241,
+        249
+      ],
+      "originalCharacters": 867,
+      "selectedRange": [
+        234,
+        512
+      ],
+      "selectedSha256": "bb772581013d9ee74bc9f0f704d53e7ac3b56143db65d1228e0d33f3442e8493"
+    },
+    {
+      "sessionId": 140,
+      "date": "2026-10-15",
+      "sourceHash": "8d6ea193d9f361d9c00cf3313b552a57fe61fd7ce6f4e4b88d2b2b6d1c2376f0",
+      "excelRows": [
+        250,
+        258
+      ],
+      "originalCharacters": 867,
+      "selectedRange": [
+        512,
+        867
+      ],
+      "selectedSha256": "0061ecf1bb7e176f0e9f1f95dbb64d0262b98b1fd371c8dd61b8203e08750c4d"
+    },
+    {
+      "sessionId": 141,
+      "date": "2026-10-17",
+      "sourceHash": "491961b2628b5339179acbd58b5324853489dae63414aa755adcbce2c2499d49",
+      "excelRows": [
+        259,
+        261
+      ],
+      "originalCharacters": 332,
+      "selectedRange": [
+        0,
+        332
+      ],
+      "selectedSha256": "506c0d7c1b0d7fd5b415b3a1f2068b7395555f2d8885367a7c4b6dd664431c5c"
+    },
+    {
+      "sessionId": 142,
+      "date": "2026-10-20",
+      "sourceHash": "bf8c397ced203d65174b47c8c70f29c4856f2006187eaaab4dcc880fe2b839c0",
+      "excelRows": [
+        262,
+        264
+      ],
+      "originalCharacters": 270,
+      "selectedRange": [
+        0,
+        270
+      ],
+      "selectedSha256": "af10e7d2c48667579668d5593b0255a1b5e53ae9348cff17342c35164b950607"
+    },
+    {
+      "sessionId": 143,
+      "date": "2026-10-22",
+      "sourceHash": "f859db18a16db9eac1bae6fa94c40585194cfb09e3fa401e6e45e39280f2a0ee",
+      "excelRows": [
+        265,
+        268
+      ],
+      "originalCharacters": 342,
+      "selectedRange": [
+        0,
+        342
+      ],
+      "selectedSha256": "58b3149d93b95b82a1b5ded7c5b7a84db749552f204a4fce18e63c9eb579fbb2"
+    }
+  ]
+}

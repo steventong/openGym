@@ -45,12 +45,12 @@ const SwipeRow = forwardRef(function SwipeRow({
     {canCopy && <div ref={sw.cpRef} className="swpane cp" aria-hidden={shut('copy') || undefined} inert={shut('copy') ? true : undefined}>
       <button type="button" tabIndex={shut('copy') ? -1 : 0} onClick={sw.pressCopy}>
         {/* 'Copy set', not 'Copy': that key is the noun a copied routine is named with ("Kopie"). */}
-        <span className="lab"><Icon name={copyIcon} /><b>{copyLabel ?? t("COPY_SET" /* 复制本组 */)}</b></span>
+        <span className="lab"><Icon name={copyIcon} /><b>{copyLabel ?? t('Copy set')}</b></span>
       </button>
     </div>}
     <div ref={sw.delRef} className={'swpane del' + (canDelete ? '' : ' dis')} aria-hidden={shut('delete') || undefined} inert={shut('delete') ? true : undefined}>
       <button type="button" tabIndex={shut('delete') ? -1 : 0} onClick={sw.pressDelete}>
-        <span className="lab"><Icon name={deleteIcon} /><b>{deleteLabel ?? t("DELETE" /* 删除 */)}</b></span>
+        <span className="lab"><Icon name={deleteIcon} /><b>{deleteLabel ?? t('Delete')}</b></span>
       </button>
     </div>
     <div ref={sw.frontRef} className="swfront">{children}</div>

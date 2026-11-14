@@ -221,11 +221,42 @@ export default function DurationWheel({ value, onChange, min = 0, max = REST_MAX
     <div className={'dw ' + className} data-nodrag="" dir="ltr">
       <span className="dw-band" aria-hidden="true" />
       <WheelColumn count={maxM + 1} index={m} nonce={nonce} step={5} rowRef={mRow}
-        onPick={i => pick(i, live.current.s)} label={t("MINUTES" /* 分钟 */)} unit={t("MIN" /* 分钟 */)} valueText={text}
+        onPick={i => pick(i, live.current.s)} label={t('Minutes')} unit={t('min')} valueText={text}
         disabledAt={i => i * 60 > max || (i + 1) * 60 - 1 < min} />
       <WheelColumn count={60} index={s} nonce={nonce} step={10} format={pad2} rowRef={sRow}
-        onPick={i => pick(live.current.m, i)} label={t("SECONDS" /* 秒数 */)} unit={t("SEC" /* 秒 */)} valueText={text}
+        onPick={i => pick(live.current.m, i)} label={t('Seconds')} unit={t('sec')} valueText={text}
         disabledAt={i => m * 60 + i > max || m * 60 + i < min} />
+    </div>
+  )
+}
+
+/**
+ * The same wheels for a longer span in hours and minutes: `value` and `onChange` are minutes,
+ * the minutes wheel steps by `step`. The Coach's session length uses it, so it looks like every
+ * other time picker in the app.
+ */
+export function HourMinuteWheel({ value, onChange, min = 10, max = 235, step = 5, className = '' }) {
+  const clamp = n => Math.max(min, Math.min(max, Math.round((Number(n) || 0) / step) * step))
+  const v = clamp(value)
+  const h = Math.floor(v / 60), mi = (v % 60) / step
+  const [nonce, setNonce] = useState(0)
+  const live = useRef({ h, mi })
+  live.current = { h, mi }
+  const pick = (hh, mm) => {
+    const next = clamp(hh * 60 + mm * step)
+    setNonce(n => n + 1)
+    if (next !== v) onChange(next)
+  }
+  const text = durationText(v * 60)
+  return (
+    <div className={'dw ' + className} data-nodrag="" dir="ltr">
+      <span className="dw-band" aria-hidden="true" />
+      <WheelColumn count={Math.floor(max / 60) + 1} index={h} nonce={nonce} step={1}
+        onPick={i => pick(i, live.current.mi)} label={t('Hours')} unit={t('h')} valueText={text}
+        disabledAt={i => i * 60 > max || i * 60 + 59 < min} />
+      <WheelColumn count={60 / step} index={mi} nonce={nonce} step={3} format={i => pad2(i * step)}
+        onPick={i => pick(live.current.h, i)} label={t('Minutes')} unit={t('min')} valueText={text}
+        disabledAt={i => h * 60 + i * step > max || h * 60 + i * step < min} />
     </div>
   )
 }
@@ -240,7 +271,7 @@ function DurationSheet({ title, value, min, max, off, footer, onDone, close }) {
     <div className="dw-read" aria-hidden="true">{fmtDuration(v, { off })}</div>
     <DurationWheel value={v} onChange={setV} min={min} max={max} off={off} readRef={read} />
     {footer && <p className="dim small dw-foot">{footer}</p>}
-    <Button variant="primary" onClick={() => { const now = read.current ? read.current() : v; close(); onDone(now) }}>{t("DONE" /* 完成 */)}</Button>
+    <Button variant="primary" onClick={() => { const now = read.current ? read.current() : v; close(); onDone(now) }}>{t('Done')}</Button>
     <div style={{ height: 8 }} />
   </>
 }

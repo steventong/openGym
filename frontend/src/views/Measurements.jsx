@@ -2,14 +2,16 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
+import DateField from '../components/DateField.jsx'
 import {
   MEASUREMENT_FIELDS, MEASUREMENT_KEYS, emptyMeasurement, enabledMeasurementFields,
   fromMeasurementDisplay, latestMeasurement, measurementEntryHasValues,
   measurementSeries, measurementUnit, measurementValue, normalizeMeasurementEntry,
-  toMeasurementDisplay, normalizeMeasurementsState,
+  toMeasurementDisplay, normalizeMeasurementsState, CUSTOM_MEASUREMENT_UNITS, customMeasurementUnits,
+  measurementUnitLabel, zeroIsReading,
 } from '../lib/measurements.js'
 import { fmtDate, fmtNum, todayISO, uid } from '../lib/format.js'
-import { t , translateValue } from '../lib/i18n.js'
+import { t } from '../lib/i18n.js'
 import LineChart from '../components/LineChart.jsx'
 import Icon from '../components/Icon.jsx'
 import { Button, NumberField, Section, Segmented, SelectRow, Switch, TextField } from '../components/ui.jsx'
@@ -19,11 +21,14 @@ import { confirmSheet } from '../sheets.jsx'
 const update = (fn, ...rest) => useStore.getState().update(s => { fn(s); normalizeMeasurementsState(s) }, ...rest)
 const toast = message => useUI.getState().toast(message)
 
-const fieldUnit = (field, profileUnit) => field.key === 'bodyFat' ? '%' : measurementUnit(profileUnit)
+// The label after a number: empty for a unitless field (#718).
+const fieldUnit = (field, profileUnit) => measurementUnitLabel(measurementUnit(profileUnit, field))
+const unitOptions = units => units.map(value => ({ value, label: value === 'none' ? t('No unit') : value }))
+const withUnit = (value, unit) => unit ? fmtNum(value) + ' ' + unit : fmtNum(value)
 const shownValue = (entry, field, profileUnit) => {
   const value = measurementValue(entry, field.key)
   if (value == null) return null
-  return field.key === 'bodyFat' ? value : toMeasurementDisplay(value, profileUnit)
+  return toMeasurementDisplay(value, profileUnit, field)
 }
 
 function MeasurementLog({ sourceDate, close }) {
@@ -38,7 +43,7 @@ function MeasurementLog({ sourceDate, close }) {
     }
     for (const o of source.other || []) {
       if (o.value != null && !fields.some(x => x.key === 'other:' + o.id)) {
-        fields.push({ key: 'other:' + o.id, label: o.name, custom: true, group: 'Other' })
+        fields.push({ key: 'other:' + o.id, label: o.name, unit: o.unit, custom: true, group: 'Other' })
       }
     }
   }
@@ -46,24 +51,31 @@ function MeasurementLog({ sourceDate, close }) {
   const [values, setValues] = useState(() => Object.fromEntries(fields.map(f => [f.key, shownValue(source, f, S.unit)])))
 
   const save = () => {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > todayISO()) { toast(t("CHOOSE_A_VALID_DATE" /* 请选择有效日期 */)); return }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > todayISO()) { toast(t('Choose a valid date')); return }
     if (date !== sourceDate && S.measurements.some(e => e.d === date)) {
-      toast(t("THAT_DATE_ALREADY_HAS_MEASUREMENTS_EDIT_IT_INSTEAD" /* 该日期已有测量——请直接编辑。 */)); return
+      toast(t('That date already has measurements. Edit it instead.')); return
     }
     const base = source ? normalizeMeasurementEntry(source, S.customMeasurements) : emptyMeasurement(date, S.customMeasurements)
     base.d = date
     base.t = source && date === source.d ? source.t : (date === todayISO() ? Date.now() : new Date(date + 'T12:00:00').getTime())
     for (const field of fields) {
       const raw = values[field.key]
-      const value = raw == null || raw === 0 ? null : Math.round(+raw * 10) / 10
-      if (field.key === 'bodyFat' && value > 100) { toast(t("BODY_FAT_MUST_BE_BETWEEN_ZERO_AND_ONEZEROZERO" /* 体脂率必须在 0% 到 100% 之间。 */)); return }
+      const shown = measurementUnit(S.unit, field)
+      const percent = shown === '%'
+      const value = raw == null || (raw === 0 && !zeroIsReading(shown)) ? null : Math.round(+raw * 10) / 10
+      if (percent && value != null && (value < 0 || value > 100)) {
+        toast(field.key === 'bodyFat' ? t('Body fat must be between 0 and 100%.') : t('{0} must be between 0 and 100%.', field.label)); return
+      }
       if (field.custom) {
         const item = base.other.find(o => o.id === field.key.slice(6))
-        if (item) item.value = value == null ? null : fromMeasurementDisplay(value, S.unit)
+        if (item) {
+          item.value = fromMeasurementDisplay(value, S.unit, field)
+          if (field.unit) item.unit = field.unit
+        }
       } else if (field.key === 'bodyFat') base.bodyFat = value
       else base[field.key] = value == null ? null : fromMeasurementDisplay(value, S.unit)
     }
-    if (!measurementEntryHasValues(base)) { toast(t("ENTER_AT_LEAST_ONE_MEASUREMENT" /* 请至少输入一项测量 */)); return }
+    if (!measurementEntryHasValues(base)) { toast(t('Enter at least one measurement')); return }
     // `t` is when the check-in was last saved: the newer one of a day wins a sync merge, the
     // way a weigh-in's does. The chart places it by its date, not by this.
     base.t = Date.now()
@@ -72,29 +84,29 @@ function MeasurementLog({ sourceDate, close }) {
       state.measurements.push(base)
     })
     close()
-    toast(t("MEASUREMENTS_SAVED" /* 已保存测量 */))
+    toast(t('Measurements saved'))
   }
 
   return <>
-    <h3>{source ? t("EDIT_MEASUREMENTS" /* 编辑测量 */) : t("LOG_MEASUREMENTS" /* 记录测量 */)}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t("FILL_ONLY_WHAT_YOU_MEASURED_TODAY_EMPTY_FIELDS_STAY_EMPTY" /* 只填今天量过的部位，留空的字段保持为空。 */)}</div>
+    <h3>{source ? t('Edit measurements') : t('Log measurements')}</h3>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t('Fill only what you measured today. Empty fields stay empty.')}</div>
     <label className="measure-date">
-      <span>{t("DATE" /* 日期 */)}</span>
-      <input className="field" type="date" value={date} max={todayISO()} onChange={e => setDate(e.target.value)} />
+      <span>{t('Date')}</span>
+      <DateField value={date} max={todayISO()} onChange={setDate} label={t('Date')} />
     </label>
     {fields.length ? <div className="measure-form">
       {fields.map(field => <label className="measure-field" key={field.key}>
-        <span>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(field.label)}</span>
+        <span>{t(field.label)}</span>
         <span className="measure-input">
           <NumberField nullable value={values[field.key]} onChange={value => setValues(v => ({ ...v, [field.key]: value }))} />
           <i>{fieldUnit(field, S.unit)}</i>
         </span>
       </label>)}
-    </div> : <div className="empty small">{t("CHOOSE_AT_LEAST_ONE_MEASUREMENT_FIRST" /* 请先选择至少一个测量项。 */)}</div>}
+    </div> : <div className="empty small">{t('Choose at least one measurement first.')}</div>}
     <div style={{ height: 14 }} />
-    <Button variant="primary" onClick={save} disabled={!fields.length}>{t("SAVE" /* 保存 */)}</Button>
+    <Button variant="primary" onClick={save} disabled={!fields.length}>{t('Save')}</Button>
     <div style={{ height: 8 }} />
-    <Button variant="ghost" className="dim" onClick={close}>{t("CANCEL" /* 取消 */)}</Button>
+    <Button variant="ghost" className="dim" onClick={close}>{t('Cancel')}</Button>
   </>
 }
 
@@ -105,6 +117,7 @@ export function measurementLogSheet(sourceDate = null) {
 function ManageMeasurements({ close }) {
   const S = useStore(s => s.S)
   const [name, setName] = useState('')
+  const [unit, setUnit] = useState(() => measurementUnit(S.unit))
   const groups = [...new Set(MEASUREMENT_FIELDS.map(f => f.group))]
   const toggleBuiltin = (key, on) => update(state => {
     const set = new Set(state.measurementEnabled || [])
@@ -115,35 +128,50 @@ function ManageMeasurements({ close }) {
     const item = state.customMeasurements.find(c => c.id === id)
     if (item) item.enabled = on
   })
+  const setCustomUnit = (id, value) => update(state => {
+    const item = state.customMeasurements.find(c => c.id === id)
+    if (item && customMeasurementUnits(item, state.measurements).includes(value)) item.unit = value
+  })
   const add = () => {
     const clean = name.trim()
     if (!clean) return
     if (S.customMeasurements.some(c => c.name.toLowerCase() === clean.toLowerCase()) ||
       MEASUREMENT_FIELDS.some(f => f.label.toLowerCase() === clean.toLowerCase())) {
-      toast(t("A_CUSTOM_MEASUREMENT_WITH_THAT_NAME_ALREADY_EXISTS" /* 已有同名的自定义测量项。 */)); return
+      toast(t('A custom measurement with that name already exists.')); return
     }
-    update(state => { state.customMeasurements.push({ id: uid(), name: clean.slice(0, 60), enabled: true }) })
+    update(state => { state.customMeasurements.push({ id: uid(), name: clean.slice(0, 60), enabled: true, unit }) })
     setName('')
   }
   return <>
-    <h3>{t("CHOOSE_MEASUREMENTS" /* 选择测量项 */)}</h3>
-    <div className="muted small" style={{ marginBottom: 12 }}>{t("KEEP_THE_LOGGING_FORM_FOCUSED_ON_THE_MEASUREMENTS_YOU_ACTUALLY_TRACK" /* 让表单只保留你真正跟踪的测量项。 */)}</div>
-    {groups.map(group => <Section title={translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(group)} key={group} className="measure-options">
+    <h3>{t('Choose measurements')}</h3>
+    <div className="muted small" style={{ marginBottom: 12 }}>{t('Keep the logging form focused on the measurements you actually track.')}</div>
+    {groups.map(group => <Section title={t(group)} key={group} className="measure-options">
       {MEASUREMENT_FIELDS.filter(f => f.group === group).map(field => <div className="lrow" key={field.key}>
-        <span className="lrow-m"><span className="lrow-t">{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(field.label)}</span></span>
+        <span className="lrow-m"><span className="lrow-t">{t(field.label)}</span></span>
         <Switch checked={(S.measurementEnabled || []).includes(field.key)} onChange={on => toggleBuiltin(field.key, on)} />
       </div>)}
-      {group === 'Other' && S.customMeasurements.map(field => <div className="lrow" key={field.id}>
-        <span className="lrow-m"><span className="lrow-t">{field.name}</span><span className="lrow-s">{t("CUSTOM_A" /* 自定义 */)}</span></span>
-        <Switch checked={field.enabled !== false} onChange={on => toggleCustom(field.id, on)} />
+      {group === 'Other' && S.customMeasurements.map(field => <div key={field.id}>
+        <div className="lrow">
+          <span className="lrow-m"><span className="lrow-t">{field.name}</span><span className="lrow-s">{t('Custom')}</span></span>
+          <Switch checked={field.enabled !== false} onChange={on => toggleCustom(field.id, on)} />
+        </div>
+        <SelectRow title={t('Measurement unit')} value={measurementUnit(S.unit, field)}
+          options={unitOptions(customMeasurementUnits(field, S.measurements))}
+          onChange={value => setCustomUnit(field.id, value)} />
       </div>)}
     </Section>)}
+    <div className="muted small" style={{ marginBottom: 12 }}>{t('Logged values keep their type. Add a new measurement to use a different type.')}</div>
+    <h4 className="sec">{t('Custom measurement')}</h4>
+    <div className="sect-b">
+      <SelectRow title={t('Measurement unit')} value={unit} onChange={setUnit}
+        options={unitOptions(CUSTOM_MEASUREMENT_UNITS)} />
+    </div>
     <div className="row" style={{ gap: 8, alignItems: 'stretch' }}>
-      <TextField value={name} maxLength={60} placeholder={t("CUSTOM_MEASUREMENT" /* 自定义测量项 */)} onChange={e => setName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') add() }} />
-      <Button icon="plus" onClick={add} disabled={!name.trim()}>{t("ADD" /* 添加 */)}</Button>
+      <TextField value={name} maxLength={60} placeholder={t('Custom measurement')} onChange={e => setName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') add() }} />
+      <Button icon="plus" onClick={add} disabled={!name.trim()}>{t('Add')}</Button>
     </div>
     <div style={{ height: 14 }} />
-    <Button variant="primary" onClick={close}>{t("DONE" /* 完成 */)}</Button>
+    <Button variant="primary" onClick={close}>{t('Done')}</Button>
   </>
 }
 
@@ -162,7 +190,7 @@ export default function Measurements() {
     }
     for (const custom of S.customMeasurements || []) {
       const key = 'other:' + custom.id
-      if (latestMeasurement(S, key) && !out.some(f => f.key === key)) out.push({ key, label: custom.name, custom: true, group: 'Other' })
+      if (latestMeasurement(S, key) && !out.some(f => f.key === key)) out.push({ key, label: custom.name, unit: custom.unit, custom: true, group: 'Other' })
     }
     return out
   }, [S])
@@ -171,7 +199,7 @@ export default function Measurements() {
   const key = available.some(f => f.key === selected) ? selected : fallback
   const field = available.find(f => f.key === key)
   const points = key ? measurementSeries(S, key, range) : []
-  const unit = key === 'bodyFat' ? '%' : measurementUnit(S.unit)
+  const unit = fieldUnit(field, S.unit)
   const all = key ? measurementSeries(S, key) : []
   const latest = all.at(-1)
   const previous = all.at(-2)
@@ -179,59 +207,59 @@ export default function Measurements() {
   const recent = [...S.measurements].reverse()
 
   const remove = entry => confirmSheet({
-    title: t("DELETE_MEASUREMENTS" /* 删除这次测量？ */),
-    message: t("DELETES_THE_MEASUREMENTS_LOGGED_ON_COUNT" /* 删除 {0} 记录的测量。 */, fmtDate(entry.d, true)),
-    confirmText: t("DELETE" /* 删除 */), danger: true,
-    onConfirm: () => { update(state => { state.measurements = state.measurements.filter(e => e.d !== entry.d) }); toast(t("MEASUREMENTS_DELETED" /* 已删除测量 */)) },
+    title: t('Delete measurements?'),
+    message: t('Deletes the measurements logged on {0}.', fmtDate(entry.d, true)),
+    confirmText: t('Delete'), danger: true,
+    onConfirm: () => { update(state => { state.measurements = state.measurements.filter(e => e.d !== entry.d) }); toast(t('Measurements deleted')) },
   })
 
   return <div className="narrow">
     <div className="hdr">
-      <button className="iconbtn" onClick={() => nav('/home')} aria-label={t("HOME" /* 首页 */)}><Icon name="chevronLeft" /></button>
-      <div style={{ flex: 1, marginLeft: 10 }}><h1>{t("BODY_MEASUREMENTS" /* 身体围度 */)}</h1><div className="sub">{t("CIRCUMFERENCE_COMPOSITION" /* 围度与体成分 */)}</div></div>
-      <button className="iconbtn" onClick={manageMeasurementsSheet} aria-label={t("CHOOSE_MEASUREMENTS" /* 选择测量项 */)}><Icon name="gear" /></button>
+      <button className="iconbtn" data-back="/stats" onClick={() => nav('/stats')} aria-label={t('Stats')}><Icon name="chevronLeft" /></button>
+      <div style={{ flex: 1, marginInlineStart: 12 }}><h1>{t('Body measurements')}</h1><div className="sub">{t('Circumference & composition')}</div></div>
+      <button className="iconbtn" onClick={manageMeasurementsSheet} aria-label={t('Choose measurements')}><Icon name="gear" /></button>
     </div>
 
     <div className="card">
       <div className="row between" style={{ marginBottom: 10 }}>
         <div>
-          <div className="muted small">{field ? translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(field.label) : t("BODY_MEASUREMENTS" /* 身体围度 */)}</div>
-          <div className="big" style={{ marginTop: 3 }}>{latest ? <>{fmtNum(latest.y)} <span className="muted" style={{ fontSize: '1rem' }}>{unit}</span></> : '–'}</div>
-          {delta != null && delta !== 0 && <div className="small" style={{ marginTop: 3, color: 'var(--label-2)' }}>{delta > 0 ? '+' : ''}{fmtNum(delta)} {unit} {t("SINCE_PREVIOUS" /* 较上次 */)}</div>}
+          <div className="muted small">{field ? t(field.label) : t('Body measurements')}</div>
+          <div className="big" style={{ marginTop: 3 }}>{latest ? <>{fmtNum(latest.y)} <span className="muted" style={{ fontSize: 'var(--fs-callout)' }}>{unit}</span></> : '–'}</div>
+          {delta != null && delta !== 0 && <div className="small" style={{ marginTop: 3, color: 'var(--label-2)' }}>{delta > 0 ? '+' : ''}{withUnit(delta, unit)} {t('since previous')}</div>}
         </div>
-        <Button size="sm" icon="plus" onClick={() => measurementLogSheet()}>{t("LOG" /* 记录 */)}</Button>
+        <Button size="sm" icon="plus" onClick={() => measurementLogSheet()}>{t('Log')}</Button>
       </div>
       {available.length > 0 && <div className="sect-b measure-select"><SelectRow
-        title={t("MEASUREMENT" /* 测量项 */)} sheetTitle={t("CHOOSE_MEASUREMENT" /* 选择测量项 */)} value={key} onChange={setSelected}
-        options={available.map(f => ({ value: f.key, label: translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(f.label) }))} />
+        title={t('Measurement')} sheetTitle={t('Choose measurement')} value={key} onChange={setSelected}
+        options={available.map(f => ({ value: f.key, label: t(f.label) }))} />
       </div>}
       <Segmented className="seg-range" value={range} onChange={setRange}
-        options={[{ value: 30, label: '1M' }, { value: 90, label: '3M' }, { value: 365, label: '1Y' }, { value: 0, label: t("ALL" /* 全部 */) }]} />
+        options={[{ value: 30, label: '1M' }, { value: 90, label: '3M' }, { value: 365, label: '1Y' }, { value: 0, label: t('All') }]} />
       <div className="chart"><LineChart points={points} h={170} unit={unit} color="var(--teal)" /></div>
     </div>
 
     {!available.length && <div className="card">
-      <div className="muted small">{t("CHOOSE_THE_MEASUREMENTS_YOU_WANT_TO_TRACK_THEN_LOG_YOUR_FIRST_CHECK" /* 选择你想跟踪的测量项，然后记录第一次测量。 */)}</div>
-      <div style={{ height: 10 }} /><Button onClick={manageMeasurementsSheet}>{t("CHOOSE_MEASUREMENTS" /* 选择测量项 */)}</Button>
+      <div className="muted small">{t('Choose the measurements you want to track, then log your first check-in.')}</div>
+      <div style={{ height: 10 }} /><Button onClick={manageMeasurementsSheet}>{t('Choose measurements')}</Button>
     </div>}
 
     <div className="row between" style={{ margin: '18px 2px 10px' }}>
-      <h4 className="sec" style={{ margin: 0 }}>{t("MEASUREMENT_HISTORY" /* 测量历史 */)}</h4>
-      <Button size="sm" variant="ghost" icon="gear" onClick={manageMeasurementsSheet}>{t("FIELDS" /* 字段 */)}</Button>
+      <h4 className="sec" style={{ margin: 0 }}>{t('Measurement history')}</h4>
+      <Button size="sm" variant="ghost" icon="gear" onClick={manageMeasurementsSheet}>{t('Fields')}</Button>
     </div>
     {recent.length ? <div className="list">{recent.map(entry => {
       const count = MEASUREMENT_KEYS.filter(k => entry[k] != null).length + (entry.other || []).filter(o => o.value != null).length
       const previewFields = enabledMeasurementFields(S).map(f => ({ field: f, value: shownValue(entry, f, S.unit) })).filter(x => x.value != null).slice(0, 3)
       return <div className="card measure-history" key={entry.d}>
         <div className="row between">
-          <div><b>{fmtDate(entry.d, true)}</b><div className="small dim" style={{ marginTop: 2 }}>{t(count === 1 ? "COUNT_MEASUREMENT" /* {0} 项测量 */ : "COUNT_MEASUREMENTS" /* {0} 项测量 */, count)}</div></div>
+          <div><b>{fmtDate(entry.d, true)}</b><div className="small dim" style={{ marginTop: 2 }}>{t(count === 1 ? '{0} measurement' : '{0} measurements', count)}</div></div>
           <div className="row" style={{ gap: 4 }}>
-            <button className="iconbtn" onClick={() => measurementLogSheet(entry.d)} aria-label={t("EDIT" /* 编辑 */)}><Icon name="pencil" /></button>
-            <button className="iconbtn" style={{ color: 'var(--red)' }} onClick={() => remove(entry)} aria-label={t("DELETE" /* 删除 */)}><Icon name="trash" /></button>
+            <button className="iconbtn" onClick={() => measurementLogSheet(entry.d)} aria-label={t('Edit')}><Icon name="pencil" /></button>
+            <button className="iconbtn" style={{ color: 'var(--red)' }} onClick={() => remove(entry)} aria-label={t('Delete')}><Icon name="trash" /></button>
           </div>
         </div>
-        {previewFields.length > 0 && <div className="measure-preview">{previewFields.map(({ field: f, value }) => <span key={f.key}>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(f.label)} <b>{fmtNum(value)} {fieldUnit(f, S.unit)}</b></span>)}</div>}
+        {previewFields.length > 0 && <div className="measure-preview">{previewFields.map(({ field: f, value }) => <span key={f.key}>{t(f.label)} <b>{withUnit(value, fieldUnit(f, S.unit))}</b></span>)}</div>}
       </div>
-    })}</div> : <div className="empty small">{t("NO_MEASUREMENTS_YET" /* 还没有测量 */)}</div>}
+    })}</div> : <div className="empty small">{t('No measurements yet')}</div>}
   </div>
 }

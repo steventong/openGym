@@ -110,7 +110,7 @@ export default function SyncBanner() {
     <div className="conn-row" ref={row} role="status" aria-live="polite">
       {act ? <button className="conn" onClick={act}>{inner}</button> : <div className="conn">{inner}</div>}
       {/* Connecting or signing in is still in Settings, so hiding the line takes nothing away. */}
-      {quiet && <button type="button" className="conn-x" aria-label={t("CLOSE" /* 关闭 */)} onClick={() => update(s => { s.connLocal = false })}><Icon name="xmark" /></button>}
+      {quiet && <button type="button" className="conn-x" aria-label={t('Close')} onClick={() => update(s => { s.connLocal = false })}><Icon name="xmark" /></button>}
     </div>
   </div>
 }

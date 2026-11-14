@@ -27,7 +27,7 @@ function render(View = StructuralBalance) {
 
 function setDoneSet(w, r) { return { done: true, w, r } }
 function workoutAt(id, start, sets) {
-  return { d: new Date(start).toISOString(), start, entries: [{ id, sets }] }
+  return { id: 'w-' + id, d: new Date(start).toISOString(), start, entries: [{ id, sets }] }
 }
 
 beforeEach(() => {
@@ -113,7 +113,7 @@ describe('StructuralBalance view', () => {
   it('picking a role\'s own default exercise does not mark it custom', () => {
     const host = render()
     const row = host.querySelector('[data-role-id="inclineBench"]')
-    act(() => [...row.querySelectorAll('button')].find(b => b.textContent.includes('Swap exercise')).click())
+    act(() => [...row.querySelectorAll('button')].find(b => b.textContent.includes('Change exercise')).click())
     const picker = useUI.getState().sheets.at(-1)
     act(() => picker.render(picker.close).props.onPick({ id: '0047' })) // barbell incline bench press, the role's default
     const after = host.querySelector('[data-role-id="inclineBench"]')
@@ -170,13 +170,13 @@ describe('StructuralBalance view', () => {
   it('changing a role\'s exercise via the picker saves an override and marks it custom', () => {
     const host = render()
     const row = host.querySelector('[data-role-id="inclineBench"]')
-    const changeBtn = [...row.querySelectorAll('button')].find(b => b.textContent.includes('Swap exercise'))
+    const changeBtn = [...row.querySelectorAll('button')].find(b => b.textContent.includes('Change exercise'))
     act(() => changeBtn.click())
 
     const picker = useUI.getState().sheets.at(-1)
     expect(picker).toBeTruthy()
     const pickerView = picker.render(picker.close)
-    expect(pickerView.props.title).toBe('Swap exercise')   // not the picker's own "Add exercise"
+    expect(pickerView.props.title).toBe('Change exercise')   // not the picker's own "Add exercise"
     act(() => pickerView.props.onPick({ id: '0043' })) // barbell full squat — deliberately not in inclineBench's whitelist
 
     const chosen = useStore.getState().S.balanceOverrides['poliquin:inclineBench']
@@ -200,13 +200,12 @@ describe('StructuralBalance view', () => {
 })
 
 describe('the way in from Stats', () => {
-  it('is a card like the others that opens the screen, once there is a workout to read', () => {
+  it('is a row in Stats\' list of pages that opens the screen, once there is a workout to read', () => {
     const host = render(Stats)
-    const card = [...host.querySelectorAll('.card')].find(c => c.querySelector('h2')?.textContent === 'Structural balance')
-    expect(card).toBeTruthy()
-    expect(card.textContent).toContain('See which lift is holding back the rest.')
-    const open = [...card.querySelectorAll('button')].find(b => b.textContent.includes('Open'))
-    act(() => open.click())
+    const row = [...host.querySelectorAll('[data-stats-links] button')].find(b => b.querySelector('.lrow-t')?.textContent === 'Structural balance')
+    expect(row).toBeTruthy()
+    expect(row.textContent).toContain('See which lift is holding back the rest.')
+    act(() => row.click())
     expect(navSpy).toHaveBeenCalledWith('/structural-balance')
   })
 

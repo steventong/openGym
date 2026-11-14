@@ -1,4 +1,3 @@
-import { t } from './i18n-core.js'
 import { describe, it, expect } from 'vitest'
 import { nextPrescription, readSession, stallCount, sessionsFor, tripleSetsOf, plannedOf, planChanged, applyPrescription, POLICIES_FOR, POLICY_NAME, POLICY_DESC, DELOAD_AFTER } from './progression.js'
 import { buildSessionEntries } from './session-start.js'
@@ -31,8 +30,8 @@ describe('triple progression is a policy like the others', () => {
   it('is offered for rep work with a name, an explanation and the usual deload', () => {
     expect(POLICIES_FOR.reps).toContain('triple')
     expect(POLICIES_FOR.time).not.toContain('triple')
-    expect(t(POLICY_NAME.triple)).toBe('Triple progression')
-    expect(t(POLICY_DESC.triple)).toMatch(/set/)
+    expect(POLICY_NAME.triple).toBe('Triple progression')
+    expect(POLICY_DESC.triple).toMatch(/set/)
     expect(DELOAD_AFTER.triple).toBe(3)
   })
 

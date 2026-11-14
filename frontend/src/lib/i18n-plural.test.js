@@ -1,4 +1,3 @@
-import english from '../../../localization/en.json' with { type: 'json' }
 import { describe, it, expect, afterEach } from 'vitest'
 import { t, tn, _setLangState } from './i18n-core.js'
 import ru from '../locales/ru.js'
@@ -18,9 +17,9 @@ const tnKeys = () => {
   const re = /\btn\(\s*(['"`])((?:\\.|(?!\1).)*)\1\s*,\s*(['"`])((?:\\.|(?!\3).)*)\3/gs
   for (const f of walk(SRC)) {
     if (!/\.(jsx?|mjs)$/.test(f) || /\.test\./.test(f) || /[\\/]locales[\\/]/.test(f)) continue
-    const s = readFileSync(f, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+    const s = readFileSync(f, 'utf8')
     let m
-    while ((m = re.exec(s))) keys.add(english[m[4]] || m[4])
+    while ((m = re.exec(s))) keys.add(m[4])
   }
   return [...keys]
 }

@@ -19,8 +19,12 @@ import { sameWorkout } from '../lib/workout-date.js'
 import { syncMedia } from '../lib/media-sync.js'
 import { useMediaPicker } from './CustomMediaField.jsx'
 import { CustomThumb, MediaView } from './CustomMedia.jsx'
+import { workoutSetVideos } from '../lib/set-videos.js'
+import { openWorkoutSetVideo } from './SetVideo.jsx'
 import { Button } from './ui.jsx'
 import Icon from './Icon.jsx'
+import { exOr } from '../lib/exercises.js'
+import { exerciseNameText } from '../lib/format.js'
 
 const toast = m => useUI.getState().toast(m)
 
@@ -28,8 +32,9 @@ const toast = m => useUI.getState().toast(m)
 // this very sheet may have written it since the caller got its copy.
 const useRecord = w => useStore(s => (s.S.workouts || []).find(x => x && sameWorkout(x, w)) || null)
 
-/** The number of photos and videos a workout shows — for the history row's small badge. */
-export const workoutMediaCount = w => workoutMediaOf(w).length
+/** The number of photos and videos a workout shows, its sets' form videos included — for the
+ *  history row's small badge. */
+export const workoutMediaCount = w => workoutMediaOf(w).length + workoutSetVideos(w).length
 
 /**
  * Whether a workout may be offered an Add at all, beside the picker's own reasons: signed in (a
@@ -55,10 +60,13 @@ export default function WorkoutMediaSection({ w, hint = false }) {
   const fileRef = useRef(null)
   if (!rec) return null
   const list = workoutMediaOf(rec)
+  // The form videos filmed for its sets (lib/set-videos.js), after its own photos and videos:
+  // they live on their sets and have their own cap, so Add's room is the workout's own.
+  const setVideos = workoutSetVideos(rec)
   const room = WORKOUT_MEDIA_MAX - list.length
   const showAdd = pickerShowsAdd && serverTakesWorkoutMedia(user, config)
   const canAdd = pickerCanAdd && showAdd
-  if (!list.length && !(showAdd && storable)) return null
+  if (!list.length && !setVideos.length && !(showAdd && storable)) return null
 
   const onFiles = async ev => {
     const picked = [...(ev.target.files || [])]
@@ -76,34 +84,42 @@ export default function WorkoutMediaSection({ w, hint = false }) {
       update(s => { res = addWorkoutMedia(s, w, got) })
       if (res === 'added') added++
       else if (res === 'full') { full = true; break }
-      else if (res === 'gone') { toast(t("WORKOUT_DELETED" /* 训练已删除 */)); full = false; break }
+      else if (res === 'gone') { toast(t('Workout deleted')); full = false; break }
     }
-    if (full) toast(t("UP_TO_COUNT_PHOTOS_OR_VIDEOS_PER_WORKOUT" /* 每次训练最多 {0} 个照片或视频。 */, WORKOUT_MEDIA_MAX))
+    if (full) toast(t('Up to {0} photos or videos per workout.', WORKOUT_MEDIA_MAX))
     // Straight up, like an exercise's picture on save: the state push waits for its debounce.
     if (added) syncMedia({ force: true })
   }
 
   return <div className="wmedia">
-    <div className="small muted wmedia-h">{t("PHOTOS_VIDEOS" /* 照片和视频 */)}</div>
-    {(list.length > 0 || showAdd) && <div className="wmedia-grid">
+    <div className="small muted wmedia-h">{t('Photos & videos')}</div>
+    {(list.length > 0 || setVideos.length > 0 || showAdd) && <div className="wmedia-grid">
       {list.map((m, i) => (
         <button key={m.hash} type="button" className="wmedia-item" data-swipe-ignore
-          aria-label={t("PHOTO_OR_VIDEO_COUNT_OF_COUNT" /* 第 {0} 个照片或视频，共 {1} 个 */, i + 1, list.length)}
+          aria-label={t('Photo or video {0} of {1}', i + 1, list.length)}
           onClick={() => openWorkoutMediaViewer(w, i)}>
           <CustomThumb ex={{ custom: true, media: m }} />
           {m.kind !== 'image' && <span className="wmedia-kind"><Icon name="play" /></span>}
         </button>
       ))}
+      {setVideos.map(v => (
+        <button key={'s' + v.m.hash} type="button" className="wmedia-item" data-swipe-ignore
+          aria-label={t('Form video: {0}', exerciseNameText(exOr(v.exId)))}
+          onClick={() => openWorkoutSetVideo(rec, v)}>
+          <CustomThumb ex={{ custom: true, media: v.m }} />
+          <span className="wmedia-kind"><Icon name="camera" /></span>
+        </button>
+      ))}
       {showAdd && room > 0 && (
         <button type="button" className="wmedia-add" disabled={!canAdd} onClick={() => fileRef.current?.click()}>
           <Icon name={busy ? 'image' : 'plus'} />
-          <span>{busy ? t("LOADING" /* 加载中… */) : t("ADD_PHOTO_OR_VIDEO" /* 添加照片或视频 */)}</span>
+          <span>{busy ? t('Loading…') : t('Add photo or video')}</span>
         </button>
       )}
     </div>}
     <input ref={fileRef} type="file" accept="image/*,video/*" multiple hidden onChange={onFiles} />
-    {hint && !list.length && showAdd && <div className="small dim wmedia-note">{t("A_PROGRESS_PHOTO_OR_A_FORM_CHECK_VIDEO_KEPT_WITH_THIS_WORKOUT" /* 进度照片或动作检查视频，与本次训练一起保存。 */)}</div>}
-    {room <= 0 && <div className="small dim wmedia-note">{t("UP_TO_COUNT_PHOTOS_OR_VIDEOS_PER_WORKOUT" /* 每次训练最多 {0} 个照片或视频。 */, WORKOUT_MEDIA_MAX)}</div>}
+    {hint && !list.length && showAdd && <div className="small dim wmedia-note">{t('A progress photo or a form-check video, kept with this workout.')}</div>}
+    {room <= 0 && <div className="small dim wmedia-note">{t('Up to {0} photos or videos per workout.', WORKOUT_MEDIA_MAX)}</div>}
     {warning && <div className="small dim wmedia-note">{warning}</div>}
     {/* Where the files live, or why none can be added — about the ones there are, so not
         while there are none (the finish screen's hint says what the section is for). */}
@@ -162,25 +178,25 @@ export function WorkoutMediaViewer({ w, index = 0, close }) {
     e.preventDefault()
     go((e.key === 'ArrowRight') !== rtl ? 1 : -1)
   }
-  return <div className="mviewer" role="dialog" aria-modal="true" aria-label={t("PHOTOS_VIDEOS" /* 照片和视频 */)} ref={box} tabIndex={-1} onKeyDown={onKeyDown}>
+  return <div className="mviewer" role="dialog" aria-modal="true" aria-label={t('Photos & videos')} ref={box} tabIndex={-1} onKeyDown={onKeyDown}>
     <div className="mviewer-bar">
-      <button type="button" className="iconbtn" aria-label={t("CLOSE" /* 关闭 */)} onClick={close}><Icon name="xmark" /></button>
+      <button type="button" className="iconbtn" aria-label={t('Close')} onClick={close}><Icon name="xmark" /></button>
       <span className="mviewer-count" dir="ltr">{at + 1} / {list.length}</span>
-      <button type="button" className="iconbtn" aria-label={t("REMOVE" /* 移除 */)} onClick={() => setAsking(a => !a)}><Icon name="trash" /></button>
+      <button type="button" className="iconbtn" aria-label={t('Remove')} onClick={() => setAsking(a => !a)}><Icon name="trash" /></button>
     </div>
     <div className="mviewer-stage">
       <MediaView key={m.hash} m={m} cls="exmedia viewer" name={rec?.name || ''} />
     </div>
     {asking && <div className="mviewer-ask">
-      <div className="mviewer-ask-t">{t("REMOVE_THIS_PHOTO_OR_VIDEO" /* 移除这个照片或视频？ */)}</div>
+      <div className="mviewer-ask-t">{t('Remove this photo or video?')}</div>
       <div className="mviewer-ask-b">
-        <Button variant="ghost" size="sm" onClick={() => setAsking(false)}>{t("CANCEL" /* 取消 */)}</Button>
-        <Button variant="danger" size="sm" onClick={remove}>{t("REMOVE" /* 移除 */)}</Button>
+        <Button variant="ghost" size="sm" onClick={() => setAsking(false)}>{t('Cancel')}</Button>
+        <Button variant="danger" size="sm" onClick={remove}>{t('Remove')}</Button>
       </div>
     </div>}
     {list.length > 1 && !asking && <div className="mviewer-nav">
-      <button type="button" className="iconbtn" aria-label={t("PREVIOUS" /* 上一个 */)} onClick={() => go(-1)}><Icon name="chevronLeft" /></button>
-      <button type="button" className="iconbtn" aria-label={t("NEXT" /* 下一个 */)} onClick={() => go(1)}><Icon name="chevronRight" /></button>
+      <button type="button" className="iconbtn" aria-label={t('Previous')} onClick={() => go(-1)}><Icon name="chevronLeft" /></button>
+      <button type="button" className="iconbtn" aria-label={t('Next')} onClick={() => go(1)}><Icon name="chevronRight" /></button>
     </div>}
   </div>
 }

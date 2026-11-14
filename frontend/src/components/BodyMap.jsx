@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { MUSCLES, INERT, MUSCLE_NAME, levelsOf } from '../lib/muscles.js'
-import { t , translateValue } from '../lib/i18n.js'
+import { t } from '../lib/i18n.js'
 
 // Front and back views of a body, each muscle shaded by how hard it was worked.
 //
@@ -45,10 +45,10 @@ function View({ view, levels, onMuscle, selected }) {
           onKeyDown={onMuscle ? event => activate(event, slug) : undefined}
           role={onMuscle ? 'button' : undefined}
           tabIndex={onMuscle ? 0 : undefined}
-          aria-label={onMuscle ? translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[slug]) : undefined}
+          aria-label={onMuscle ? t(MUSCLE_NAME[slug]) : undefined}
           aria-pressed={onMuscle ? selected === slug : undefined}
         >
-          <title>{translateValue /* 动态标签：保留原始数据值，只翻译显示文字 */(MUSCLE_NAME[slug])}</title>
+          <title>{t(MUSCLE_NAME[slug])}</title>
         </path>))}
     </svg>
   )
@@ -59,11 +59,12 @@ function View({ view, levels, onMuscle, selected }) {
  * `load` is effective sets per muscle (see lib/muscles.js); shading is relative to
  * the hardest-worked muscle in that same load, so it always reads as a balance. Pass ordered
  * `{ at, level, exclusive? }` `thresholds` for a fixed absolute scale (recovery views use this
- * to keep their semantic bands stable); omitting it preserves the balance behavior.
+ * to keep their semantic bands stable); omitting it preserves the balance behavior. `levels`
+ * hands over ready-made steps instead (the live session map, lib/muscles.js sessionLevels).
  */
-export default function BodyMap({ load = {}, thresholds, body = 'male', onMuscle, selected, className = '' }) {
+export default function BodyMap({ load = {}, thresholds, levels: given, body = 'male', onMuscle, selected, className = '' }) {
   const paths = useBodyPaths()
-  const levels = levelsOf(load, thresholds)
+  const levels = given || levelsOf(load, thresholds)
   const g = paths && (paths[body] || paths.male)
   return (
     <div className={'bodymap ' + className}>
@@ -76,8 +77,8 @@ export default function BodyMap({ load = {}, thresholds, body = 'male', onMuscle
 }
 
 export function BodyMapLegend() {
-  return <div className="hm-legend" aria-label={`${t("LESS" /* 更少 */)} ${t("MORE" /* 更多 */)}`}>
-    {t("LESS" /* 更少 */)} <div className="hm-c l0" /><div className="hm-c l1" /><div className="hm-c l2" />
-    <div className="hm-c l3" /><div className="hm-c l4" /> {t("MORE" /* 更多 */)}
+  return <div className="hm-legend" aria-label={`${t('Less')} ${t('More')}`}>
+    {t('Less')} <div className="hm-c l0" /><div className="hm-c l1" /><div className="hm-c l2" />
+    <div className="hm-c l3" /><div className="hm-c l4" /> {t('More')}
   </div>
 }

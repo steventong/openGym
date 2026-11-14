@@ -1,4 +1,3 @@
-import { t } from './i18n-core.js'
 import { describe, expect, it } from 'vitest'
 import { NUDGE_COPY, NUDGE_TONES, lineIndex, nudgeFor, nudgeMinute, toneOf } from './nudge.js'
 import { buildNudgeNotifications } from './mobile.js'
@@ -62,8 +61,8 @@ describe('buildNudgeNotifications (mobile)', () => {
     const n = buildNudgeNotifications(S({ workouts: [w('2026-09-04')] }), now)
     expect(n.map(x => [x.schedule.at.getDate(), x.schedule.at.getHours(), x.schedule.at.getMinutes()]))
       .toEqual([[7, 20, 0], [9, 20, 0], [11, 20, 0]])
-    expect(n[0].title).toBe(t(NUDGE_COPY.friendly.title))
-    expect(n[0].body).toBe(t(NUDGE_COPY.friendly.lines[lineIndex('2026-09-07', 4)], 'Push'))
+    expect(n[0].title).toBe(NUDGE_COPY.friendly.title)
+    expect(n[0].body).toBe(NUDGE_COPY.friendly.lines[lineIndex('2026-09-07', 4)].replace('{0}', 'Push'))
     expect(new Set(n.map(x => x.id)).size).toBe(3)
   })
   it('is off unless both the reminder and the nudge are on', () => {
@@ -85,7 +84,7 @@ describe('buildNudgeNotifications (mobile)', () => {
   })
   it('takes the tone, and runs 2 hours after a late reminder', () => {
     const n = buildNudgeNotifications(S({ workouts: [w('2026-09-04')], reminder: { on: true, time: '19:00', nudge: true, tone: 'drill' } }), now)
-    expect(n[0].title).toBe(t(NUDGE_COPY.drill.title))
+    expect(n[0].title).toBe(NUDGE_COPY.drill.title)
     expect([n[0].schedule.at.getHours(), n[0].schedule.at.getMinutes()]).toEqual([21, 0])
   })
 })

@@ -1,0 +1,28 @@
+{
+  "status": "updated_verified",
+  "account": "Steven",
+  "source": {
+    "path": "/Users/tongwanglin/Workspace/fitness-logs/outputs/01a16bcd-c62d-75a2-aac0-36c8ac1ef5ca/Fitness_Log_完整明细_2026-10-25.xlsx",
+    "sha256": "4ac5cd1ddedba8e441baa1009e22a83aafd853ecb44bea39f9cd66c893c2643d"
+  },
+  "workouts": 74,
+  "originalSessions": 76,
+  "entryNotes": 211,
+  "standingNotes": 103,
+  "sets": 1304,
+  "priorRevision": 12,
+  "revision": 13,
+  "backup": "/data/backups/notes-20261025/state-LhEb0Tg3gzidmdnz-before-2026-10-25T08-19-32-622Z.json",
+  "backupSha256": "d6adff65cd8a1ee4a2e63335734f8b2038acf95bc8ae2e5a06fb09dd1fe1bd62",
+  "verifiedAt": "2026-10-25T08:19:33.267Z",
+  "browserVerifiedDate": "2026-10-22",
+  "postBrowserRevision": 13,
+  "frontend": {
+    "baseRevision": "e9a303877d02e4237b183f96a9a6603990e8fafb",
+    "image": "opengym-web:notes-20261025",
+    "sessionNoteLimit": 2000,
+    "testsPassed": 43,
+    "composeBackup": "/volume1/docker/opengym/compose.yaml.bak-notes-20261025",
+    "sourceArchive": "/volume1/docker/opengym/custom-web-notes-20261025/source.tgz"
+  }
+}

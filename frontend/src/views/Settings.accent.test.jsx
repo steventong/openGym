@@ -177,7 +177,7 @@ describe('Settings: your own accent colour', () => {
 
   it('the settings search finds it', () => {
     for (const q of ['custom color', 'own color', 'picker', 'hex']) {
-      expect(searchSettings(q, {}).map(h => h.title), q).toContain('ACCENT_COLOR')
+      expect(searchSettings(q, {}).map(h => h.title), q).toContain('Accent color')
     }
   })
 })

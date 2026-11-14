@@ -1,0 +1,12 @@
+{
+  "status": "renamed_verified",
+  "customExercises": 103,
+  "workouts": 75,
+  "sets": 1322,
+  "routines": 4,
+  "notesPreserved": true,
+  "source": "/Users/tongwanglin/Downloads/opengym-backup-2026-10-26 (3).json",
+  "nativeTests": 10,
+  "nativeSimulatorBuildVerified": true,
+  "nativeNumbering": "Per-session index + Chinese(English)"
+}
