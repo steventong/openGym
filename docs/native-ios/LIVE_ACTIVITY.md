@@ -89,8 +89,6 @@ xcrun simctl spawn <SIMULATOR-UDID> log show --last 10m --style compact \
 
 `WorkoutActivityTests.testSystemRendererAfterCompletingSet` 是仅限模拟器的显式集成探针：在 QA 模拟器为 App 设置 `OpenGymActivityRendererQA=true` 后运行，创建测试活动，执行完成组及结束休息，再结束活动。普通测试默认跳过；验证后应删除该开关。需同时检查系统渲染日志，不能仅把 ActivityKit 更新成功当作画面成功。修复前解码错误、修复后 iOS 26.5 的系统日志保存在忽略目录 `artifacts/live-activity-render-fix/`。
 
-同轮跨端文案检查将已核对的同义入口收敛到既有翻译键，映射位于 `localization/metadata/canonical-keys.json`。本地化检查拒绝再次引用这些旧键，以及直接拼接 Rest / Reps / Set / Increase / Decrease 的英文模板；旧导入值仍通过别名映射解析。按钮、状态、空列表、组数及动作进度共享文案，区分体重／自重、测量／肌群等不同语义。
-
 ### 真机恢复与最终验证
 
 真机曾在活动请求成功、授权开启的情况下始终处于 `stale`。协调器现在仅把未来的五秒保护截止时间作为 stale date；已过期的截止时间转为 nil。是否需要更新同时比较训练状态、stale date 和 relevance score，训练数据相同时也能恢复活动元数据。

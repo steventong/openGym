@@ -10,10 +10,9 @@ Paths in this guide are relative to the repository root.
 | `mcp/` | Optional MCP server and its tests |
 | `website/` | Public project website |
 | `catalogue/` | Exercise definitions, translations and licensed media |
-| `localization/` | Shared translation source JSON and metadata |
 | `assets/` | Repository banner, screenshots and social artwork |
 | `deploy/` | Deployment configuration: `web/`, `kubernetes/`, `helm/`, `nix/` |
-| `scripts/` | Cross-project generation, localization, catalogue, media and CI tooling |
+| `scripts/` | Cross-project generation, catalogue, media and CI tooling |
 | `docs/` | User/operator guides; `dev/` for design notes; `native-ios/` for native feature documentation |
 | `artifacts/` | Local build/QA evidence; `outputs/` contains local exports and task reports |
 | `data/`, `coach-auth/` | Local runtime data and provider credentials; ignored by Git |
@@ -56,7 +55,7 @@ native-ios/
 
 Exercise images and videos are fetched from the configured server and persisted under `Documents/workout-images/` and `Documents/workout-videos/`; neither is bundled with the native app. Icons and shared branding remain in asset catalogs.
 
-Translation source remains in the root `localization/` directory. `scripts/localization/generate-apple.mjs` generates the catalogs; `native-ios/scripts/configure-localization.rb` maintains their Xcode target references.
+Native interface translations live in `Resources/Localization/*.xcstrings` and are edited in Xcode; `native-ios/scripts/configure-localization.rb` maintains their Xcode target references.
 
 ## Common entry points
 
@@ -66,7 +65,6 @@ npm run dev --prefix frontend
 npm test --prefix api
 npm test --prefix frontend
 npm test --prefix mcp
-npm run check:localization
 open native-ios/OpenGYM.xcodeproj
 kubectl apply -k deploy/kubernetes/
 helm lint deploy/helm
