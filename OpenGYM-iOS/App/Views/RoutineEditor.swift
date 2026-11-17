@@ -189,7 +189,7 @@ struct ExercisePicker: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("CANCEL") { dismiss() } } }
                 .onAppear { refreshEquipment() }
-                .onChange(of: store.lastSync) { _, _ in refreshEquipment() }
+                .onChange(of: store.lastDocumentChange) { _, _ in refreshEquipment() }
                 .onChange(of: search) { _, _ in limit = 60 }
                 .onChange(of: bodyPart) { _, _ in limit = 60 }
                 .onChange(of: equipment) { _, _ in limit = 60 }

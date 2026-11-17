@@ -19,7 +19,7 @@ struct ExerciseThumbnail: View {
     }
 
     private var loadKey: LoadKey {
-        LoadKey(id: id, server: store.serverURL, mediaID: store.imageMediaID(id), attempt: attempt)
+        LoadKey(id: id, server: store.mediaServerURL, mediaID: store.imageMediaID(id), attempt: attempt)
     }
 
     var body: some View {

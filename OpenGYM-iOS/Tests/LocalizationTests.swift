@@ -51,7 +51,6 @@ import UIKit
             try assertLocalized(key, expected: expected, locale: locale) { SectionTitle(text: $0) }
             try assertLocalized(key, expected: expected, locale: locale) { EmptyCard(icon: "dumbbell", title: $0) }
             try assertLocalized(key, expected: expected, locale: locale) { StatsMetricCard(value: "24", label: $0, icon: "dumbbell") }
-            try assertLocalized(key, expected: expected, locale: locale) { CoachTextList(title: $0, items: ["CANCEL 50% {0}"], symbol: "dumbbell") }
         }
     }
 
@@ -286,12 +285,12 @@ import UIKit
         }
     }
 
-    func testRulesKeepSelectedLanguageAfterOpeningCoach() throws {
+    func testRulesKeepSelectedLanguageAcrossCalls() throws {
         let original = AppLanguage.preferences.language
         defer { AppLanguage.preferences.language = original }
         for language in ["en", "zh"] {
             AppLanguage.preferences.language = language
-            _ = try WebRules.shared.call("coachInfo", payload: ["state": [:]])
+            _ = try WebRules.shared.call("schedule", payload: ["state": [:], "dates": ["2026-11-02"], "today": "2026-11-02"])
             XCTAssertThrowsError(try WebRules.shared.call("validatePersonalConfig", payload: ["config": ["id": "0025", "prog": "linear", "inc": 0]])) { error in
                 XCTAssertTrue(error.localizedDescription.contains(String(localized: "RULE_INCREMENT_POSITIVE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)))
             }

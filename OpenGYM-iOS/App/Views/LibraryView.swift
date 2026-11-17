@@ -76,7 +76,7 @@ struct LibraryView: View {
                 }
             }.padding(20)
         }.scrollDismissesKeyboard(.interactively)
-            .onAppear { refreshEquipment() }.onChange(of:store.lastSync) {_,_ in refreshEquipment()}
+            .onAppear { refreshEquipment() }.onChange(of:store.lastDocumentChange) {_,_ in refreshEquipment()}
             .sheet(isPresented:$createCustom) { CustomExerciseEditor() }
             .onChange(of:query) { _, _ in limit = 60 }.onChange(of:bodyPart) { _, _ in limit = 60 }.onChange(of:equipment) { _, _ in limit = 60 }
     }

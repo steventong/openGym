@@ -106,7 +106,7 @@ struct RestNotificationPermission {
 
     private var currentKey: String? {
         guard enabled, let store, store.userID != nil, let draft = store.draft, let end = store.restUntil else { return nil }
-        return "\(store.coachIdentity)|\(draft.id)|\(end.timeIntervalSince1970)"
+        return "\(store.profileIdentity)|\(draft.id)|\(end.timeIntervalSince1970)"
     }
 
     private func reconcile(traces: [String]) async {

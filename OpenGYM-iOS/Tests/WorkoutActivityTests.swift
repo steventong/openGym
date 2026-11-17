@@ -414,7 +414,7 @@ import ActivityKit
         XCTAssertTrue(records.contains { $0.event == "draft.save.end" && $0.traces == starts[0].traces && $0.fields["outcome"] == "saved" })
         XCTAssertFalse(records.contains { $0.event == "draft.save.begin" && $0.traces == starts[1].traces })
         let values = records.flatMap { Array($0.fields.values) }.joined(separator: "|")
-        for sensitive in [command, "activity-test", "胸背训练", "杠铃卧推", "40 kg", "10 次", store.serverURL, root.path] {
+        for sensitive in [command, "activity-test", "胸背训练", "杠铃卧推", "40 kg", "10 次", store.mediaServerURL, root.path] {
             XCTAssertFalse(values.contains(sensitive))
         }
     }

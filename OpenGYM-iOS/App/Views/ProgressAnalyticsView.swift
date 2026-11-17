@@ -40,7 +40,7 @@ struct ExerciseProgressView:View {
             }
         }.operationAlert($issue).navigationTitle("EXERCISE_PROGRESS").navigationBarTitleDisplayMode(.inline)
             .onAppear { if selected.isEmpty { selected = initialID ?? ids.first ?? "" };reload() }
-            .onChange(of:selected) {_,_ in reload()}.onChange(of:store.lastSync) {_,_ in reload()}
+            .onChange(of:selected) {_,_ in reload()}.onChange(of:store.lastDocumentChange) {_,_ in reload()}
     }
     private func label(_ id:String)->String { store.exercise(id)?.name ?? store.workouts.flatMap {$0["entries"] as? [[String:Any]] ?? []}.first {$0["id"] as? String == id}?["n"] as? String ?? id }
     private func reload() { guard !selected.isEmpty else{return};do {data = try store.personalInfo("progress",["id":selected]);issue = nil} catch {issue = error.localizedDescription} }
@@ -69,7 +69,7 @@ struct MuscleAnalyticsView:View {
                     }
                 }
             }
-        }.operationAlert($issue).navigationTitle("TRAINING_BY_MUSCLE").navigationBarTitleDisplayMode(.inline).onAppear {reload()}.onChange(of:days) {_,_ in reload()}.onChange(of:store.lastSync) {_,_ in reload()}
+        }.operationAlert($issue).navigationTitle("TRAINING_BY_MUSCLE").navigationBarTitleDisplayMode(.inline).onAppear {reload()}.onChange(of:days) {_,_ in reload()}.onChange(of:store.lastDocumentChange) {_,_ in reload()}
     }
     private func reload() {do {data = try store.personalInfo("muscles",["days":days,"now":Date().timeIntervalSince1970*1000]);issue = nil} catch {issue = error.localizedDescription} }
 }
@@ -113,7 +113,7 @@ struct StructuralBalanceView:View {
                 }
             }
         }.operationAlert($issue).navigationTitle("STRUCTURAL_BALANCE").navigationBarTitleDisplayMode(.inline)
-            .onAppear {reload()}.onChange(of:template){_,_ in reload()}.onChange(of:store.lastSync){_,_ in reload()}
+            .onAppear {reload()}.onChange(of:template){_,_ in reload()}.onChange(of:store.lastDocumentChange){_,_ in reload()}
             .sheet(item:$selected) {row in ExercisePicker(title: "CHOOSE_MATCHING_EXERCISE") {ex in assign(row.raw,ex.id);selected = nil} }
     }
     private func status(_ row:[String:Any])->LocalizedStringKey {

@@ -58,7 +58,6 @@ struct RootView: View {
                     .accessibilityIdentifier("tab-4")
             }
         }
-        .id(store.coachIdentity)
         .background(GymTheme.background)
         .foregroundStyle(.white)
         .background {

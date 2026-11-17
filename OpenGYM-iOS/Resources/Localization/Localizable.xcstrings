@@ -3129,6 +3129,23 @@
         }
       }
     },
+    "COULD_NOT_READ_LOCAL_DATABASE_COUNT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not open the data on this device: %1$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取本机资料：%1$@"
+          }
+        }
+      }
+    },
     "COULD_NOT_READ_LOCAL_HEALTH_DATA_COUNT": {
       "comment": "本机健康数据读取失败：{0}",
       "extractionState": "manual",
@@ -5973,6 +5990,40 @@
         }
       }
     },
+    "EXERCISE_MEDIA_SERVER": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exercise media"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "动作图片与视频"
+          }
+        }
+      }
+    },
+    "EXERCISE_MEDIA_SERVER_INFO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exercise images and videos are downloaded from this address when first viewed and cached on this device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "动作图片和视频在首次查看时从这个地址下载，并缓存在本机。"
+          }
+        }
+      }
+    },
     "EXERCISE_MENU": {
       "comment": "动作菜单",
       "extractionState": "manual",
@@ -7337,6 +7388,91 @@
           "stringUnit": {
             "state": "translated",
             "value": "训练方式"
+          }
+        }
+      }
+    },
+    "ICLOUD_ACCOUNT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud account"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud 账号"
+          }
+        }
+      }
+    },
+    "ICLOUD_SIGNED_IN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signed in"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已登录"
+          }
+        }
+      }
+    },
+    "ICLOUD_SIGNED_OUT": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not signed in"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未登录"
+          }
+        }
+      }
+    },
+    "ICLOUD_SYNC": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud sync"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud 同步"
+          }
+        }
+      }
+    },
+    "ICLOUD_SYNC_INFO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your data is stored on this device and syncs automatically across devices signed in to the same iCloud account."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "资料保存在本机，并在登录同一 iCloud 账号的设备间自动同步。"
           }
         }
       }
@@ -10762,19 +10898,19 @@
       }
     },
     "READS_BODY_WEIGHT_AND_SYNCS_IT_TO_THIS_ACCOUNT_WITHOUT_WRITING_TO": {
-      "comment": "读取体重并同步到当前账号，不写回 Apple 健康。读取权限可在健康 App 管理。",
+      "comment": "读取体重到 openGym，不写回 Apple 健康。读取权限可在健康 App 管理。",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Reads body weight and syncs it to this account without writing to Apple Health. Manage read access in the Health app."
+            "value": "Reads body weight into openGym without writing to Apple Health. Manage read access in the Health app."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "读取体重并同步到当前账号，不写回 Apple 健康。读取权限可在健康 App 管理。"
+            "value": "读取体重到 openGym，不写回 Apple 健康。读取权限可在健康 App 管理。"
           }
         }
       }
@@ -12400,19 +12536,19 @@
       }
     },
     "SAVE_TO_SERVER": {
-      "comment": "保存到服务端",
+      "comment": "保存训练",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Save to server"
+            "value": "Save workout"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "保存到服务端"
+            "value": "保存训练"
           }
         }
       }
@@ -14416,19 +14552,19 @@
       }
     },
     "THE_SERVER_RETURNED_DATA_THAT_COULD_NOT_BE_READ": {
-      "comment": "服务器返回了无法识别的数据。",
+      "comment": "数据无法识别。",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The server returned data that could not be read."
+            "value": "The data could not be read."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "服务器返回了无法识别的数据。"
+            "value": "数据无法识别。"
           }
         }
       }
@@ -14452,19 +14588,19 @@
       }
     },
     "THE_SERVER_S_WEIGHT_UNIT_CHANGED_YOUR_WORKOUT_DRAFT_IS_SAFE_ON": {
-      "comment": "服务端重量单位已改变，训练草稿保留在本机。",
+      "comment": "重量单位已改变，训练草稿保留在本机。",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The server's weight unit changed. Your workout draft is safe on this device."
+            "value": "The weight unit changed. Your workout draft is safe on this device."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "服务端重量单位已改变，训练草稿保留在本机。"
+            "value": "重量单位已改变，训练草稿保留在本机。"
           }
         }
       }
@@ -14920,19 +15056,19 @@
       }
     },
     "THIS_WORKOUT_IS_ALREADY_SAVED_ON_THE_SERVER_WITH_DIFFERENT_DETAILS_YOUR": {
-      "comment": "同一训练已在服务端保存，但内容不同。本机草稿已保留，请核对。",
+      "comment": "同一训练已保存，但内容不同。本机草稿已保留，请核对。",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This workout is already saved on the server with different details. Your local draft is safe. Compare both versions."
+            "value": "This workout is already saved with different details. Your local draft is safe. Compare both versions."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "同一训练已在服务端保存，但内容不同。本机草稿已保留，请核对。"
+            "value": "同一训练已保存，但内容不同。本机草稿已保留，请核对。"
           }
         }
       }

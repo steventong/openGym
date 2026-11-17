@@ -1,8 +1,101 @@
-# openGym Native iOS
+# OpenGYM iOS
+
+独立运行的 SwiftUI 原生健身记录 App：iPhone / iPad、Apple Watch 训练伴侣、实时活动与灵动岛。资料保存在本机 Core Data，经 iCloud 私有数据库在自己的设备间同步；不需要服务器、账号或配对。
+
+本目录自成一体：源码、训练规则、动作目录、脚本和文档都在这里，构建不读取目录以外的任何文件。
+
+## 运行
+
+- iOS 26+、watchOS 10+；Xcode 26+。打开 `OpenGYM.xcodeproj`，选择 `OpenGYM` scheme 运行。不需要 Swift Package、CocoaPods 或 Node（Node 只在重新生成训练规则时使用）。
+- 签名能力：iCloud（CloudKit，容器 `iCloud.me.itwl.opengym`）、推送通知、后台模式「远程通知」、HealthKit。首次真机运行或 Archive 前，在 Xcode 的 Signing & Capabilities 中确认该 iCloud 容器已在开发者账号下创建。更换 Team 或 Bundle ID 时，同步修改 `App/OpenGYM.entitlements` 与 `PersistenceController.cloudContainerIdentifier`。
+- 发布 TestFlight / App Store 前，在 CloudKit Console 把该容器的 Schema 从 Development 部署到 Production；`aps-environment` 由 Xcode 在发布签名时切换为 production。
+- 模拟器或未登录 iCloud 的设备照常使用，资料只保存在本机，登录后自动开始同步。
+- 必须保留模拟器的 ad-hoc 签名和 `OpenGYM.entitlements`，不要使用 `CODE_SIGNING_ALLOWED=NO`。
+
+```sh
+xcodebuild -project OpenGYM.xcodeproj -scheme OpenGYM \
+  -destination 'platform=iOS Simulator,id=<SIMULATOR-UDID>' \
+  -derivedDataPath .build test
+```
+
+## 目录
+
+| 目录 | 内容 |
+| --- | --- |
+| `App/` | iPhone / iPad：`Models/`（含 Core Data 模型 `OpenGYM.xcdatamodeld`）、`Services/`、`Views/` |
+| `Watch/`、`Widgets/` | 手表伴侣 App、实时活动 |
+| `Shared/` | 跨 target 代码，target 归属由 `scripts/shared-sources.rb` 决定 |
+| `Resources/` | 资源、本地化、内置动作目录 `catalogue.json`、生成的规则包 `web-rules.js` |
+| `scripts/rules/` | 训练规则源码（JavaScript）：`lib/` 为纯规则，`localization/` 为规则提示文案 |
+| `scripts/` | 工程生成、图标、动作目录与规则打包脚本 |
+| `Tests/` | XCTest |
+| `docs/` | 功能对照与实时活动说明 |
+
+## 数据存储与同步
+
+页面和训练规则使用一整份资料文档（`GymStore.state`）；存储时拆成逐条记录，iCloud 才能按记录合并。
+
+| Core Data 实体 | 内容 | 标识 |
+| --- | --- | --- |
+| `StoredWorkout` | 一次训练记录 | `id` |
+| `StoredRoutine` | 一个训练计划（`position` 保存顺序） | `id` |
+| `StoredBodyWeight` | 一天的体重 | `day` |
+| `StoredMeasurement` | 一天的围度 | `day` |
+| `StoredExercise` | 本地动作：`origin = custom` 为自建或编辑过的动作，`catalogue` 为动作库副本 | `id` |
+| `StoredSetting` | 其余每个顶层字段一条（单位、排期、偏好等） | `key` |
+
+每条记录的 `payload` 是该记录的 JSON，其余属性是便于查询和辨认的冗余副本。
+
+- `App/Models/StateDocument.swift`：文档与记录之间的纯数据拆分、拼回和规范化。
+- `App/Services/StateRepository.swift`：读写 Core Data。保存时只写内容变化的记录，未改动的记录不会被本机旧值覆盖。
+- `App/Services/PersistenceController.swift`：`NSPersistentCloudKitContainer`。测试与预览使用内存库，只有 `WorkoutActivityRuntime` 创建正式容器。
+- `App/Services/GymStore+Storage.swift`：启动读取、`mutate`（所有资料修改的唯一入口）、iCloud 变更后的重新读取。
+
+同步规则：同一条记录在两台设备上被修改时，以较新的修改为准；不同记录互不影响。两台设备各自新建了同一标识的记录时，读取时保留较新的一条。设置页「iCloud 同步」显示登录状态和上次同步时间，同步由系统自动进行，没有手动同步按钮。
+
+以下内容只保存在本机、不随 iCloud 同步：进行中的训练草稿、未提交的历史编辑、Apple 健康同步的进度、已下载的动作图片和视频。
+
+## 从服务器版升级
+
+旧版把资料存在 openGym 服务器。升级后首次启动会一次性导入（`App/Services/LegacyServerImport.swift`）：
+
+1. 仍有配对凭据时，最后读取一次服务器上的最新资料，并在 `Documents/backup/` 留一份原始快照；
+2. 读取失败时，改用旧版缓存在本机的上次同步结果；
+3. 导入完成后不再连接服务器。两者都没有时保持待导入，下次启动再试。
+
+导入只补充数据库里还没有的内容；如果另一台已升级的设备先把资料同步到了 iCloud，以 iCloud 上的为准。导入期间页面先显示本机缓存，保存操作等待导入结束。训练草稿、历史编辑草稿和健康同步进度沿用原来的本机文件。钥匙串里的旧配对凭据不会被删除，也不再使用。
+
+边界：一台设备在升级前很久没有同步、而另一台升级后删除过记录时，旧设备的导入可能把已删除的记录带回来。
+
+## 动作库
+
+- 5,632 条动作的文字资料内置在 `Resources/catalogue.json`，App 不从网络读取目录。需要更新时，用一份 openGym 动作目录重新生成后重新打包：`python3 scripts/build-catalogue.py /path/to/openGym`（读取其中的 `catalogue/exercises` 与 `catalogue/i18n/zh.json`）。
+- 图片和视频不打包，首次查看时从「设置 → 动作图片与视频」填写的地址下载（`/exercise-media/still/{id}.webp`、`/exercise-media/clip/{id}.mp4`），缓存在 `Documents/workout-images` 与 `Documents/workout-videos`。这是 App 唯一的网络访问。
+- 计划或训练记录用到某个动作库动作时，该动作会复制进用户自己的资料（`StoredExercise`，`origin = catalogue`），之后显示以副本为准，并随 iCloud 同步。
+- 任何动作都可以在详情页菜单中「编辑动作」。编辑动作库动作会保存为同 ID 的本地动作，计划和历史记录继续指向它；删除这份本地动作后恢复为动作库原样。「复制动作」仍会创建一个独立 ID 的新动作。
+
+## 训练规则
+
+排期解析、训练组生成、进阶、训练量、个人纪录、超级组和循环流转等计算是一组纯 JavaScript 函数，由系统 JavaScriptCore 执行，没有 WebView。源码在 `scripts/rules/`，`npm ci && npm run build:rules` 用 esbuild 打包为 `Resources/web-rules.js`；生成文件已随源码提供，日常 Xcode 构建不需要 Node。
+
+## 已知边界
+
+- AI 教练已下线（原实现依赖服务器端的模型服务）。已有的教练记录保留在资料中，暂无入口。
+- 从 Apple 健康读取的体重会作为体重记录随资料同步到 iCloud。上架审核前请确认这符合 App Store 对健康数据的要求，或改为仅保存在本机。
+- 训练草稿不跨设备同步：一次训练在哪台设备开始，就在哪台设备完成。
+- CloudKit 同步需要真机和 iCloud 账号验证；模拟器只能验证本机存储。
+
+## 授权
+
+沿用 AGPL v3.0。动作文字和素材保留原作者与第三方声明，参见 `Resources/NOTICE.txt` 和 `Resources/LICENSE.txt`。动作图片与视频的授权仅限 openGym 客户端使用，不随本 App 打包，商用或独立产品不能据此获得 Gym visual 的素材授权。
+
+## 历史开发记录（服务器同步版）
+
+以下是独立运行之前各阶段的开发与验收记录，按当时的实现原样保留。其中关于服务器、账号配对、`/api/data` 协议、409 冲突重试、服务器快照、AI 教练以及从父仓库读取文件的描述已不再适用；训练、计划、历史、手表、实时活动和 Apple 健康等功能的行为沿用至今。
 
 openGym 的 SwiftUI 原生开发版本。仅在 `native-ios/` 内新增代码；沿用现有后端协议，不修改 Web、Android 或服务端。
 
-## 运行
+### 运行
 
 - iOS 26+；Xcode 26+（本次以 Xcode 27.1 / iPhone 17 Pro，iOS 26.5 验证）。
 - 打开 `OpenGYM.xcodeproj`，选择 `OpenGYM` scheme 和 iPhone 模拟器，Run。
@@ -24,7 +117,7 @@ xcrun simctl launch <SIMULATOR-UDID> me.itwl.opengym
 
 服务端用仓库现有 Docker Compose 启动。正常账号在网页中登录后，从「设置 → 账号 → 配对手机 App」取得一次性代码，在 iOS 设置中填写。凭据保存在 Keychain，绑定服务地址；应用不会读取 Docker 数据目录或服务端密钥。
 
-## 本版功能
+### 本版功能
 
 - 原生五页导航：首页、计划、训练、历史、动作库；黑色背景、绿色主色、圆角卡片参考 Web。历史页顶部通过「统计 / 列表」两个子 tab 切换，默认统计，两页分别滚动。
 - 设置入口保留在首页右上角；动作库不重复提供。首页不显示账号同步状态行、体重卡片及底部累计统计。历史页「统计」包含累计训练、完成组数、12 周活动、体重趋势与个人分析入口；体重标题右侧「添加记录」打开体重录入，无记录时也保留入口。「列表」包含搜索、训练记录及未同步状态，滚动到底部自动追加下一批 30 条记录，无需点击加载；搜索结果也按匹配数量自动分页，全部显示后停止。切换子 tab 保留搜索与已加载记录。
@@ -41,7 +134,7 @@ xcrun simctl launch <SIMULATOR-UDID> me.itwl.opengym
 - 循环排期：编辑循环名称与顺序、移入移出计划、进度显示、重新开始一轮、切回固定周；保留外部队列的归属规则，完成一轮后按网页版规则自动续轮。
 - 体重记录与折线图、真实训练历史、完成组数、12 周活动图。
 
-## AI 教练
+### AI 教练
 
 在「训练计划」标题右侧、`+` 左边点击 `AI`。使用当前配对账号与服务器统一配置的服务，手机不保存模型密钥；设置页不重复放入口。
 
@@ -56,7 +149,7 @@ xcrun simctl launch <SIMULATOR-UDID> me.itwl.opengym
 
 模拟器交互验证可运行 `node scripts/coach-qa-server.mjs`，连接 `http://localhost:19384` 并用 `QA` 配对。该服务仅监听本机，使用虚构数据，不联系模型服务；验证结果保存到忽略目录 `artifacts/coach/qa-result.json`。不要把测试端口配置到真实手机。
 
-## 协议
+### 协议
 
 | 操作 | 现有接口 |
 | --- | --- |
@@ -78,11 +171,11 @@ xcrun simctl launch <SIMULATOR-UDID> me.itwl.opengym
 
 动作目录没有单独的服务端 API；`scripts/build-catalogue.py` 从现有 `catalogue/exercises` 和 `catalogue/i18n/zh.json` 生成 App 内的 JSON，沿用原始动作库的文案：简介使用英文源文，步骤优先使用原库已有中文，缺失时回退至英文。它只读取原仓库，输出到 `native-ios/Resources`。视频与图片分别按需从服务器下载到 `Documents/workout-videos` 和 `Documents/workout-images`，不打包动作媒体；账号同步会另外合并自定义动作及收藏。
 
-## 复用的计算规则
+### 复用的计算规则
 
 所有页面为 SwiftUI，视频为 AVPlayer。排期解析、训练组生成、训练量、个人纪录、分侧聚合、超级组和循环流转，通过系统 JavaScriptCore 执行仓库已有纯函数，没有 WebView。`scripts/rules/entry.js` 与 `advanced.js` 只读导入原 Web 源码，esbuild 将其打包至本目录的 `Resources/web-rules.js`。生成文件已加入工程，日常 Xcode 构建不需要 Node。更新仓库后，在 `native-ios` 中执行 `npm ci && npm run build:rules` 重新生成，不会修改原 Web 文件。
 
-## 当前边界
+### 当前边界
 
 训练和历史编辑的动作卡片提供「本次重量单位」kg / lb 切换，适合同一个动作在不同健身房使用不同标注的器械。切换会换算显示已有重量；新输入按所选单位记录，普通组、分侧和递减重量均适用。每组保留输入单位并随草稿和历史保存；实际数值始终使用账号统一单位，以兼容现有训练量、纪录与同步规则。此选项仅影响当前动作，不修改全局单位；上次训练摘要仍明确标注账号单位。尚未填写完成的重量会阻止切换，保留原输入。
 
@@ -101,7 +194,7 @@ xcrun simctl launch <SIMULATOR-UDID> me.itwl.opengym
 
 休息通知在后台正常保留；手机或手表上的 App 进入前台时，会清除该设备上已送达的休息通知。使用 App 期间不显示休息通知横幅或新增通知中心记录：手机保留提示音，手表使用本地到点触感。清理已送达通知不会取消尚未到期的休息提醒。手表正在记录当前训练的 HealthKit workout 时，放下手腕或切到后台也保留本地到点震动，同一轮休息只提醒一次；此时不重复安排手表系统通知。停止训练记录后恢复系统通知兜底，后台通知仍遵循授权与系统设置。
 
-## Apple Watch 训练伴侣
+### Apple Watch 训练伴侣
 
 `OpenGYMWatch` 是随 iPhone App 嵌入的配套训练 App，watchOS 10+；`WKRunsIndependentlyOfCompanionApp` 与 `WKWatchOnly` 都是 `false`。无需单独登录或配置服务器。OpenGYM 训练由 iPhone 开始、编辑和保存；手表显示当前动作、下一未完成组、重量／次数，以及手机同源的休息倒计时。主按钮与灵动岛采用相同的状态切换：休息中显示「结束休息」，主动结束后经 5 秒防连点阶段显示「完成本组」；自然到期保留「结束休息」（记录当前组／当前侧）。完成后同步下一组，当前动作全部完成时自动切到下一个未完成动作；全部完成后提示回 iPhone 保存。手表不创建独立的 OpenGYM 训练、不访问后端、不读取账号凭据或训练历史。开启 Apple 健身同步后，手表同时负责系统运动记录，详见下方「Apple 健身训练同步」。
 
@@ -127,7 +220,7 @@ Xcode 打开原工程即可构建手机及内嵌手表；`OpenGYMWatch` scheme �
 
 本轮最终 100 项 XCTest 全部通过；42mm 配对模拟器实际验证了手表接收手机数据、手表完成写入手机草稿且只记录一次（含手机退到后台）、同源倒计时、通知到期回调及触感 API 调用，以及手机紧凑录入、聚焦加减、重量联动、删除和撤销。证据保存在忽略目录 `artifacts/watch-remote/`。模拟器无法证明真实震动和所有后台交付时机；本轮没有发布 TestFlight。
 
-## 验证与开发
+### 验证与开发
 
 2026-10-29 训练录入补齐：
 
@@ -161,18 +254,18 @@ ruby scripts/generate-project.rb  # 需要 xcodeproj Ruby gem；生成的工程�
 
 可选 `node scripts/simulator-account.mjs <SIMULATOR-UDID>` 通过现有 WebAuthn API 创建独立的「iOS 模拟器测试」账号，再用正式配对接口连接 Debug App。测试会创建一份有明显测试名称的计划；不操作真实健身账号。会在本目录生成已忽略的 `.test-session.json`（0600 权限），仅供本机测试，不要分享。此脚本不会修改服务配置或后端源码。
 
-## 授权
+### 授权
 
 本目录是 openGym 的非商业原生客户端开发分支，沿用项目的 AGPL v3.0 许可。动作文字和素材保留原作者与第三方声明，参见 `Resources/NOTICE.txt` 和 `LICENSE.txt`。素材仅在本 openGym 客户端中使用，保留原版分辨率，不打包或提取到独立产品。商用或独立产品不能据此获得 Gym visual 的素材授权。
 
-## 2026-10-29 个人功能对齐
+### 2026-10-29 个人功能对齐
 
-详细入口、已实现范围及剩余工作见 [FEATURE_PARITY.md](../docs/native-ios/FEATURE_PARITY.md)。本次新增个人设置、器械档案和库存、全局单位换算、体重历史/目标、围度、自定义动作与收藏、动作/肌群/结构平衡分析、计划模板与 JSON 工具、进阶参数、重复训练/分享/删除及每日备注。网页版与服务端未改。
+详细入口、已实现范围及剩余工作见 [FEATURE_PARITY.md](docs/FEATURE_PARITY.md)。本次新增个人设置、器械档案和库存、全局单位换算、体重历史/目标、围度、自定义动作与收藏、动作/肌群/结构平衡分析、计划模板与 JSON 工具、进阶参数、重复训练/分享/删除及每日备注。网页版与服务端未改。
 
 全套 XCTest 118 项通过（含 18 项本次个人功能测试）；独立模拟器及 loopback 虚构服务完成围度、偏好、模板导入、自定义动作和收藏的界面保存/服务端读回。未进行本次真机验收或发布。照片、二维码、提醒、全量备份等仍在对照清单内，不能称为网页全部功能已迁移。
 
 
-## Apple 健身训练同步（2026-11-03）
+### Apple 健身训练同步（2026-11-03）
 
 「设置 → Apple 健身 · 训练同步」开启「同步训练到苹果健身」并授权后，从下一次训练开始生效。自动同步只为新训练建立运动记录，在训练结束时写入 Apple 健身，不扫描、补传或更新历史训练；历史记录在 openGym 服务器的手动同步与保存逻辑保持原样。训练期间不能更改开关。整次训练使用「传统力量训练」类型；不按每个动作分别创建运动记录。
 
@@ -200,7 +293,7 @@ ruby scripts/generate-project.rb  # 需要 xcodeproj Ruby gem；生成的工程�
 历史页的统计和列表分别按记录内容比较，列表额外比较本机待同步状态，后台版本戳、计划或体重同步不重建训练记录区域；体重图独立观察，同值不重新绘制。列表各行也按记录内容比较，保留搜索、已展开的分页和滚动位置。
 训练页、训练记录列表／预览和历史编辑不再因全局同步状态禁用或变灰；记录列表仍可打开，提交按钮通过操作内检查防止重复提交。计划编辑使用本次保存状态显示进度，保存期间新输入会保留。
 
-## 页面文案与状态反馈（2026-11-03）
+### 页面文案与状态反馈（2026-11-03）
 
 原生各页面移除重复介绍、口号和空状态长解释；保留数据、单位、用户备注、教练建议正文、隐私授权与素材署名。设置使用简短的固定状态行，健康同步、进阶和排期规则通过信息按钮按需查看。
 
@@ -209,7 +302,7 @@ ruby scripts/generate-project.rb  # 需要 xcodeproj Ruby gem；生成的工程�
 本轮 iOS、Widget、Watch 编译通过，191 项非 UI XCTest 通过。按用户要求未做 UI 测试，明确跳过 Coach 小屏截图及 AdvancedTests 中 3 项视图身份/布局测试；未操作锁屏界面，视觉效果仍需安装后检查。
 
 
-## 原生底部导航（2026-11-03）
+### 原生底部导航（2026-11-03）
 
 最低系统版本统一为 iOS 26（App、Widget 和测试目标）。底部五个入口使用系统 `TabView`，由系统提供 Liquid Glass 外观及安全区处理；中央入口在「开始」与「训练中」之间切换，点击仍进入训练页。首页的开始／继续训练和次级操作使用系统玻璃按钮，保留原有日期、计划与草稿逻辑。
 

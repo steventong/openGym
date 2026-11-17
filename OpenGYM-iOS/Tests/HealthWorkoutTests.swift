@@ -5,16 +5,13 @@ import HealthKit
 @MainActor final class HealthWorkoutTests: XCTestCase {
     private var root: URL!
     override func setUp() async throws { root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString) }
-    override func tearDown() async throws { StubProtocol.handler = nil; try? FileManager.default.removeItem(at: root) }
+    override func tearDown() async throws { try? FileManager.default.removeItem(at: root) }
 
     private func request(_ id: String = "account:training", owner: HealthWorkoutRequest.Owner = .watch) -> HealthWorkoutRequest {
         HealthWorkoutRequest(id: id, start: Date(timeIntervalSince1970: 1000), owner: owner)
     }
-    private func fixture() throws -> (GymStore, HealthWorkoutJournal, String) {
-        let config = URLSessionConfiguration.ephemeral; config.protocolClasses = [StubProtocol.self]
-        let client = APIClient(address: try ServerAddress("https://test.invalid"), token: "test", session: URLSession(configuration: config))
-        let store = GymStore(client: client, userID: "health-test", storage: LocalTrainingStorage(root: root))
-        store.serverURL = "https://test.invalid"; store.userName = "Health test"
+    private func fixture(_ persistence: PersistenceController = PersistenceController(inMemory: true)) throws -> (GymStore, HealthWorkoutJournal, String) {
+        let store = GymStore(userID: "health-test", storage: LocalTrainingStorage(root: root), persistence: persistence)
         store.state = ["unit": "kg", "workouts": [], "routines": []]
         store.draft = try TrainingDraft.fromWeb(["id": "training", "name": "训练", "start": Date().addingTimeInterval(-300).timeIntervalSince1970 * 1000,
             "entries": [["id": "0289", "sets": [["w": 20, "r": 8, "done": true]]]]], unit: "kg")
@@ -203,13 +200,14 @@ import HealthKit
         XCTAssertEqual(HealthWorkoutWire.requests(from: payload), [good])
         XCTAssertEqual(HealthWorkoutWire.requests(from: ["healthWorkouts": Data("broken".utf8)]), [])
     }
-    func testServerFailureStillStopsHealthAndRetryKeepsOriginalEnd() async throws {
-        let (store, journal, id) = try fixture()
+    func testSaveFailureStillStopsHealthAndRetryKeepsOriginalEnd() async throws {
+        let persistence = try PersistenceController.onDisk(in: root.appendingPathComponent("database"))
+        let (store, journal, id) = try fixture(persistence)
         var dispatched: [HealthWorkoutRequest] = []
         store.workoutHealth = WorkoutHealthSync(store: store, journal: journal, dispatch: { dispatched = $0 })
-        StubProtocol.handler = { _ in throw URLError(.notConnectedToInternet) }
+        try persistence.setReadOnly(true)
         await store.finish()
-        XCTAssertNotNil(store.draft)
+        XCTAssertNotNil(store.draft); XCTAssertNotNil(store.error)
         let first = try XCTUnwrap(try journal.read().requests[id])
         XCTAssertEqual(first.phase, .finished); XCTAssertNotNil(first.end)
         XCTAssertEqual(dispatched.first?.phase, .finished)

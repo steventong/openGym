@@ -162,7 +162,6 @@ extension GymStore {
 extension GymStore {
     func repeatPersonalWorkout(_ record:WorkoutRecord) -> Bool {
         guard draft == nil else { error = String(localized: "FINISH_YOUR_CURRENT_WORKOUT_FIRST", bundle: AppLanguage.bundle, locale: AppLanguage.locale);return false }
-        guard userID != nil else {showSettings = true;return false}
         do {
             let result = try WebRules.shared.call("personalRepeat",payload:["state":state,"workout":record.raw,"id":UUID().uuidString,"day":dayString(),"now":Date().timeIntervalSince1970*1000]) as! [String:Any]
             draft = try TrainingDraft.fromWeb(result["active"] as! [String:Any],unit:unit)

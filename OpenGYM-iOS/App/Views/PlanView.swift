@@ -3,7 +3,6 @@ struct PlanView: View {
     @Environment(GymStore.self) private var store
     @State private var create = false
     @State private var tools = false
-    @State private var coach = false
     @State private var schedule = false
     @State private var rotation = false
     @State private var selected: Routine?
@@ -13,28 +12,15 @@ struct PlanView: View {
                 HStack {
                     VStack(alignment:.leading,spacing:7) { Text("ROUTINES").font(.system(size:34,weight:.bold)) }
                     Spacer()
-                    if store.userName != nil {
-                        Button { coach = true } label: {
-                            Text("AI_LABEL").font(.system(size:16,weight:.bold)).foregroundStyle(GymTheme.green)
-                                .frame(width:44,height:44).background(GymTheme.green.opacity(0.12),in:Circle())
-                        }.accessibilityLabel("AI_COACH").accessibilityIdentifier("open-coach")
-                    }
                     Button { create = true } label: { Image(systemName:"plus").font(.system(size:20)).foregroundStyle(GymTheme.green).padding(12).background(GymTheme.green.opacity(0.12),in:Circle()) }.accessibilityLabel("NEW_ROUTINE")
                 }
-                if store.userName == nil {
-                    EmptyCard(icon:"link",title:"CONNECT_ACCOUNT")
-                    GreenButton(title:"CONNECT_ACCOUNT",icon:"link") { store.showSettings = true }
-                } else if store.routines.isEmpty {
+                if store.routines.isEmpty {
                     EmptyCard(icon:"calendar",title:"NO_ROUTINES_YET")
                     GreenButton(title:"CREATE_ROUTINE",icon:"plus") { create = true }
                 }
-                if store.userName != nil {
-                    Button { schedule = true } label: { HStack { Label("WORKOUT_SCHEDULE",systemImage:"calendar.badge.clock"); Spacer(); Text("WEEKLY_BY_DATE").font(.caption); Image(systemName:"chevron.right") }.foregroundStyle(GymTheme.green).gymCard() }.accessibilityIdentifier("open-schedule")
-                }
-                if store.userName != nil {
-                    Button {rotation = true} label:{HStack {Label("ROTATION_SCHEDULE",systemImage:"repeat");Spacer();Text("ORDER_PROGRESS").font(.caption);Image(systemName:"chevron.right")}.foregroundStyle(GymTheme.green).gymCard()}.accessibilityIdentifier("open-rotation")
-                    if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
-                }
+                Button { schedule = true } label: { HStack { Label("WORKOUT_SCHEDULE",systemImage:"calendar.badge.clock"); Spacer(); Text("WEEKLY_BY_DATE").font(.caption); Image(systemName:"chevron.right") }.foregroundStyle(GymTheme.green).gymCard() }.accessibilityIdentifier("open-schedule")
+                Button {rotation = true} label:{HStack {Label("ROTATION_SCHEDULE",systemImage:"repeat");Spacer();Text("ORDER_PROGRESS").font(.caption);Image(systemName:"chevron.right")}.foregroundStyle(GymTheme.green).gymCard()}.accessibilityIdentifier("open-rotation")
+                if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
                 ForEach(store.routines) { routine in
                     VStack(alignment:.leading,spacing:16) {
                         Button { selected = routine } label: {
@@ -56,7 +42,6 @@ struct PlanView: View {
             }.padding(22)
         }.refreshable { await store.refresh() }.sheet(isPresented:$create) { RoutineComposer() }
             .sheet(isPresented:$tools) { PlanToolsView() }
-            .sheet(isPresented:$coach) { CoachView() }
             .sheet(isPresented:$schedule) { ScheduleEditor() }
             .sheet(isPresented:$rotation) {RotationEditor()}
             .sheet(item:$selected) { routine in RoutineEditor(routine:routine,unit:store.unit) }

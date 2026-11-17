@@ -19,6 +19,10 @@ end
 Dir.glob(File.join(root, 'App/**/*.swift')).sort.each do |path|
   app.add_file_references([grouped_file(project, path.delete_prefix(root + '/'))])
 end
+# The Core Data model is compiled with the app's sources.
+Dir.glob(File.join(root, 'App/**/*.xcdatamodeld')).sort.each do |path|
+  app.add_file_references([grouped_file(project, path.delete_prefix(root + '/'))])
+end
 Dir.glob(File.join(root, 'Resources/*')).sort.each do |path|
   next if File.basename(path) == 'Localization' # Catalog target membership is configured below.
   app.resources_build_phase.add_file_reference(grouped_file(project, path.delete_prefix(root + '/')))

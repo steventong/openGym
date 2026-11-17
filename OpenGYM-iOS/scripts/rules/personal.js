@@ -1,27 +1,27 @@
-import { t } from '../../../frontend/src/lib/i18n-core.js';
+import { t } from './lib/i18n-core.js';
 // Native personal features use the same catalogue, units and analytics as the web client.
-import { registerCustom, EXIDX, betterWeight, isAssisted } from '../../../frontend/src/lib/exercises.js';
-import { convertStateUnit } from '../../../frontend/src/lib/units.js';
-import { inventoryFor, loadKindFor, loadKindOf, baseWeightFor, rowLoad } from '../../../frontend/src/lib/plates.js';
-import { hasBarOverride } from '../../../frontend/src/lib/bar.js';
-import { isFav } from '../../../frontend/src/lib/favourites.js';
-import { eqAvailable, exAvailable, ALL_EQUIPMENT } from '../../../frontend/src/lib/equipment.js';
-import { buildPlanBundle, parsePlan, mergePlan } from '../../../frontend/src/lib/plan-share.js';
-import { buildStarterPlan } from '../../../frontend/src/lib/starter.js';
-import { normalizeMeasurementsState, MEASUREMENT_FIELDS } from '../../../frontend/src/lib/measurements.js';
-import { bestWeightForEntry, metricEntriesForExercise, metricModeForEntry, completedRepsOf, streakWeeks, workoutVolume } from '../../../frontend/src/lib/history.js';
-import { e1rmSeries, best1RM, estimate1RM, formulaOf } from '../../../frontend/src/lib/onerm.js';
-import { currentDbLoad, dbLoadOf, workoutAs } from '../../../frontend/src/lib/dumbbells.js';
-import { maxRepsSeries } from '../../../frontend/src/lib/pyramid.js';
-import { perSetSessions, perSetLines } from '../../../frontend/src/lib/per-set.js';
-import { avgRir, toScale, displayScale } from '../../../frontend/src/lib/effort.js';
-import { loadOfWorkouts, loadOfWeeklyPlan, MUSCLES, MUSCLE_NAME, normalizeMuscleGroups } from '../../../frontend/src/lib/muscles.js';
-import { fatigueOf, strengthOf } from '../../../frontend/src/lib/recovery.js';
-import { computeBalance, overrideIdOf } from '../../../frontend/src/lib/structuralBalance.js';
-import { TEMPLATES, TEMPLATE_LIST, DEFAULT_TEMPLATE_ID } from '../../../frontend/src/lib/structuralBalanceTemplates.js';
-import { speedUnitOf, toSpeed } from '../../../frontend/src/lib/speed.js';
-import { rebuildPrHistory } from '../../../frontend/src/lib/workout-date.js';
-import { workoutText } from '../../../frontend/src/lib/workout-text.js';
+import { registerCustom, EXIDX, betterWeight, isAssisted } from './lib/exercises.js';
+import { convertStateUnit } from './lib/units.js';
+import { inventoryFor, loadKindFor, loadKindOf, baseWeightFor, rowLoad } from './lib/plates.js';
+import { hasBarOverride } from './lib/bar.js';
+import { isFav } from './lib/favourites.js';
+import { eqAvailable, exAvailable, ALL_EQUIPMENT } from './lib/equipment.js';
+import { buildPlanBundle, parsePlan, mergePlan } from './lib/plan-share.js';
+import { buildStarterPlan } from './lib/starter.js';
+import { normalizeMeasurementsState, MEASUREMENT_FIELDS } from './lib/measurements.js';
+import { bestWeightForEntry, metricEntriesForExercise, metricModeForEntry, completedRepsOf, streakWeeks, workoutVolume } from './lib/history.js';
+import { e1rmSeries, best1RM, estimate1RM, formulaOf } from './lib/onerm.js';
+import { currentDbLoad, dbLoadOf, workoutAs } from './lib/dumbbells.js';
+import { maxRepsSeries } from './lib/pyramid.js';
+import { perSetSessions, perSetLines } from './lib/per-set.js';
+import { avgRir, toScale, displayScale } from './lib/effort.js';
+import { loadOfWorkouts, loadOfWeeklyPlan, MUSCLES, MUSCLE_NAME, normalizeMuscleGroups } from './lib/muscles.js';
+import { fatigueOf, strengthOf } from './lib/recovery.js';
+import { computeBalance, overrideIdOf } from './lib/structuralBalance.js';
+import { TEMPLATES, TEMPLATE_LIST, DEFAULT_TEMPLATE_ID } from './lib/structuralBalanceTemplates.js';
+import { speedUnitOf, toSpeed } from './lib/speed.js';
+import { rebuildPrHistory } from './lib/workout-date.js';
+import { workoutText } from './lib/workout-text.js';
 const prepare = state => {
   const s = {unit:'kg', workouts:[], routines:[], customEx:[], bodyweight:[], exWeights:{}, week:{}, dayPlan:{}, ...state};
   registerCustom(s.customEx); s.workouts.sort((a,b)=>(a.start||0)-(b.start||0)); return s;
@@ -112,10 +112,10 @@ export function personalChange(input){
   throw Error(t("RULE_UNKNOWN_ACTION" /* 未知操作 */));
 }
 
-import { bestSetFor } from '../../../frontend/src/lib/exercise-history.js';
-import { lastEntryFor, modeOf, setLabel } from '../../../frontend/src/lib/history.js';
-import { repeatSessionEntries } from '../../../frontend/src/lib/session-repeat.js';
-import { POLICIES_FOR, policyFor, MAX_TRIPLE_SETS } from '../../../frontend/src/lib/progression.js';
+import { bestSetFor } from './lib/exercise-history.js';
+import { lastEntryFor, modeOf, setLabel } from './lib/history.js';
+import { repeatSessionEntries } from './lib/session-repeat.js';
+import { POLICIES_FOR, policyFor, MAX_TRIPLE_SETS } from './lib/progression.js';
 export function personalReference(input) {
  const p=JSON.parse(input),s=prepare(p.state);s.workouts=s.workouts.filter(w=>w.id!==p.exclude&&(!w.start||w.start<p.before));
  const best=(p.reference ?? s.logRef)==='best', mode=modeOf(p.entry.target||{id:p.entry.id});

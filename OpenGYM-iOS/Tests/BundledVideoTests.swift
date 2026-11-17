@@ -55,7 +55,7 @@ import AVFoundation
 
     func testCatalogueVideosUseServerAndAreNotBundled() throws {
         let store = GymStore()
-        store.serverURL = "https://gym.example/base"
+        store.mediaServerURL = "https://gym.example/base"
         let catalogue = try XCTUnwrap(Bundle.main.url(forResource:"catalogue",withExtension:"json"))
         let exercises = try JSONDecoder().decode([Exercise].self,from:Data(contentsOf:catalogue))
         XCTAssertFalse(exercises.isEmpty)
@@ -74,7 +74,7 @@ import AVFoundation
 
     func testMissingOrCustomVideoDoesNotFallBackToNetwork() throws {
         let store = GymStore()
-        store.serverURL = "https://gym.example"
+        store.mediaServerURL = "https://gym.example"
         let catalogue = try XCTUnwrap(Bundle.main.url(forResource: "catalogue", withExtension: "json"))
         store.registerCatalogue(try JSONDecoder().decode([Exercise].self, from: Data(contentsOf: catalogue)))
         for id in ["99999", "custom-squat", "../0289", ""] {

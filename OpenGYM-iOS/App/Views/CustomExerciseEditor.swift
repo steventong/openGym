@@ -4,16 +4,19 @@ struct CustomExerciseEditor:View {
     @Environment(GymStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let original:[String:Any]?
+    /// 正在编辑的动作库动作：尚未写入资料，保存时作为同 ID 的本地动作新建。
+    private let catalogueCopy: [String: Any]?
     private let initial: [String: Any]
     @State private var inputBuffer = InputCommitBuffer()
     @State private var raw:[String:Any]
     @State private var issue:String?
     @State private var invalidField: String?
     @State private var confirmDelete = false
-    @MainActor init(original:[String:Any]? = nil) {
+    @MainActor init(original:[String:Any]? = nil, catalogueCopy: [String: Any]? = nil) {
         self.original = original
-        var initial = original ?? ["id":"c"+UUID().uuidString,"n":"","bp":"chest","eq":"body weight","custom":true]
-        if let original, (original["primaries"] as? [String] ?? []).isEmpty,
+        self.catalogueCopy = catalogueCopy
+        var initial = original ?? catalogueCopy ?? ["id":"c"+UUID().uuidString,"n":"","bp":"chest","eq":"body weight","custom":true]
+        if let original = original ?? catalogueCopy, (original["primaries"] as? [String] ?? []).isEmpty,
            let metadata = try? WebRules.shared.call("personalInfo",payload:["action":"customMetadata","state":[:],"exercise":original]) as? [String:Any],let groups = metadata["groups"] as? [String] {
             initial["primaries"] = Array(groups.prefix(1));initial["secondaries"] = Array(groups.dropFirst())
         }
@@ -46,7 +49,7 @@ struct CustomExerciseEditor:View {
                         }.disabled(store.syncing)
                     }
                 }
-            }.operationAlert($issue).navigationTitle(LocalizedStringKey(original == nil ? "CUSTOM_EXERCISE":"EDIT_EXERCISE")).navigationBarTitleDisplayMode(.inline)
+            }.operationAlert($issue).navigationTitle(LocalizedStringKey(original == nil && catalogueCopy == nil ? "CUSTOM_EXERCISE":"EDIT_EXERCISE")).navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { dismiss() } };ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { save() }.disabled(store.syncing).accessibilityIdentifier("save-custom-exercise") } }
                 .confirmationDialog("DELETE_THIS_EXERCISE",isPresented:$confirmDelete,titleVisibility:.visible) {
                     Button("DELETE",role:.destructive) { guard let original else {return}; Task { if await store.deleteCustomExercise(original) { store.selectedExercise = nil;dismiss() } else { issue = store.editError } } }
@@ -58,10 +61,12 @@ struct CustomExerciseEditor:View {
     private func save() {
         inputBuffer.commitAll()
         invalidField = nil
-        var proposed = original ?? raw
-        if original == nil || !RecordPatch.equal(initial["n"], raw["n"]) {
+        // 动作库动作与已有自定义动作一样，只写入改动过的字段，其余保持原样。
+        let baseline = original ?? catalogueCopy
+        var proposed = baseline ?? raw
+        if baseline == nil || !RecordPatch.equal(initial["n"], raw["n"]) {
             let name = (raw["n"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines)
-            if let nameIssue = store.customExerciseNameIssue(name, original: original) {
+            if let nameIssue = store.customExerciseNameIssue(name, original: baseline) {
                 invalidField = "n"
                 issue = nameIssue
                 return
@@ -70,22 +75,23 @@ struct CustomExerciseEditor:View {
         }
         proposed["bp"] = raw["bp"]
         proposed["eq"] = raw["eq"]
-        if original == nil || !RecordPatch.equal(initial["url"], raw["url"]) {
+        if baseline == nil || !RecordPatch.equal(initial["url"], raw["url"]) {
             let url = (raw["url"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines)
             if !url.isEmpty { guard let parsed = URL(string:url), ["https","http"].contains(parsed.scheme?.lowercased() ?? ""),parsed.host != nil,parsed.user == nil,parsed.password == nil else { invalidField = "url"; issue = String(localized: "ENTER_A_VALID_HTTP_OR_HTTPS_URL", bundle: AppLanguage.bundle, locale: AppLanguage.locale);return } }
             proposed["url"] = url.isEmpty ? nil : url
         }
-        if original == nil || !RecordPatch.equal(initial["desc"], raw["desc"]) {
+        if baseline == nil || !RecordPatch.equal(initial["desc"], raw["desc"]) {
             proposed["desc"] = String((raw["desc"] as? String ?? "").prefix(1000))
         }
-        if original == nil || ["bp", "primaries", "secondaries"].contains(where: { !RecordPatch.equal(initial[$0], raw[$0]) }) {
+        if baseline == nil || ["bp", "primaries", "secondaries"].contains(where: { !RecordPatch.equal(initial[$0], raw[$0]) }) {
             let primary = raw["bp"] as? String == "cardio" ? ["cardiovascular system"] : raw["primaries"] as? [String] ?? []
             let secondary = (raw["secondaries"] as? [String] ?? []).filter { !primary.contains($0) }
             proposed["primaries"] = primary
             proposed["secondaries"] = secondary
             proposed["sm"] = secondary
             proposed["muscleGroups"] = primary + secondary
-            proposed["tg"] = primary.contains(original?["tg"] as? String ?? "") ? original?["tg"] : primary.first ?? ""
+            let target = baseline?["tg"] as? String
+            proposed["tg"] = primary.contains(target ?? "") ? target : primary.first ?? ""
         }
         Task { if await store.savePersonalRecord(collection:"customEx",key:"id",original:original,proposed:proposed) { if let id = proposed["id"] as? String, store.selectedExercise != nil { store.selectedExercise = store.exercise(id) };dismiss() } else { issue = store.editError } }
     }

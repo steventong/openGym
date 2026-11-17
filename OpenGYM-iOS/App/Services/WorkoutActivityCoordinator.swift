@@ -7,7 +7,8 @@ import UIKit
         let started = ContinuousClock.now
         WorkoutActivityDiagnostics.record("runtime.initialize.begin", ["version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
             "build": Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "unknown", "os": ProcessInfo.processInfo.operatingSystemVersionString])
-        let store = GymStore()
+        // 唯一使用正式数据库（Core Data + iCloud）的地方；其余 GymStore() 默认是内存库。
+        let store = GymStore(persistence: PersistenceController(inMemory: false))
         WorkoutActivityDiagnostics.record("runtime.offline.begin")
         store.prepareOfflineLaunch()
         WorkoutActivityDiagnostics.record("runtime.offline.end", WorkoutActivityDiagnostics.state(store))

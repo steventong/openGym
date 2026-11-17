@@ -22,7 +22,7 @@ import UIKit
 
     func testCatalogueImagesUseCurrentServerAndPreserveSubpathWithoutBundledThumbnails() throws {
         let store = GymStore()
-        store.serverURL = "https://gym.example/base"
+        store.mediaServerURL = "https://gym.example/base"
         let file = try XCTUnwrap(Bundle.main.url(forResource: "catalogue", withExtension: "json"))
         let data = try Data(contentsOf: file)
         let exercises = try JSONDecoder().decode([Exercise].self, from: data)
@@ -38,13 +38,13 @@ import UIKit
         XCTAssertNotNil(UIImage(named: "BrandMark"))
         XCTAssertEqual(ExerciseImageCache.documentsFolder.lastPathComponent, "workout-images")
         XCTAssertEqual(ExerciseImageCache.documentsFolder.deletingLastPathComponent().lastPathComponent, "Documents")
-        store.serverURL = "https://other.example/gym"
+        store.mediaServerURL = "https://other.example/gym"
         XCTAssertEqual(store.remoteImageURL("0289")?.absoluteString, "https://other.example/gym/exercise-media/still/0289.webp")
         for id in ["99999", "custom-squat", "../0289", "0289\n", ""] {
             XCTAssertNil(store.remoteImageURL(id))
             XCTAssertFalse(store.hasCatalogueMedia(id))
         }
-        store.serverURL = ""
+        store.mediaServerURL = ""
         XCTAssertNil(store.remoteImageURL("0289"))
         XCTAssertTrue(store.hasCatalogueMedia("0289"))
     }

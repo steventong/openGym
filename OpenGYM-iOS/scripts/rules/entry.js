@@ -1,7 +1,7 @@
 // Build-time, read-only imports of openGym's existing pure rules. No WebView or DOM.
-import { effectiveRoutineIds, bestWeightForEntry, workoutVolume } from '../../../frontend/src/lib/history.js';
-import { registerCustom, beatsWeight } from '../../../frontend/src/lib/exercises.js';
-import { rebuildPrHistory } from '../../../frontend/src/lib/workout-date.js';
+import { effectiveRoutineIds, bestWeightForEntry, workoutVolume } from './lib/history.js';
+import { registerCustom, beatsWeight } from './lib/exercises.js';
+import { rebuildPrHistory } from './lib/workout-date.js';
 export function schedule(input) {
   const {state,dates,today}=JSON.parse(input);
   return JSON.stringify(dates.map(date=>effectiveRoutineIds({routines:[],workouts:[],week:{},dayPlan:{},...state},date,today)));
@@ -30,7 +30,6 @@ export function repairHistory(input) {
   return JSON.stringify(state);
 }
 export * from './advanced.js';
-export * from './coach.js';
 export * from './exercise-management.js';
 export * from './training-operations.js';
 

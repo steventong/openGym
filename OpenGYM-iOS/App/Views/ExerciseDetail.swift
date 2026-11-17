@@ -153,6 +153,8 @@ struct ExerciseDetail: View {
     @State private var choosePlan = false
     @State private var saved = false
     @State private var editingCustom: RawRow?
+    @State private var editingCatalogue: RawRow?
+    @State private var editIssue: String?
     @State private var progress = false
     @State private var copiedName = false
     @State private var copyFeedbackID = UUID()
@@ -195,11 +197,8 @@ struct ExerciseDetail: View {
                         Menu {
                             Button("COPY_EXERCISE", systemImage: "doc.on.doc") { namingCopy = true }
                                 .disabled(store.syncing)
-                            if let customExercise {
-                                Button("EDIT_EXERCISE", systemImage: "pencil") {
-                                    editingCustom = RawRow(raw: customExercise)
-                                }
-                            }
+                            Button("EDIT_EXERCISE", systemImage: "pencil") { editExercise() }
+                                .accessibilityIdentifier("edit-exercise")
                         } label: {
                             ExerciseDetailActionIcon(symbol: "ellipsis")
                         }
@@ -262,12 +261,16 @@ struct ExerciseDetail: View {
             .sheet(item: $editingCustom) {
                 CustomExerciseEditor(original: $0.raw)
             }
+            .sheet(item: $editingCatalogue) {
+                CustomExerciseEditor(catalogueCopy: $0.raw)
+            }
             .sheet(isPresented:$progress) { NavigationStack { ExerciseProgressView(initialID:exercise.id) } }
             .sheet(isPresented: $namingCopy, onDismiss: finishNamingCopy) {
                 copyNameSheet
             }
             .operationAlert($copyConfirmation, title: "EXERCISE_COPIED")
-            .task(id:"\(exercise.id)|\(store.videoMediaID(exercise.id) ?? "")|\(store.serverURL)|\(videoAttempt)") { await loadVideo() }.onDisappear { playback.stop() }
+            .operationAlert($editIssue)
+            .task(id:"\(exercise.id)|\(store.videoMediaID(exercise.id) ?? "")|\(store.mediaServerURL)|\(videoAttempt)") { await loadVideo() }.onDisappear { playback.stop() }
             .task(id:copyFeedbackID) {
                 guard copiedName else { return }
                 try? await Task.sleep(for: .milliseconds(1500))
@@ -310,6 +313,13 @@ struct ExerciseDetail: View {
         .presentationDetents([.height(240), .large])
         .interactiveDismissDisabled(store.syncing)
         .onAppear { copyNameFocused = true }
+    }
+
+    /// 自定义动作直接编辑；动作库动作先转成同 ID 的本地记录，保存后才写入资料。
+    private func editExercise() {
+        if let customExercise { editingCustom = RawRow(raw: customExercise); return }
+        do { editingCatalogue = RawRow(raw: try store.editableRecord(for: exercise)) }
+        catch { editIssue = error.localizedDescription }
     }
 
     private func finishNamingCopy() {

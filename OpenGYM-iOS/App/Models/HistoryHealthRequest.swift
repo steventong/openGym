@@ -3,7 +3,7 @@ import CoreFoundation
 
 enum HistoryHealthRequest {
     static func make(_ record: WorkoutRecord, account: String, now: Date = Date()) throws -> HealthWorkoutRequest {
-        guard !account.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw APIError.signIn }
+        guard !account.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw APIError.noProfile }
         guard !record.id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw APIError.response(0, String(localized: "HEALTH_HISTORY_INVALID_RECORD", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
         }

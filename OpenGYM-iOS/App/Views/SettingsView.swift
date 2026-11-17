@@ -4,12 +4,7 @@ struct SettingsView: View {
     @Environment(GymStore.self) private var store
     @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
-    @State private var server = ""
-    @State private var code = ""
     @State private var notice = false
-    @State private var loaded = false
-    @State private var pairingAgain = false
-    @State private var confirmPairing = false
 
     var body: some View {
         let weightDetails = [store.healthSync.status, store.healthSync.backgroundIssue,
@@ -18,42 +13,11 @@ struct SettingsView: View {
 
         NavigationStack {
             Form {
-                if store.userID != nil && !pairingAgain {
-                    Section("CURRENT_CONNECTION") {
-                        LabeledContent("SERVER") {
-                            Text(store.serverURL)
-                                .lineLimit(1).truncationMode(.middle).textSelection(.enabled)
-                        }
-                        LabeledContent("ACCOUNT", value: store.userName ?? String(localized: "PAIR_AGAIN_TO_RECONNECT", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
-                        LabeledContent("SERVICE", value: store.online ? String(localized: "AVAILABLE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "CONNECTION_FAILED", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
-                        LabeledContent("LAST_SYNC", value: store.lastSync?.formatted(date: .omitted, time: .standard) ?? "—")
-                        SettingsSyncControls(isBusy: store.syncing, onSync: store.refresh) { confirmPairing = true }
-                    }
-                } else {
-                    Section("PAIR_OPENGYM") {
-                        TextField("LOCAL_SERVER_EXAMPLE", text: $server)
-                            .textFieldStyle(.plain).stableInputLine().submitLabel(.done)
-                            .onSubmit { GymKeyboard.dismiss() }.keyboardType(.URL)
-                            .textInputAutocapitalization(.never).autocorrectionDisabled()
-                            .accessibilityIdentifier("server-url")
-                        TextField("ENTER_A_ONE_TIME_PAIRING_CODE", text: $code)
-                            .textFieldStyle(.plain).stableInputLine().submitLabel(.done)
-                            .onSubmit { GymKeyboard.dismiss() }.textInputAutocapitalization(.characters)
-                            .autocorrectionDisabled().accessibilityIdentifier("pair-code")
-                        Button { Task { await store.pair(server: server, code: code) } } label: {
-                            HStack {
-                                Text(LocalizedStringKey(store.syncing ? "PAIRING" : "CONNECT_ACCOUNT"))
-                                Spacer()
-                                if store.syncing { ProgressView() }
-                            }
-                        }
-                        .disabled(code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || store.syncing)
-                        if pairingAgain {
-                            Button("CANCEL_PAIRING", role: .cancel) { pairingAgain = false; code = "" }
-                                .disabled(store.syncing)
-                        }
-                    }
+                if let cloudSync = store.cloudSync {
+                    CloudSyncSection(status: cloudSync.status)
                 }
+
+                MediaServerSection(current: store.mediaServerURL, save: store.saveMediaServer)
 
                 Section("PERSONAL_SETTINGS") {
                     NavigationLink("FILTER_BY_GYM_EQUIPMENT") { EquipmentProfilesView() }
@@ -131,12 +95,7 @@ struct SettingsView: View {
             .navigationTitle("SETTINGS")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("DONE") { dismiss() } } }
-            .onAppear { guard !loaded else { return }; loaded = true; server = store.serverURL }
             .task { await store.restNotifications?.flush() }
-            .confirmationDialog("PAIR_OPENGYM_AGAIN", isPresented: $confirmPairing, titleVisibility: .visible) {
-                Button("PAIR_AGAIN") { server = store.serverURL; code = ""; pairingAgain = true }
-                Button("CANCEL", role: .cancel) {}
-            }
             .sheet(isPresented: $notice) {
                 ScrollView { Text((try? String(contentsOf: Bundle.main.url(forResource: "NOTICE", withExtension: "txt")!, encoding: .utf8)) ?? "openGym · GNU AGPL v3.0").font(.system(size: 12)).padding() }
             }
@@ -165,21 +124,18 @@ struct SettingsView: View {
     }
 }
 
-#Preview("Connected") {
+#Preview("中文") {
     let store = GymStore(userID: "preview")
-    store.serverURL = "https://gym.example.com"
-    store.userName = "Alex"
-    store.online = true
-    store.lastSync = Date()
+    store.mediaServerURL = "https://gym.example.com"
     if let url = Bundle.main.url(forResource: "catalogue", withExtension: "json"),
        let data = try? Data(contentsOf: url), let exercises = try? JSONDecoder().decode([Exercise].self, from: data) {
         store.registerCatalogue(exercises)
     }
-    return SettingsView().environment(store).environment(\.locale, AppLanguage.locale)
+    return SettingsView().environment(store).environment(\.locale, Locale(identifier: "zh-Hans"))
 }
 
-#Preview("Pair account · Dark") {
-    let store = GymStore()
-    store.serverURL = "https://gym.example.com"
-    return SettingsView().environment(store).environment(\.locale, AppLanguage.locale).preferredColorScheme(.dark)
+#Preview("English · Dark") {
+    let store = GymStore(userID: "preview")
+    store.mediaServerURL = "https://gym.example.com"
+    return SettingsView().environment(store).environment(\.locale, Locale(identifier: "en")).preferredColorScheme(.dark)
 }

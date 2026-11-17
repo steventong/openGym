@@ -56,8 +56,8 @@ Design notes for specific features, kept next to the code they describe:
 
 | Note | Covers |
 |---|---|
-| [Native iOS parity](native-ios/FEATURE_PARITY.md) | Implemented native features and remaining gaps |
-| [Live Activity](native-ios/LIVE_ACTIVITY.md) | Lock Screen, Dynamic Island and training controls |
+| [Native iOS parity](../OpenGYM-iOS/docs/FEATURE_PARITY.md) | Implemented native features and remaining gaps |
+| [Live Activity](../OpenGYM-iOS/docs/LIVE_ACTIVITY.md) | Lock Screen, Dynamic Island and training controls |
 | [Set types](dev/SET_TYPES.md) | Drop sets and rest-pause: the set-row model and how totals are counted |
 | [Workout views](dev/LIST_VIEW.md) | The cards, list and compact layouts of the workout screen |
 | [Combine routines](dev/COMBINE_ROUTINES.md) | Spec for running more than one routine in a session |

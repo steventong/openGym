@@ -70,7 +70,7 @@ import UIKit
     func testCustomExerciseReusesCatalogueMediaAndInstructionsWithoutChangingIdentity() throws {
         let source = try sourceExercise()
         let store = try makeStore(custom: copiedExercise(source))
-        store.serverURL = "https://gym.example/base"
+        store.mediaServerURL = "https://gym.example/base"
         let custom = try XCTUnwrap(store.exercise(customID))
         XCTAssertEqual(custom.id, customID)
         XCTAssertEqual(custom.name, "窄距平行握引体向上")
@@ -115,7 +115,7 @@ import UIKit
     func testMediaReferencesRejectPathsURLsUnknownIDsAndWrongExtensions() throws {
         var custom = copiedExercise(try sourceExercise())
         let store = try makeStore(custom: custom)
-        store.serverURL = "https://gym.example"
+        store.mediaServerURL = "https://gym.example"
         for invalid in ["../0253", "/0253", "https://example.com/0253", "0253?x=1", "0253\n", "０２５３", "99999", customID, "025", "002533"] {
             custom["img"] = invalid + ".webp"
             custom["gif"] = invalid + ".mp4"

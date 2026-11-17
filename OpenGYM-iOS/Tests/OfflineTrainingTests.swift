@@ -1,22 +1,26 @@
+import CoreData
 import XCTest
 @testable import OpenGYM
 
 final class OfflineTrainingTests: XCTestCase {
     var root: URL!
     override func setUpWithError() throws { root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString); try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true) }
-    override func tearDownWithError() throws { StubProtocol.handler = nil; try? FileManager.default.removeItem(at:root) }
-    @MainActor private func store() throws -> GymStore {
-        let config = URLSessionConfiguration.ephemeral; config.protocolClasses = [StubProtocol.self]
-        let api = APIClient(address:try ServerAddress("https://test.invalid"),token:"test",session:URLSession(configuration:config))
-        let store = GymStore(client:api,userID:"offline-test",storage:LocalTrainingStorage(root:root))
-        store.serverURL = "https://test.invalid"; store.userName = "Offline test"; return store
+    override func tearDownWithError() throws { try? FileManager.default.removeItem(at:root) }
+    @MainActor private func store(_ persistence: PersistenceController = PersistenceController(inMemory: true)) throws -> GymStore {
+        GymStore(userID:"offline-test",storage:LocalTrainingStorage(root:root),persistence:persistence)
     }
-    private func body(_ request: URLRequest) throws -> [String:Any] {
-        if let data = request.httpBody { return try JSONSerialization.jsonObject(with:data) as! [String:Any] }
-        let stream = try XCTUnwrap(request.httpBodyStream); stream.open(); defer { stream.close() }
-        var data = Data(), buffer = [UInt8](repeating:0,count:8192)
-        while stream.hasBytesAvailable { let n = stream.read(&buffer,maxLength:buffer.count); if n <= 0 {break}; data.append(buffer,count:n) }
-        return try JSONSerialization.jsonObject(with:data) as! [String:Any]
+    /// 记录上次写入数据库的时间；重试没有再次写入时保持不变。
+    @MainActor private func savedAt(_ id: String, in persistence: PersistenceController) throws -> Date? {
+        let request = NSFetchRequest<NSManagedObject>(entityName: "StoredWorkout")
+        request.predicate = NSPredicate(format: "id == %@", id)
+        return try persistence.container.viewContext.fetch(request).first?.value(forKey: "updatedAt") as? Date
+    }
+    /// 占住归档目录的位置：记录已经保存，但提交的收尾步骤失败。返回值用于之后恢复。
+    @MainActor private func blockArchive(of store: GymStore) throws -> URL {
+        let folder = try XCTUnwrap(store.accountFolder), archive = folder.appendingPathComponent("archive")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try Data([1]).write(to: archive)
+        return archive
     }
     private func workout() -> [String:Any] {
         ["id":"w1","name":"原训练","d":"2026-10-20","start":1_792_476_000_000.0,"end":1_792_476_060_000.0,
@@ -45,102 +49,30 @@ final class OfflineTrainingTests: XCTestCase {
         for snapshot in saved { XCTAssertTrue(NSDictionary(dictionary: snapshot["response"] as! [String: Any]).isEqual(to: response)) }
         XCTAssertEqual(try storage.backupRoot.resourceValues(forKeys: [.isExcludedFromBackupKey]).isExcludedFromBackup, true)
     }
-    @MainActor func testEachConflictAttemptBacksUpBeforeOperationAndPut() async throws {
-        let s = try store(); var revision = 1, writes = 0, operations = 0
-        var server: [String: Any] = ["unit": "kg", "workouts": [], "_wid": "one", "remote": 1]
-        StubProtocol.handler = { request in
-            if request.httpMethod == "GET" { return (200, ["state": server, "rev": revision]) }
-            writes += 1
-            let copies = try self.snapshots(s.localStorage)
-            XCTAssertEqual(copies.count, writes)
-            XCTAssertTrue(copies.contains { (($0["response"] as? [String: Any])?["rev"] as? Int) == revision })
-            let body = try self.body(request)
-            XCTAssertEqual(body["baseRev"] as? Int, revision)
-            XCTAssertEqual(body["baseWid"] as? String, server["_wid"] as? String)
-            if writes == 1 { revision = 2; server["remote"] = 2; server["_wid"] = "two"; return (409, ["error": "conflict"]) }
-            server = body["state"] as! [String: Any]; return (200, ["ok": true])
-        }
-        let ok = await s.mutate { source in
-            operations += 1
-            XCTAssertEqual(try self.snapshots(s.localStorage).count, operations)
-            var next = source; next["local"] = true; return next
-        }
-        XCTAssertTrue(ok); XCTAssertEqual(writes, 2); XCTAssertEqual(server["remote"] as? Int, 2)
-        XCTAssertEqual(try snapshots(s.localStorage).count, 2)
-    }
-    @MainActor func testBackupFailurePreventsOperationAndPutThenCanRetry() async throws {
-        let s = try store()
-        try Data([1]).write(to: s.localStorage.backupRoot)
-        var writes = 0, operations = 0
-        StubProtocol.handler = { request in
-            if request.httpMethod == "PUT" { writes += 1; return (200, ["ok": true]) }
-            return (200, ["state": ["unit": "kg", "workouts": []], "rev": 1])
-        }
-        let failed = await s.mutate { source in operations += 1; var next = source; next["note"] = "local"; return next }
-        XCTAssertFalse(failed); XCTAssertEqual(writes, 0); XCTAssertEqual(operations, 0)
-        XCTAssertNotNil(s.localSaveIssues["serverBackup"])
-        try FileManager.default.removeItem(at: s.localStorage.backupRoot)
-        let retry = await s.mutate { source in var next = source; next["note"] = "local"; return next }
-        XCTAssertTrue(retry); XCTAssertEqual(writes, 1); XCTAssertNil(s.localSaveIssues["serverBackup"])
-    }
-    @MainActor func testRefreshSavesEverySnapshotBeforeReplacingCacheAndStopsOnDiskFailure() async throws {
-        let s = try store()
-        let remote: [String: Any] = ["unit": "kg", "workouts": [workout()]]
-        StubProtocol.handler = { request in
-            XCTAssertEqual(request.httpMethod, "GET")
-            switch request.url!.lastPathComponent {
-            case "health": return (200, ["ok": true])
-            case "me": return (200, ["user": ["id": "offline-test", "name": "test"]])
-            default: return (200, ["state": remote, "rev": 1])
-            }
-        }
-        await s.refresh(); await s.refresh()
-        XCTAssertEqual(try snapshots(s.localStorage).count, 2)
-        XCTAssertTrue(RecordPatch.equal(s.state, remote))
-        try FileManager.default.removeItem(at: s.localStorage.backupRoot)
-        try Data([1]).write(to: s.localStorage.backupRoot)
-        s.state = ["local": "keep"]
-        await s.refresh()
-        XCTAssertEqual(s.state["local"] as? String, "keep"); XCTAssertNotNil(s.error)
-    }
-    @MainActor func testMalformedSnapshotNeverBecomesAnEmptyProfileWrite() async throws {
-        let s = try store(); var operated = false
-        StubProtocol.handler = { request in XCTAssertEqual(request.httpMethod, "GET"); return (200, ["state": "invalid", "rev": 1]) }
-        let result = await s.mutate { source in operated = true; return source }
-        XCTAssertFalse(result); XCTAssertFalse(operated); XCTAssertEqual(try snapshots(s.localStorage).count, 0)
-    }
     @MainActor func testExplicitOverwritePreservesOtherRecordsAndUneditedRemoteFields() async throws {
-        let s = try store(), old = workout(); var local = old, remote = old
+        let persistence = PersistenceController(inMemory: true)
+        let s = try store(persistence), old = workout(); var local = old, remote = old
         local["name"] = "local title"; remote["name"] = "remote title"; remote["note"] = "remote note"
         var other = old; other["id"] = "w2"
-        var server: [String: Any] = ["unit": "kg", "workouts": [remote, other], "future": "keep", "_wid": "latest"]
-        var writes = 0
-        StubProtocol.handler = { request in
-            if request.httpMethod == "GET" { return (200, ["state": server, "rev": 7]) }
-            XCTAssertEqual(try self.snapshots(s.localStorage).count, 1)
-            let body = try self.body(request)
-            XCTAssertEqual(body["baseRev"] as? Int, 7); XCTAssertEqual(body["baseWid"] as? String, "latest")
-            server = body["state"] as! [String: Any]; writes += 1; return (200, ["ok": true])
-        }
+        // 打开编辑之后，另一台设备改了同一条记录的名称和备注。
+        s.state = ["unit": "kg", "workouts": [remote, other], "future": "keep", "_wid": "latest"]
         let ok = await s.saveWorkout(original: old, proposed: local, expectedUnit: "kg", overwrite: true)
-        XCTAssertTrue(ok); XCTAssertEqual(writes, 1); XCTAssertNil(s.historyEdits["w1"])
-        let records = server["workouts"] as! [[String: Any]]
+        XCTAssertTrue(ok); XCTAssertNil(s.historyEdits["w1"])
+        let reopened = try store(persistence); try reopened.reloadDocument()
+        let records = reopened.state["workouts"] as! [[String: Any]]
         XCTAssertEqual(records[0]["name"] as? String, "local title")
         XCTAssertEqual(records[0]["note"] as? String, "remote note")
-        XCTAssertTrue(RecordPatch.equal(records[1], other)); XCTAssertEqual(server["future"] as? String, "keep")
+        XCTAssertTrue(RecordPatch.equal(records[1], other)); XCTAssertEqual(reopened.state["future"] as? String, "keep")
+        XCTAssertEqual(reopened.state["_wid"] as? String, "latest")
     }
     @MainActor func testExplicitOverwriteRecreatesDeletedRecordWithSameIDAndRejectsUnitChange() async throws {
         let s = try store(), old = workout()
         var local = old; local["name"] = "local title"
-        var server: [String: Any] = ["unit": "kg", "workouts": [], "deleted": ["workouts": ["w1": 123]]]
-        StubProtocol.handler = { request in
-            if request.httpMethod == "GET" { return (200, ["state": server, "rev": 1]) }
-            server = try self.body(request)["state"] as! [String: Any]; return (200, ["ok": true])
-        }
+        s.state = ["unit": "kg", "workouts": [], "deleted": ["workouts": ["w1": 123]]]
         let ok = await s.saveWorkout(original: old, proposed: local, expectedUnit: "kg", overwrite: true)
         XCTAssertTrue(ok)
-        XCTAssertEqual((server["workouts"] as? [[String: Any]])?.map { $0["id"] as? String }, ["w1"])
-        server["unit"] = "lb"
+        XCTAssertEqual((s.state["workouts"] as? [[String: Any]])?.map { $0["id"] as? String }, ["w1"])
+        s.state["unit"] = "lb"
         let failed = await s.saveWorkout(original: old, proposed: local, expectedUnit: "kg", overwrite: true)
         XCTAssertFalse(failed); XCTAssertNotNil(s.historyEdits["w1"])
     }
@@ -157,11 +89,8 @@ final class OfflineTrainingTests: XCTestCase {
         XCTAssertEqual(restored.draft?.id, draft.id)
         XCTAssertTrue(RecordPatch.equal(restored.draft?.activeJSON, draft.activeJSON))
     }
-    @MainActor func testFreestyleRequiresAccountAndResumesExistingPlan() throws {
-        let s = try store(); s.userName = nil
-        s.startFreestyle()
-        XCTAssertNil(s.draft); XCTAssertTrue(s.showSettings)
-        s.userName = "Test"; s.showSettings = false
+    @MainActor func testFreestyleResumesExistingPlan() throws {
+        let s = try store()
         s.state = ["routines": [["id": "plan", "name": "原计划", "ex": [["id": "0289", "sets": 1, "reps": 8, "weight": 20]]]]]
         s.start(s.routines[0])
         let existing = try XCTUnwrap(s.draft)
@@ -172,12 +101,11 @@ final class OfflineTrainingTests: XCTestCase {
     }
     @MainActor func testFreestyleAddsExerciseAndSavesWithoutCreditingPlan() async throws {
         let s = try store()
-        var server: [String: Any] = ["unit": "kg", "routines": [["id": "plan", "name": "计划", "ex": []]],
+        let original: [String: Any] = ["unit": "kg", "routines": [["id": "plan", "name": "计划", "ex": []]],
             "workouts": [], "week": ["4": ["plan"]], "dayPlan": [dayString(): ["plan"]],
             "rotation": ["id": "rotation", "sequence": ["plan"]], "scheduleMode": "rotation",
             "queue": ["ids": ["plan"], "rotationId": "rotation", "startsOn": dayString(), "since": 0]]
-        let original = server
-        s.state = server; s.startFreestyle()
+        s.state = original; s.startFreestyle()
         let id = try XCTUnwrap(s.draft?.id)
         s.manageLiveExercise(action: "add", index: 0, id: "0289")
         XCTAssertEqual(s.draft?.rawEntries.count, 1)
@@ -186,32 +114,36 @@ final class OfflineTrainingTests: XCTestCase {
         s.liveRowAction(entry: 0, set: 0, action: ["action": "field", "key": "r", "value": 8])
         s.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"])
         XCTAssertEqual(s.draft?.completedSets, 1)
-        StubProtocol.handler = { request in
-            if request.httpMethod == "GET" { return (200, ["state": server, "rev": 1]) }
-            server = try self.body(request)["state"] as! [String: Any]
-            return (200, ["ok": true])
-        }
         await s.finish()
         XCTAssertNil(s.draft); XCTAssertNil(s.error)
-        let saved = try XCTUnwrap((server["workouts"] as? [[String: Any]])?.first)
+        let saved = try XCTUnwrap((s.state["workouts"] as? [[String: Any]])?.first)
         XCTAssertEqual(saved["id"] as? String, id); XCTAssertEqual(saved["name"] as? String, "自由训练")
         XCTAssertEqual(saved["routineIds"] as? [String], []); XCTAssertTrue(saved["routineId"] is NSNull)
         XCTAssertEqual(number(saved["vol"]), 160)
         for key in ["routines", "week", "dayPlan", "rotation", "queue"] {
-            XCTAssertTrue(RecordPatch.equal(server[key], original[key]), key)
+            XCTAssertTrue(RecordPatch.equal(s.state[key], original[key]), key)
         }
         let restored = try store(); restored.restoreDraft()
         XCTAssertNil(restored.draft)
     }
-    @MainActor func testColdOfflineRestartRestoresAccountProfileLiveInputAndHistoryForm() throws {
-        let first = try store(), original = workout()
-        first.state = ["unit":"kg","workouts":[original],"routines":[]];first.cacheProfile()
+    @MainActor func testColdRestartRestoresAccountProfileLiveInputAndHistoryForm() async throws {
+        let storage = LocalTrainingStorage(root:root), persistence = PersistenceController(inMemory: true), original = workout()
+        let suite = "offline-training-" + UUID().uuidString, defaults = try XCTUnwrap(UserDefaults(suiteName:suite))
+        defer { defaults.removePersistentDomain(forName:suite) }
+        // 从服务器版升级的账号：资料导入一次后保存在本机数据库，之后的冷启动不再需要服务器。
+        try storage.write(["server":"https://test.invalid","user":"offline-test","name":"Offline test"],to:root.appendingPathComponent("last-account.json"))
+        let first = GymStore(storage:storage,defaults:defaults,persistence:persistence)
+        first.legacyDocumentSource = { _, _ in ["unit":"kg","workouts":[original],"routines":[]] }
+        first.prepareOfflineLaunch();await first.importLegacyServerDataIfNeeded()
         var form = HistoryForm(original:original,unit:"kg");form.name = "未提交的名称 ";form.minutes = "12.";form.note = "还没输入完的备注"
         form.entries[0].sets[0].raw[TrainingInput.key] = ["both.w":""]
         XCTAssertTrue(first.keepHistoryEdit(original:original,proposed:form.proposed,unit:"kg",form:form.fields))
         first.draft = try TrainingDraft.fromWeb(["id":"active","name":"训练中","start":1_792_476_000_000.0,"entries":[["id":"0289","sets":[["w":12,"r":10,"done":false,TrainingInput.key:["both.w":"12."]]]]]],unit:"kg")
         first.startRest(entry:0,seconds:90)
-        let second = try store();second.userID = nil;second.userName = nil;second.restoreOfflineAccount()
+        let second = GymStore(storage:storage,defaults:defaults,persistence:persistence)
+        second.legacyDocumentSource = { _, _ in XCTFail("The server is read only once");return nil }
+        second.prepareOfflineLaunch();await second.importLegacyServerDataIfNeeded()
+        XCTAssertEqual(second.userID,"offline-test")
         XCTAssertEqual(second.userName,"Offline test");XCTAssertEqual(second.workouts.count,1)
         let restored = HistoryForm(original:original,unit:"kg",saved:second.historyEdits["w1"])
         XCTAssertEqual(restored.name,"未提交的名称 ");XCTAssertEqual(restored.minutes,"12.");XCTAssertEqual(restored.note,form.note)
@@ -273,47 +205,53 @@ final class OfflineTrainingTests: XCTestCase {
         XCTAssertFalse(ok);XCTAssertNotNil(s.localSaveError)
         XCTAssertEqual((s.historyEdits["w1"]?["proposed"] as? [String:Any])?["name"] as? String,"不要丢失")
     }
-    @MainActor func testServerDownRetainsDraftAndRepeatSubmitAfterRestartDoesNotDuplicate() async throws {
-        let first = try store();var edited = workout();edited["note"] = "离线写入"
-        StubProtocol.handler = { _ in throw URLError(.notConnectedToInternet) }
+    @MainActor func testSaveFailureRetainsDraftAndRepeatSubmitAfterRestartDoesNotDuplicate() async throws {
+        let profile:[String:Any] = ["unit":"kg","workouts":[workout()],"routines":[],"futureServer":"keep"]
+        let unwritable = try PersistenceController.onDisk(in:root.appendingPathComponent("database"))
+        let first = try store(unwritable);var edited = workout();edited["note"] = "离线写入"
+        first.state = profile
+        try unwritable.setReadOnly(true)
         let failed = await first.saveWorkout(original:workout(),proposed:edited,expectedUnit:"kg")
         XCTAssertFalse(failed);XCTAssertEqual(first.historyEdits["w1"]?["submitted"] as? Bool,true)
+        XCTAssertTrue(RecordPatch.equal(first.state,profile))
         let second = try store();second.restoreLocalTraining()
-        var server:[String:Any] = ["unit":"kg","workouts":[workout()],"routines":[],"futureServer":"keep"]
-        var writes = 0
-        StubProtocol.handler = { request in
-            if request.httpMethod == "GET" { return (200,["state":server,"rev":1]) }
-            server = try self.body(request)["state"] as! [String:Any];writes += 1;return (200,["ok":true])
-        }
+        second.state = profile
         let ok = await second.submitHistoryEdit("w1")
-        XCTAssertTrue(ok);XCTAssertEqual(writes,1);XCTAssertNil(second.historyEdits["w1"])
-        XCTAssertEqual((server["workouts"] as? [[String:Any]])?.count,1)
-        XCTAssertEqual((server["workouts"] as? [[String:Any]])?[0]["note"] as? String,"离线写入")
-        XCTAssertEqual(server["futureServer"] as? String,"keep")
+        XCTAssertTrue(ok);XCTAssertNil(second.historyEdits["w1"])
+        XCTAssertEqual((second.state["workouts"] as? [[String:Any]])?.count,1)
+        XCTAssertEqual((second.state["workouts"] as? [[String:Any]])?[0]["note"] as? String,"离线写入")
+        XCTAssertEqual(second.state["futureServer"] as? String,"keep")
+        // 已保存的修改不再留在待提交列表里。
+        let repeated = await second.submitHistoryEdit("w1")
+        XCTAssertFalse(repeated);XCTAssertEqual((second.state["workouts"] as? [[String:Any]])?.count,1)
     }
-    @MainActor func testLostPutResponseRetriesRecomputedHistoryWithoutSecondWrite() async throws {
-        let s = try store(), old = workout();var changed = old
+    @MainActor func testInterruptedSubmitRetriesRecomputedHistoryWithoutSecondWrite() async throws {
+        let persistence = PersistenceController(inMemory: true)
+        let s = try store(persistence), old = workout();var changed = old
         changed["entries"] = [["id":"0289","target":["mode":"reps"],"sets":[["w":20,"r":12,"done":true,TrainingInput.key:["both.w":"20."]]]]]
-        var server:[String:Any] = ["unit":"kg","workouts":[old],"routines":[],"exWeights":[:]],writes = 0
-        StubProtocol.handler = { request in
-            if request.httpMethod == "GET" {return (200,["state":server,"rev":writes+1])}
-            server = try self.body(request)["state"] as! [String:Any];writes += 1;throw URLError(.networkConnectionLost)
-        }
+        let seeded = await s.mutate { _ in ["unit":"kg","workouts":[old],"routines":[],"exWeights":[:]] }
+        XCTAssertTrue(seeded)
+        let archive = try blockArchive(of:s)
         let failed = await s.saveWorkout(original:old,proposed:changed,expectedUnit:"kg")
-        XCTAssertFalse(failed);XCTAssertEqual(writes,1)
-        let restarted = try store();restarted.restoreLocalTraining()
+        XCTAssertFalse(failed);XCTAssertEqual(number((s.state["workouts"] as? [[String:Any]])?[0]["vol"]),240)
+        let written = try XCTUnwrap(try savedAt("w1",in:persistence))
+        try FileManager.default.removeItem(at:archive)
+        let restarted = try store(persistence);try restarted.reloadDocument();restarted.restoreLocalTraining()
         let retried = await restarted.submitHistoryEdit("w1")
-        XCTAssertTrue(retried);XCTAssertEqual(writes,1);XCTAssertNil(restarted.historyEdits["w1"])
-        let saved = (server["workouts"] as! [[String:Any]])[0]
+        XCTAssertTrue(retried);XCTAssertNil(restarted.historyEdits["w1"])
+        XCTAssertEqual(try savedAt("w1",in:persistence),written)
+        let saved = (restarted.state["workouts"] as! [[String:Any]])[0]
         XCTAssertEqual(number(saved["vol"]),240)
         XCTAssertNil(((saved["entries"] as! [[String:Any]])[0]["sets"] as! [[String:Any]])[0][TrainingInput.key])
     }
-    @MainActor func testConcurrentServerEditKeepsLocalInputAndDoesNotOverwriteRemote() async throws {
+    @MainActor func testConcurrentEditOnAnotherDeviceKeepsLocalInputAndIsNotOverwritten() async throws {
         let s = try store(), old = workout();var edited = old;edited["name"] = "本机名称"
         var remote = old;remote["name"] = "远端名称"
-        StubProtocol.handler = { request in XCTAssertEqual(request.httpMethod,"GET");return (200,["state":["unit":"kg","workouts":[remote]],"rev":2]) }
+        // 打开编辑之后，另一台设备改了同一个字段。
+        s.state = ["unit":"kg","workouts":[remote]]
         let ok = await s.saveWorkout(original:old,proposed:edited,expectedUnit:"kg")
         XCTAssertFalse(ok);XCTAssertEqual((s.historyEdits["w1"]?["proposed"] as? [String:Any])?["name"] as? String,"本机名称")
+        XCTAssertEqual((s.state["workouts"] as? [[String:Any]])?[0]["name"] as? String,"远端名称")
     }
     @MainActor func testLiteralNumericInputSurvivesInvalidValuesAndNeverSubmitsStaleNumber() throws {
         let row:[String:Any] = ["w":10,"r":8,"done":false]
@@ -470,38 +408,43 @@ final class OfflineTrainingTests: XCTestCase {
         XCTAssertEqual((removed["bodyweight"] as? [[String:Any]])?.count,1)
         XCTAssertTrue(RecordPatch.equal(result,HealthWeightMerge.merge(result,samples:[:],deleted:[])),"No readable HealthKit samples must not erase stored data")
     }
-    @MainActor func testLiveFinishLostResponseRestartsAndRetriesWithSameIDAndEndTime() async throws {
-        let first = try store()
+    @MainActor func testLiveFinishInterruptedAfterSaveRestartsAndRetriesWithSameIDAndEndTime() async throws {
+        let persistence = PersistenceController(inMemory: true)
+        let first = try store(persistence)
+        let seeded = await first.mutate { _ in ["unit":"kg","workouts":[],"routines":[],"exWeights":[:]] }
+        XCTAssertTrue(seeded)
         first.draft = try TrainingDraft.fromWeb(["id":"finished-offline","name":"测试训练","d":"2026-10-20","start":1_792_476_000_000.0,"entries":[["id":"0289","target":["mode":"reps"],"sets":[["w":15,"r":10,"done":true,"at":1_792_476_060_000.0]]]]],unit:"kg")
-        var server:[String:Any] = ["unit":"kg","workouts":[],"routines":[],"exWeights":[:]], writes = 0
-        StubProtocol.handler = { request in
-            if request.httpMethod == "GET" { return (200,["state":server,"rev":writes+1]) }
-            server = try self.body(request)["state"] as! [String:Any];writes += 1;throw URLError(.networkConnectionLost)
-        }
-        await first.finish();XCTAssertNotNil(first.draft);XCTAssertEqual(writes,1)
-        let second = try store();second.restoreDraft();XCTAssertEqual(second.draft?.id,"finished-offline")
-        await second.finish();XCTAssertNil(second.draft);XCTAssertEqual(writes,1)
-        XCTAssertEqual((server["workouts"] as? [[String:Any]])?.count,1)
+        let archive = try blockArchive(of:first)
+        await first.finish();XCTAssertNotNil(first.draft)
+        let saved = try XCTUnwrap((first.state["workouts"] as? [[String:Any]])?.first)
+        let written = try XCTUnwrap(try savedAt("finished-offline",in:persistence))
+        try FileManager.default.removeItem(at:archive)
+        let second = try store(persistence);try second.reloadDocument();second.restoreDraft();XCTAssertEqual(second.draft?.id,"finished-offline")
+        await second.finish();XCTAssertNil(second.draft);XCTAssertNil(second.error)
+        let workouts = try XCTUnwrap(second.state["workouts"] as? [[String:Any]])
+        XCTAssertEqual(workouts.count,1);XCTAssertEqual(workouts[0]["id"] as? String,"finished-offline")
+        XCTAssertTrue(RecordPatch.equal(workouts[0]["end"],saved["end"]))
+        XCTAssertEqual(try savedAt("finished-offline",in:persistence),written)
     }
-    @MainActor func testNewInputAfterLostResponseCanBeSubmittedWithoutLosingEitherVersion() async throws {
+    @MainActor func testNewInputAfterInterruptedSubmitCanBeSubmittedWithoutLosingEitherVersion() async throws {
         let s = try store(), old = workout();var changed = old;changed["name"] = "第一次修改"
-        var server:[String:Any] = ["unit":"kg","workouts":[old],"routines":[]],writes = 0
-        StubProtocol.handler = { request in
-            if request.httpMethod == "GET" { return (200,["state":server,"rev":writes+1]) }
-            server = try self.body(request)["state"] as! [String:Any];writes += 1
-            if writes == 1 { throw URLError(.networkConnectionLost) };return (200,["ok":true])
-        }
+        s.state = ["unit":"kg","workouts":[old],"routines":[]]
+        let archive = try blockArchive(of:s)
         let failed = await s.saveWorkout(original:old,proposed:changed,expectedUnit:"kg");XCTAssertFalse(failed)
+        XCTAssertEqual((s.state["workouts"] as? [[String:Any]])?[0]["name"] as? String,"第一次修改")
+        try FileManager.default.removeItem(at:archive)
         changed["name"] = "继续编辑后的最新内容"
         let saved = await s.saveWorkout(original:old,proposed:changed,expectedUnit:"kg")
-        XCTAssertTrue(saved);XCTAssertEqual(writes,2)
-        XCTAssertEqual((server["workouts"] as? [[String:Any]])?[0]["name"] as? String,"继续编辑后的最新内容")
+        XCTAssertTrue(saved);XCTAssertNil(s.historyEdits["w1"])
+        XCTAssertEqual((s.state["workouts"] as? [[String:Any]])?.count,1)
+        XCTAssertEqual((s.state["workouts"] as? [[String:Any]])?[0]["name"] as? String,"继续编辑后的最新内容")
     }
     @MainActor func testIncompleteDurationCannotBeRetriedFromPendingList() async throws {
         let s = try store(), old = workout();var edited = old;edited["name"] = "保留"
+        s.state = ["unit":"kg","workouts":[old]]
         XCTAssertTrue(s.keepHistoryEdit(original:old,proposed:edited,unit:"kg",form:["minutes":""],submit:true))
-        StubProtocol.handler = { _ in XCTFail("Incomplete input must never be sent");throw URLError(.cancelled) }
         let saved = await s.submitHistoryEdit("w1");XCTAssertFalse(saved);XCTAssertNotNil(s.historyEdits["w1"])
+        XCTAssertTrue(RecordPatch.equal((s.state["workouts"] as? [[String:Any]])?[0],old),"Incomplete input must never be saved")
     }
     @MainActor func testEquipmentWeightUnitRoundTripsWithoutChangingStoredLoad() throws {
         let original: [String: Any] = ["w": 20, "r": 8, "done": true, TrainingInput.key: ["both.w": "20.", "both.r": "8"]]

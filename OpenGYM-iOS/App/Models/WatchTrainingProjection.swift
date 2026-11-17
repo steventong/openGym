@@ -7,7 +7,7 @@ extension GymStore {
         snapshot.language = AppLanguage.language
         snapshot.autoEndRestEnabled = autoEndRestEnabled
         guard let userID else { return snapshot }
-        snapshot.account = Self.watchHash(Data("\(serverURL)|\(userID)".utf8))
+        snapshot.account = Self.watchHash(Data("\(profileServer)|\(userID)".utf8))
         guard let draft else { return snapshot }
         snapshot.sessionID = draft.id
         snapshot.actionReadyAt = trainingActionReadyAt

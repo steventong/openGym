@@ -1,8 +1,8 @@
-import { t } from '../../../frontend/src/lib/i18n-core.js';
-import { defaultConfig, freestyleConfig, lastEntryFor, setsFromRows, workoutAt, buildSets, cleanupSg, pairAdjacent, unpairSuperset } from '../../../frontend/src/lib/history.js';
-import { registerCustom } from '../../../frontend/src/lib/exercises.js';
-import { hasCompletedWork } from '../../../frontend/src/lib/workout-model.js';
-import { replaceSlotExercise } from '../../../frontend/src/lib/routines.js';
+import { t } from './lib/i18n-core.js';
+import { defaultConfig, freestyleConfig, lastEntryFor, setsFromRows, workoutAt, buildSets, cleanupSg, pairAdjacent, unpairSuperset } from './lib/history.js';
+import { registerCustom } from './lib/exercises.js';
+import { hasCompletedWork } from './lib/workout-model.js';
+import { replaceSlotExercise } from './lib/routines.js';
 
 // Remap by occurrence, never by exercise ID: a session may contain the same ID twice.
 export function manageTrainingExercises(input) {

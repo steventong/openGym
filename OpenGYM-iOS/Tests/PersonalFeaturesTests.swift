@@ -187,41 +187,45 @@ final class PersonalFeaturesTests:XCTestCase {
 }
 
 extension PersonalFeaturesTests {
-    @MainActor func testDateRecordSaveRebases409WithoutDroppingOtherDates() async throws {
-        let cfg = URLSessionConfiguration.ephemeral;cfg.protocolClasses = [StubProtocol.self]
-        let client = APIClient(address:try ServerAddress("https://test.invalid"),token:"test",session:URLSession(configuration:cfg))
-        let store = GymStore(client:client,userID:"personal-test",storage:LocalTrainingStorage(root:FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)))
-        var server:[String:Any] = ["unit":"kg","measurements":[["d":"2026-10-20","waist":80]],"future":"keep"], writes = 0
-        StubProtocol.handler = {req in
-            if req.httpMethod == "GET" {return (200,["state":server,"rev":writes])}
-            writes += 1
-            if writes == 1 {server["measurements"] = [["d":"2026-10-20","waist":80],["d":"2026-10-21","waist":81]];return (409,["error":"conflict"])}
-            let body = try Self.decodeBody(req);server = body["state"] as! [String:Any];return (200,["ok":true])
-        }
-        let ok = await store.savePersonalRecord(collection:"measurements",key:"d",original:["d":"2026-10-20","waist":80],proposed:["d":"2026-10-20","waist":79],unit:"kg")
-        XCTAssertTrue(ok);XCTAssertEqual(writes,2);XCTAssertEqual((server["measurements"] as! [Any]).count,2);XCTAssertEqual(server["future"] as? String,"keep")
+    @MainActor private func localStore(_ user:String,_ persistence:PersistenceController = PersistenceController(inMemory:true)) -> GymStore {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        addTeardownBlock { try? FileManager.default.removeItem(at:root) }
+        return GymStore(userID:user,storage:LocalTrainingStorage(root:root),persistence:persistence)
+    }
+    @MainActor func testDateRecordSaveKeepsDatesAddedOnAnotherDevice() async throws {
+        let persistence = PersistenceController(inMemory:true)
+        let store = localStore("personal-test",persistence), other = localStore("personal-test",persistence)
+        let original:[String:Any] = ["d":"2026-10-20","waist":80]
+        let seeded = await store.mutate { _ in ["unit":"kg","measurements":[original],"future":"keep"] }
+        XCTAssertTrue(seeded)
+        // 打开编辑之后，另一台设备记了第二天的围度。
+        try other.reloadDocument()
+        let added = await other.savePersonalRecord(collection:"measurements",key:"d",original:nil,proposed:["d":"2026-10-21","waist":81],unit:"kg")
+        XCTAssertTrue(added)
+        try store.reloadDocument()
+        let ok = await store.savePersonalRecord(collection:"measurements",key:"d",original:original,proposed:["d":"2026-10-20","waist":79],unit:"kg")
+        XCTAssertTrue(ok)
+        try other.reloadDocument()
+        let saved = try XCTUnwrap(other.state["measurements"] as? [[String:Any]])
+        XCTAssertEqual(saved.map { $0["d"] as? String },["2026-10-20","2026-10-21"]);XCTAssertEqual(saved.map { number($0["waist"]) },[79,81])
+        XCTAssertEqual(other.state["future"] as? String,"keep")
     }
     @MainActor func testDateRecordRejectsConcurrentEditAndDuplicateDate() async throws {
-        let cfg = URLSessionConfiguration.ephemeral;cfg.protocolClasses = [StubProtocol.self]
-        let store = GymStore(client:APIClient(address:try ServerAddress("https://test.invalid"),token:"test",session:URLSession(configuration:cfg)),userID:"personal-conflict")
-        StubProtocol.handler = {req in XCTAssertEqual(req.httpMethod,"GET");return (200,["state":["unit":"kg","measurements":[["d":"2026-10-20","waist":85],["d":"2026-10-21","waist":82]]],"rev":1])}
+        let store = localStore("personal-conflict")
+        // 打开编辑之后，另一台设备把同一天的数值改成了 85。
+        let current:[String:Any] = ["unit":"kg","measurements":[["d":"2026-10-20","waist":85],["d":"2026-10-21","waist":82]]]
+        store.state = current
         let conflict = await store.savePersonalRecord(collection:"measurements",key:"d",original:["d":"2026-10-20","waist":80],proposed:["d":"2026-10-20","waist":79],unit:"kg")
         XCTAssertFalse(conflict)
         let duplicate = await store.savePersonalRecord(collection:"measurements",key:"d",original:nil,proposed:["d":"2026-10-21","waist":70],unit:"kg")
         XCTAssertFalse(duplicate)
+        XCTAssertTrue(RecordPatch.equal(store.state,current))
     }
     @MainActor func testEquipmentFilteringUnderstandsBenchAndBodyweight() throws {
         let result = try rule("equipment",["equipFilterOn":true,"activeEquipId":"home","equipProfiles":[["id":"home","equipment":["dumbbell"],"accV":1]]])
         let ids = result["available"] as! [String]
         XCTAssertFalse(ids.contains("0025"));XCTAssertFalse(ids.isEmpty)
         XCTAssertTrue((result["equipment"] as! [String]).contains("bench"))
-    }
-    private static func decodeBody(_ request:URLRequest) throws -> [String:Any] {
-        if let data = request.httpBody {return try JSONSerialization.jsonObject(with:data) as! [String:Any]}
-        let stream = try XCTUnwrap(request.httpBodyStream);stream.open();defer{stream.close()}
-        var data = Data(),buffer = [UInt8](repeating:0,count:4096)
-        while stream.hasBytesAvailable {let n = stream.read(&buffer,maxLength:buffer.count);if n<=0{break};data.append(buffer,count:n)}
-        return try JSONSerialization.jsonObject(with:data) as! [String:Any]
     }
 }
 

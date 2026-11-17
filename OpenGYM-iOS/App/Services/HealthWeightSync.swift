@@ -61,7 +61,7 @@ enum HealthWeightMerge {
     private var file: URL? { store?.accountFolder?.appendingPathComponent("health-weight.json") }
     private var identity: String? { store?.accountFolder?.path }
     private func save() throws {
-        guard let file, let store else { throw APIError.signIn }
+        guard let file, let store else { throw APIError.noProfile }
         var record: [String: Any] = ["enabled": enabled, "samples": samples, "deleted": Array(deleted), "pending": pending]
         record["anchor"] = anchorData; record["lastRead"] = lastRead?.timeIntervalSince1970
         try store.localStorage.write(record, to: file)
@@ -164,7 +164,7 @@ enum HealthWeightMerge {
             guard token == epoch, enabled, target == identity else { return }
             if samples.isEmpty && deleted.isEmpty { pending = false; try save(); status = String(localized: "NO_WEIGHT_DATA_AVAILABLE_THERE_MAY_BE_NO_RECORDS_OR_READ_ACCESS", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
             var expected: Any?
-            let saved = await store.mutate(reportError: false, background: true, verify: { RecordPatch.equal($0["bodyweight"], expected) }) { source in
+            let saved = await store.mutate(reportError: false, verify: { RecordPatch.equal($0["bodyweight"], expected) }) { source in
                 guard self.enabled, self.epoch == token, self.identity == target else { throw APIError.response(0, String(localized: "SYNC_STOPPED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
                 let result = HealthWeightMerge.merge(source, samples: next, deleted: tombstones); expected = result["bodyweight"]; return result
             }

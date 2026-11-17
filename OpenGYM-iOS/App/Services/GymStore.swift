@@ -1,6 +1,8 @@
 import Foundation
 import Observation
 
+/// App 的状态与依赖。资料文档 `state` 来自本机 Core Data（经 iCloud 同步），
+/// 读写流程见 GymStore+Storage.swift；这里只放状态、依赖对象和动作索引。
 @MainActor @Observable final class GymStore {
     private(set) var exercises: [Exercise] = []
     var catalogueError: String?
@@ -8,19 +10,24 @@ import Observation
         didSet {
             if !RecordPatch.equal(oldValue["lang"], state["lang"]) { AppLanguage.setLanguage(state["lang"] as? String) }
             // Workout, weight and sync metadata changes do not change exercise names or images.
-            if !RecordPatch.equal(oldValue["customEx"],state["customEx"]) { rebuildExerciseIndex() }
+            if !RecordPatch.equal(oldValue[StateDocument.customExercises], state[StateDocument.customExercises])
+                || !RecordPatch.equal(oldValue[StateDocument.exerciseCopies], state[StateDocument.exerciseCopies]) { rebuildExerciseIndex() }
             publishTraining()
         }
     }
-    var serverURL = UserDefaults.standard.string(forKey: "serverURL") ?? "http://localhost:8080"
-    var userName: String?
+    /// 动作图片与视频的下载地址。动作文字随 App 内置，媒体按需从这里获取。
+    var mediaServerURL: String
+    /// 本机资料标识，只用来定位草稿、健康同步等本机文件。
+    /// 从服务器版升级的用户沿用旧服务器地址和账号 ID，原有文件位置不变。
+    var profileServer = LocalProfile.fresh.server
     var userID: String? { didSet { publishTraining() } }
-    var online = false
+    var userName: String?
+    /// 一次性导入旧服务器资料期间为 true，页面据此暂停保存操作。
     var syncing = false { didSet { publishTraining() } }
-    var status = String(localized: "CONNECTING_TO_SERVER", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     var error: String?
     var editError: String?
-    var lastSync: Date?
+    /// 内存文档上次随数据库变化的时间；依赖整份资料的页面据此重新计算。
+    var lastDocumentChange: Date?
     var selectedTab = 0
     var showSettings = false
     var selectedExercise: Exercise?
@@ -42,7 +49,7 @@ import Observation
             publishTraining()
         }
     }
-    @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored let defaults: UserDefaults
     var liveActivityIssue: String?
     var localSaveIssues: [String: String] = [:] { didSet { publishTraining() } }
     var localSaveError: String? {
@@ -51,6 +58,14 @@ import Observation
     }
     var historyEdits: [String: [String: Any]] = [:]
     let localStorage: LocalTrainingStorage
+    @ObservationIgnored let repository: StateRepository
+    /// 仅正式容器有 iCloud 同步状态；内存库（测试、预览）为 nil。
+    let cloudSync: CloudSyncMonitor?
+    @ObservationIgnored var legacyImport: Task<Void, Never>?
+    /// 读取旧服务器上的最新资料；测试中替换为固定数据。
+    @ObservationIgnored var legacyDocumentSource: (LegacyAccount, LocalTrainingStorage) async -> [String: Any]? = LegacyServer.latestDocument
+    @ObservationIgnored var storeObserver: NSObjectProtocol?
+    @ObservationIgnored var storeReload: Task<Void, Never>?
     @ObservationIgnored lazy var healthSync = HealthWeightSync(store:self)
     @ObservationIgnored lazy var workoutHealth = WorkoutHealthSync(store: self)
     @ObservationIgnored lazy var historyHealth = HistoryHealthSync()
@@ -64,16 +79,22 @@ import Observation
     }
     private var index: [String: Exercise] = [:]
     private var catalogue: [Exercise] = []
+    private var catalogueIndex: [String: Exercise] = [:]
     private var catalogueMediaIDs: Set<String> = []
-    private var client: APIClient?
-    @ObservationIgnored private var loading = false
-    @ObservationIgnored private var backgroundMutation = false
-    init(client: APIClient? = nil, userID: String? = nil, storage: LocalTrainingStorage = LocalTrainingStorage(), defaults: UserDefaults = .standard) {
-        self.client = client; self.userID = userID; self.localStorage = storage
+    /// 默认使用内存库，预览和测试不会碰到用户数据；正式容器只在 App 启动处传入。
+    init(userID: String? = nil, storage: LocalTrainingStorage = LocalTrainingStorage(), defaults: UserDefaults = .standard,
+         persistence: PersistenceController = PersistenceController(inMemory: true)) {
+        self.userID = userID; self.localStorage = storage
         self.defaults = defaults
+        self.repository = StateRepository(persistence: persistence)
+        self.cloudSync = persistence.syncsWithCloud ? CloudSyncMonitor(container: persistence.container, defaults: defaults) : nil
+        self.mediaServerURL = defaults.string(forKey: Self.mediaServerKey) ?? "http://localhost:8080"
         self.autoEndRestEnabled = defaults.bool(forKey: "watch.autoEndRest.enabled")
     }
+    /// 沿用旧版保存服务器地址的键，升级后媒体地址无需重新填写。
+    static let mediaServerKey = "serverURL"
     private func publishTraining() { restNotifications?.publish(); watchBridge?.publish(); liveActivity?.publish() }
+    var profileIdentity: String { profileServer + "|" + (userID ?? "") }
     var unit: String { state["unit"] as? String ?? "kg" }
     var routines: [Routine] { (state["routines"] as? [[String: Any]] ?? []).filter { ($0["id"] as? String) != nil }.map { Routine(raw: $0) } }
     var workouts: [[String: Any]] {
@@ -96,10 +117,13 @@ import Observation
         return routines.first { $0.id == id }
     }
     func exercise(_ id: String) -> Exercise? { index[id] }
+    /// 内置动作库中的原始条目，不受本地副本或自建动作影响。
+    func catalogueExercise(_ id: String) -> Exercise? { catalogueIndex[id] }
     func registerCatalogue(_ list: [Exercise]) {
         let sorted = list.sorted { $0.english < $1.english }
         guard catalogue != sorted else { return }
         catalogue = sorted
+        catalogueIndex = Dictionary(sorted.map { ($0.id, $0) }, uniquingKeysWith: { _, latest in latest })
         catalogueMediaIDs = Set(sorted.map(\.id))
         rebuildExerciseIndex()
         publishTraining()
@@ -107,14 +131,22 @@ import Observation
     private func rebuildExerciseIndex() {
         var customs: [Exercise] = []
         var positions: [String: Int] = [:]
-        for raw in state["customEx"] as? [Any] ?? [] {
+        for raw in state[StateDocument.customExercises] as? [Any] ?? [] {
             guard let raw = raw as? [String: Any], let exercise = Exercise.custom(raw) else { continue }
             if let position = positions[exercise.id] { customs[position] = exercise }
             else { positions[exercise.id] = customs.count; customs.append(exercise) }
         }
+        // 用过的动作库动作在资料里有一份副本：显示以副本为准，位置仍按动作库排序。
+        var copies: [String: Exercise] = [:]
+        for case let raw as [String: Any] in state[StateDocument.exerciseCopies] as? [Any] ?? [] {
+            guard let exercise = Exercise.catalogueCopy(raw), positions[exercise.id] == nil else { continue }
+            copies[exercise.id] = exercise
+        }
         // Keep gym-specific IDs intact. Refresh from scratch so renamed/deleted exercises and
-        // account changes cannot retain a stale name from the previous document.
-        let next = customs + catalogue.filter { positions[$0.id] == nil }
+        // profile changes cannot retain a stale name from the previous document.
+        var next = customs
+        for exercise in catalogue where positions[exercise.id] == nil { next.append(copies.removeValue(forKey: exercise.id) ?? exercise) }
+        next += copies.values.sorted { $0.english < $1.english }
         guard exercises != next else { return }
         exercises = next
         index = Dictionary(exercises.map { ($0.id, $0) }, uniquingKeysWith: { _, latest in latest })
@@ -138,7 +170,7 @@ import Observation
     }
     func remoteImageURL(_ id: String) -> URL? {
         guard let source = imageMediaID(id) else { return nil }
-        return (try? ServerAddress(serverURL))?.endpoint("exercise-media/still/\(source).webp")
+        return (try? ServerAddress(mediaServerURL))?.endpoint("exercise-media/still/\(source).webp")
     }
     func videoURL(_ id: String) -> URL? {
         guard let source = videoMediaID(id) else { return nil }
@@ -146,131 +178,7 @@ import Observation
     }
     func remoteVideoURL(_ id: String) -> URL? {
         guard let source = videoMediaID(id) else { return nil }
-        return (try? ServerAddress(serverURL))?.endpoint("exercise-media/clip/\(source).mp4")
-    }
-    func prepareOfflineLaunch() {
-        do { client = APIClient(address:try ServerAddress(serverURL),token:CredentialStore.read(for:serverURL)) }
-        catch { self.error = error.localizedDescription }
-        restoreOfflineAccount()
-        if userID == nil, let token = client?.token, let id = token.split(separator: ":").first, !id.isEmpty {
-            // Upgrade path: old versions stored only the paired token and the live draft.
-            userID = String(id); userName = String(localized: "OFFLINE_ACCOUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); restoreLocalTraining()
-        }
-        healthSync.prepare()
-    }
-    func boot() async {
-        do {
-            guard let url = Bundle.main.url(forResource: "catalogue", withExtension: "json") else { throw APIError.invalidResponse }
-            let list = try await Task.detached { try JSONDecoder().decode([Exercise].self, from: Data(contentsOf: url)) }.value
-            registerCatalogue(list)
-        } catch { catalogueError = String(format: String(localized: "COULD_NOT_LOAD_EXERCISE_LIBRARY_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
-        do {
-            let address = try ServerAddress(serverURL)
-            client = APIClient(address: address, token: CredentialStore.read(for: serverURL))
-        } catch { self.error = error.localizedDescription }
-        if userID == nil { restoreOfflineAccount() }
-        await refresh()
-        await healthSync.resume()
-        #if DEBUG
-        if let i = ProcessInfo.processInfo.arguments.firstIndex(of: "-pairCode"), ProcessInfo.processInfo.arguments.count > i + 1 {
-            await pair(server: serverURL, code: ProcessInfo.processInfo.arguments[i + 1])
-        }
-        #endif
-    }
-    @discardableResult func refresh() async -> Result<Void, Error> {
-        guard !loading, !syncing, !backgroundMutation else { return .failure(APIError.busy) }
-        guard let client else { return .failure(APIError.signIn) }
-        loading = true; defer { loading = false }
-        do {
-            let health = try await client.request("api/health")
-            online = health["ok"] as? Bool == true
-            guard online else { throw APIError.response(503, String(localized: "SERVICE_TEMPORARILY_UNAVAILABLE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
-            if client.token != nil {
-                let me = try await client.request("api/me")
-                if let token = me["token"] as? String { try CredentialStore.save(token, for: serverURL); client.token = token }
-                let user = me["user"] as? [String: Any] ?? [:]
-                let changed = userID != user["id"] as? String
-                if userName != user["name"] as? String { userName = user["name"] as? String }
-                if changed { userID = user["id"] as? String }
-                let result = try await client.request("api/data")
-                try backupServerSnapshot(result, server: client.address.url.absoluteString)
-                let next = result["state"] as? [String: Any] ?? [:]
-                // Preserve server stamps too; only suppress a refresh when the complete document matches.
-                if !NSDictionary(dictionary:state).isEqual(to:next) { state = next }
-                if changed { restoreLocalTraining() }
-                cacheProfile()
-                lastSync = Date(); status = String(localized: "SYNCED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
-                return .success(())
-            } else {
-                status = String(localized: "SERVER_CONNECTED_ACCOUNT_NOT_PAIRED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
-                return .failure(APIError.signIn)
-            }
-        } catch {
-            if let issue = localSaveIssues["serverBackup"], error.localizedDescription == issue {
-                status = issue; self.error = issue; return .failure(error)
-            }
-            if case APIError.response(401, _) = error { userName = nil; status = String(localized: "PAIR_AGAIN_TO_RECONNECT", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
-            else { online = false; status = String(localized: "OFFLINE_USING_LOCAL_DATA", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
-            return .failure(error)
-        }
-    }
-    func pair(server: String, code: String) async {
-        guard !syncing && !loading && !backgroundMutation else { return }
-        guard draft == nil else { error = String(localized: "FINISH_YOUR_CURRENT_WORKOUT_BEFORE_CHANGING_ACCOUNTS_OR_SERVERS", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
-        syncing = true; defer { syncing = false }
-        do {
-            let address = try ServerAddress(server)
-            let next = APIClient(address: address)
-            let result = try await next.request("api/pair/redeem", method: "POST", body: ["code": code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()])
-            guard let token = result["token"] as? String, let user = result["user"] as? [String: Any], let id = user["id"] as? String else { throw APIError.invalidResponse }
-            try CredentialStore.save(token, for: address.url.absoluteString)
-            next.token = token
-            client = next; serverURL = address.url.absoluteString
-            UserDefaults.standard.set(serverURL, forKey: "serverURL")
-            userID = id; userName = user["name"] as? String
-            state = [:]; historyEdits = [:]; restoreLocalTraining()
-            let data = try await next.request("api/data")
-            try backupServerSnapshot(data, server: next.address.url.absoluteString)
-            state = data["state"] as? [String: Any] ?? [:]
-            online = true; lastSync = Date(); status = String(localized: "SYNCED", bundle: AppLanguage.bundle, locale: AppLanguage.locale); showSettings = false; cacheProfile()
-            healthSync.prepare()
-        } catch { self.error = error.localizedDescription }
-    }
-    /// Rebase a narrow, idempotent operation onto the latest whole document; never replace unknown fields.
-    func mutate(reportError: Bool = true, background: Bool = false, verify: (([String: Any]) -> Bool)? = nil, _ operation: ([String: Any]) throws -> [String: Any]) async -> Bool {
-        editError = nil
-        guard !syncing && !loading && !backgroundMutation else { if reportError { error = APIError.busy.localizedDescription } else { editError = APIError.busy.localizedDescription }; return false }
-        guard let client, client.token != nil, userID != nil else { if reportError { error = APIError.signIn.localizedDescription; showSettings = true } else { editError = APIError.signIn.localizedDescription }; return false }
-        if background { backgroundMutation = true } else { syncing = true }
-        defer { if background { backgroundMutation = false } else { syncing = false } }
-        do {
-            for attempt in 0..<3 {
-                let current = try await client.request("api/data")
-                try backupServerSnapshot(current, server: client.address.url.absoluteString)
-                let source = current["state"] as? [String: Any] ?? ["unit":"kg", "routines":[], "workouts":[], "bodyweight":[], "week":[:]]
-                let next = try operation(source)
-                if RecordPatch.equal(source,next), verify?(source) != false { acceptSyncedState(source); cacheProfile(); return true }
-                var body: [String: Any] = ["state": next, "baseRev": current["rev"] ?? 0]
-                if let wid = source["_wid"] as? String { body["baseWid"] = wid }
-                do {
-                    _ = try await client.request("api/data", method: "PUT", body: body)
-                    if let verify {
-                        let canonical = try await client.request("api/data")
-                        guard let doc = canonical["state"] as? [String: Any], verify(doc) else { throw APIError.response(0, String(localized: "THE_SERVER_HAS_NOT_CONFIRMED_THIS_SAVE_YOUR_LOCAL_DATA_IS_SAFE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
-                        acceptSyncedState(doc)
-                    } else {
-                        acceptSyncedState(next)
-                        if let canonical = try? await client.request("api/data"), let doc = canonical["state"] as? [String: Any] { acceptSyncedState(doc) }
-                    }
-                    online = true; lastSync = Date(); status = String(localized: "SYNCED", bundle: AppLanguage.bundle, locale: AppLanguage.locale); cacheProfile()
-                    return true
-                } catch APIError.response(409, _) where attempt < 2 { continue }
-            }
-            throw APIError.response(409, "conflict")
-        } catch { if reportError { self.error = error.localizedDescription } else { editError = error.localizedDescription }; return false }
-    }
-    private func acceptSyncedState(_ next: [String: Any]) {
-        if !NSDictionary(dictionary: state).isEqual(to: next) { state = next }
+        return (try? ServerAddress(mediaServerURL))?.endpoint("exercise-media/clip/\(source).mp4")
     }
     func addRoutine(name: String, exerciseIDs: [String]) async -> Bool {
         let id = UUID().uuidString
@@ -309,7 +217,6 @@ import Observation
     func startFreestyle() { startSession(routineIDs: []) }
     private func startSession(routineIDs: [String]) {
         guard draft == nil else { selectedTab = 2; return }
-        guard userName != nil else { showSettings = true; return }
         do {
             let raw = try WebRules.shared.call("beginAdvanced",payload:["state":state,"ids":routineIDs,"id":UUID().uuidString,"now":Date().timeIntervalSince1970*1000,"day":dayString()]) as! [String:Any]
             draft = try TrainingDraft.fromWeb(raw,unit:unit);selectedTab = 2
@@ -418,41 +325,12 @@ import Observation
             }
             // Adopt pre-offline-client drafts without deleting the old copy.
             guard let userID else { return }
-            let key = Data("\(serverURL)|\(userID)".utf8).base64EncodedString().replacingOccurrences(of: "/", with: "_")
+            let key = Data("\(profileServer)|\(userID)".utf8).base64EncodedString().replacingOccurrences(of: "/", with: "_")
             let old = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("draft-\(key).json")
             if FileManager.default.fileExists(atPath: old.path) { source = "legacy_storage"; draft = try JSONDecoder().decode(TrainingDraft.self, from: Data(contentsOf: old)) }
         } catch {
             WorkoutActivityDiagnostics.record("draft.restore.failed", WorkoutActivityDiagnostics.errorFields(error), failure: true)
             localSaveError = String(format: String(localized: "COULD_NOT_READ_THE_WORKOUT_DRAFT_THE_FILE_HAS_BEEN_KEPT_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))
         }
-    }
-}
-
-extension GymStore {
-    var coachIdentity: String { serverURL + "|" + (userID ?? "") }
-    /// The paired session is the only credential used by the native Coach.
-    func coachRequest(_ path: String, method: String = "GET", body: [String: Any]? = nil) async throws -> [String: Any] {
-        guard let client, client.token != nil, userID != nil else { throw APIError.signIn }
-        let identity = coachIdentity
-        let result = try await client.request(path, method: method, body: body)
-        guard identity == coachIdentity else { throw CancellationError() }
-        return result
-    }
-    func waitForCoachIdle() async throws {
-        for _ in 0..<50 {
-            try Task.checkCancellation()
-            if !loading && !syncing && !backgroundMutation { return }
-            try await Task.sleep(for:.milliseconds(100))
-        }
-        throw APIError.busy
-    }
-    func refreshCoachState() async throws {
-        try await waitForCoachIdle()
-        guard !loading, !syncing, !backgroundMutation else { throw APIError.busy }
-        loading = true; defer { loading = false }
-        let result = try await coachRequest("api/data")
-        try backupServerSnapshot(result, server: serverURL)
-        guard let document = result["state"] as? [String: Any] else { throw APIError.invalidResponse }
-        state = document; cacheProfile(); lastSync = Date()
     }
 }

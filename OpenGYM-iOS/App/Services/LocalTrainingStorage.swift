@@ -14,8 +14,8 @@ final class LocalTrainingStorage {
         let digest = SHA256.hash(data: Data("\(server)|\(user)".utf8)).map { String(format: "%02x", $0) }.joined()
         return root.appendingPathComponent(digest, isDirectory: true)
     }
-    /// Append-only server snapshots, isolated by server/account and readable in Files.
-    /// No pruning or restore operation: every successful pre-sync download has its own file.
+    /// The last document read from the legacy server, kept beside the snapshots the server-synced
+    /// versions wrote: isolated by server/account, readable in Files, never pruned.
     @discardableResult func saveServerSnapshot(_ response: [String: Any], server: String, user: String, now: Date = Date()) throws -> URL {
         guard response["state"] is [String: Any] || response["state"] is NSNull else { throw APIError.invalidResponse }
         let format = ISO8601DateFormatter()
@@ -63,39 +63,9 @@ final class LocalTrainingStorage {
 }
 
 extension GymStore {
-    func backupServerSnapshot(_ response: [String: Any], server: String) throws {
-        guard let userID else { throw APIError.signIn }
-        do {
-            try localStorage.saveServerSnapshot(response, server: server, user: userID)
-            if localSaveIssues["serverBackup"] != nil { localSaveIssues.removeValue(forKey: "serverBackup") }
-        } catch {
-            let message = String(format: String(localized: "SERVER_BACKUP_FAILED_SYNC_STOPPED", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))
-            if localSaveIssues["serverBackup"] != message { localSaveIssues["serverBackup"] = message }
-            throw APIError.response(0, message)
-        }
-    }
-    var accountFolder: URL? { userID.map { localStorage.folder(server: serverURL, user: $0) } }
+    var accountFolder: URL? { userID.map { localStorage.folder(server: profileServer, user: $0) } }
     var localHistoryURL: URL? { accountFolder?.appendingPathComponent("history-edits.json") }
 
-    func cacheProfile() {
-        guard let userID, let folder = accountFolder else { return }
-        do {
-            try localStorage.write(["state": state, "name": userName ?? ""], to: folder.appendingPathComponent("profile.json"))
-            try localStorage.write(["server": serverURL, "user": userID, "name": userName ?? ""], to: localStorage.root.appendingPathComponent("last-account.json"))
-            if localSaveIssues["profile"] != nil { localSaveIssues.removeValue(forKey:"profile") }
-        } catch { localSaveIssues["profile"] = String(format: String(localized: "COULD_NOT_SAVE_ON_THIS_DEVICE_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
-    }
-    func restoreOfflineAccount() {
-        do {
-            guard let account = try localStorage.read(localStorage.root.appendingPathComponent("last-account.json")),
-                  account["server"] as? String == serverURL, let id = account["user"] as? String else { return }
-            userID = id; userName = account["name"] as? String
-            let cached = try localStorage.read(localStorage.folder(server: serverURL, user: id).appendingPathComponent("profile.json"))
-            state = cached?["state"] as? [String: Any] ?? [:]
-            restoreLocalTraining()
-            status = String(localized: "LOCAL_DATA_LOADED", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
-        } catch { localSaveError = error.localizedDescription }
-    }
     func restoreLocalTraining() {
         do {
             if let url = localHistoryURL { historyEdits = try localStorage.read(url)?["edits"] as? [String: [String: Any]] ?? [:] }

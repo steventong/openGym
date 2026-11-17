@@ -1,7 +1,7 @@
-import { t } from '../../../frontend/src/lib/i18n-core.js';
-import { cascadeWeight } from '../../../frontend/src/lib/history.js';
-import { loadKindFor, baseWeightFor, inventoryFor, rowLoad, ownsPlates } from '../../../frontend/src/lib/plates.js';
-import { registerCustom } from '../../../frontend/src/lib/exercises.js';
+import { t } from './lib/i18n-core.js';
+import { cascadeWeight } from './lib/history.js';
+import { loadKindFor, baseWeightFor, inventoryFor, rowLoad, ownsPlates } from './lib/plates.js';
+import { registerCustom } from './lib/exercises.js';
 
 export function cascadeNativeWeight(input) {
   const { sets, index, side, target = {} } = JSON.parse(input);

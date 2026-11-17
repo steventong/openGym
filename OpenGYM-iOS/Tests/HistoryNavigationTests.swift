@@ -277,7 +277,7 @@ import Observation
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
         let store = GymStore(storage: LocalTrainingStorage(root: root))
-        store.serverURL = ""
+        store.mediaServerURL = ""
         let catalogueURL = try XCTUnwrap(Bundle.main.url(forResource: "catalogue", withExtension: "json"))
         let catalogue = try JSONDecoder().decode([Exercise].self, from: Data(contentsOf: catalogueURL))
         store.registerCatalogue(catalogue)

@@ -8,6 +8,10 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>CFBundleURLTypes</key>
@@ -27,7 +31,7 @@
 		<true/>
 	</dict>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Read body weight to chart your progress and sync it to your openGym account. Read workouts, heart rate, active and resting energy to show activity and calories (kcal). Health metrics stay on your devices and in Apple Health.</string>
+	<string>Read body weight to chart your progress in openGym. Read workouts, heart rate, active and resting energy to show activity and calories (kcal). Health metrics stay on your devices and in Apple Health.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Save workouts you start and finish in openGym, along with activity energy recorded by the system, to Apple Health and show them in the Fitness app.</string>
 </dict>
