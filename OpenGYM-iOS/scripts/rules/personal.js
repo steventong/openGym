@@ -113,13 +113,24 @@ export function personalChange(input){
 }
 
 import { bestSetFor } from './lib/exercise-history.js';
-import { lastEntryFor, modeOf, setLabel } from './lib/history.js';
+import { modeOf, setLabel } from './lib/history.js';
 import { repeatSessionEntries } from './lib/session-repeat.js';
 import { POLICIES_FOR, policyFor, MAX_TRIPLE_SETS } from './lib/progression.js';
+// The latest earlier session of the exercise as it was recorded: every completed set, whichever
+// routine or combined day it was in, deloads and warm-ups included.
+function lastSessionOf(s,id){
+ for(let i=s.workouts.length-1;i>=0;i--){
+  const w=s.workouts[i],entries=(w.entries||[]).filter(e=>e&&e.id===id),sets=entries.flatMap(e=>(e.sets||[]).filter(r=>r.done));
+  if(!sets.length)continue;
+  const note=entries.map(e=>typeof e.note==='string'?e.note.trim():'').find(Boolean);
+  return {d:w.d,sets,target:entries[0].target||null,note:note||null};
+ }
+ return null;
+}
 export function personalReference(input) {
  const p=JSON.parse(input),s=prepare(p.state);s.workouts=s.workouts.filter(w=>w.id!==p.exclude&&(!w.start||w.start<p.before));
  const best=(p.reference ?? s.logRef)==='best', mode=modeOf(p.entry.target||{id:p.entry.id});
- const found=best?bestSetFor(s,p.entry.id,mode,p.entry.target?.dbLoad):lastEntryFor(s,p.entry.id,p.entry.rid);
+ const found=best?bestSetFor(s,p.entry.id,mode,p.entry.target?.dbLoad):lastSessionOf(s,p.entry.id);
  return JSON.stringify(found?{kind:best?t("BEST_A" /* 最佳 */):t("LAST_TIME" /* 上次 */),date:found.d,label:(best?[found.set]:found.sets).map(r=>setLabel(p.entry.id,r,found.target,speedUnitOf(s),{showZeroWeight:true})).join(' · '),note:found.note||null}:null);
 }
 export function personalRepeat(input) {

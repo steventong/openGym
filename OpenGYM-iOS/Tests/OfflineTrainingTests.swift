@@ -368,14 +368,45 @@ final class OfflineTrainingTests: XCTestCase {
         }
         s.state = ["unit": "kg", "logRef": "best", "workouts": [
             workout("old-best", 1000, 30, "旧备注"),
+            workout("other-routine", 1500, 88, "另一个计划", rid: "B"),
             workout("last", 2000, 12, "  控制下放\n不要摆动  "),
-            workout("other-routine", 2100, 88, "另一个计划", rid: "B"),
             workout("unfinished", 2200, 99, "未完成的备注", done: false),
             workout("current", 2300, 77, "当前备注"),
             workout("future", 4000, 66, "未来备注")]]
         let reference = s.previousExerciseReference(["id": "bodyweight-test", "rid": "A"], before: 3000, exclude: "current")
         XCTAssertEqual(reference.text, "上次 2026-11-01 · 0 × 12 · kg")
         XCTAssertEqual(reference.note, "控制下放\n不要摆动")
+    }
+
+    @MainActor func testPreviousReferenceAndStartingWeightUseLatestSessionFromAnyRoutine() throws {
+        let s = try store()
+        func entry(_ rid: String, _ weight: Int, _ reps: Int) -> [String: Any] {
+            ["id": "0739", "rid": rid, "target": ["id": "0739", "mode": "reps", "sets": 3, "reps": reps],
+             "planned": ["sets": 3, "reps": reps], "sets": [["w": weight, "r": reps, "done": true]]]
+        }
+        let routines: [[String: Any]] = [["id": "a", "name": "A", "ex": [["id": "0739", "sets": 3, "reps": 15, "weight": 60]]],
+                                         ["id": "b", "name": "B", "ex": [["id": "0739", "sets": 3, "reps": 12, "weight": 75]]]]
+        let state: [String: Any] = ["unit": "kg", "restSec": 90, "bodyweight": [], "week": [:], "dayPlan": [:], "routines": routines, "workouts": [
+            ["id": "own", "d": "2026-11-04", "start": 1000, "routineIds": ["a"], "entries": [entry("a", 73, 15)]],
+            ["id": "other", "d": "2026-11-14", "start": 2000, "routineIds": ["b"], "entries": [entry("b", 75, 12)]]]]
+        s.state = state
+        XCTAssertEqual(s.previousExerciseReference(["id": "0739", "rid": "a"], before: 3000, exclude: "new").text, "上次 2026-11-14 · 75×12 · kg")
+        let active = try WebRules.shared.call("beginAdvanced", payload: ["state": state, "ids": ["a"], "id": "new", "now": 3000, "day": "2026-11-18"]) as! [String: Any]
+        let rows = (active["entries"] as! [[String: Any]])[0]["sets"] as! [[String: Any]]
+        XCTAssertEqual(rows.map { number($0["w"]) }, [75, 75, 75])
+    }
+
+    @MainActor func testPreviousReferenceShowsLatestRecordedSessionWithoutFilters() throws {
+        let s = try store()
+        s.state = ["unit": "kg", "workouts": [
+            ["id": "regular", "d": "2026-11-10", "start": 1000, "entries": [["id": "0739", "rid": "a", "sets": [["w": 73, "r": 15, "done": true]]]]],
+            ["id": "deload", "d": "2026-11-14", "start": 2000, "excludeFromProgression": true, "entries": [
+                ["id": "0739", "rid": "b", "sets": [["w": 40, "r": 10, "done": true, "phase": "warmup"], ["w": 60, "r": 12, "done": true], ["w": 99, "r": 9, "done": false]]],
+                ["id": "0739", "rid": "c", "sets": [["w": 65, "r": 8, "done": true]]]]]]]
+        let text = s.previousExerciseReference(["id": "0739", "rid": "a"], before: 3000, exclude: "new").text
+        XCTAssertTrue(text.hasPrefix("上次 2026-11-14"), text)
+        for value in ["40", "60", "65"] { XCTAssertTrue(text.contains(value), text) }
+        XCTAssertFalse(text.contains("99"), text)
     }
 
     @MainActor func testPreviousReferenceDoesNotBorrowOlderNotesWhenLatestHasNone() throws {

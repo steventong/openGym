@@ -80,6 +80,11 @@ final class PersonalFeaturesTests:XCTestCase {
         let text = result["text"] as! String
         XCTAssertTrue(text.contains("卧推"));XCTAssertFalse(text.contains("[object Object]"));XCTAssertTrue(text.contains("60"))
     }
+    @MainActor func testWorkoutTextWithoutDateHasNoDateLine() throws {
+        var w = workout();w["d"] = "";w["name"] = ""
+        let text = try rule("workoutText",[:],["workout":w,"names":["0025":"卧推"]])["text"] as! String
+        XCTAssertFalse(text.contains("Invalid"));XCTAssertFalse(text.hasPrefix("\n"));XCTAssertTrue(text.contains("卧推"))
+    }
     func testHistorySummaryCountsCompletedSidesLikeWeb() {
         let record = WorkoutRecord(raw:["entries":[["sets":[
             ["done":true], ["done":false], ["done":true,"phase":"warmup"],

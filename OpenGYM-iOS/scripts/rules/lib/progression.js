@@ -16,7 +16,7 @@
 //   · fewer sets than prescribed                       → miss
 // So a session that fell apart can never advance the load as though it had succeeded.
 
-import { modeOf, repStep, rerampWarmups, isBw, isPerSide, entryExcluded, entryRoutineId } from './history.js'
+import { modeOf, repStep, rerampWarmups, isBw, isPerSide, entryExcluded, entryRoutineId, entryIn } from './history.js'
 import { EXIDX, isAssisted, isLoadedEq, defaultIncrement } from './exercises.js'
 import { isWarmupRow, isSideSet, syncSideAggregate, makeSideSet } from './workout-model.js'
 import { normalizeRepRange } from './rep-range.js'
@@ -320,27 +320,15 @@ export function readSession(entry, fallback) {
 }
 
 /**
- * Every past session for one exercise, oldest first. `fallback` — see readSession.
- *
- * With a routine id, the sessions that routine trained (issue #216): a heavy day and a light day
- * of the same lift each progress on their own line, and a combined day that holds the lift twice
- * is read by the entry that belongs to the routine, not by whichever comes first. A routine with
- * no session of its own reads the exercise's whole history instead, so a new or copied routine
- * continues from where you are. Each session carries the routine it came from (`rid`) and the
- * plan it was built from (`planned`), so the caller can tell a borrowed or outdated baseline.
+ * Every past session for one exercise, oldest first, whichever routine trained it. `fallback` —
+ * see readSession. `rid` only picks the routine's own entry in a combined day that holds the
+ * lift twice. Each session carries the routine it came from (`rid`) and the plan it was built
+ * from (`planned`), so the caller can tell a borrowed or outdated baseline.
  */
 export function sessionsFor(S, exId, fallback, rid) {
-  if (rid) {
-    const own = sessionsIn(S, exId, fallback, rid)
-    if (own.length) return own
-  }
-  return sessionsIn(S, exId, fallback, null)
-}
-
-function sessionsIn(S, exId, fallback, rid) {
   const out = []
   ;(S.workouts || []).forEach(w => {
-    const entry = (w.entries || []).find(e => e && e.id === exId && (!rid || entryRoutineId(w, e) === rid))
+    const entry = entryIn(w, exId, rid)
     if (!entry) return
     // A session that does not count for this exercise cannot become the baseline for its next
     // prescription. Exclusion is per-entry now (ENG-11): a legacy whole-workout
@@ -468,8 +456,7 @@ export function nextPrescription(S, cfg, routine) {
   const toppedOut = (weight, extra = {}) => ({ policy, kind: 'hold', weight, ...extra, why: ['You’ve outgrown the rack: {0} {1} is your heaviest dumbbell, so the weight stays.', weight, unit] })
 
 
-  // The routine's own sessions of this exercise, or the exercise's whole history when the
-  // routine has none yet (issue #216) — see sessionsFor.
+  // Every session of this exercise, whichever routine trained it — see sessionsFor.
   const sessions = sessionsFor(S, cfg.id, cfg, routine?.id).filter(s => s.mode === mode)
   const last = sessions[sessions.length - 1]
   // Triple progression starts a cycle at the base sets and the bottom of the range, so its first
@@ -485,20 +472,22 @@ export function nextPrescription(S, cfg, routine) {
 
   // Start again from the plan (issue #275) when the last session was built from a different one:
   // the routine's sets or reps were edited since, or the session is borrowed from another routine
-  // (this one has none of its own yet, see sessionsFor) whose plan was not this one's. Its
-  // numbers were judged against the old target, so they cannot say where the new one stands —
-  // a bodyweight goal climbing from the old count, or a deload aimed at reps and sets the
-  // routine no longer asks for. The sets and reps are the routine's own (double progression aims
-  // inside its new range, from what you managed).
+  // whose plan was not this one's. Its numbers were judged against the old target, so they cannot
+  // say where the new one stands — a bodyweight goal climbing from the old count, or a deload
+  // aimed at reps and sets the routine no longer asks for. The sets and reps are the routine's
+  // own (double progression aims inside its new range, from what you managed).
   // A borrowed session saved before plans were stamped is taken as a different plan.
   const borrowed = !!routine?.id && last.rid !== routine.id
   if (last.planned ? planChanged(last.planned, cfg) : borrowed) {
-    const why = borrowed ? ['First time in this routine, so starting from its own target.'] : ['Plan changed, so starting from your new target.']
-    // The weight holds at what was last lifted, unless the plan's own weight is not the one the
-    // session was built from: the same edit that turned 3 × 5 @ 100 into 3 × 10 @ 70 set 70,
-    // and 102.5 × 10 is a load never lifted for those reps. A routine whose weight nobody
-    // touched still carries the one it was created with, so there the history decides.
-    const set = cfg.weight > 0 && last.planned && (last.planned.weight ?? null) !== cfg.weight ? { weight: cfg.weight } : null
+    const firstHere = borrowed && !sessions.some(s => s.rid === routine.id)
+    const why = firstHere ? ['First time in this routine, so starting from its own target.'] : ['Plan changed, so starting from your new target.']
+    // The weight holds at what was last lifted, unless this routine's own weight was edited
+    // since the session was built from it: the same edit that turned 3 × 5 @ 100 into
+    // 3 × 10 @ 70 set 70, and 102.5 × 10 is a load never lifted for those reps. A routine whose
+    // weight nobody touched still carries the one it was created with, so there the history
+    // decides. Another routine's plan weight says nothing about this one, so a borrowed session
+    // always keeps the weight that was lifted.
+    const set = !borrowed && cfg.weight > 0 && last.planned && (last.planned.weight ?? null) !== cfg.weight ? { weight: cfg.weight } : null
     if (mode === 'time') return { policy, kind: 'hold', ...set, sec: cfg.sec || last.goal || undefined, why }
     if (!set && last.weight <= 0 && climbsReps(cfg)) return { policy, kind: 'hold', weight: 0, reps: cfg.reps || undefined, why }
     // A loaded lift logged at 0 had no weight typed in (see below): the plan's, if it has one.
