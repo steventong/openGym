@@ -1,5 +1,6 @@
 import XCTest
 import HealthKit
+import WeatherKit
 @testable import OpenGYM
 
 @MainActor final class HealthWorkoutTests: XCTestCase {
@@ -251,5 +252,64 @@ import HealthKit
         XCTAssertNil(store.workoutHealth.current)
         store.workoutHealth.receive(HealthWorkoutReport(id: id, state: .running, activeCalories: 15), owner: .watch)
         XCTAssertEqual(store.workoutHealth.report(for: store.draft!)?.activeCalories, 15)
+    }
+
+    // MARK: - Place and weather
+
+    private let gym = HealthWorkoutPlace(latitude: 3.139, longitude: 101.687, altitude: 60, horizontalAccuracy: 35,
+                                         verticalAccuracy: 10, temperature: 26, humidity: 87, condition: HKWeatherCondition.showers.rawValue)
+
+    func testPlaceCapturedDuringWorkoutTravelsWithFinishAndLateResultIsDropped() throws {
+        let (store, journal, id) = try fixture()
+        var dispatched: [HealthWorkoutRequest] = []
+        store.workoutHealth = WorkoutHealthSync(store: store, journal: journal, dispatch: { dispatched = $0 })
+        store.workoutHealth.attach(gym, to: id)
+        XCTAssertEqual(try journal.read().requests[id]?.place, gym, "A relaunch before finishing keeps the captured place")
+        XCTAssertTrue(store.workoutHealth.finish(try XCTUnwrap(store.draft), at: Date()))
+        XCTAssertEqual(dispatched.first?.phase, .finished)
+        XCTAssertEqual(dispatched.first?.place, gym)
+        XCTAssertEqual(HealthWorkoutWire.requests(from: HealthWorkoutWire.requests(dispatched)).first?.place, gym)
+        var moved = gym; moved.latitude = 1.29
+        store.workoutHealth.attach(moved, to: id)
+        XCTAssertEqual(store.workoutHealth.ledger.requests[id]?.place, gym, "The Watch already has the finish; a late place cannot reach it")
+    }
+    func testRequestsWithoutPlaceStayReadable() throws {
+        var legacy = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(request())) as? [String: Any])
+        legacy.removeValue(forKey: "place")
+        let decoded = try JSONDecoder().decode(HealthWorkoutRequest.self, from: JSONSerialization.data(withJSONObject: legacy))
+        XCTAssertNil(decoded.place)
+        let metadata = HealthWorkoutAccess.metadata(decoded)
+        XCTAssertNil(metadata[HKMetadataKeyWeatherTemperature])
+        XCTAssertNil(metadata[HKMetadataKeyWeatherHumidity])
+        XCTAssertNil(metadata[HKMetadataKeyWeatherCondition])
+    }
+    func testWeatherMetadataUsesHealthUnits() throws {
+        var value = request(); value.place = gym
+        let metadata = HealthWorkoutAccess.metadata(value)
+        let temperature = try XCTUnwrap(metadata[HKMetadataKeyWeatherTemperature] as? HKQuantity)
+        XCTAssertEqual(temperature.doubleValue(for: .degreeCelsius()), 26, accuracy: 0.001)
+        let humidity = try XCTUnwrap(metadata[HKMetadataKeyWeatherHumidity] as? HKQuantity)
+        XCTAssertEqual(humidity.doubleValue(for: .percent()), 87, accuracy: 0.001)
+        XCTAssertEqual(metadata[HKMetadataKeyWeatherCondition] as? Int, HKWeatherCondition.showers.rawValue)
+        XCTAssertNotNil(metadata[HKMetadataKeySyncIdentifier], "Weather never replaces the sync identity")
+    }
+    func testOutOfRangeWeatherAndMissingLocationAreLeftOut() {
+        var place = gym; place.humidity = 140; place.temperature = .nan; place.condition = HKWeatherCondition.none.rawValue
+        var value = request(); value.place = place
+        let metadata = HealthWorkoutAccess.metadata(value)
+        XCTAssertNil(metadata[HKMetadataKeyWeatherTemperature])
+        XCTAssertNil(metadata[HKMetadataKeyWeatherHumidity])
+        XCTAssertNil(metadata[HKMetadataKeyWeatherCondition])
+        place.latitude = 120
+        XCTAssertFalse(place.hasLocation)
+        place.latitude = 3; place.horizontalAccuracy = -1
+        XCTAssertFalse(place.hasLocation, "A negative accuracy means Core Location had no fix")
+    }
+    func testWeatherKitConditionsMapToHealthCategories() {
+        XCTAssertEqual(WorkoutPlaceCapture.healthCondition(.clear), .clear)
+        XCTAssertEqual(WorkoutPlaceCapture.healthCondition(.heavyRain), .showers)
+        XCTAssertEqual(WorkoutPlaceCapture.healthCondition(.scatteredThunderstorms), .thunderstorms)
+        XCTAssertEqual(WorkoutPlaceCapture.healthCondition(.blizzard), .snow)
+        XCTAssertNil(WorkoutPlaceCapture.healthCondition(.hot), "Temperature-only descriptions are not weather conditions")
     }
 }

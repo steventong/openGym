@@ -12,6 +12,8 @@ struct HealthWorkoutRequest: Codable, Equatable, Identifiable {
     var phase: Phase = .running
     // Optional so queued requests from earlier app versions remain readable.
     var title: String?
+    /// Captured on the phone when the workout starts; written to Health as a route point and weather metadata.
+    var place: HealthWorkoutPlace?
     var isValid: Bool {
         !id.isEmpty && start.timeIntervalSince1970.isFinite &&
         (phase == .running ? end == nil : end.map { $0 >= start && $0.timeIntervalSince1970.isFinite } == true)
@@ -22,6 +24,27 @@ struct HealthWorkoutRequest: Codable, Equatable, Identifiable {
         return max(start, now)
     }
     var syncIdentifier: String { "me.itwl.opengym.workout.\(id)" }
+}
+
+/// Where the workout happened and the weather there when it started.
+/// Device-only like the journal: it travels phone → Watch → Apple Health, never into training records or iCloud.
+struct HealthWorkoutPlace: Codable, Equatable {
+    var latitude: Double
+    var longitude: Double
+    var altitude: Double?
+    var horizontalAccuracy: Double
+    var verticalAccuracy: Double?
+    /// Degrees Celsius.
+    var temperature: Double?
+    /// Relative humidity, 0 to 100.
+    var humidity: Double?
+    /// `HKWeatherCondition.rawValue`; kept as an integer so the model does not depend on HealthKit.
+    var condition: Int?
+    var hasLocation: Bool {
+        (-90...90).contains(latitude) && (-180...180).contains(longitude) &&
+        horizontalAccuracy.isFinite && horizontalAccuracy >= 0
+    }
+    var hasWeather: Bool { temperature?.isFinite == true || humidity?.isFinite == true || condition != nil }
 }
 
 struct HealthWorkoutReport: Codable, Equatable {

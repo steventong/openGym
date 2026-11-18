@@ -60,6 +60,24 @@
           }
         }
       }
+    },
+    "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "开启「添加位置和天气」后，openGym 会在训练开始时读取一次你的位置，并随训练保存到 Apple 健康。",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When you turn on location and weather for Apple Fitness, openGym reads where you are once as a workout starts and saves it with the workout in Apple Health."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启「添加位置和天气」后，openGym 会在训练开始时读取一次你的位置，并随训练保存到 Apple 健康。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

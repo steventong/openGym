@@ -17826,6 +17826,57 @@
           }
         }
       }
+    },
+    "ADD_LOCATION_AND_WEATHER": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add location and weather"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加位置和天气"
+          }
+        }
+      }
+    },
+    "ADD_LOCATION_AND_WEATHER_INFO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reads your location once when a workout starts and looks up the weather there. Apple Fitness then shows the workout on a map with the temperature and humidity. The location is only saved in Apple Health, not in your openGym history."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "训练开始时读取一次位置，并查询当地天气。健身 App 会在地图上显示这次训练的位置，并显示温度和湿度。位置只保存在 Apple 健康中，不会写入 openGym 的训练记录。"
+          }
+        }
+      }
+    },
+    "ALLOW_LOCATION_ACCESS_FOR_OPENGYM_IN_SETTINGS_TO_ADD_THE_PLACE_AND_WEATHER": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow location access for openGym in Settings to add the place and weather."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在系统设置中允许 openGym 访问位置，才能添加位置和天气。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -1,5 +1,6 @@
 import Foundation
 import HealthKit
+import CoreLocation
 import OSLog
 
 enum HealthWorkoutAccess {
@@ -8,8 +9,11 @@ enum HealthWorkoutAccess {
     static let energy = HKQuantityType(.activeEnergyBurned)
     static let restingEnergy = HKQuantityType(.basalEnergyBurned)
     static let heartRate = HKQuantityType(.heartRate)
-    static func authorize(_ health: HKHealthStore) async throws {
-        try await health.requestAuthorization(toShare: [workout, energy], read: [workout, energy, restingEnergy, heartRate])
+    static let route = HKSeriesType.workoutRoute()
+    /// `includeRoute` is only asked for when the user turns on location and weather.
+    static func authorize(_ health: HKHealthStore, includeRoute: Bool = false) async throws {
+        let share: Set<HKSampleType> = includeRoute ? [workout, energy, route] : [workout, energy]
+        try await health.requestAuthorization(toShare: share, read: [workout, energy, restingEnergy, heartRate])
         guard health.authorizationStatus(for: workout) == .sharingAuthorized else {
             throw NSError(domain: "OpenGymHealth", code: 1, userInfo: [NSLocalizedDescriptionKey: String(localized: "ALLOW_OPENGYM_TO_WRITE_WORKOUTS_IN_THE_HEALTH_APP", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])
         }
@@ -34,14 +38,41 @@ enum HealthWorkoutAccess {
         logger.notice("HealthSync saved workout sourceBundle=\(sourceBundle, privacy: .public) sourceVersion=\(sourceVersion, privacy: .public) writerBundle=\(writerBundle, privacy: .public) appBundle=\(bundle, privacy: .public) appBuild=\(build, privacy: .public) iconName=\(iconName, privacy: .public)")
     }
     static func metadata(_ request: HealthWorkoutRequest) -> [String: Any] {
-        [HKMetadataKeySyncIdentifier: request.syncIdentifier, HKMetadataKeySyncVersion: 1,
-         HKMetadataKeyWorkoutBrandName: request.title ?? "openGym"]
+        var value: [String: Any] = [HKMetadataKeySyncIdentifier: request.syncIdentifier, HKMetadataKeySyncVersion: 1,
+                                    HKMetadataKeyWorkoutBrandName: request.title ?? "openGym"]
+        guard let place = request.place else { return value }
+        if let celsius = place.temperature, celsius.isFinite {
+            value[HKMetadataKeyWeatherTemperature] = HKQuantity(unit: .degreeCelsius(), doubleValue: celsius)
+        }
+        // Fitness reads humidity as a 0 to 100 value in percent units, the way Apple Watch writes it.
+        if let humidity = place.humidity, humidity.isFinite, (0...100).contains(humidity) {
+            value[HKMetadataKeyWeatherHumidity] = HKQuantity(unit: .percent(), doubleValue: humidity)
+        }
+        if let raw = place.condition, let condition = HKWeatherCondition(rawValue: raw), condition != .none {
+            value[HKMetadataKeyWeatherCondition] = condition.rawValue
+        }
+        return value
+    }
+    /// One fixed point at the start and end of the workout, so Fitness shows where it happened on a map.
+    /// The route belongs to the builder and is saved with `finishWorkout`; a failure here never blocks the workout.
+    static func addRoute(_ request: HealthWorkoutRequest, to builder: HKWorkoutBuilder, health: HKHealthStore, from start: Date, to end: Date) async {
+        guard let place = request.place, place.hasLocation,
+              health.authorizationStatus(for: route) == .sharingAuthorized,
+              let series = builder.seriesBuilder(for: route) as? HKWorkoutRouteBuilder else { return }
+        let points = [start, max(start, end)].map { date in
+            CLLocation(coordinate: CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude),
+                       altitude: place.altitude ?? 0, horizontalAccuracy: place.horizontalAccuracy,
+                       verticalAccuracy: place.altitude == nil ? -1 : place.verticalAccuracy ?? -1, timestamp: date)
+        }
+        do { try await series.insertRouteData(points) }
+        catch { logger.error("HealthSync route skipped domain=\((error as NSError).domain, privacy: .public) code=\((error as NSError).code)") }
     }
     /// Used on older iOS and when collection could not run. Never invent energy samples.
     static func saveDuration(_ request: HealthWorkoutRequest, health: HKHealthStore) async throws {
         guard let end = request.end, request.phase == .finished else { return }
         let builder = HKWorkoutBuilder(healthStore: health, configuration: configuration, device: .local())
         try await builder.beginCollection(at: request.start)
+        await addRoute(request, to: builder, health: health, from: request.start, to: end)
         try await builder.addMetadata(metadata(request))
         try await builder.endCollection(at: end)
         guard let workout = try await builder.finishWorkout() else {
@@ -175,7 +206,8 @@ enum HealthWorkoutAccess {
                     throw NSError(domain: "OpenGymHealth", code: 3, userInfo: [NSLocalizedDescriptionKey: String(localized: "STOPPING_ACTIVITY_TRACKING_RETRY_SYNCING_SHORTLY", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])
                 }
                 if !collectionEnded { try await builder.endCollection(at: end); collectionEnded = true }
-                // The training may have been renamed since collection began.
+                await HealthWorkoutAccess.addRoute(request, to: builder, health: health, from: builder.startDate ?? request.start, to: end)
+                // The training may have been renamed since collection began; place and weather arrive with the finish.
                 try await builder.addMetadata(HealthWorkoutAccess.metadata(request))
                 guard let workout = try await builder.finishWorkout() else {
                     throw NSError(domain: "OpenGymHealth", code: 4, userInfo: [NSLocalizedDescriptionKey: String(localized: "APPLE_HEALTH_HAS_NOT_CONFIRMED_THE_SAVE_RETRY_SYNCING", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])

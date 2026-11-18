@@ -52,12 +52,17 @@ struct SettingsView: View {
                         .disabled(!store.healthSync.enabled || store.healthSync.busy || store.syncing)
                 }
 
-                Section("APPLE_FITNESS_WORKOUT_SYNC") {
+                Section {
                     Toggle("SYNC_WORKOUTS_TO_APPLE_FITNESS", isOn: Binding(get: { store.workoutHealth.enabled }, set: { value in
                         Task { await store.workoutHealth.setEnabled(value) }
                     }))
                     .disabled(!store.workoutHealth.available || !store.workoutHealth.canChangeSetting)
                     .accessibilityIdentifier("health-workout-enabled")
+                    Toggle("ADD_LOCATION_AND_WEATHER", isOn: Binding(get: { store.workoutHealth.placeEnabled }, set: { value in
+                        Task { await store.workoutHealth.setPlaceEnabled(value) }
+                    }))
+                    .disabled(!store.workoutHealth.enabled || store.workoutHealth.busy)
+                    .accessibilityIdentifier("health-workout-place-enabled")
                     LabeledContent("SYNC_STATUS") {
                         StatusDetailButton(title: workoutStatus, message: "\(workoutDetails)",
                             warning: store.workoutHealth.current?.state == .failed)
@@ -66,6 +71,10 @@ struct SettingsView: View {
                         .disabled(store.workoutHealth.busy || !store.workoutHealth.available)
                     Button("RETRY_WORKOUT_SYNC") { store.workoutHealth.retry(wakeWatch: true) }
                         .disabled(!store.workoutHealth.available)
+                } header: {
+                    Text("APPLE_FITNESS_WORKOUT_SYNC")
+                } footer: {
+                    Text("ADD_LOCATION_AND_WEATHER_INFO")
                 }
 
                 if let notifications = store.restNotifications {

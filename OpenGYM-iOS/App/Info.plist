@@ -32,6 +32,8 @@
 	</dict>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Read body weight to chart your progress in openGym. Read workouts, heart rate, active and resting energy to show activity and calories (kcal). Health metrics stay on your devices and in Apple Health.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>When you turn on location and weather for Apple Fitness, openGym reads where you are once as a workout starts and saves it with the workout in Apple Health.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Save workouts you start and finish in openGym, along with activity energy recorded by the system, to Apple Health and show them in the Fitness app.</string>
 </dict>

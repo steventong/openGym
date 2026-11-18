@@ -5,6 +5,8 @@ import WatchConnectivity
 
 @MainActor @Observable final class WorkoutHealthSync {
     private(set) var enabled: Bool
+    /// Attach the gym's location and the weather when the workout started; off until the user turns it on.
+    private(set) var placeEnabled: Bool
     private(set) var busy = false
     private(set) var status = String(localized: "WORKOUT_SYNC_IS_OFF", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     private(set) var current: HealthWorkoutReport?
@@ -16,6 +18,7 @@ import WatchConnectivity
     private var loaded = false
     private var retrying = false
     private var wakingWatch = false
+    @ObservationIgnored private lazy var placeCapture = WorkoutPlaceCapture()
     var available: Bool { HKHealthStore.isHealthDataAvailable() }
     var canChangeSetting: Bool { store?.draft == nil && !busy }
 
@@ -24,6 +27,7 @@ import WatchConnectivity
         self.store = store
         self.journal = journal ?? HealthWorkoutJournal(name: "phone-sync", root: store.localStorage.root.appendingPathComponent("HealthWorkouts"))
         enabled = UserDefaults.standard.bool(forKey: "health.workouts.enabled")
+        placeEnabled = UserDefaults.standard.bool(forKey: "health.workouts.place")
         load()
     }
     private func load() {
@@ -36,7 +40,7 @@ import WatchConnectivity
         if value {
             guard available else { status = String(localized: "HEALTH_DATA_IS_UNAVAILABLE_ON_THIS_DEVICE", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
             busy = true; defer { busy = false }
-            do { try await HealthWorkoutAccess.authorize(health) }
+            do { try await HealthWorkoutAccess.authorize(health, includeRoute: placeEnabled) }
             catch { status = error.localizedDescription; return }
         }
         enabled = value; UserDefaults.standard.set(value, forKey: "health.workouts.enabled")
@@ -45,8 +49,36 @@ import WatchConnectivity
     func authorize() async {
         guard available, !busy else { return }
         busy = true; defer { busy = false }
-        do { try await HealthWorkoutAccess.authorize(health); retry() }
+        do { try await HealthWorkoutAccess.authorize(health, includeRoute: placeEnabled); retry() }
         catch { status = error.localizedDescription }
+    }
+    /// Turning it on asks for location and for saving workout routes; weather needs no extra permission.
+    func setPlaceEnabled(_ value: Bool) async {
+        if value {
+            busy = true; defer { busy = false }
+            do { try await HealthWorkoutAccess.authorize(health, includeRoute: true) }
+            catch { status = error.localizedDescription; return }
+            guard await placeCapture.authorize() else {
+                status = String(localized: "ALLOW_LOCATION_ACCESS_FOR_OPENGYM_IN_SETTINGS_TO_ADD_THE_PLACE_AND_WEATHER", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
+                return
+            }
+        }
+        placeEnabled = value; UserDefaults.standard.set(value, forKey: "health.workouts.place")
+    }
+    /// The place arrives a few seconds after the start. It rides along with the finish request,
+    /// so it is only attached while the workout is still running; a later result is dropped.
+    func attach(_ place: HealthWorkoutPlace, to id: String) {
+        guard var request = ledger.requests[id], request.phase == .running, ledger.reports[id]?.terminal != true else { return }
+        request.place = place
+        var next = ledger; next.requests[id] = request
+        do { try journal.write(next); ledger = next } catch {}
+    }
+    private func capturePlace(for id: String) {
+        guard placeEnabled else { return }
+        Task {
+            guard let place = await placeCapture.capture() else { return }
+            attach(place, to: id)
+        }
     }
     func requestID(for draft: TrainingDraft) -> String {
         "\(store?.watchSnapshot().account ?? ""):\(draft.id)"
@@ -58,7 +90,7 @@ import WatchConnectivity
         let request = HealthWorkoutRequest(id: requestID(for: draft), start: draft.start, owner: .watch, title: draft.name)
         var next = ledger
         guard next.merge(request) else { retry(); return }
-        do { try journal.write(next); ledger = next; current = nil; retry(wakeWatch: true) }
+        do { try journal.write(next); ledger = next; current = nil; retry(wakeWatch: true); capturePlace(for: request.id) }
         catch { status = String(format: String(localized: "YOUR_WORKOUT_STARTED_BUT_HEALTH_SYNC_HAS_NOT_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
     }
     /// Persist the stop independently of server submission; retries keep the first end time and owner.
