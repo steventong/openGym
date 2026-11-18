@@ -6096,6 +6096,24 @@
         }
       }
     },
+    "EXERCISE_NOTE_SUMMARY": {
+      "comment": "备注: {0}",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note: %1$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "备注: %1$@"
+          }
+        }
+      }
+    },
     "EXERCISE_PREP": {
       "comment": "动作准备",
       "extractionState": "manual",
@@ -9458,19 +9476,19 @@
       }
     },
     "NOTES_FOR_THIS_EXERCISE": {
-      "comment": "本次动作备注",
+      "comment": "单次备注",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Notes for this exercise"
+            "value": "Note for this session"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "本次动作备注"
+            "value": "单次备注"
           }
         }
       }
@@ -10682,7 +10700,7 @@
       }
     },
     "PREVIOUS_WORKOUT_EMPTY": {
-      "comment": "上次：暂无同一动作的训练记录",
+      "comment": "上次: 暂无同一动作的训练记录",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -10694,43 +10712,25 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "上次：暂无同一动作的训练记录"
-          }
-        }
-      }
-    },
-    "PREVIOUS_WORKOUT_NOTE": {
-      "comment": "上次备注：{0}",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Previous note: %1$@"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "上次备注：%1$@"
+            "value": "上次: 暂无同一动作的训练记录"
           }
         }
       }
     },
     "PREVIOUS_WORKOUT_SUMMARY": {
-      "comment": "上次 {0} · {1} · {2}",
+      "comment": "上次: {0} · {1} · {2}",
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Last workout %1$@ · %2$@ · %3$@"
+            "value": "Last workout: %1$@ · %2$@ · %3$@"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "上次 %1$@ · %2$@ · %3$@"
+            "value": "上次: %1$@ · %2$@ · %3$@"
           }
         }
       }
@@ -13323,6 +13323,42 @@
           "stringUnit": {
             "state": "translated",
             "value": "健身球"
+          }
+        }
+      }
+    },
+    "STANDING_EXERCISE_NOTE": {
+      "comment": "长期备注",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standing note"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "长期备注"
+          }
+        }
+      }
+    },
+    "STANDING_EXERCISE_NOTE_FOOTER": {
+      "comment": "每次训练这个动作时都会显示。",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shown every time you train this exercise."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每次训练这个动作时都会显示。"
           }
         }
       }

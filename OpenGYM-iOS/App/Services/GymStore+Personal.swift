@@ -71,6 +71,24 @@ extension GymStore {
             ids.removeAll { $0 == id }; if enabled { ids.append(id) }; s["favEx"] = ids; return s
         }
     }
+    /// 长期备注：按动作 ID 保存在 `exNotes`，每次训练该动作都显示。单次备注是训练记录里 entry 的 `note`，只属于那一次。
+    func standingExerciseNote(_ id: String) -> String? {
+        let note = ((state["exNotes"] as? [String: Any])?[id] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return note?.isEmpty == false ? note : nil
+    }
+    /// 只改这个动作的那一条，其他动作的长期备注保持原样；清空即删除。
+    func setStandingExerciseNote(_ id: String, text: String) async -> Bool {
+        let note = String(text.trimmingCharacters(in: .whitespacesAndNewlines).prefix(Self.exerciseNoteLimit))
+        guard !id.isEmpty else { return false }
+        guard note != (standingExerciseNote(id) ?? "") else { return true }
+        return await mutate(verify: { (($0["exNotes"] as? [String: Any])?[id] as? String ?? "") == note }) { source in
+            var s = source, notes = source["exNotes"] as? [String: Any] ?? [:]
+            notes[id] = note.isEmpty ? nil : note
+            s["exNotes"] = notes; return s
+        }
+    }
+    /// 与训练规则 history.js 的 NOTE_MAX 一致。
+    static let exerciseNoteLimit = 500
     /// Date-keyed measurements and ID-keyed customs update one record, never the entire array.
     func savePersonalRecord(collection:String,key:String,original:[String:Any]?,proposed:[String:Any]?,unit expected:String? = nil) async -> Bool {
         let identity = original?[key] as? String ?? proposed?[key] as? String ?? ""

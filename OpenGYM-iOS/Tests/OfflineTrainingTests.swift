@@ -374,7 +374,7 @@ final class OfflineTrainingTests: XCTestCase {
             workout("current", 2300, 77, "当前备注"),
             workout("future", 4000, 66, "未来备注")]]
         let reference = s.previousExerciseReference(["id": "bodyweight-test", "rid": "A"], before: 3000, exclude: "current")
-        XCTAssertEqual(reference.text, "上次 2026-11-01 · 0 × 12 · kg")
+        XCTAssertEqual(reference.text, "上次: 2026-11-01 · 0 × 12 · kg")
         XCTAssertEqual(reference.note, "控制下放\n不要摆动")
     }
 
@@ -390,7 +390,7 @@ final class OfflineTrainingTests: XCTestCase {
             ["id": "own", "d": "2026-11-04", "start": 1000, "routineIds": ["a"], "entries": [entry("a", 73, 15)]],
             ["id": "other", "d": "2026-11-14", "start": 2000, "routineIds": ["b"], "entries": [entry("b", 75, 12)]]]]
         s.state = state
-        XCTAssertEqual(s.previousExerciseReference(["id": "0739", "rid": "a"], before: 3000, exclude: "new").text, "上次 2026-11-14 · 75×12 · kg")
+        XCTAssertEqual(s.previousExerciseReference(["id": "0739", "rid": "a"], before: 3000, exclude: "new").text, "上次: 2026-11-14 · 75×12 · kg")
         let active = try WebRules.shared.call("beginAdvanced", payload: ["state": state, "ids": ["a"], "id": "new", "now": 3000, "day": "2026-11-18"]) as! [String: Any]
         let rows = (active["entries"] as! [[String: Any]])[0]["sets"] as! [[String: Any]]
         XCTAssertEqual(rows.map { number($0["w"]) }, [75, 75, 75])
@@ -404,7 +404,7 @@ final class OfflineTrainingTests: XCTestCase {
                 ["id": "0739", "rid": "b", "sets": [["w": 40, "r": 10, "done": true, "phase": "warmup"], ["w": 60, "r": 12, "done": true], ["w": 99, "r": 9, "done": false]]],
                 ["id": "0739", "rid": "c", "sets": [["w": 65, "r": 8, "done": true]]]]]]]
         let text = s.previousExerciseReference(["id": "0739", "rid": "a"], before: 3000, exclude: "new").text
-        XCTAssertTrue(text.hasPrefix("上次 2026-11-14"), text)
+        XCTAssertTrue(text.hasPrefix("上次: 2026-11-14"), text)
         for value in ["40", "60", "65"] { XCTAssertTrue(text.contains(value), text) }
         XCTAssertFalse(text.contains("99"), text)
     }
@@ -422,7 +422,7 @@ final class OfflineTrainingTests: XCTestCase {
             XCTAssertNil(reference.note)
         }
         let missing = s.previousExerciseReference(["id": "different-exercise"], before: 3000, exclude: "new")
-        XCTAssertEqual(missing.text, "上次：暂无同一动作的训练记录")
+        XCTAssertEqual(missing.text, "上次: 暂无同一动作的训练记录")
         XCTAssertNil(missing.note)
     }
 

@@ -52,12 +52,14 @@ struct TrainingExerciseCard<ExerciseActions: View, Accessory: View>: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     Text(previous).font(.caption).foregroundStyle(GymTheme.muted).lineLimit(1).fixedSize(horizontal: true, vertical: false)
                 }.accessibilityIdentifier("previous-exercise")
-                if let previousNote {
-                    Text(String(format: String(localized: "PREVIOUS_WORKOUT_NOTE", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: previousNote)))
+                // 长期备注在前，上次的单次备注在后，共用一个「备注: 」。
+                let notes = [store.standingExerciseNote(entry["id"] as? String ?? ""), previousNote].compactMap { $0 }
+                if !notes.isEmpty {
+                    Text(String(format: String(localized: "EXERCISE_NOTE_SUMMARY", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, notes.joined(separator: " · ")))
                         .font(.caption).foregroundStyle(GymTheme.muted)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityIdentifier("previous-exercise-note")
+                        .accessibilityIdentifier("exercise-notes")
                 }
             }
             ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in

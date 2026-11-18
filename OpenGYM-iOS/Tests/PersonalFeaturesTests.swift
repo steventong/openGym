@@ -215,6 +215,25 @@ extension PersonalFeaturesTests {
         XCTAssertEqual(saved.map { $0["d"] as? String },["2026-10-20","2026-10-21"]);XCTAssertEqual(saved.map { number($0["waist"]) },[79,81])
         XCTAssertEqual(other.state["future"] as? String,"keep")
     }
+    @MainActor func testStandingExerciseNoteSavesPerExerciseAndClears() async throws {
+        let persistence = PersistenceController(inMemory:true)
+        let store = localStore("standing-note",persistence)
+        let seeded = await store.mutate { _ in ["unit":"kg","exNotes":["other":"座椅 4 档"]] }
+        XCTAssertTrue(seeded)
+        let saved = await store.setStandingExerciseNote("0025",text:"  握距窄一点 \n")
+        XCTAssertTrue(saved)
+        XCTAssertEqual(store.standingExerciseNote("0025"),"握距窄一点")
+        // 另一台设备读到的是同一份长期备注，其他动作的备注不受影响。
+        let other = localStore("standing-note",persistence)
+        try other.reloadDocument()
+        XCTAssertEqual(other.standingExerciseNote("0025"),"握距窄一点")
+        XCTAssertEqual(other.standingExerciseNote("other"),"座椅 4 档")
+        let cleared = await store.setStandingExerciseNote("0025",text:"   ")
+        XCTAssertTrue(cleared)
+        XCTAssertNil(store.standingExerciseNote("0025"))
+        XCTAssertNil((store.state["exNotes"] as? [String:Any])?["0025"])
+        XCTAssertEqual(store.standingExerciseNote("other"),"座椅 4 档")
+    }
     @MainActor func testDateRecordRejectsConcurrentEditAndDuplicateDate() async throws {
         let store = localStore("personal-conflict")
         // 打开编辑之后，另一台设备把同一天的数值改成了 85。

@@ -78,6 +78,14 @@ struct TrainingExerciseEditor<ExerciseActions: View, Accessory: View>: View {
                     BufferedTextField("ADD_NOTE", text: $note, axis: .vertical).textFieldStyle(.plain).submitLabel(.done).onSubmit { GymKeyboard.dismiss() }
                         .lineLimit(3...6).accessibilityIdentifier("\(identifier)-exercise-note")
                 }
+                if entries.indices.contains(selected), let id = entries[selected]["id"] as? String, !id.isEmpty {
+                    Section {
+                        BufferedTextField("ADD_NOTE", text: Binding(get: { store.standingExerciseNote(id) ?? "" }, set: { text in
+                            Task { _ = await store.setStandingExerciseNote(id, text: text) }
+                        }), axis: .vertical).textFieldStyle(.plain).submitLabel(.done).onSubmit { GymKeyboard.dismiss() }
+                            .lineLimit(3...6).accessibilityIdentifier("\(identifier)-standing-note")
+                    } header: { Text("STANDING_EXERCISE_NOTE") } footer: { Text("STANDING_EXERCISE_NOTE_FOOTER") }
+                }
                 if entries.indices.contains(selected), !rows.isEmpty,
                    (entries[selected]["target"] as? [String: Any])?["mode"] as? String != "cardio",
                    rows.contains(where: { $0.raw["mode"] as? String != "cardio" }) {
