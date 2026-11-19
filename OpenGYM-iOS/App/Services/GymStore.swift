@@ -22,7 +22,7 @@ import Observation
     var profileServer = LocalProfile.fresh.server
     var userID: String? { didSet { publishTraining() } }
     var userName: String?
-    /// 一次性导入旧服务器资料期间为 true，页面据此暂停保存操作。
+    /// 迁移旧服务器资料期间为 true，页面据此暂停保存操作。
     var syncing = false { didSet { publishTraining() } }
     var error: String?
     var editError: String?
@@ -61,7 +61,6 @@ import Observation
     @ObservationIgnored let repository: StateRepository
     /// 仅正式容器有 iCloud 同步状态；内存库（测试、预览）为 nil。
     let cloudSync: CloudSyncMonitor?
-    @ObservationIgnored var legacyImport: Task<Void, Never>?
     /// 读取旧服务器上的最新资料；测试中替换为固定数据。
     @ObservationIgnored var legacyDocumentSource: (LegacyAccount, LocalTrainingStorage) async -> [String: Any]? = LegacyServer.latestDocument
     @ObservationIgnored var storeObserver: NSObjectProtocol?

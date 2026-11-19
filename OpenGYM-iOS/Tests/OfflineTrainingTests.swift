@@ -130,19 +130,19 @@ final class OfflineTrainingTests: XCTestCase {
         let storage = LocalTrainingStorage(root:root), persistence = PersistenceController(inMemory: true), original = workout()
         let suite = "offline-training-" + UUID().uuidString, defaults = try XCTUnwrap(UserDefaults(suiteName:suite))
         defer { defaults.removePersistentDomain(forName:suite) }
-        // 从服务器版升级的账号：资料导入一次后保存在本机数据库，之后的冷启动不再需要服务器。
+        // 从服务器版升级的账号：资料迁移后保存在本机数据库，冷启动不再读取服务器。
         try storage.write(["server":"https://test.invalid","user":"offline-test","name":"Offline test"],to:root.appendingPathComponent("last-account.json"))
         let first = GymStore(storage:storage,defaults:defaults,persistence:persistence)
         first.legacyDocumentSource = { _, _ in ["unit":"kg","workouts":[original],"routines":[]] }
-        first.prepareOfflineLaunch();await first.importLegacyServerDataIfNeeded()
+        first.prepareOfflineLaunch();let imported = await first.importLegacyServerData();XCTAssertEqual(imported,.importedFromServer)
         var form = HistoryForm(original:original,unit:"kg");form.name = "未提交的名称 ";form.minutes = "12.";form.note = "还没输入完的备注"
         form.entries[0].sets[0].raw[TrainingInput.key] = ["both.w":""]
         XCTAssertTrue(first.keepHistoryEdit(original:original,proposed:form.proposed,unit:"kg",form:form.fields))
         first.draft = try TrainingDraft.fromWeb(["id":"active","name":"训练中","start":1_792_476_000_000.0,"entries":[["id":"0289","sets":[["w":12,"r":10,"done":false,TrainingInput.key:["both.w":"12."]]]]]],unit:"kg")
         first.startRest(entry:0,seconds:90)
         let second = GymStore(storage:storage,defaults:defaults,persistence:persistence)
-        second.legacyDocumentSource = { _, _ in XCTFail("The server is read only once");return nil }
-        second.prepareOfflineLaunch();await second.importLegacyServerDataIfNeeded()
+        second.legacyDocumentSource = { _, _ in XCTFail("Launch never reads the server");return nil }
+        second.prepareOfflineLaunch()
         XCTAssertEqual(second.userID,"offline-test")
         XCTAssertEqual(second.userName,"Offline test");XCTAssertEqual(second.workouts.count,1)
         let restored = HistoryForm(original:original,unit:"kg",saved:second.historyEdits["w1"])

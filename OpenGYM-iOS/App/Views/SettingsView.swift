@@ -5,6 +5,8 @@ struct SettingsView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
     @State private var notice = false
+    /// 本机留有的服务器版地址；打开设置时读取一次，没有则不显示迁移入口。
+    @State private var legacyServer: String?
 
     var body: some View {
         let weightDetails = [store.healthSync.status, store.healthSync.backgroundIssue,
@@ -18,6 +20,10 @@ struct SettingsView: View {
                 }
 
                 MediaServerSection(current: store.mediaServerURL, save: store.saveMediaServer)
+
+                if let legacyServer {
+                    LegacyImportSection(server: legacyServer, busy: store.syncing, run: store.importLegacyServerData)
+                }
 
                 Section("PERSONAL_SETTINGS") {
                     NavigationLink("FILTER_BY_GYM_EQUIPMENT") { EquipmentProfilesView() }
@@ -104,7 +110,10 @@ struct SettingsView: View {
             .navigationTitle("SETTINGS")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("DONE") { dismiss() } } }
-            .task { await store.restNotifications?.flush() }
+            .task {
+                legacyServer = LegacyAccount.find(in: store.localStorage)?.server
+                await store.restNotifications?.flush()
+            }
             .sheet(isPresented: $notice) {
                 ScrollView { Text((try? String(contentsOf: Bundle.main.url(forResource: "NOTICE", withExtension: "txt")!, encoding: .utf8)) ?? "openGym · GNU AGPL v3.0").font(.system(size: 12)).padding() }
             }

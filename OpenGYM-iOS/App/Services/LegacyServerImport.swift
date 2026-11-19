@@ -49,35 +49,43 @@ enum LegacyImport {
     }
 }
 
-/// 一次性迁移：服务器版的资料导入 Core Data 后，App 不再连接服务器。
+/// 服务器版资料的迁移：只在设置页手动触发，启动流程不检查也不运行它。
 extension GymStore {
-    private static let legacyImportDoneKey = "legacyServerImport.done"
-
-    var legacyImportPending: Bool {
-        !defaults.bool(forKey: Self.legacyImportDoneKey) && LegacyAccount.find(in: localStorage) != nil
+    /// 一次迁移的结果，设置页据此提示。
+    enum LegacyImportResult: Equatable {
+        case importedFromServer
+        /// 服务器读不到，改用了旧版缓存在本机的上次同步结果。
+        case importedFromCache
+        /// 没有服务器版账号，或服务器和本机缓存都读不到。
+        case unavailable
+        case failed(String)
     }
 
-    /// 每次启动最多尝试一次；保存操作会先等它结束，避免新修改写在导入之前。
-    func importLegacyServerDataIfNeeded() async {
-        if legacyImport == nil, legacyImportPending { legacyImport = Task { await self.importLegacyServerData() } }
-        await legacyImport?.value
-    }
-
-    private func importLegacyServerData() async {
-        guard let account = LegacyAccount.find(in: localStorage) else { return }
+    /// 读取旧服务器（读不到时用本机缓存）的资料，只补充数据库里还没有的内容，可重复执行。
+    func importLegacyServerData() async -> LegacyImportResult {
+        guard let account = LegacyAccount.find(in: localStorage) else { return .unavailable }
         syncing = true
         defer { syncing = false }
-        // 先取服务器上的最新资料；取不到时用本机缓存的上次同步结果。
+        let result: LegacyImportResult
         var imported = await legacyDocumentSource(account, localStorage)
-        if imported == nil { imported = LegacyAccount.cachedDocument(for: account, in: localStorage) }
-        // 两者都没有时保持待导入，下次启动再试。
-        guard let imported else { return }
+        if imported != nil { result = .importedFromServer }
+        else {
+            imported = LegacyAccount.cachedDocument(for: account, in: localStorage)
+            result = .importedFromCache
+        }
+        guard let imported else { return .unavailable }
         do {
             let merged = StateDocument.canonical(addingExerciseCopies(to: LegacyImport.merge(imported: imported, into: try repository.load())))
             try repository.save(merged, at: LegacyImport.recordDate)
-            defaults.set(true, forKey: Self.legacyImportDoneKey)
-            state = merged
-            lastDocumentChange = Date()
-        } catch { reportDatabaseFailure(error) }
+            clearDatabaseFailure()
+            if !StateDocument.same(state, merged) {
+                state = merged
+                lastDocumentChange = Date()
+            }
+            return result
+        } catch {
+            reportDatabaseFailure(error)
+            return .failed(error.localizedDescription)
+        }
     }
 }

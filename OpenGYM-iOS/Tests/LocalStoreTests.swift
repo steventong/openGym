@@ -188,57 +188,68 @@ import XCTest
 
     func testLegacyImportPrefersServerThenFallsBackToCache() async throws {
         try writeLegacyAccount(cached: ["unit": "kg", "routines": [["id": "cached", "name": "缓存"]]])
+        var requests = 0
         let fetched = store()
         fetched.legacyDocumentSource = { account, _ in
+            requests += 1
             XCTAssertEqual(account.user, "u1")
             return ["unit": "lb", "routines": [["id": "server", "name": "服务器"]], "futureField": 1]
         }
         fetched.prepareOfflineLaunch()
-        // 导入完成前先显示本机缓存，并沿用旧账号定位本机文件。
-        XCTAssertEqual(fetched.routines.map(\.id), ["cached"])
+        // 启动只沿用旧账号定位本机文件，不读服务器也不显示旧缓存。
         XCTAssertEqual(fetched.userID, "u1")
         XCTAssertEqual(fetched.profileServer, "https://old.example")
-        await fetched.importLegacyServerDataIfNeeded()
+        XCTAssertTrue(fetched.routines.isEmpty)
+        XCTAssertEqual(requests, 0)
+        let result = await fetched.importLegacyServerData()
+        XCTAssertEqual(result, .importedFromServer)
         XCTAssertEqual(fetched.routines.map(\.id), ["server"])
         XCTAssertEqual(fetched.unit, "lb")
-        XCTAssertFalse(fetched.legacyImportPending)
         XCTAssertFalse(fetched.syncing)
 
-        defaults.removePersistentDomain(forName: suite)
         let offline = store()
         offline.legacyDocumentSource = { _, _ in nil }
         offline.prepareOfflineLaunch()
-        await offline.importLegacyServerDataIfNeeded()
+        let fallback = await offline.importLegacyServerData()
+        XCTAssertEqual(fallback, .importedFromCache)
         XCTAssertEqual(offline.routines.map(\.id), ["cached"])
-        XCTAssertFalse(offline.legacyImportPending)
     }
 
-    func testLegacyImportRunsOnceAndWaitsWhenNothingIsAvailable() async throws {
+    func testLegacyImportRunsOnlyWhenAskedAndCanRepeat() async throws {
         try writeLegacyAccount(cached: nil)
         let persistence = PersistenceController(inMemory: true)
         var requests = 0
-        let waiting = store(persistence)
-        waiting.legacyDocumentSource = { _, _ in requests += 1; return nil }
-        waiting.prepareOfflineLaunch()
-        await waiting.importLegacyServerDataIfNeeded()
-        await waiting.importLegacyServerDataIfNeeded()
-        XCTAssertEqual(requests, 1)
-        XCTAssertTrue(waiting.legacyImportPending)
-
-        let imported = store(persistence)
-        imported.legacyDocumentSource = { _, _ in requests += 1; return ["unit": "kg", "routines": [["id": "server", "name": "服务器"]]] }
-        imported.prepareOfflineLaunch()
-        let saved = await imported.addRoutine(name: "新计划", exerciseIDs: ["c-own"])
+        let s = store(persistence)
+        s.legacyDocumentSource = { _, _ in requests += 1; return nil }
+        s.prepareOfflineLaunch()
+        let saved = await s.addRoutine(name: "新计划", exerciseIDs: ["c-own"])
         XCTAssertTrue(saved)
-        XCTAssertEqual(requests, 2)
-        XCTAssertEqual(imported.routines.map(\.name), ["服务器", "新计划"])
+        XCTAssertEqual(requests, 0)
+
+        let nothing = await s.importLegacyServerData()
+        XCTAssertEqual(nothing, .unavailable)
+        XCTAssertEqual(requests, 1)
+        XCTAssertEqual(s.routines.map(\.name), ["新计划"])
+
+        s.legacyDocumentSource = { _, _ in requests += 1; return ["unit": "kg", "routines": [["id": "server", "name": "服务器"]]] }
+        for _ in 0..<2 {
+            let result = await s.importLegacyServerData()
+            XCTAssertEqual(result, .importedFromServer)
+        }
+        XCTAssertEqual(requests, 3)
+        XCTAssertEqual(s.routines.map(\.name), ["新计划", "服务器"])
 
         let later = store(persistence)
-        later.legacyDocumentSource = { _, _ in requests += 1; return [:] }
+        later.legacyDocumentSource = { _, _ in XCTFail("Launch never reads the server"); return nil }
         later.prepareOfflineLaunch()
-        await later.importLegacyServerDataIfNeeded()
-        XCTAssertEqual(requests, 2)
-        XCTAssertEqual(later.routines.map(\.name), ["服务器", "新计划"])
+        XCTAssertEqual(later.routines.map(\.name), ["新计划", "服务器"])
+    }
+
+    func testLegacyImportWithoutAccountIsUnavailable() async {
+        let s = store()
+        s.legacyDocumentSource = { _, _ in XCTFail("No account, no request"); return nil }
+        let result = await s.importLegacyServerData()
+        XCTAssertEqual(result, .unavailable)
     }
 
     func testLegacyMergeKeepsWhatIsAlreadyStored() {
@@ -258,7 +269,6 @@ import XCTest
         s.prepareOfflineLaunch()
         XCTAssertEqual(s.userID, LocalProfile.fresh.user)
         XCTAssertEqual(s.profileServer, LocalProfile.fresh.server)
-        XCTAssertFalse(s.legacyImportPending)
         XCTAssertTrue(s.routines.isEmpty)
         XCTAssertNil(s.localSaveError)
     }

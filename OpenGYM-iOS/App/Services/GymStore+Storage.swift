@@ -24,8 +24,6 @@ extension GymStore {
         do {
             state = try repository.load()
             clearDatabaseFailure()
-            // 旧服务器资料尚未导入时，先显示旧版留在本机的缓存；导入在 boot 中完成。
-            if legacyImportPending, let legacy, let cached = LegacyAccount.cachedDocument(for: legacy, in: localStorage) { state = cached }
         } catch { reportDatabaseFailure(error) }
         restoreLocalTraining()
         observeStoreChanges()
@@ -39,7 +37,6 @@ extension GymStore {
             registerCatalogue(list)
         } catch { catalogueError = String(format: String(localized: "COULD_NOT_LOAD_EXERCISE_LIBRARY_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)) }
         if userID == nil { prepareOfflineLaunch() }
-        await importLegacyServerDataIfNeeded()
         await healthSync.resume()
     }
 
@@ -61,7 +58,6 @@ extension GymStore {
     /// `verify` 是调用方对结果的确认条件，不满足时不保存。
     func mutate(reportError: Bool = true, verify: (([String: Any]) -> Bool)? = nil, _ operation: ([String: Any]) throws -> [String: Any]) async -> Bool {
         editError = nil
-        await importLegacyServerDataIfNeeded()
         func fail(_ message: String) -> Bool {
             if reportError { error = message } else { editError = message }
             return false
@@ -102,7 +98,7 @@ extension GymStore {
     }
 
     /// 只在确有错误标记时才改动，避免没有变化的读取也触发界面、手表和实时活动刷新。
-    private func clearDatabaseFailure() {
+    func clearDatabaseFailure() {
         if localSaveIssues["database"] != nil { localSaveIssues.removeValue(forKey: "database") }
     }
 
