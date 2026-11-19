@@ -241,13 +241,18 @@ import UIKit
         let original = AppLanguage.preferences.language
         AppLanguage.preferences.language = "zh"
         defer { AppLanguage.preferences.language = original }
-        XCTAssertEqual(WatchTrainingAction.complete.title, "完成")
-        XCTAssertEqual(WatchTrainingAction.endRest(.betweenSets).title, "结束")
+        XCTAssertEqual(TrainingActionTitle.complete(set: 1, language: "zh").title, "完成第 1 组")
+        XCTAssertEqual(TrainingActionTitle.endRest(.betweenSets, nextSet: 2, language: "zh").title, "开始第 2 组")
+        XCTAssertEqual(TrainingActionTitle.endRest(.betweenSets, nextSet: 2, language: "en").title, "Start set 2")
+        XCTAssertEqual(TrainingActionTitle.endRest(.exercisePrep, nextSet: 2, language: "en").title, "Start set 2")
+        // 动作做完后的手动计时没有下一组，按钮不写组号。
+        XCTAssertEqual(TrainingActionTitle.endRest(.betweenSets, nextSet: nil, language: "zh").title, "继续训练")
         XCTAssertEqual(TrainingActionStatus.workout(startedAt: nil).titleKey, "TRAINING_STATUS_WORKOUT")
         XCTAssertEqual(TrainingActionStatus.rest(endsAt: now).titleKey, "TRAINING_STATUS_REST")
         XCTAssertEqual(TrainingActionStatus.rest(endsAt: now, phase: .exercisePrep).titleKey, "TRAINING_STATUS_EXERCISE_PREP")
         XCTAssertEqual(String(localized: "TRAINING_STATUS_EXERCISE_PREP", bundle: AppLanguage.bundle, locale: AppLanguage.locale), "动作准备")
-        XCTAssertEqual(WatchTrainingAction.endRest(.exercisePrep).title, "开始")
+        XCTAssertEqual(TrainingActionTitle.endRest(.exercisePrep, nextSet: 1, language: "zh").title, "开始第 1 组")
+        XCTAssertEqual(TrainingActionTitle.next(exercise: 2, language: "zh").title, "第 2 个动作")
         XCTAssertEqual(String(localized: "TRAINING_STATUS_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), "正在训练")
         XCTAssertEqual(String(localized: "TRAINING_STATUS_REST", bundle: AppLanguage.bundle, locale: AppLanguage.locale), "组间休息")
         XCTAssertEqual(String(localized: "TRAINING_STATUS_WORKOUT", bundle: AppLanguage.bundle(for: "en"), locale: AppLanguage.locale(for: "en")), "TRAIN")
@@ -321,13 +326,13 @@ import UIKit
                         state.language = language
                         state.trainingName = language == "zh" ? "力量训练" : "Strength training"
                         state.exercise = language == "zh" ? "坐姿单臂哑铃肩上推举" : "Seated single-arm dumbbell shoulder press"
-                        state.position = language == "zh" ? "第 2/6 个动作" : "Exercise 2/6"
+                        state.position = language == "zh" ? "第 2/6 动作" : "Exercise 2/6"
                         state.setLabel = String(format: String(localized: "SET_COUNT_OF_COUNT", bundle: AppLanguage.bundle(for: language), locale: AppLanguage.locale(for: language)), locale: AppLanguage.locale(for: language), String(describing: 2), String(describing: 4))
                         state.setWeight = "40 kg"; state.setDetail = language == "zh" ? "10 次" : "10 reps"
-                        state.commandTitle = language == "zh" ? "完成" : "Complete"
+                        state.commandTitle = language == "zh" ? "完成第 2 组" : "Complete set 2"
+                        state.nextSetNumber = 2
                         state.setStartedAt = phase == "workout" ? nil : state.setStartedAt
                         state.restEnd = phase == "workout" ? nil : now.addingTimeInterval(phase == "expired" ? -55 : 55)
-                        state.setCompletionLabel = phase == "workout" ? nil : String(localized: "COMPLETED", bundle: AppLanguage.bundle(for: language), locale: AppLanguage.locale(for: language))
                         state.restCommand = phase == "workout" ? nil : "preview-rest"
                         state.actionReadyAt = phase == "protected" ? now.addingTimeInterval(5) : nil
                         state.busyTitle = phase == "busy" ? (language == "zh" ? "正在保存" : "Saving") : nil

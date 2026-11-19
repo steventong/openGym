@@ -20,7 +20,7 @@ struct TrainingSetSummary: View {
             }.lineLimit(1).minimumScaleFactor(0.65)
             Spacer(minLength: 0)
             Text(label).font(.system(size: labelFontSize * scale, weight: .semibold, design: .rounded))
-                .foregroundStyle(TrainingDisplayStyle.green)
+                .foregroundStyle(.white)
                 .multilineTextAlignment(.trailing).lineLimit(1).minimumScaleFactor(0.65)
         }
         .padding(.horizontal, 9 * scale)

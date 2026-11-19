@@ -69,14 +69,8 @@ extension GymStore {
             if workTimer != nil { blocked = String(localized: "TIMER_RUNNING_FINISH_IT_ON_IPHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
             if syncing { blocked = String(localized: "IPHONE_IS_SAVING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
             if localSaveError != nil { blocked = String(localized: "RESOLVE_THE_DRAFT_SAVE_ISSUE_ON_IPHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
-            return WatchTrainingSet(entry: e, index: index, side: side, label: label,
+            return WatchTrainingSet(entry: e, index: index, number: setNumber, side: side, label: label,
                 weight: mode == "cardio" ? String(format: String(localized: "COUNT_MIN", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: decimal(number(data["min"])))) : "\(weight.isEmpty ? "—" : weight) \(unit)", detail: detail, blockedReason: blocked)
-        }
-        // Keep the completed set visible until rest is explicitly ended, including at zero.
-        if let rest = draft.activeJSON["nativeRest"] as? [String: Any], snapshot.restEnd != nil,
-           rest["entry"] as? Int == e, let index = rest["set"] as? Int,
-           rows.indices.contains(index), rows[index]["done"] as? Bool == true {
-            snapshot.restSet = summary(for: index)
         }
         if let index = rows.firstIndex(where: { $0["done"] as? Bool != true }) {
             snapshot.nextSet = summary(for: index)

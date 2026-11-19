@@ -8,36 +8,38 @@ import Observation
     private func content() -> TrainingContentData {
         .init(exercise: "Bench press", position: "Exercise 1/3",
             summary: .init(weight: "40 kg", detail: "8 reps", label: "Set 1 of 3"),
-            action: .init(title: "Complete", symbol: "checkmark", status: .workout(startedAt: nil)),
+            action: .init(title: "Complete set 1", symbol: "checkmark", status: .workout(startedAt: nil)),
             locale: AppLanguage.locale(for: "en"))
     }
 
     private func activityState() -> WorkoutActivityAttributes.ContentState {
         .init(trainingName: "Workout", exercise: "Bench press", position: "Exercise 1/3",
             setLabel: "Set 1 of 3", compactSet: "1/3", detail: "40 kg · 8 reps", message: "",
-            restEnd: nil, restExercise: "", command: "complete", commandTitle: "Complete", restCommand: nil,
-            setWeight: "40 kg", setDetail: "8 reps", language: "en")
+            restEnd: nil, restExercise: "", command: "complete", commandTitle: "Complete set 1", restCommand: nil,
+            setWeight: "40 kg", setDetail: "8 reps", nextSetNumber: 1, language: "en")
     }
 
     func testWatchAndActivityProduceTheSameWorkoutContent() {
-        let row = WatchTrainingSet(entry: 0, index: 0, label: "Set 1 of 3", weight: "40 kg", detail: "8 reps")
+        let row = WatchTrainingSet(entry: 0, index: 0, number: 1, label: "Set 1 of 3", weight: "40 kg", detail: "8 reps")
         let snapshot = WatchTrainingSnapshot(language: "en", sessionID: "test", exercise: "Bench press",
             exercisePosition: "Exercise 1/3", nextSet: row)
         XCTAssertEqual(snapshot.trainingContent(action: .complete, disabled: false), activityState().trainingContent())
     }
 
-    func testBothSourcesDisplayTheSetThatStartedRestRatherThanTheNextSet() {
+    func testBothSourcesDisplayTheNextSetDuringRestAndNameItOnTheButton() {
         let end = Date(timeIntervalSince1970: 1000)
-        let completed = WatchTrainingSet(entry: 0, index: 0, label: "Set 1 of 3", weight: "40 kg", detail: "8 reps")
-        let next = WatchTrainingSet(entry: 0, index: 1, label: "Set 2 of 3", weight: "45 kg", detail: "10 reps")
+        let next = WatchTrainingSet(entry: 0, index: 1, number: 2, label: "Set 2 of 3", weight: "45 kg", detail: "10 reps")
         let snapshot = WatchTrainingSnapshot(language: "en", sessionID: "test", exercise: "Bench press",
-            exercisePosition: "Exercise 1/3", nextSet: next, restSet: completed, restEnd: end)
+            exercisePosition: "Exercise 1/3", nextSet: next, restEnd: end)
         var state = activityState()
+        state.setLabel = "Set 2 of 3"; state.setWeight = "45 kg"; state.setDetail = "10 reps"; state.nextSetNumber = 2
         state.restEnd = end
         state.restCommand = "rest"
         let watch = snapshot.trainingContent(action: .endRest(.betweenSets), disabled: false)
         XCTAssertEqual(watch, state.trainingContent())
-        XCTAssertEqual(watch.summary?.weight, "40 kg")
+        XCTAssertEqual(watch.summary?.weight, "45 kg")
+        XCTAssertEqual(watch.action?.title, "Start set 2")
+        XCTAssertEqual(watch.action?.symbol, "play.fill")
         XCTAssertEqual(watch.action?.status, .rest(endsAt: end))
     }
 
@@ -79,10 +81,10 @@ import Observation
         let original = AppLanguage.preferences.language
         AppLanguage.preferences.language = "zh"
         defer { AppLanguage.preferences.language = original }
-        let row = WatchTrainingSet(entry: 0, index: 0, label: "Set 1", weight: "40 kg", detail: "8 reps")
+        let row = WatchTrainingSet(entry: 0, index: 0, number: 1, label: "Set 1", weight: "40 kg", detail: "8 reps")
         let snapshot = WatchTrainingSnapshot(language: "en", nextSet: row)
         let data = snapshot.trainingContent(action: .complete, disabled: false)
-        XCTAssertEqual(data.action?.title, "Complete")
+        XCTAssertEqual(data.action?.title, "Complete set 1")
         XCTAssertEqual(data.locale, AppLanguage.locale(for: "en"))
     }
 
@@ -120,11 +122,11 @@ import Observation
                 var data = content()
                 data.locale = AppLanguage.locale(for: language)
                 data.exercise = language == "zh" ? "坐姿单臂哑铃肩上推举" : "Seated single-arm dumbbell shoulder press"
-                data.position = language == "zh" ? "第 1/3 个动作" : "Exercise 1/3"
+                data.position = language == "zh" ? "第 1/3 动作" : "Exercise 1/3"
                 data.summary?.detail = language == "zh" ? "8 次" : "8 reps"
                 data.summary?.label = language == "zh" ? "第 1/3 组" : "Set 1 of 3"
-                data.action?.title = resting ? (language == "zh" ? "结束" : "Finish") : (language == "zh" ? "完成" : "Complete")
-                data.action?.symbol = resting ? "forward.end.fill" : "checkmark"
+                data.action?.title = resting ? (language == "zh" ? "开始第 2 组" : "Start set 2") : (language == "zh" ? "完成第 1 组" : "Complete set 1")
+                data.action?.symbol = resting ? "play.fill" : "checkmark"
                 data.action?.status = resting ? .rest(endsAt: Date(timeIntervalSince1970: 1000)) : .workout(startedAt: nil)
                 let action = try XCTUnwrap(data.action)
                 for layout in [TrainingContentLayout.expanded, .compact, .compactWithoutHeader] {
@@ -137,7 +139,10 @@ import Observation
                         .environment(\.colorScheme, .dark).background(.black)
                     let controller = UIHostingController(rootView: view)
                     let fitted = controller.sizeThatFits(in: size)
-                    XCTAssertLessThanOrEqual(fitted.height, size.height)
+                    // 展开布局的弹性留白会撑满提议高度，取整后可能多出一个像素；
+                    // 是否放得下看内容本身需要的高度。
+                    let needed = controller.sizeThatFits(in: CGSize(width: size.width, height: .greatestFiniteMagnitude))
+                    XCTAssertLessThanOrEqual(needed.height, size.height)
                     XCTAssertLessThanOrEqual(fitted.width, size.width)
                     let renderer = ImageRenderer(content: view)
                     renderer.proposedSize = .init(width: size.width, height: size.height)

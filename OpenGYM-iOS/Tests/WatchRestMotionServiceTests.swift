@@ -36,7 +36,7 @@ import XCTest
 
     private func snapshot() -> WatchTrainingSnapshot {
         WatchTrainingSnapshot(account: "account", sessionID: "session", revision: "revision",
-            nextSet: .init(entry: 0, index: 1, label: "2", weight: "40 kg", detail: "10"),
+            nextSet: .init(entry: 0, index: 1, number: 2, label: "2", weight: "40 kg", detail: "10"),
             restEnd: Date(timeIntervalSince1970: 1090), restEntry: 0, restStartedAt: Date(timeIntervalSince1970: 999), autoEndRestEnabled: true)
     }
 

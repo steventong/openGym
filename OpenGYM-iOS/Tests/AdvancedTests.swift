@@ -629,9 +629,8 @@ import AVFoundation
         XCTAssertNil((store.draft?.activeJSON["nativeRest"] as? [String: Any])?["set"])
         let snapshot = store.watchSnapshot()
         XCTAssertEqual(snapshot.restEnd, deadline)
-        XCTAssertNil(snapshot.restSet)
         XCTAssertEqual(snapshot.nextSet?.entry, 1)
-        // 换动作的倒计时显示为“动作准备”，按钮为“开始”。
+        // 换动作的倒计时显示为“动作准备”，按钮写明下一个动作的第 1 组。
         XCTAssertEqual(store.restPhase, .exercisePrep)
         XCTAssertEqual(snapshot.restPhase, .exercisePrep)
         XCTAssertEqual(snapshot.primaryAction(commandState: .idle), .endRest(.exercisePrep))

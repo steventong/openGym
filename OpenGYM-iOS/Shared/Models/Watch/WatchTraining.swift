@@ -10,13 +10,8 @@ struct WatchTrainingSnapshot: Codable, Equatable {
     var revision = ""
     var exercise = ""
     var exercisePosition = ""
+    /// 下一组；休息时也显示它，刚完成的组由按钮切到休息倒计时来确认。
     var nextSet: WatchTrainingSet?
-    var restSet: WatchTrainingSet?
-    var displayedSet: WatchTrainingSet? { restEnd != nil ? (restSet ?? nextSet) : nextSet }
-    var setCompletionLabel: String? {
-        guard restEnd != nil, restSet != nil else { return nil }
-        return String(localized: "COMPLETED", bundle: AppLanguage.bundle(for: language ?? AppLanguage.language), locale: AppLanguage.locale(for: language ?? AppLanguage.language))
-    }
     var nextEntry: Int?
     var restEnd: Date?
     var restEntry: Int?
@@ -73,35 +68,26 @@ struct WatchTrainingSnapshot: Codable, Equatable {
 
 enum WatchTrainingAction: Equatable {
     case sending, retry, complete, next, finished
-    /// 结束休息；换动作前的准备显示为“开始”。
+    /// 结束休息并开始下一组，组间休息和换动作前的准备都用它。
     case endRest(TrainingActionStatus.RestPhase)
-    var title: String {
-        String(localized: String.LocalizationValue(titleKey), bundle: AppLanguage.bundle, locale: AppLanguage.locale)
-    }
-    var titleKey: String {
+
+    /// 按钮文字与图标：setNumber 是下一组的组号，exerciseNumber 是下一个动作的序号（从 1 开始）。
+    func label(setNumber: Int?, exerciseNumber: Int?, language: String) -> (title: String, symbol: String) {
         switch self {
-        case .sending: "CONFIRMING"
-        case .retry: "RETRY_CONFIRMATION"
-        case .endRest(.betweenSets): "FINISH"
-        case .endRest(.exercisePrep): "START"
-        case .complete: "COMPLETE"
-        case .next: "NEXT_EXERCISE"
-        case .finished: "WORKOUT_DONE"
-        }
-    }
-    var symbol: String {
-        switch self {
-        case .sending, .retry: "arrow.clockwise"
-        case .endRest(.betweenSets): "forward.end.fill"
-        case .endRest(.exercisePrep): "play.fill"
-        case .next: "arrow.right"
-        case .complete, .finished: "checkmark"
+        case .sending: return (TrainingActionTitle.text("CONFIRMING", language), "arrow.clockwise")
+        case .retry: return (TrainingActionTitle.text("RETRY_CONFIRMATION", language), "arrow.clockwise")
+        case .complete: return TrainingActionTitle.complete(set: setNumber, language: language)
+        case .endRest(let phase): return TrainingActionTitle.endRest(phase, nextSet: setNumber, language: language)
+        case .next: return TrainingActionTitle.next(exercise: exerciseNumber, language: language)
+        case .finished: return (TrainingActionTitle.text("WORKOUT_DONE", language), "checkmark")
         }
     }
 }
 struct WatchTrainingSet: Codable, Equatable, Identifiable {
     var entry: Int
     var index: Int
+    /// 按钮上的组号，与 label 的“第 N/总数 组”一致（左右两侧算同一组）。
+    var number: Int
     var side: String?
     var label: String
     var weight: String

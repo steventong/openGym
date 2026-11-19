@@ -57,7 +57,7 @@ import UserNotifications
         XCTAssertEqual(center.addCount, 3)
     }
 
-    func testCompletedSetNotificationNamesUpcomingSetWhileSummaryKeepsCompletedSet() async throws {
+    func testCompletedSetNotificationAndSummaryBothNameUpcomingSet() async throws {
         store.state["customEx"] = [["id": "bench", "n": "杠铃臀腿", "bp": "legs", "eq": "barbell", "tg": "glutes"]]
         XCTAssertTrue(store.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"]))
         await notifications.flush()
@@ -65,8 +65,7 @@ import UserNotifications
         XCTAssertEqual(content.title, "OpenGYM 组间休息完成")
         XCTAssertEqual(content.body, "杠铃臀腿 开始第 2/2 组")
         let snapshot = store.watchSnapshot()
-        XCTAssertEqual(snapshot.displayedSet?.label, "第 1/2 组")
-        XCTAssertEqual(snapshot.setCompletionLabel, "已完成")
+        XCTAssertEqual(snapshot.nextSet?.label, "第 2/2 组")
         XCTAssertEqual(snapshot.restNotificationTitle, content.title)
         XCTAssertEqual(snapshot.restNotificationBody, content.body)
     }

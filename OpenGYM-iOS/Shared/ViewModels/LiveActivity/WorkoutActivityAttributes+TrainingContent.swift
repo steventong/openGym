@@ -22,12 +22,8 @@ extension WorkoutActivityAttributes.ContentState {
             let title: String
             let symbol: String
             switch status {
-            case .rest(_, .betweenSets):
-                title = String(localized: "FINISH", bundle: bundle, locale: locale)
-                symbol = "forward.end.fill"
-            case .rest(_, .exercisePrep):
-                title = String(localized: "START", bundle: bundle, locale: locale)
-                symbol = "play.fill"
+            case .rest(_, let phase):
+                (title, symbol) = TrainingActionTitle.endRest(phase, nextSet: nextSetNumber, language: language)
             case .workout:
                 title = commandTitle
                 symbol = "checkmark"

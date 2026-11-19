@@ -11,7 +11,7 @@ struct WatchWaitingView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .accessibilityHidden(true)
             
-            Text("START_A_WORKOUT_ON_PHONE")
+            Text("WAITING_FOR_A_WORKOUT")
                 .font(.headline)
                 .multilineTextAlignment(.center)
         }

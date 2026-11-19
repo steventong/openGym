@@ -45,10 +45,10 @@ struct TrainingContentView<Metrics: View, PrimaryAction: View>: View {
                     detailFontWeight: layout == .expanded ? .regular : .medium,
                     detailColor: layout == .expanded ? .secondary : .white.opacity(0.9))
                     .padding(.horizontal, layout == .expanded ? 2 : 0)
-                    .padding(.vertical, layout == .expanded ? 5 : 0)
+                    .padding(.vertical, layout == .expanded ? 7 : 0)
                     .background(.white.opacity(layout == .expanded ? 0.1 : 0),
                         in: RoundedRectangle(cornerRadius: 12))
-                    .padding(.bottom, layout == .expanded ? 5 : 0)
+                    .padding(.bottom, layout == .expanded ? 9 : 0)
             }
 
             // 指标内容独立于组摘要和主操作，即使它们缺失，也仍由调用方决定是否展示指标。
@@ -84,7 +84,7 @@ struct TrainingContentView<Metrics: View, PrimaryAction: View>: View {
 
 #Preview("训练内容", traits: .sizeThatFitsLayout) {
     let action = TrainingContentData.Action(title: "完成", symbol: "checkmark", status: .workout(startedAt: nil))
-    let content = TrainingContentData(exercise: "哑铃飞鸟", position: "第 1/3 个动作",
+    let content = TrainingContentData(exercise: "哑铃飞鸟", position: "第 1/3 动作",
         summary: .init(weight: "5 kg", detail: "12 次", label: "第 1/3 组"),
         action: action, locale: AppLanguage.locale(for: "zh"))
     TrainingContentView(content: content, layout: .compact, metrics: EmptyView(),
@@ -97,9 +97,9 @@ struct TrainingContentView<Metrics: View, PrimaryAction: View>: View {
 }
 
 #Preview("休息内容", traits: .sizeThatFitsLayout) {
-    let action = TrainingContentData.Action(title: "结束", symbol: "forward.end.fill",
+    let action = TrainingContentData.Action(title: "开始第 2 组", symbol: "play.fill",
         status: .rest(endsAt: .now.addingTimeInterval(75)))
-    let content = TrainingContentData(exercise: "哑铃飞鸟", position: "第 1/3 个动作",
+    let content = TrainingContentData(exercise: "哑铃飞鸟", position: "第 1/3 动作",
         summary: .init(weight: "5 kg", detail: "12 次", label: "第 1/3 组"),
         action: action, locale: AppLanguage.locale(for: "zh"))
     TrainingContentView(content: content, layout: .compact, metrics: EmptyView(),

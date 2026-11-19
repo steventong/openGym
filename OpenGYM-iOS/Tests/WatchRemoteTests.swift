@@ -290,7 +290,6 @@ import XCTest
         // The next exercise opens with a transition rest instead of the finished set.
         XCTAssertEqual(snapshot.restEntry, 2)
         XCTAssertNotNil(snapshot.restEnd)
-        XCTAssertNil(snapshot.restSet)
         store.selectLiveEntry(0)
         XCTAssertEqual(store.performReadyWatchCommand(command)["accepted"] as? Bool, true)
         XCTAssertEqual(store.draft?.activeJSON["cur"] as? Int, 0)

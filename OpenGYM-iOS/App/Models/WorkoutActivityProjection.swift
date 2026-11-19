@@ -6,9 +6,8 @@ extension GymStore {
         guard let draft, userID != nil else { return nil }
         let snapshot = watchSnapshot()
         let row = snapshot.nextSet
-        let displayedRow = snapshot.displayedSet
         let compactSet: String
-        if let row = displayedRow {
+        if let row {
             let rows = draft.rawEntries[row.entry]["sets"] as? [[String: Any]] ?? []
             let logical = rows.indices.filter { !(rows[$0]["side"] as? String == "R" && $0 > 0 && rows[$0 - 1]["side"] as? String == "L") }
             compactSet = String(format: String(localized: "SET_COUNT_OF_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: logical.filter { $0 <= row.index }.count), String(describing: logical.count))
@@ -23,15 +22,15 @@ extension GymStore {
         let commandTitle: String
         if localSaveError != nil { commandTitle = String(localized: "COULD_NOT_SAVE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
         else if row?.blockedReason != nil, !syncing { commandTitle = workTimer != nil ? String(localized: "TIMER_RUNNING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "COMPLETE_SET_DETAILS", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
-        else { commandTitle = row != nil ? String(localized: "COMPLETE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : (snapshot.nextEntry != nil ? String(localized: "NEXT_EXERCISE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "OPEN_APP", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
+        else { commandTitle = row != nil ? TrainingActionTitle.complete(set: row?.number, language: AppLanguage.language).title : (snapshot.nextEntry != nil ? TrainingActionTitle.next(exercise: snapshot.nextEntry.map { $0 + 1 }, language: AppLanguage.language).title : String(localized: "OPEN_APP", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
         return .init(trainingName: String(draft.name.prefix(80)), exercise: snapshot.exercise,
-            position: snapshot.exercisePosition, setLabel: displayedRow?.label ?? (draft.rawEntries.isEmpty ? String(localized: "ADD_AN_EXERCISE_TO_START", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "ALL_SETS_COMPLETE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)), compactSet: compactSet,
-            detail: displayedRow.map { "\($0.weight) · \($0.detail)" } ?? "",
+            position: snapshot.exercisePosition, setLabel: row?.label ?? (draft.rawEntries.isEmpty ? String(localized: "ADD_AN_EXERCISE_TO_START", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "ALL_SETS_COMPLETE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)), compactSet: compactSet,
+            detail: row.map { "\($0.weight) · \($0.detail)" } ?? "",
             message: row?.blockedReason ?? snapshot.message, restEnd: snapshot.restEnd,
             restExercise: snapshot.restExercise, command: command,
             commandTitle: commandTitle,
             restCommand: snapshot.restEnd != nil && available ? activityCommand(snapshot, action: "skipRest", entry: restEntry ?? 0) : nil,
-            setWeight: displayedRow?.weight, setDetail: displayedRow?.detail, setCompletionLabel: snapshot.setCompletionLabel, busyTitle: syncing ? String(localized: "SAVING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : nil,
+            setWeight: row?.weight, setDetail: row?.detail, nextSetNumber: row?.number, busyTitle: syncing ? String(localized: "SAVING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : nil,
             actionReadyAt: snapshot.actionReadyAt, setStartedAt: snapshot.setStartedAt, language: AppLanguage.language,
             restPhase: snapshot.restPhase)
     }

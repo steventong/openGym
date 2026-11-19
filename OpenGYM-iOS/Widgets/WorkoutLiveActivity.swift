@@ -92,11 +92,11 @@ struct WorkoutLiveActivity: Widget {
 
 private extension WorkoutActivityAttributes.ContentState {
     static func canvas(resting: Bool) -> Self {
-        Self(trainingName: "胸部训练", exercise: "哑铃飞鸟", position: "第 1/1 个动作",
-            setLabel: "第 1/3 组", compactSet: "1/3", detail: "5 kg · 12 次", message: "预览",
+        Self(trainingName: "胸部训练", exercise: "哑铃飞鸟", position: "第 1/1 动作",
+            setLabel: resting ? "第 2/3 组" : "第 1/3 组", compactSet: resting ? "2/3" : "1/3", detail: "5 kg · 12 次", message: "预览",
             restEnd: resting ? Date().addingTimeInterval(75) : nil, restExercise: "哑铃飞鸟",
-            command: "preview", commandTitle: "完成本组", restCommand: resting ? "preview" : nil,
-            setWeight: "5 kg", setDetail: "12 次", setCompletionLabel: resting ? "已完成" : nil,
+            command: "preview", commandTitle: "完成第 1 组", restCommand: resting ? "preview" : nil,
+            setWeight: "5 kg", setDetail: "12 次", nextSetNumber: resting ? 2 : 1,
             setStartedAt: resting ? nil : Date().addingTimeInterval(-45), language: "zh-Hans")
     }
 }

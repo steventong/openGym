@@ -46,7 +46,7 @@ struct TrainingActionLabel: View {
 }
 
 #Preview("组间休息", traits: .sizeThatFitsLayout) {
-    TrainingActionLabel(title: "结束", symbol: "forward.end.fill",
+    TrainingActionLabel(title: "开始第 2 组", symbol: "play.fill",
         status: .rest(endsAt: .now.addingTimeInterval(75)), disabled: false, tint: TrainingDisplayStyle.green)
         .environment(\.locale, AppLanguage.locale(for: "zh"))
         .frame(width: 184)

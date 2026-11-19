@@ -11,11 +11,10 @@ extension WatchTrainingSnapshot {
         } else {
             status = .workout(startedAt: setStartedAt)
         }
+        let label = action.label(setNumber: nextSet?.number, exerciseNumber: nextEntry.map { $0 + 1 }, language: language)
         return TrainingContentData(exercise: exercise, position: exercisePosition,
-            summary: displayedSet.map { .init(weight: $0.weight, detail: $0.detail, label: $0.label) },
-            action: .init(title: String(localized: String.LocalizationValue(action.titleKey),
-                bundle: AppLanguage.bundle(for: language), locale: locale),
-                symbol: action.symbol, status: status, disabled: disabled, readyAt: actionReadyAt),
+            summary: nextSet.map { .init(weight: $0.weight, detail: $0.detail, label: $0.label) },
+            action: .init(title: label.title, symbol: label.symbol, status: status, disabled: disabled, readyAt: actionReadyAt),
             locale: locale)
     }
 }

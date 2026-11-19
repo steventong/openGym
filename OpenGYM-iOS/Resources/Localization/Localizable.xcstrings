@@ -2535,6 +2535,24 @@
         }
       }
     },
+    "COMPLETE_SET_NUMBER": {
+      "comment": "完成第 {0} 组",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Complete set %1$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成第 %1$@ 组"
+          }
+        }
+      }
+    },
     "COMPLETED": {
       "comment": "已完成",
       "extractionState": "manual",
@@ -5865,7 +5883,7 @@
       }
     },
     "EXERCISE_COUNT_OF_COUNT": {
-      "comment": "第 {0}/{1} 个动作",
+      "comment": "第 {0}/{1} 动作",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -5877,7 +5895,25 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "第 %1$@/%2$@ 个动作"
+            "value": "第 %1$@/%2$@ 动作"
+          }
+        }
+      }
+    },
+    "EXERCISE_NUMBER": {
+      "comment": "第 {0} 个动作",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exercise %1$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第 %1$@ 个动作"
           }
         }
       }
@@ -13500,6 +13536,24 @@
         }
       }
     },
+    "START_SET_NUMBER": {
+      "comment": "开始第 {0} 组",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start set %1$@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开始第 %1$@ 组"
+          }
+        }
+      }
+    },
     "STARTER_TEMPLATES": {
       "comment": "入门模板",
       "extractionState": "manual",
@@ -13568,6 +13622,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "在手机开始训练"
+          }
+        }
+      }
+    },
+    "WAITING_FOR_A_WORKOUT": {
+      "comment": "等待开始训练",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for a workout"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待开始训练"
           }
         }
       }
@@ -17910,6 +17982,24 @@
         }
       }
     },
+    "WORKOUT_COMPLETE": {
+      "comment": "训练完成",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workout complete"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "训练完成"
+          }
+        }
+      }
+    },
     "ADD_NEW_EXERCISE": {
       "comment": "添加新动作",
       "extractionState": "manual",
@@ -17924,24 +18014,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "添加新动作"
-          }
-        }
-      }
-    },
-    "ADD_NEW_EXERCISES_ON_PHONE": {
-      "comment": "可在手机添加新动作",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add new exercises on your phone"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "可在手机添加新动作"
           }
         }
       }

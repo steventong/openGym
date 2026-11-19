@@ -26,9 +26,9 @@ struct WatchTrainingView: View {
 
 // mock 数据只在预览入口注入，不创建真实 Store、不连接手机。
 #Preview("训练中") {
-    let content = TrainingContentData(exercise: "哑铃飞鸟", position: "第 1/3 个动作",
+    let content = TrainingContentData(exercise: "哑铃飞鸟", position: "第 1/3 动作",
         summary: .init(weight: "5 kg", detail: "12 次", label: "第 1/3 组"),
-        action: .init(title: "完成", symbol: "checkmark", status: .workout(startedAt: .now.addingTimeInterval(-45))),
+        action: .init(title: "完成第 1 组", symbol: "checkmark", status: .workout(startedAt: .now.addingTimeInterval(-45))),
         locale: AppLanguage.locale(for: "zh"))
     WatchTrainingView(viewModel: TrainingViewModel(content: content),
         healthReport: .init(id: "preview", state: .running, activeCalories: 128, totalCalories: 156, heartRate: 124),
@@ -36,9 +36,9 @@ struct WatchTrainingView: View {
 }
 
 #Preview("休息中") {
-    let content = TrainingContentData(exercise: "哑铃飞鸟", position: "第 1/3 个动作",
-        summary: .init(weight: "5 kg", detail: "12 次", label: "第 1/3 组"),
-        action: .init(title: "结束", symbol: "forward.end.fill", status: .rest(endsAt: .now.addingTimeInterval(75))),
+    let content = TrainingContentData(exercise: "哑铃飞鸟", position: "第 1/3 动作",
+        summary: .init(weight: "5 kg", detail: "12 次", label: "第 2/3 组"),
+        action: .init(title: "开始第 2 组", symbol: "play.fill", status: .rest(endsAt: .now.addingTimeInterval(75))),
         locale: AppLanguage.locale(for: "zh"))
     WatchTrainingView(viewModel: TrainingViewModel(content: content),
         healthReport: .init(id: "preview", state: .running, activeCalories: 128, totalCalories: 156, heartRate: 124),
