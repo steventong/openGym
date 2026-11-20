@@ -46,7 +46,7 @@ struct BodyRecordsView: View {
                         guard goal.isEmpty || (TrainingInput.value(goal).map { $0 > 0 && $0 < 1000 } ?? false) else { invalidGoal = true; issue = String(localized: "ENTER_A_VALID_TARGET_WEIGHT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
                         let unit = goalUnit
                         Task { if await store.savePersonalFields(original:goalOriginal,proposed:goal.isEmpty ? [:] : ["targetW":TrainingInput.value(goal)!],unit:unit) { goalOriginal = store.state.filter { $0.key == "targetW" } } else { issue = store.editError } }
-                    }.disabled(store.syncing)
+                    }
                 }
             } else { Section { NavigationLink("CHOOSE_MEASUREMENTS") { MeasurementFieldsView() } } }
             Section("HISTORY") {
@@ -157,7 +157,7 @@ struct BodyRecordEditor:View {
                 } }
             }.operationAlert($issue).navigationTitle(LocalizedStringKey(measurements ? "LOG_MEASUREMENTS" : "LOG_BODY_WEIGHT")).navigationBarTitleDisplayMode(.inline)
                 .keyboardDismissToolbar()
-                .toolbar { ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { dismiss() } };ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { save() }.disabled(store.syncing).accessibilityIdentifier("save-body-record") } }
+                .toolbar { ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { dismiss() } };ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { save() }.accessibilityIdentifier("save-body-record") } }
                 .onAppear { guard !ready else { return };ready = true;date = (original?["d"] as? String).flatMap(dateFromDay) ?? Date()
                     for f in visible { let v = measurements ? MeasureField.value(original ?? [:],f.id):number(original?["w"]);values[f.id] = v>0 ? personalNumber(v/(measurements && f.id != "bodyFat" && unit == "lb" ? 2.54:1)):"" }
                 }
@@ -204,7 +204,7 @@ struct MeasurementFieldsView:View {
                 Button("ADD_MEASUREMENT") { let clean = name.trimmingCharacters(in:.whitespacesAndNewlines);guard !clean.isEmpty else{return};guard !custom.contains(where:{($0["name"] as? String ?? "").localizedCaseInsensitiveCompare(clean) == .orderedSame}) else {issue = String(localized: "THIS_MEASUREMENT_ALREADY_EXISTS", bundle: AppLanguage.bundle, locale: AppLanguage.locale);return};custom.append(["id":UUID().uuidString,"name":String(clean.prefix(60)),"enabled":true]);name = "" }
             }
         }.operationAlert($issue).navigationTitle("CHOOSE_MEASUREMENTS").onAppear { guard !loaded else {return};loaded = true;original = store.state.filter {["measurementEnabled","customMeasurements"].contains($0.key)};enabled = Set(original["measurementEnabled"] as? [String] ?? MeasureField.builtin.map(\.id));custom = original["customMeasurements"] as? [[String:Any]] ?? [] }
-            .toolbar { ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { Task { if await store.savePersonalFields(original:original,proposed:["measurementEnabled":enabled.sorted(),"customMeasurements":custom]) { dismiss() } else { issue = store.editError } } }.disabled(store.syncing) } }
+            .toolbar { ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { Task { if await store.savePersonalFields(original:original,proposed:["measurementEnabled":enabled.sorted(),"customMeasurements":custom]) { dismiss() } else { issue = store.editError } } } } }
     }
 }
 

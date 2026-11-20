@@ -96,7 +96,7 @@ struct RoutineEditor: View {
     }
     private func saveRoutine() async {
         inputBuffer.commitAll()
-        guard !saving, !deleting, !store.syncing else { return }
+        guard !saving, !deleting else { return }
         guard dirty else { dismiss(); return }
         saving = true; defer { saving = false }
         let snapshot = proposed

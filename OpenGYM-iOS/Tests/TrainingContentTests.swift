@@ -55,7 +55,7 @@ import Observation
         XCTAssertEqual(data.evaluated(at: deadline).action?.disabled, true)
     }
 
-    func testSystemExpiryOnlyChangesDisplayDeadlineAndKeepsSavingDisabled() {
+    func testSystemExpiryOnlyChangesDisplayDeadline() {
         var state = activityState()
         let deadline = Date().addingTimeInterval(60)
         state.actionReadyAt = deadline
@@ -64,8 +64,6 @@ import Observation
         XCTAssertEqual(expired.action?.disabled, false)
         XCTAssertNil(expired.action?.readyAt)
         XCTAssertEqual(state.actionReadyAt, deadline)
-        state.busyTitle = "Saving"
-        XCTAssertEqual(TrainingViewModel(content: state.trainingContent(systemDeadlinePassed: true)).content.action?.disabled, true)
     }
 
     func testViewModelRefreshesAtTheProtectionDeadline() async {

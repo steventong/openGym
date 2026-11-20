@@ -17,13 +17,8 @@ import Observation
     }
     /// 动作图片与视频的下载地址。动作文字随 App 内置，媒体按需从这里获取。
     var mediaServerURL: String
-    /// 本机资料标识，只用来定位草稿、健康同步等本机文件。
-    /// 从服务器版升级的用户沿用旧服务器地址和账号 ID，原有文件位置不变。
-    var profileServer = LocalProfile.fresh.server
+    /// 本机资料标识（见 LocalProfile），只用来定位草稿、健康同步等本机文件。
     var userID: String? { didSet { publishTraining() } }
-    var userName: String?
-    /// 迁移旧服务器资料期间为 true，页面据此暂停保存操作。
-    var syncing = false { didSet { publishTraining() } }
     var error: String?
     var editError: String?
     /// 内存文档上次随数据库变化的时间；依赖整份资料的页面据此重新计算。
@@ -61,8 +56,6 @@ import Observation
     @ObservationIgnored let repository: StateRepository
     /// 仅正式容器有 iCloud 同步状态；内存库（测试、预览）为 nil。
     let cloudSync: CloudSyncMonitor?
-    /// 读取旧服务器上的最新资料；测试中替换为固定数据。
-    @ObservationIgnored var legacyDocumentSource: (LegacyAccount, LocalTrainingStorage) async -> [String: Any]? = LegacyServer.latestDocument
     @ObservationIgnored var storeObserver: NSObjectProtocol?
     @ObservationIgnored var storeReload: Task<Void, Never>?
     @ObservationIgnored lazy var healthSync = HealthWeightSync(store:self)
@@ -93,7 +86,7 @@ import Observation
     /// 沿用旧版保存服务器地址的键，升级后媒体地址无需重新填写。
     static let mediaServerKey = "serverURL"
     private func publishTraining() { restNotifications?.publish(); watchBridge?.publish(); liveActivity?.publish() }
-    var profileIdentity: String { profileServer + "|" + (userID ?? "") }
+    var profileIdentity: String { LocalProfile.server + "|" + (userID ?? "") }
     var unit: String { state["unit"] as? String ?? "kg" }
     var routines: [Routine] { (state["routines"] as? [[String: Any]] ?? []).filter { ($0["id"] as? String) != nil }.map { Routine(raw: $0) } }
     var workouts: [[String: Any]] {
@@ -224,7 +217,7 @@ import Observation
     }
     func finish() async {
         liveInputBuffer.commitAll()
-        guard !syncing, let d = draft, d.completedSets > 0 else { error = String(localized: "COMPLETE_AT_LEAST_ONE_SET_BEFORE_SAVING_YOUR_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
+        guard let d = draft, d.completedSets > 0 else { error = String(localized: "COMPLETE_AT_LEAST_ONE_SET_BEFORE_SAVING_YOUR_WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
         do { try TrainingInput.validate(d.activeJSON) } catch { self.error = error.localizedDescription; return }
         if d.activeJSON["nativeFinishAt"] == nil { changeActive { $0["nativeFinishAt"] = Date().timeIntervalSince1970 * 1000 } }
         guard persistDraft(), let snapshot = draft else { error = localSaveError; return }
@@ -260,11 +253,10 @@ import Observation
     }
     func deleteCurrentWorkout() {
         liveInputBuffer.commitAll()
-        guard !syncing, draft != nil else { return }
+        guard draft != nil else { return }
         guard let url = draftURL else { error = String(localized: "YOUR_ACCOUNT_COULD_NOT_BE_IDENTIFIED_THIS_WORKOUT_CANNOT_BE_DELETED", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
         do {
-            // Persist an empty document first: a failed write must keep the live input,
-            // and an absent file would allow restoreDraft to adopt a legacy draft.
+            // Persist an empty document first: a failed write must keep the live input.
             if let draft, !workoutHealth.finish(draft, discard: true, at: Date()) { error = workoutHealth.status; return }
             try localStorage.write([:], to: url)
             draft = nil
@@ -320,13 +312,7 @@ import Observation
             if let saved = try localStorage.read(url) {
                 source = "account_storage"
                 if let raw = saved["draft"] { draft = try JSONDecoder().decode(TrainingDraft.self, from: JSONSerialization.data(withJSONObject: raw)) }
-                return
             }
-            // Adopt pre-offline-client drafts without deleting the old copy.
-            guard let userID else { return }
-            let key = Data("\(profileServer)|\(userID)".utf8).base64EncodedString().replacingOccurrences(of: "/", with: "_")
-            let old = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("draft-\(key).json")
-            if FileManager.default.fileExists(atPath: old.path) { source = "legacy_storage"; draft = try JSONDecoder().decode(TrainingDraft.self, from: Data(contentsOf: old)) }
         } catch {
             WorkoutActivityDiagnostics.record("draft.restore.failed", WorkoutActivityDiagnostics.errorFields(error), failure: true)
             localSaveError = String(format: String(localized: "COULD_NOT_READ_THE_WORKOUT_DRAFT_THE_FILE_HAS_BEEN_KEPT_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription))

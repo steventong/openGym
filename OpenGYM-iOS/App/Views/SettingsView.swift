@@ -5,8 +5,6 @@ struct SettingsView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
     @State private var notice = false
-    /// 本机留有的服务器版地址；打开设置时读取一次，没有则不显示迁移入口。
-    @State private var legacyServer: String?
 
     var body: some View {
         let weightDetails = [store.healthSync.status, store.healthSync.backgroundIssue,
@@ -20,10 +18,6 @@ struct SettingsView: View {
                 }
 
                 MediaServerSection(current: store.mediaServerURL, save: store.saveMediaServer)
-
-                if let legacyServer {
-                    LegacyImportSection(server: legacyServer, busy: store.syncing, run: store.importLegacyServerData)
-                }
 
                 Section("PERSONAL_SETTINGS") {
                     NavigationLink("FILTER_BY_GYM_EQUIPMENT") { EquipmentProfilesView() }
@@ -47,15 +41,13 @@ struct SettingsView: View {
                     }))
                     .disabled(!store.healthSync.available || (store.healthSync.busy && !store.healthSync.enabled) || store.userID == nil)
                     .accessibilityIdentifier("health-weight-enabled")
-                    LabeledContent("SYNC_STATUS") {
-                        StatusDetailButton(title: weightStatus, message: "\(weightDetails)",
-                            warning: store.healthSync.backgroundIssue != nil || store.healthSync.pending)
-                    }
+                    StatusDetailRow(label: "SYNC_STATUS", title: weightStatus, message: "\(weightDetails)",
+                        warning: store.healthSync.backgroundIssue != nil || store.healthSync.pending)
                     LabeledContent("LAST_READ", value: store.healthSync.lastRead?.formatted(date: .abbreviated, time: .shortened) ?? "—")
                     Button("ALLOW_WEIGHT_ACCESS") { Task { await store.healthSync.setEnabled(true) } }
                         .disabled(store.healthSync.busy || !store.healthSync.available || store.userID == nil)
                     Button("SYNC_WEIGHT_NOW") { Task { await store.healthSync.sync() } }
-                        .disabled(!store.healthSync.enabled || store.healthSync.busy || store.syncing)
+                        .disabled(!store.healthSync.enabled || store.healthSync.busy)
                 }
 
                 Section {
@@ -69,10 +61,8 @@ struct SettingsView: View {
                     }))
                     .disabled(!store.workoutHealth.enabled || store.workoutHealth.busy)
                     .accessibilityIdentifier("health-workout-place-enabled")
-                    LabeledContent("SYNC_STATUS") {
-                        StatusDetailButton(title: workoutStatus, message: "\(workoutDetails)",
-                            warning: store.workoutHealth.current?.state == .failed)
-                    }
+                    StatusDetailRow(label: "SYNC_STATUS", title: workoutStatus, message: "\(workoutDetails)",
+                        warning: store.workoutHealth.current?.state == .failed)
                     Button("ALLOW_WORKOUT_AND_ACTIVITY_ACCESS") { Task { await store.workoutHealth.authorize() } }
                         .disabled(store.workoutHealth.busy || !store.workoutHealth.available)
                     Button("RETRY_WORKOUT_SYNC") { store.workoutHealth.retry(wakeWatch: true) }
@@ -90,10 +80,9 @@ struct SettingsView: View {
                         }))
                         .disabled(notifications.busy)
                         .accessibilityIdentifier("rest-notifications-enabled")
-                        LabeledContent("NOTIFICATION_STATUS") {
-                            StatusDetailButton(title: !notifications.enabled ? "STATUS_OFF" : notifications.issue != nil ? "NEEDS_ATTENTION" : notifications.permission.canDeliver ? "ALLOWED" : "NOT_AUTHORIZED",
-                                message: "\(notifications.status)", warning: notifications.enabled && (!notifications.permission.canDeliver || notifications.issue != nil))
-                        }
+                        StatusDetailRow(label: "NOTIFICATION_STATUS",
+                            title: !notifications.enabled ? "STATUS_OFF" : notifications.issue != nil ? "NEEDS_ATTENTION" : notifications.permission.canDeliver ? "ALLOWED" : "NOT_AUTHORIZED",
+                            message: "\(notifications.status)", warning: notifications.enabled && (!notifications.permission.canDeliver || notifications.issue != nil))
                         Button(LocalizedStringKey(notifications.permission.authorization == .notDetermined ? "ALLOW_NOTIFICATIONS" : "SYSTEM_NOTIFICATION_SETTINGS")) {
                             if notifications.permission.authorization == .notDetermined { Task { await notifications.authorize() } }
                             else if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) }
@@ -111,7 +100,6 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("DONE") { dismiss() } } }
             .task {
-                legacyServer = LegacyAccount.find(in: store.localStorage)?.server
                 await store.restNotifications?.flush()
             }
             .sheet(isPresented: $notice) {

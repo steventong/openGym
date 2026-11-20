@@ -46,11 +46,11 @@ struct CustomExerciseEditor:View {
                         Button("DELETE_EXERCISE", role: .destructive) {
                             if let reason = store.customExerciseDeletionIssue(id) { issue = reason }
                             else { confirmDelete = true }
-                        }.disabled(store.syncing)
+                        }
                     }
                 }
             }.operationAlert($issue).navigationTitle(LocalizedStringKey(original == nil && catalogueCopy == nil ? "CUSTOM_EXERCISE":"EDIT_EXERCISE")).navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { dismiss() } };ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { save() }.disabled(store.syncing).accessibilityIdentifier("save-custom-exercise") } }
+                .toolbar { ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { dismiss() } };ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { save() }.accessibilityIdentifier("save-custom-exercise") } }
                 .confirmationDialog("DELETE_THIS_EXERCISE",isPresented:$confirmDelete,titleVisibility:.visible) {
                     Button("DELETE",role:.destructive) { guard let original else {return}; Task { if await store.deleteCustomExercise(original) { store.selectedExercise = nil;dismiss() } else { issue = store.editError } } }
                 }

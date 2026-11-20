@@ -117,9 +117,9 @@ struct WeightEntryView: View {
         NavigationStack {
             Form {
                 Section(String(format: String(localized: "TODAY_S_WEIGHT_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: store.unit))) { TextField("ENTER_BODY_WEIGHT",text:$value).textFieldStyle(.plain).stableInputLine().submitLabel(.done).onSubmit { GymKeyboard.dismiss() }.keyboardType(.decimalPad) }
-                Section { Button(LocalizedStringKey(store.syncing ? "SAVING" : "SAVE_TO_SERVER")) {
+                Section { Button("SAVE_TO_SERVER") {
                     if let number = Double(value.replacingOccurrences(of:",",with:".")), number > 0 { Task { if await store.recordWeight(number) { dismiss() } } }
-                }.disabled(store.syncing || (Double(value.replacingOccurrences(of:",",with:".")) ?? 0) <= 0) }
+                }.disabled((Double(value.replacingOccurrences(of:",",with:".")) ?? 0) <= 0) }
             }.navigationTitle("LOG_BODY_WEIGHT").toolbar { ToolbarItem(placement:.topBarTrailing) { Button("CANCEL") { dismiss() } } }
                 .keyboardDismissToolbar()
         }.presentationDetents([.medium]).tint(GymTheme.green)

@@ -178,97 +178,11 @@ import XCTest
         XCTAssertEqual(second.exercise("0025"), benchPress)
     }
 
-    // MARK: - 旧服务器资料导入
-
-    private func writeLegacyAccount(cached: [String: Any]?) throws {
-        let storage = LocalTrainingStorage(root: root)
-        try storage.write(["server": "https://old.example", "user": "u1", "name": "Alex"], to: root.appendingPathComponent("last-account.json"))
-        if let cached { try storage.write(["state": cached, "name": "Alex"], to: storage.folder(server: "https://old.example", user: "u1").appendingPathComponent("profile.json")) }
-    }
-
-    func testLegacyImportPrefersServerThenFallsBackToCache() async throws {
-        try writeLegacyAccount(cached: ["unit": "kg", "routines": [["id": "cached", "name": "缓存"]]])
-        var requests = 0
-        let fetched = store()
-        fetched.legacyDocumentSource = { account, _ in
-            requests += 1
-            XCTAssertEqual(account.user, "u1")
-            return ["unit": "lb", "routines": [["id": "server", "name": "服务器"]], "futureField": 1]
-        }
-        fetched.prepareOfflineLaunch()
-        // 启动只沿用旧账号定位本机文件，不读服务器也不显示旧缓存。
-        XCTAssertEqual(fetched.userID, "u1")
-        XCTAssertEqual(fetched.profileServer, "https://old.example")
-        XCTAssertTrue(fetched.routines.isEmpty)
-        XCTAssertEqual(requests, 0)
-        let result = await fetched.importLegacyServerData()
-        XCTAssertEqual(result, .importedFromServer)
-        XCTAssertEqual(fetched.routines.map(\.id), ["server"])
-        XCTAssertEqual(fetched.unit, "lb")
-        XCTAssertFalse(fetched.syncing)
-
-        let offline = store()
-        offline.legacyDocumentSource = { _, _ in nil }
-        offline.prepareOfflineLaunch()
-        let fallback = await offline.importLegacyServerData()
-        XCTAssertEqual(fallback, .importedFromCache)
-        XCTAssertEqual(offline.routines.map(\.id), ["cached"])
-    }
-
-    func testLegacyImportRunsOnlyWhenAskedAndCanRepeat() async throws {
-        try writeLegacyAccount(cached: nil)
-        let persistence = PersistenceController(inMemory: true)
-        var requests = 0
-        let s = store(persistence)
-        s.legacyDocumentSource = { _, _ in requests += 1; return nil }
-        s.prepareOfflineLaunch()
-        let saved = await s.addRoutine(name: "新计划", exerciseIDs: ["c-own"])
-        XCTAssertTrue(saved)
-        XCTAssertEqual(requests, 0)
-
-        let nothing = await s.importLegacyServerData()
-        XCTAssertEqual(nothing, .unavailable)
-        XCTAssertEqual(requests, 1)
-        XCTAssertEqual(s.routines.map(\.name), ["新计划"])
-
-        s.legacyDocumentSource = { _, _ in requests += 1; return ["unit": "kg", "routines": [["id": "server", "name": "服务器"]]] }
-        for _ in 0..<2 {
-            let result = await s.importLegacyServerData()
-            XCTAssertEqual(result, .importedFromServer)
-        }
-        XCTAssertEqual(requests, 3)
-        XCTAssertEqual(s.routines.map(\.name), ["新计划", "服务器"])
-
-        let later = store(persistence)
-        later.legacyDocumentSource = { _, _ in XCTFail("Launch never reads the server"); return nil }
-        later.prepareOfflineLaunch()
-        XCTAssertEqual(later.routines.map(\.name), ["新计划", "服务器"])
-    }
-
-    func testLegacyImportWithoutAccountIsUnavailable() async {
-        let s = store()
-        s.legacyDocumentSource = { _, _ in XCTFail("No account, no request"); return nil }
-        let result = await s.importLegacyServerData()
-        XCTAssertEqual(result, .unavailable)
-    }
-
-    func testLegacyMergeKeepsWhatIsAlreadyStored() {
-        let current: [String: Any] = ["unit": "lb", "routines": [["id": "r1", "name": "iCloud 上的新版"]], "workouts": [workout("w2", day: "2026-11-02", start: 2)]]
-        let imported: [String: Any] = ["unit": "kg", "restSec": 120, "routines": [["id": "r1", "name": "旧版"], ["id": "r2", "name": "只在旧资料"]],
-                                       "workouts": [workout("w1", day: "2026-11-01", start: 1)]]
-        let merged = LegacyImport.merge(imported: imported, into: current)
-        XCTAssertEqual(merged["unit"] as? String, "lb")
-        XCTAssertEqual(merged["restSec"] as? Int, 120)
-        XCTAssertEqual((merged["routines"] as? [[String: Any]])?.map { $0["name"] as? String }, ["iCloud 上的新版", "只在旧资料"])
-        XCTAssertEqual((merged["workouts"] as? [[String: Any]])?.map { $0["id"] as? String }, ["w1", "w2"])
-    }
-
     func testFreshInstallUsesLocalProfileAndEmptyDocument() {
         let s = store()
         s.userID = nil
         s.prepareOfflineLaunch()
-        XCTAssertEqual(s.userID, LocalProfile.fresh.user)
-        XCTAssertEqual(s.profileServer, LocalProfile.fresh.server)
+        XCTAssertEqual(s.userID, LocalProfile.user)
         XCTAssertTrue(s.routines.isEmpty)
         XCTAssertNil(s.localSaveError)
     }

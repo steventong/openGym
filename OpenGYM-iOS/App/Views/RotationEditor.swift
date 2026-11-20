@@ -39,16 +39,16 @@ struct RotationEditor:View {
                     } header: { HStack { Text("WORKOUT_ORDER"); Spacer(); ExplanationButton(title: "ROTATION_RULES", message: "CONTINUE_UNFINISHED_WORKOUTS_IN_ORDER_THE_NEXT_ROUND_STARTS_THE_DAY_AFTER") } }
                     Section("CURRENT_ROUND") {RotationProgressCard(card:false)}
                     Section {
-                        Button("RESTART_ROUND"){restart = true}.disabled(dirty || ids.isEmpty || store.syncing || (store.state["rotation"] as? [String:Any]) == nil).accessibilityIdentifier("rotation-restart")
+                        Button("RESTART_ROUND"){restart = true}.disabled(dirty || ids.isEmpty || (store.state["rotation"] as? [String:Any]) == nil).accessibilityIdentifier("rotation-restart")
                     }
                 }
             }.navigationTitle("ROTATION_SCHEDULE").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement:.topBarLeading){Button("CANCEL"){inputBuffer.commitAll();if dirty {discard = true}else{dismiss()}}.disabled(store.syncing)}
-                    ToolbarItem(placement:.topBarTrailing){Button(LocalizedStringKey(store.syncing ? "SAVING" : "SAVE")) {
+                    ToolbarItem(placement:.topBarLeading){Button("CANCEL"){inputBuffer.commitAll();if dirty {discard = true}else{dismiss()}}}
+                    ToolbarItem(placement:.topBarTrailing){Button("SAVE") {
                         if mode == "rotation", ids.isEmpty, !initialIDs.isEmpty { confirmClear = true }
                         else { Task { await save(action: mode == "week" ? "week" : "save") } }
-                    }.lineLimit(1).disabled(store.syncing || !loaded).accessibilityIdentifier("save-rotation")}
+                    }.lineLimit(1).disabled(!loaded).accessibilityIdentifier("save-rotation")}
                 }
                 .onAppear {if !loaded {baseline = store.state;let rotation = store.state["rotation"] as? [String:Any] ?? [:];let queue = store.state["queue"] as? [String:Any] ?? [:];ids = (rotation["sequence"] as? [String] ?? queue["ids"] as? [String] ?? []).filter { id in store.routines.contains { $0.id == id } };label = rotation["label"] as? String ?? queue["label"] as? String ?? String(localized: "MY_ROTATION", bundle: AppLanguage.bundle, locale: AppLanguage.locale);mode = store.rotationSummary()["mode"] as? String ?? "week";initialMode = mode;initialIDs = ids;initialLabel = label;loaded = true}}
                 .confirmationDialog("RESTART_THE_CURRENT_ROUND",isPresented:$restart,titleVisibility:.visible){Button("START_NEW_PASS"){Task{await save(action:"restart")}};Button("CANCEL",role:.cancel){}} message: { Text("RESET_THIS_ROUND_S_PROGRESS_AND_KEEP_WORKOUT_HISTORY") }
@@ -58,7 +58,7 @@ struct RotationEditor:View {
                 } message: { Text("CLEAR_THE_WORKOUT_ORDER_AND_STOP_THE_ROTATION_WORKOUT_HISTORY_IS_KEPT") }
                 .confirmationDialog("DISCARD_ROTATION_CHANGES",isPresented:$discard,titleVisibility:.visible){Button("DISCARD_CHANGES",role:.destructive){dismiss()};Button("KEEP_EDITING",role:.cancel){}}
                 .alert("COULD_NOT_SAVE",isPresented:Binding(get:{error != nil},set:{if !$0 {error = nil}})){Button("GOT_IT",role:.cancel){}}message:{Text(error ?? "")}
-                .interactiveDismissDisabled(dirty || store.syncing)
+                .interactiveDismissDisabled(dirty)
         }.tint(GymTheme.green).environment(\.inputCommitBuffer, inputBuffer)
     }
     private func save(action:String) async {inputBuffer.commitAll();if await store.updateRotation(action:action,ids:ids,label:label,baseline:baseline){dismiss()}else{error = store.editError}}

@@ -1,11 +1,10 @@
 import CoreData
 import Foundation
 
-/// 本机资料标识。新安装使用固定值；从服务器版升级时沿用旧账号，草稿等本机文件的位置不变。
-struct LocalProfile {
-    let server: String
-    let user: String
-    static let fresh = LocalProfile(server: "local", user: "local")
+/// 本机资料标识，固定值，只用来定位草稿、历史编辑和健康同步进度等本机文件。
+enum LocalProfile {
+    static let server = "local"
+    static let user = "local"
 }
 
 /// 资料文档的读写流程：
@@ -15,12 +14,9 @@ extension GymStore {
     /// 全新资料的文档骨架，与规则引擎默认值一致。
     static let emptyDocument: [String: Any] = ["unit": "kg", "routines": [], "workouts": [], "bodyweight": [], "week": [String: Any]()]
 
-    /// 同步完成的冷启动准备：确定本机资料标识，读出文档、训练草稿和历史编辑。
+    /// 冷启动准备：确定本机资料标识，读出文档、训练草稿和历史编辑。
     func prepareOfflineLaunch() {
-        let legacy = LegacyAccount.find(in: localStorage)
-        profileServer = legacy?.server ?? LocalProfile.fresh.server
-        userID = legacy?.user ?? LocalProfile.fresh.user
-        userName = legacy?.name
+        userID = LocalProfile.user
         do {
             state = try repository.load()
             clearDatabaseFailure()
@@ -92,7 +88,7 @@ extension GymStore {
         storeReload?.cancel()
         storeReload = Task { [weak self] in
             try? await Task.sleep(for: .milliseconds(400))
-            guard !Task.isCancelled, let self, !self.syncing, self.repository.consumeForeignChanges() else { return }
+            guard !Task.isCancelled, let self, self.repository.consumeForeignChanges() else { return }
             do { try self.reloadDocument() } catch { self.reportDatabaseFailure(error) }
         }
     }

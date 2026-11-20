@@ -40,9 +40,9 @@ struct PlanToolsView:View {
                             VStack(alignment:.leading) { Text(r["name"] as? String ?? String(localized: "WORKOUT", bundle: AppLanguage.bundle, locale: AppLanguage.locale));Text(String(format: String(localized: "COUNT_EXERCISES", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: (r["ex"] as? [Any] ?? []).count))).font(.caption).foregroundStyle(.secondary) }
                         }
                         Toggle("USE_IMPORTED_WEEKLY_SCHEDULE",isOn:$applySchedule).disabled(preparedProposed != nil)
-                        Button(LocalizedStringKey(store.syncing ? "SAVING":"CONFIRM_IMPORT")) {
+                        Button("CONFIRM_IMPORT") {
                             if applySchedule { confirmImport = true } else { apply() }
-                        }.lineLimit(1).disabled(store.syncing || (bundle["routines"] as? [Any] ?? []).isEmpty).accessibilityIdentifier("confirm-plan-import")
+                        }.lineLimit(1).disabled((bundle["routines"] as? [Any] ?? []).isEmpty).accessibilityIdentifier("confirm-plan-import")
                         Button("CANCEL_IMPORT",role:.cancel) { self.bundle = nil;preparedOriginal = nil;preparedProposed = nil }
                     } header: {
                         HStack {
@@ -81,7 +81,7 @@ struct PlanToolsView:View {
         } catch { issue = error.localizedDescription }
     }
     private func exportPlan() { do {
-        let bundle = try store.personalInfo("exportPlan",["name":store.userName ?? "openGym"])
+        let bundle = try store.personalInfo("exportPlan",["name":"openGym"])
         exportDoc = GymJSONDocument(data:try JSONSerialization.data(withJSONObject:bundle,options:[.prettyPrinted,.sortedKeys]));exporting = true
     } catch {issue = error.localizedDescription} }
     private func apply() {

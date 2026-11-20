@@ -191,20 +191,15 @@ import UIKit
         state.setWeight = nil
         state.setStartedAt = nil
         XCTAssertNil(state.trainingContent().action?.status)
-
-        state.busyTitle = "正在保存"
-        XCTAssertNil(state.trainingContent().action?.status)
     }
 
-    func testLiveActivitySavingKeepsWorkoutAction() throws {
+    func testLiveActivityWithoutCommandKeepsWorkoutActionDisabled() throws {
         var state = try XCTUnwrap(store.workoutActivityState())
         state.command = nil
         state.setStartedAt = nil
-        state.busyTitle = "正在保存"
         let content = TrainingViewModel(content: state.trainingContent()).content
         XCTAssertEqual(content.action?.status, .workout(startedAt: nil))
         XCTAssertEqual(content.action?.title, state.commandTitle)
-        XCTAssertNotEqual(content.action?.title, state.busyTitle)
         XCTAssertEqual(content.action?.disabled, true)
     }
 
@@ -259,7 +254,7 @@ import UIKit
         XCTAssertEqual(String(localized: "TRAINING_STATUS_REST", bundle: AppLanguage.bundle(for: "en"), locale: AppLanguage.locale(for: "en")), "REST")
     }
 
-    func testLiveActivityProtectionExpiresButBusyStateRemainsDisabled() throws {
+    func testLiveActivityProtectionExpires() throws {
         var state = try XCTUnwrap(store.workoutActivityState())
         state.actionReadyAt = Date().addingTimeInterval(60)
         let protected = TrainingViewModel(content: state.trainingContent())
@@ -270,11 +265,6 @@ import UIKit
         XCTAssertNil(systemExpired.content.action?.readyAt)
         XCTAssertEqual(systemExpired.content.action?.disabled, false)
 
-        state.busyTitle = "Saving"
-        let busy = TrainingViewModel(content: state.trainingContent(systemDeadlinePassed: true))
-        XCTAssertEqual(busy.content.action?.disabled, true)
-
-        state.busyTitle = nil
         state.actionReadyAt = Date().addingTimeInterval(-1)
         let expired = TrainingViewModel(content: state.trainingContent())
         XCTAssertEqual(expired.content.action?.disabled, false)
@@ -321,7 +311,7 @@ import UIKit
             for width: CGFloat in [296, 347, 384] {
                 for island in [false, true] {
                     var baseline: CGFloat?
-                    for phase in ["rest", "expired", "workout", "protected", "busy"] {
+                    for phase in ["rest", "expired", "workout", "protected"] {
                         var state = try XCTUnwrap(store.workoutActivityState())
                         state.language = language
                         state.trainingName = language == "zh" ? "力量训练" : "Strength training"
@@ -335,7 +325,6 @@ import UIKit
                         state.restEnd = phase == "workout" ? nil : now.addingTimeInterval(phase == "expired" ? -55 : 55)
                         state.restCommand = phase == "workout" ? nil : "preview-rest"
                         state.actionReadyAt = phase == "protected" ? now.addingTimeInterval(5) : nil
-                        state.busyTitle = phase == "busy" ? (language == "zh" ? "正在保存" : "Saving") : nil
                         let view = WorkoutActivityContent(viewModel: TrainingViewModel(content: state.trainingContent()),
                             command: state.trainingActionCommand, island: island)
                             .environment(\.colorScheme, .dark).environment(\.dynamicTypeSize, .large)

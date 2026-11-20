@@ -8,14 +8,12 @@ struct CloudSyncSection: View {
         Section {
             LabeledContent("ICLOUD_ACCOUNT") {
                 Text(LocalizedStringKey(status.accountAvailable ? "ICLOUD_SIGNED_IN" : "ICLOUD_SIGNED_OUT"))
-                    .foregroundStyle(status.accountAvailable ? GymTheme.muted : Color.orange)
+                    .foregroundStyle(status.accountAvailable ? Color.secondary : Color.orange)
             }
             LabeledContent("LAST_SYNC", value: status.lastSync?.formatted(date: .abbreviated, time: .shortened) ?? "—")
             // 未登录时系统只会反复报告“没有账号”，上面一行已经说明。
             if status.accountAvailable, let issue = status.issue {
-                LabeledContent("SYNC_STATUS") {
-                    StatusDetailButton(title: "NEEDS_ATTENTION", message: "\(issue)", warning: true)
-                }
+                StatusDetailRow(label: "SYNC_STATUS", title: "NEEDS_ATTENTION", message: "\(issue)", warning: true)
             }
         } header: {
             Text("ICLOUD_SYNC")

@@ -109,38 +109,12 @@ import ActivityKit
         raw.removeValue(forKey: "setWeight")
         raw.removeValue(forKey: "setDetail")
         raw.removeValue(forKey: "nextSetNumber")
-        raw.removeValue(forKey: "busyTitle")
         let decoded = try JSONDecoder().decode(WorkoutActivityAttributes.ContentState.self, from: JSONSerialization.data(withJSONObject: raw))
         XCTAssertNil(decoded.setWeight)
         XCTAssertNil(decoded.setDetail)
         XCTAssertNil(decoded.nextSetNumber)
-        XCTAssertNil(decoded.busyTitle)
         XCTAssertEqual(decoded.detail, "40 kg · 10 次")
         XCTAssertEqual(decoded.command, state.command)
-    }
-
-    func testSavingDisablesCurrentActionAndRestoresCommandsWithoutChangingTraining() throws {
-        store.startRest(entry: 0, seconds: 90)
-        let before = try XCTUnwrap(store.workoutActivityState())
-        store.syncing = true
-        let saving = try XCTUnwrap(store.workoutActivityState())
-        XCTAssertEqual(saving.busyTitle, "正在保存")
-        XCTAssertNil(saving.command)
-        XCTAssertNil(saving.restCommand)
-        XCTAssertEqual(saving.setLabel, before.setLabel)
-        XCTAssertEqual(saving.setWeight, before.setWeight)
-        XCTAssertEqual(saving.restEnd, before.restEnd)
-        let content = TrainingViewModel(content: saving.trainingContent()).content
-        XCTAssertEqual(content.action?.status, .rest(endsAt: try XCTUnwrap(saving.restEnd)))
-        XCTAssertEqual(content.action?.title, "开始第 1 组")
-        XCTAssertEqual(content.action?.title, before.trainingContent().action?.title)
-        XCTAssertEqual(content.action?.disabled, true)
-        store.syncing = false
-        let after = try XCTUnwrap(store.workoutActivityState())
-        XCTAssertNil(after.busyTitle)
-        XCTAssertEqual(after.command, before.command)
-        XCTAssertEqual(after.restCommand, before.restCommand)
-        XCTAssertEqual(store.draft?.completedSets, 0)
     }
 
     func testBlockedStatesHaveShortActionTitlesForOpeningTheApp() throws {
@@ -312,12 +286,8 @@ import ActivityKit
         XCTAssertEqual(store.draft?.completedSets, 0)
     }
 
-    func testBlockedInputTimerSyncAndStorageFailureCannotComplete() throws {
+    func testBlockedInputTimerAndStorageFailureCannotComplete() throws {
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
-        store.syncing = true
-        XCTAssertNil(store.workoutActivityState()?.command)
-        XCTAssertNotNil(store.performReadyActivityCommand(command))
-        store.syncing = false
         store.localSaveError = "test write failure"
         XCTAssertNil(store.workoutActivityState()?.command)
         XCTAssertNotNil(store.performReadyActivityCommand(command))
@@ -414,14 +384,11 @@ import ActivityKit
         }
     }
 
-    func testDiagnosticsDistinguishMalformedStaleBusyAndRestOwnerRejections() throws {
+    func testDiagnosticsDistinguishMalformedStaleAndRestOwnerRejections() throws {
         var records: [WorkoutActivityDiagnostics.Record] = []
         let command = try XCTUnwrap(store.workoutActivityState()?.command)
         WorkoutActivityDiagnostics.$observer.withValue({ records.append($0) }) {
             XCTAssertNotNil(store.performReadyActivityCommand("not-base64"))
-            store.syncing = true
-            XCTAssertNotNil(store.performReadyActivityCommand(command))
-            store.syncing = false
             store.localSaveError = "private error text"
             XCTAssertNotNil(store.performReadyActivityCommand(command))
             store.localSaveError = nil
@@ -429,7 +396,7 @@ import ActivityKit
             XCTAssertNotNil(store.performReadyActivityCommand(command))
         }
         XCTAssertTrue(records.contains { $0.event == "activity.command.rejected" && $0.fields["reason"] == "invalid_payload" })
-        XCTAssertEqual(records.filter { $0.event == "remote.command.end" }.map { $0.fields["outcome"] }, ["syncing", "save_error", "revision_mismatch"])
+        XCTAssertEqual(records.filter { $0.event == "remote.command.end" }.map { $0.fields["outcome"] }, ["save_error", "revision_mismatch"])
         store.startRest(entry: 0, seconds: 90)
         var skip = try JSONDecoder().decode(WatchTrainingCommand.self, from: XCTUnwrap(Data(base64Encoded: try XCTUnwrap(store.workoutActivityState()?.restCommand))))
         skip.entry = 1

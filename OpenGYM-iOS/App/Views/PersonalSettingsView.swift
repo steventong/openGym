@@ -38,7 +38,7 @@ struct PersonalSettingsView: View {
             .onAppear { if values.isEmpty { original = store.state.filter { keys.contains($0.key) }; values = original } }
             .toolbar { ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { Task {
                 if await store.savePersonalFields(original:original,proposed:values) { dismiss() } else { issue = store.editError }
-            } }.disabled(store.syncing) } }
+            } } } }
             .confirmationDialog("CHANGE_ACCOUNT_WEIGHT_UNIT",isPresented:$unitPrompt,titleVisibility:.visible) {
                 Button("CONVERT_ALL_WEIGHTS") { changeUnit(true) }
                 Button("KEEP_NUMBERS_CHANGE_UNIT_ONLY") { changeUnit(false) }
@@ -84,7 +84,7 @@ struct EquipmentInventoryView: View {
                 for w in sizes { counts[String(w)] = Int(number(plates[decimalKey(w)] ?? (w == 0.5 || (unit == "lb" && [15,1.25].contains(w)) ? 0:6))) }
                 let list = ((original["dumbbells"] as? [String:Any])?[unit] as? [String:Any])?["weights"] as? [Double] ?? []
                 bells = list.map { String($0) }.joined(separator:", ")
-            }.toolbar { ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { save() }.disabled(store.syncing) } }
+            }.toolbar { ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { save() } } }
     }
     private func decimalKey(_ w:Double)->String { w.rounded() == w ? String(Int(w)) : String(w) }
     private func save() {

@@ -206,7 +206,7 @@ final class OpenGYMTests: XCTestCase {
         XCTAssertTrue(seeded)
         let changes = ObservationChangeCount()
         withObservationTracking {
-            _ = store.profileIdentity; _ = store.localSaveError; _ = store.syncing
+            _ = store.profileIdentity; _ = store.localSaveError
             _ = store.state; _ = store.draft
         } onChange: { changes.record() }
         await store.refresh()
@@ -214,7 +214,6 @@ final class OpenGYMTests: XCTestCase {
         let saved = await store.mutate(reportError: false) { source in source }
         XCTAssertTrue(saved)
         XCTAssertEqual(changes.value, 0)
-        XCTAssertFalse(store.syncing)
     }
 
     @MainActor func testIdenticalRefreshDoesNotInvalidateStateButNewStampsDo() async throws {

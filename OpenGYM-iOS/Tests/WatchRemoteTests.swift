@@ -261,9 +261,6 @@ import XCTest
         var wrongOwner = try endRestCommand(); wrongOwner.entry = 1
         XCTAssertEqual(store.performReadyWatchCommand(wrongOwner)["accepted"] as? Bool, false)
         let current = try endRestCommand()
-        store.syncing = true
-        XCTAssertEqual(store.performReadyWatchCommand(current)["accepted"] as? Bool, false)
-        store.syncing = false
         store.localSaveError = "test write failure"
         XCTAssertEqual(store.performReadyWatchCommand(current)["accepted"] as? Bool, false)
         store.localSaveError = nil

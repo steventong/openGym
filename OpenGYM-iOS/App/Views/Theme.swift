@@ -82,6 +82,31 @@ struct StatusDetailButton: View {
             .alert(title, isPresented: $showing) { Button("OK", role: .cancel) {} } message: { Text(message) }
     }
 }
+
+/// 表单里的状态行。状态值和普通 LabeledContent 的值同字号同颜色，点按弹出详情。
+struct StatusDetailRow: View {
+    let label: LocalizedStringKey
+    let title: LocalizedStringKey
+    let message: LocalizedStringKey
+    var warning = false
+    @State private var showing = false
+    var body: some View {
+        LabeledContent(label) {
+            Button { showing = true } label: {
+                HStack(spacing: 6) {
+                    Text(title)
+                    Image(systemName: warning ? "exclamationmark.circle" : "info.circle").imageScale(.small)
+                }
+                .lineLimit(1).minimumScaleFactor(0.8)
+                .foregroundStyle(warning ? Color.orange : Color.secondary)
+            }
+            .buttonStyle(.borderless).accessibilityHint("VIEW_DETAILS")
+            .alert(title, isPresented: $showing) { Button("OK", role: .cancel) {} } message: { Text(message) }
+        }
+        // 行里有按钮时，系统会把分隔线起点对齐到按钮文字，这里固定回行首。
+        .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
+    }
+}
 struct GreenButton: View {
     @Environment(\.isEnabled) private var isEnabled
     let title: LocalizedStringKey

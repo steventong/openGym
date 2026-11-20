@@ -145,7 +145,7 @@ final class EditingTests:XCTestCase {
         try persistence.setReadOnly(true)
         let deleted = await store.deleteRoutine(id:"a")
         XCTAssertFalse(deleted); XCTAssertNotNil(store.editError)
-        XCTAssertTrue(RecordPatch.equal(store.state,before)); XCTAssertFalse(store.syncing)
+        XCTAssertTrue(RecordPatch.equal(store.state,before))
     }
 
 }

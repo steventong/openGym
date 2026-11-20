@@ -20,8 +20,6 @@ struct WorkoutActivityAttributes: ActivityAttributes {
         var setDetail: String? = nil
         /// 下一组的组号，写在“完成第 N 组”“开始第 N 组”按钮上。
         var nextSetNumber: Int? = nil
-        // Optional for activities created by older builds. Busy state stays inside the button.
-        var busyTitle: String? = nil
         var actionReadyAt: Date? = nil
         var setStartedAt: Date? = nil
         var language: String? = nil

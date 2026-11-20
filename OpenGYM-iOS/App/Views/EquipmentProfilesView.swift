@@ -28,7 +28,7 @@ struct EquipmentProfilesView:View {
             guard profiles.allSatisfy({!($0.raw["name"] as? String ?? "").trimmingCharacters(in:.whitespacesAndNewlines).isEmpty}) else{issue = String(localized: "ENTER_A_GYM_NAME", bundle: AppLanguage.bundle, locale: AppLanguage.locale);return}
             let proposed:[String:Any] = ["equipProfiles":profiles.map(\.raw),"activeEquipId":active,"equipFilterOn":enabled]
             Task {if await store.savePersonalFields(original:original,proposed:proposed) {dismiss()} else{issue = store.editError}}
-        }.disabled(store.syncing)} }
+        }} }
     }
 }
 struct EquipmentProfileEditor:View {

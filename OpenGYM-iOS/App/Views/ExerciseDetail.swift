@@ -196,7 +196,6 @@ struct ExerciseDetail: View {
                             .accessibilityIdentifier("copy-exercise-name")
                         Menu {
                             Button("COPY_EXERCISE", systemImage: "doc.on.doc") { namingCopy = true }
-                                .disabled(store.syncing)
                             Button("EDIT_EXERCISE", systemImage: "pencil") { editExercise() }
                                 .accessibilityIdentifier("edit-exercise")
                         } label: {
@@ -230,7 +229,7 @@ struct ExerciseDetail: View {
                     }
                 }
                 HStack {
-                    Button { Task { _ = await store.setFavourite(exercise.id,enabled:!store.favouriteIDs.contains(exercise.id)) } } label: { Label(LocalizedStringKey(store.favouriteIDs.contains(exercise.id) ? "FAVOURITED":"FAVOURITES"),systemImage:store.favouriteIDs.contains(exercise.id) ? "star.fill":"star") }.disabled(store.syncing)
+                    Button { Task { _ = await store.setFavourite(exercise.id,enabled:!store.favouriteIDs.contains(exercise.id)) } } label: { Label(LocalizedStringKey(store.favouriteIDs.contains(exercise.id) ? "FAVOURITED":"FAVOURITES"),systemImage:store.favouriteIDs.contains(exercise.id) ? "star.fill":"star") }
                     Spacer()
                     Button("WORKOUT_HISTORY_AND_PROGRESS") { progress = true }
                 }
@@ -238,7 +237,7 @@ struct ExerciseDetail: View {
                     Link("OPEN_EXERCISE_TUTORIAL",destination:url)
                 }
                 GreenButton(title:saved ? "ADDED_TO_ROUTINE" : "ADD_TO_MY_PLAN",icon:saved ? "checkmark" : "plus") { choosePlan = true }
-                    .disabled(saved || store.syncing)
+                    .disabled(saved)
                 VStack(alignment:.leading,spacing:16) {
                     HStack { Text("EST_ONE_REP_MAX").font(.headline); Spacer(); Text(store.state["oneRmFormula"] as? String ?? "epley").font(.caption).foregroundStyle(GymTheme.muted) }
                     HStack(spacing:14) {
@@ -293,7 +292,6 @@ struct ExerciseDetail: View {
                     .submitLabel(.done)
                     .onSubmit { Task { await saveExerciseCopy() } }
                     .onChange(of: copyName) { copyIssue = nil }
-                    .disabled(store.syncing)
                     .accessibilityIdentifier("exercise-copy-name")
                 if let copyIssue { Text(copyIssue).foregroundStyle(.red) }
             }
@@ -301,17 +299,15 @@ struct ExerciseDetail: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("CANCEL") { namingCopy = false }.disabled(store.syncing)
+                    Button("CANCEL") { namingCopy = false }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("SAVE") { Task { await saveExerciseCopy() } }
-                        .disabled(store.syncing)
                         .accessibilityIdentifier("save-exercise-copy")
                 }
             }
         }
         .presentationDetents([.height(240), .large])
-        .interactiveDismissDisabled(store.syncing)
         .onAppear { copyNameFocused = true }
     }
 
@@ -331,7 +327,6 @@ struct ExerciseDetail: View {
     }
 
     private func saveExerciseCopy() async {
-        guard !store.syncing else { return }
         let name = copyName.trimmingCharacters(in: .whitespacesAndNewlines)
         if let issue = store.customExerciseNameIssue(name) {
             copyIssue = issue

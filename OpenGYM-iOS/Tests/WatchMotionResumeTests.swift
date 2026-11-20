@@ -146,7 +146,7 @@ import XCTest
         XCTAssertNotNil(store.restUntil)
     }
 
-    func testRejectsMotionAfterManualEndAndDuringSaving() throws {
+    func testRejectsMotionAfterManualEndAndOnSaveFailure() throws {
         let stale = try command()
         store.endRestFromTextButton(at: received)
         let start = store.watchSnapshot().setStartedAt
@@ -154,9 +154,6 @@ import XCTest
         XCTAssertEqual(store.watchSnapshot().setStartedAt, start)
         store.startRest(entry: 0, seconds: 90)
         let command = try command()
-        store.syncing = true
-        XCTAssertEqual(store.performWatchCommand(command, now: received)["accepted"] as? Bool, false)
-        store.syncing = false
         store.localSaveError = "test write failure"
         XCTAssertEqual(store.performWatchCommand(command, now: received)["accepted"] as? Bool, false)
         XCTAssertNotNil(store.restUntil)

@@ -77,7 +77,7 @@ import CryptoKit
     static func state(_ store: GymStore, snapshot: WatchTrainingSnapshot? = nil) -> [String: String] {
         let snapshot = snapshot ?? store.watchSnapshot()
         return ["has_account": String(store.userID != nil), "has_draft": String(store.draft != nil),
-                "syncing": String(store.syncing), "save_error": String(store.localSaveError != nil),
+                "save_error": String(store.localSaveError != nil),
                 "work_timer": String(store.workTimer != nil), "completed_sets": String(store.draft?.completedSets ?? 0),
                 "current_entry": String(snapshot.nextSet?.entry ?? -1), "current_set": String(snapshot.nextSet?.index ?? -1),
                 "rest": snapshot.restEnd == nil ? "none" : (snapshot.isResting() ? "active" : "expired")]

@@ -26,29 +26,6 @@ final class OfflineTrainingTests: XCTestCase {
         ["id":"w1","name":"原训练","d":"2026-10-20","start":1_792_476_000_000.0,"end":1_792_476_060_000.0,
          "entries":[["id":"0289","target":["mode":"reps"],"sets":[["w":15,"r":10,"done":true]]]],"prs":[],"future":"keep"]
     }
-    private func snapshots(_ storage: LocalTrainingStorage) throws -> [[String: Any]] {
-        guard let files = FileManager.default.enumerator(at: storage.backupRoot, includingPropertiesForKeys: nil) else { return [] }
-        return try files.compactMap { item in
-            guard let url = item as? URL, url.pathExtension == "json" else { return nil }
-            return try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any]
-        }
-    }
-    func testServerSnapshotsKeepExactResponseSeparateAccountsAndSameTimestamp() throws {
-        let storage = LocalTrainingStorage(root: root)
-        let response: [String: Any] = ["state": ["workouts": [workout()], "_wid": "server-write", "future": ["keep": true]], "rev": 42]
-        let now = Date(timeIntervalSince1970: 1_700_000_000.125)
-        let a = try storage.saveServerSnapshot(response, server: "https://a.invalid", user: "a", now: now)
-        let b = try storage.saveServerSnapshot(response, server: "https://a.invalid", user: "a", now: now)
-        let c = try storage.saveServerSnapshot(response, server: "https://b.invalid", user: "a", now: now)
-        let d = try storage.saveServerSnapshot(response, server: "https://a.invalid", user: "b", now: now)
-        XCTAssertNotEqual(a, b); XCTAssertNotEqual(a.deletingLastPathComponent(), c.deletingLastPathComponent())
-        XCTAssertNotEqual(a.deletingLastPathComponent(), d.deletingLastPathComponent())
-        XCTAssertTrue(a.lastPathComponent.hasPrefix("server-2023-11-14T22-13-20.125Z-"))
-        let saved = try snapshots(storage)
-        XCTAssertEqual(saved.count, 4)
-        for snapshot in saved { XCTAssertTrue(NSDictionary(dictionary: snapshot["response"] as! [String: Any]).isEqual(to: response)) }
-        XCTAssertEqual(try storage.backupRoot.resourceValues(forKeys: [.isExcludedFromBackupKey]).isExcludedFromBackup, true)
-    }
     @MainActor func testExplicitOverwritePreservesOtherRecordsAndUneditedRemoteFields() async throws {
         let persistence = PersistenceController(inMemory: true)
         let s = try store(persistence), old = workout(); var local = old, remote = old
@@ -130,21 +107,17 @@ final class OfflineTrainingTests: XCTestCase {
         let storage = LocalTrainingStorage(root:root), persistence = PersistenceController(inMemory: true), original = workout()
         let suite = "offline-training-" + UUID().uuidString, defaults = try XCTUnwrap(UserDefaults(suiteName:suite))
         defer { defaults.removePersistentDomain(forName:suite) }
-        // 从服务器版升级的账号：资料迁移后保存在本机数据库，冷启动不再读取服务器。
-        try storage.write(["server":"https://test.invalid","user":"offline-test","name":"Offline test"],to:root.appendingPathComponent("last-account.json"))
         let first = GymStore(storage:storage,defaults:defaults,persistence:persistence)
-        first.legacyDocumentSource = { _, _ in ["unit":"kg","workouts":[original],"routines":[]] }
-        first.prepareOfflineLaunch();let imported = await first.importLegacyServerData();XCTAssertEqual(imported,.importedFromServer)
+        first.prepareOfflineLaunch()
+        let seeded = await first.mutate { _ in ["unit":"kg","workouts":[original],"routines":[]] };XCTAssertTrue(seeded)
         var form = HistoryForm(original:original,unit:"kg");form.name = "未提交的名称 ";form.minutes = "12.";form.note = "还没输入完的备注"
         form.entries[0].sets[0].raw[TrainingInput.key] = ["both.w":""]
         XCTAssertTrue(first.keepHistoryEdit(original:original,proposed:form.proposed,unit:"kg",form:form.fields))
         first.draft = try TrainingDraft.fromWeb(["id":"active","name":"训练中","start":1_792_476_000_000.0,"entries":[["id":"0289","sets":[["w":12,"r":10,"done":false,TrainingInput.key:["both.w":"12."]]]]]],unit:"kg")
         first.startRest(entry:0,seconds:90)
         let second = GymStore(storage:storage,defaults:defaults,persistence:persistence)
-        second.legacyDocumentSource = { _, _ in XCTFail("Launch never reads the server");return nil }
         second.prepareOfflineLaunch()
-        XCTAssertEqual(second.userID,"offline-test")
-        XCTAssertEqual(second.userName,"Offline test");XCTAssertEqual(second.workouts.count,1)
+        XCTAssertEqual(second.userID,LocalProfile.user);XCTAssertEqual(second.workouts.count,1)
         let restored = HistoryForm(original:original,unit:"kg",saved:second.historyEdits["w1"])
         XCTAssertEqual(restored.name,"未提交的名称 ");XCTAssertEqual(restored.minutes,"12.");XCTAssertEqual(restored.note,form.note)
         XCTAssertEqual((restored.entries[0].sets[0].raw[TrainingInput.key] as? [String:String])?["both.w"],"")
@@ -179,14 +152,6 @@ final class OfflineTrainingTests: XCTestCase {
         try Data([1]).write(to: folder)
         s.deleteCurrentWorkout()
         XCTAssertEqual(s.draft?.id, "keep-current"); XCTAssertNotNil(s.error)
-    }
-    @MainActor func testDeleteCurrentWorkoutIsBlockedDuringSubmission() throws {
-        let s = try store()
-        s.draft = try TrainingDraft.fromWeb(["id": "submitting", "start": 1000, "entries": []], unit: "kg")
-        s.syncing = true; s.deleteCurrentWorkout()
-        XCTAssertEqual(s.draft?.id, "submitting")
-        let restarted = try store(); restarted.restoreDraft()
-        XCTAssertEqual(restarted.draft?.id, "submitting")
     }
     func testAtomicStorageRecoveryAndAccountIsolation() throws {
         let storage = LocalTrainingStorage(root:root)

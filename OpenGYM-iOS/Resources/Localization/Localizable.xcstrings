@@ -7549,57 +7549,6 @@
         }
       }
     },
-    "IMPORTED_FROM_LOCAL_CACHE": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The server could not be reached. Imported the copy saved on this device at the last sync."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "连不上服务器，已改用本机保存的上次同步结果导入。"
-          }
-        }
-      }
-    },
-    "IMPORTED_FROM_SERVER": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imported from the server."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已从服务器导入。"
-          }
-        }
-      }
-    },
-    "IMPORTING": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Importing…"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在导入…"
-          }
-        }
-      }
-    },
     "IMPORT_AND_REPLACE": {
       "comment": "导入并替换",
       "extractionState": "manual",
@@ -7650,40 +7599,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "导入训练计划"
-          }
-        }
-      }
-    },
-    "IMPORT_SERVER_DATA_AGAIN": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import server data again"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重新迁移服务器资料"
-          }
-        }
-      }
-    },
-    "IMPORT_SERVER_DATA_INFO": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reads your data from the openGym server once more and adds only what this device does not have yet. Nothing already here is changed."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "再次读取 openGym 服务器上的资料，只补充本机还没有的内容，不改动已有的资料。"
           }
         }
       }
@@ -7882,24 +7797,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "手机正在记录训练"
-          }
-        }
-      }
-    },
-    "IPHONE_IS_SAVING": {
-      "comment": "手机正在保存",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "phone is saving"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "手机正在保存"
           }
         }
       }
@@ -12962,24 +12859,6 @@
         }
       }
     },
-    "SERVER": {
-      "comment": "服务器",
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "服务器"
-          }
-        }
-      }
-    },
     "SERVER_BACKUP_FAILED_SYNC_STOPPED": {
       "comment": "服务器快照保存失败，已停止同步：{0}",
       "extractionState": "manual",
@@ -13012,40 +12891,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "服务已连接 · 尚未配对账号"
-          }
-        }
-      }
-    },
-    "SERVER_DATA": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Server data"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "服务器资料"
-          }
-        }
-      }
-    },
-    "SERVER_DATA_UNAVAILABLE": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Could not read the server or a copy on this device. Nothing was imported."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "服务器和本机都读不到资料，没有导入任何内容。"
           }
         }
       }

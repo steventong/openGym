@@ -65,13 +65,13 @@ struct ScheduleEditor: View {
                 }
             }.navigationTitle("WORKOUT_SCHEDULE").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { if dirty { discard = true } else { dismiss() } }.disabled(store.syncing) }
-                    ToolbarItem(placement: .topBarTrailing) { ExplanationButton(title: "SCHEDULE", message: "YOU_CAN_SCHEDULE_SEVERAL_ROUTINES_ON_EACH_WEEKDAY_A_DATE_OVERRIDE_AFFECTS") }; ToolbarItem(placement:.topBarTrailing) { Button(LocalizedStringKey(store.syncing ? "SAVING" : "SAVE")) { Task { if await store.saveSchedule(original:original,proposed:proposed) { dismiss() } else { error = store.editError } } }.disabled(!dirty || store.syncing).accessibilityIdentifier("save-schedule") }
+                    ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { if dirty { discard = true } else { dismiss() } } }
+                    ToolbarItem(placement: .topBarTrailing) { ExplanationButton(title: "SCHEDULE", message: "YOU_CAN_SCHEDULE_SEVERAL_ROUTINES_ON_EACH_WEEKDAY_A_DATE_OVERRIDE_AFFECTS") }; ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { Task { if await store.saveSchedule(original:original,proposed:proposed) { dismiss() } else { error = store.editError } } }.disabled(!dirty).accessibilityIdentifier("save-schedule") }
                 }
                 .onAppear { if !loaded { for key in ["week","dayPlan"] { original[key] = store.state[key] }; week = original["week"] as? [String:Any] ?? [:]; overrides = original["dayPlan"] as? [String:Any] ?? [:]; loaded = true } }
                 .alert("COULD_NOT_SAVE",isPresented:Binding(get:{error != nil},set:{if !$0 { error = nil }})) { Button("GOT_IT",role:.cancel) {} } message: { Text(error ?? "") }
                 .confirmationDialog("DISCARD_SCHEDULE_CHANGES",isPresented:$discard,titleVisibility:.visible) { Button("DISCARD_CHANGES",role:.destructive) { dismiss() }; Button("KEEP_EDITING",role:.cancel) {} }
-                .interactiveDismissDisabled(dirty || store.syncing)
+                .interactiveDismissDisabled(dirty)
         }.tint(GymTheme.green)
     }
 }

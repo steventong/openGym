@@ -7,7 +7,7 @@ extension GymStore {
         snapshot.language = AppLanguage.language
         snapshot.autoEndRestEnabled = autoEndRestEnabled
         guard let userID else { return snapshot }
-        snapshot.account = Self.watchHash(Data("\(profileServer)|\(userID)".utf8))
+        snapshot.account = Self.watchHash(Data("\(LocalProfile.server)|\(userID)".utf8))
         guard let draft else { return snapshot }
         snapshot.sessionID = draft.id
         snapshot.actionReadyAt = trainingActionReadyAt
@@ -67,7 +67,6 @@ extension GymStore {
             var blocked: String?
             if (try? TrainingInput.validate(row)) == nil { blocked = String(localized: "COMPLETE_THIS_SET_S_DETAILS_ON_IPHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
             if workTimer != nil { blocked = String(localized: "TIMER_RUNNING_FINISH_IT_ON_IPHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
-            if syncing { blocked = String(localized: "IPHONE_IS_SAVING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
             if localSaveError != nil { blocked = String(localized: "RESOLVE_THE_DRAFT_SAVE_ISSUE_ON_IPHONE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
             return WatchTrainingSet(entry: e, index: index, number: setNumber, side: side, label: label,
                 weight: mode == "cardio" ? String(format: String(localized: "COUNT_MIN", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: decimal(number(data["min"])))) : "\(weight.isEmpty ? "—" : weight) \(unit)", detail: detail, blockedReason: blocked)
@@ -108,8 +107,8 @@ extension GymStore {
         } else if command.revision != before.revision {
             outcome = "revision_mismatch"
             result = String(localized: "THE_RECORD_ON_YOUR_PHONE_HAS_CHANGED_CHECK_THE_CURRENT_SET_AND", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
-        } else if syncing || localSaveError != nil {
-            outcome = syncing ? "syncing" : "save_error"
+        } else if localSaveError != nil {
+            outcome = "save_error"
             result = String(localized: "FINISH_SAVING_ON_IPHONE_FIRST", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
         } else if command.action == "resumeFromMotion", !autoEndRestEnabled {
             outcome = "motion_disabled"

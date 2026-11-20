@@ -116,7 +116,7 @@ struct RoutineComposer: View {
             }.navigationTitle("NEW_ROUTINE").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement:.topBarLeading) { Button("CANCEL") { dismiss() } }
-                    ToolbarItem(placement:.topBarTrailing) { Button(LocalizedStringKey(store.syncing ? "SAVING" : "SAVE")) { inputBuffer.commitAll(); let title = name.trimmingCharacters(in:.whitespacesAndNewlines); guard !title.isEmpty, !ids.isEmpty else { return }; Task { if await store.addRoutine(name:title,exerciseIDs:ids) { dismiss() } } }.disabled((name.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty && !inputBuffer.hasPending) || ids.isEmpty || store.syncing) }
+                    ToolbarItem(placement:.topBarTrailing) { Button("SAVE") { inputBuffer.commitAll(); let title = name.trimmingCharacters(in:.whitespacesAndNewlines); guard !title.isEmpty, !ids.isEmpty else { return }; Task { if await store.addRoutine(name:title,exerciseIDs:ids) { dismiss() } } }.disabled((name.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty && !inputBuffer.hasPending) || ids.isEmpty) }
                 }
         }.tint(GymTheme.green).environment(\.inputCommitBuffer, inputBuffer)
     }

@@ -29,7 +29,7 @@ extension WorkoutActivityAttributes.ContentState {
                 symbol = "checkmark"
             }
             action = .init(title: title, symbol: symbol, status: status,
-                disabled: busyTitle != nil || trainingActionCommand == nil,
+                disabled: trainingActionCommand == nil,
                 readyAt: systemDeadlinePassed ? nil : actionReadyAt, hint: message)
         } else {
             action = nil

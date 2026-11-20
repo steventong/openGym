@@ -184,7 +184,7 @@ struct HistoryEditor: View {
         catch { self.error = error.localizedDescription }
     }
     private func submit() async {
-        guard !submitting, !store.syncing else { return }
+        guard !submitting else { return }
         submitting = true; defer { submitting = false }
         persist()
         guard TrainingInput.value(form.minutes) != nil else { error = String(localized: "ENTER_A_VALID_DURATION_YOUR_INPUT_HAS_BEEN_KEPT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }

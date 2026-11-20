@@ -61,7 +61,7 @@ struct WorkoutHistoryList: View, Equatable {
     }
 
     private func sync(_ id: String) {
-        guard syncingRecordID == nil, !store.syncing else { return }
+        guard syncingRecordID == nil else { return }
         syncingRecordID = id
         Task {
             defer { syncingRecordID = nil }

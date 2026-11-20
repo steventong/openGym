@@ -12,7 +12,7 @@ extension GymStore {
             let logical = rows.indices.filter { !(rows[$0]["side"] as? String == "R" && $0 > 0 && rows[$0 - 1]["side"] as? String == "L") }
             compactSet = String(format: String(localized: "SET_COUNT_OF_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: logical.filter { $0 <= row.index }.count), String(describing: logical.count))
         } else { compactSet = draft.rawEntries.isEmpty ? "…" : "✓" }
-        let available = !syncing && localSaveError == nil
+        let available = localSaveError == nil
         let command: String?
         if let row, row.blockedReason == nil, available {
             command = activityCommand(snapshot, action: "complete", entry: row.entry, index: row.index, side: row.side)
@@ -21,7 +21,7 @@ extension GymStore {
         } else { command = nil }
         let commandTitle: String
         if localSaveError != nil { commandTitle = String(localized: "COULD_NOT_SAVE", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
-        else if row?.blockedReason != nil, !syncing { commandTitle = workTimer != nil ? String(localized: "TIMER_RUNNING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "COMPLETE_SET_DETAILS", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
+        else if row?.blockedReason != nil { commandTitle = workTimer != nil ? String(localized: "TIMER_RUNNING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "COMPLETE_SET_DETAILS", bundle: AppLanguage.bundle, locale: AppLanguage.locale) }
         else { commandTitle = row != nil ? TrainingActionTitle.complete(set: row?.number, language: AppLanguage.language).title : (snapshot.nextEntry != nil ? TrainingActionTitle.next(exercise: snapshot.nextEntry.map { $0 + 1 }, language: AppLanguage.language).title : String(localized: "OPEN_APP", bundle: AppLanguage.bundle, locale: AppLanguage.locale)) }
         return .init(trainingName: String(draft.name.prefix(80)), exercise: snapshot.exercise,
             position: snapshot.exercisePosition, setLabel: row?.label ?? (draft.rawEntries.isEmpty ? String(localized: "ADD_AN_EXERCISE_TO_START", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : String(localized: "ALL_SETS_COMPLETE", bundle: AppLanguage.bundle, locale: AppLanguage.locale)), compactSet: compactSet,
@@ -30,7 +30,7 @@ extension GymStore {
             restExercise: snapshot.restExercise, command: command,
             commandTitle: commandTitle,
             restCommand: snapshot.restEnd != nil && available ? activityCommand(snapshot, action: "skipRest", entry: restEntry ?? 0) : nil,
-            setWeight: row?.weight, setDetail: row?.detail, nextSetNumber: row?.number, busyTitle: syncing ? String(localized: "SAVING", bundle: AppLanguage.bundle, locale: AppLanguage.locale) : nil,
+            setWeight: row?.weight, setDetail: row?.detail, nextSetNumber: row?.number,
             actionReadyAt: snapshot.actionReadyAt, setStartedAt: snapshot.setStartedAt, language: AppLanguage.language,
             restPhase: snapshot.restPhase)
     }
@@ -83,7 +83,6 @@ extension GymStore {
             else if command.revision != before.revision { reason = "revision_mismatch" }
             else if restUntil == nil { reason = "rest_missing" }
             else if command.entry != restEntry { reason = "rest_owner_mismatch" }
-            else if syncing { reason = "syncing" }
             else if localSaveError != nil { reason = "save_error" }
             else if before.actionTiming.isProtected(at: now) { reason = "action_cooldown" }
             else { reason = nil }
