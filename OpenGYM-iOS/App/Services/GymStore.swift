@@ -248,6 +248,7 @@ import Observation
             guard RecordPatch.equal(draft?.activeJSON,snapshot.activeJSON), let folder = accountFolder else { error = String(localized: "NEW_INPUT_WAS_ENTERED_WHILE_SUBMITTING_YOUR_LOCAL_DRAFT_HAS_BEEN_KEPT", bundle: AppLanguage.bundle, locale: AppLanguage.locale); return }
             do { try localStorage.write(["draft":try JSONSerialization.jsonObject(with:JSONEncoder().encode(snapshot))],to:folder.appendingPathComponent("archive/live-\(snapshot.id).json")) }
             catch { localSaveError = error.localizedDescription; return }
+            workoutHealth.showReceipt(for: snapshot)
             self.draft = nil; selectedTab = 3
         }
     }

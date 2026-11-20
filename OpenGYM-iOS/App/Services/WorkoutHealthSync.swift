@@ -11,6 +11,12 @@ import WatchConnectivity
     private(set) var status = String(localized: "WORKOUT_SYNC_IS_OFF", bundle: AppLanguage.bundle, locale: AppLanguage.locale)
     private(set) var current: HealthWorkoutReport?
     private(set) var ledger = HealthWorkoutLedger()
+    /// 刚保存的训练对应的请求 ID；非空时手机弹出写入进度，用户关闭后清空。只在内存里，重启不再弹出。
+    private(set) var receiptID: String?
+    /// 跟随账本实时更新，手表回执到达后页面随之变化。
+    var receipt: WorkoutHealthReceipt? {
+        receiptID.flatMap { WorkoutHealthReceipt(request: ledger.requests[$0], report: ledger.reports[$0]) }
+    }
     private let journal: HealthWorkoutJournal
     private let health = HKHealthStore()
     private weak var store: GymStore?
@@ -104,6 +110,13 @@ import WatchConnectivity
         do { try journal.write(next); ledger = next; retry(); return true }
         catch { status = String(format: String(localized: "COULD_NOT_SAVE_THE_HEALTH_SYNC_STOP_REQUEST_COUNT", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: error.localizedDescription)); return false }
     }
+    /// 训练保存成功后调用；没有健康请求（同步未开启）时不弹出。
+    func showReceipt(for draft: TrainingDraft) {
+        let id = requestID(for: draft)
+        guard ledger.requests[id] != nil else { return }
+        receiptID = id
+    }
+    func dismissReceipt() { receiptID = nil }
     var watchRequests: [HealthWorkoutRequest] { ledger.pending.filter { $0.owner == .watch } }
     func retry(wakeWatch: Bool = false) {
         load(); guard loaded, !retrying else { return }

@@ -14,7 +14,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 if let cloudSync = store.cloudSync {
-                    CloudSyncSection(status: cloudSync.status)
+                    Section { CloudSyncRow(status: cloudSync.status) }
                 }
 
                 MediaServerSection(current: store.mediaServerURL, save: store.saveMediaServer)

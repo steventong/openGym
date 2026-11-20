@@ -73,10 +73,17 @@ struct WorkoutView: View {
                             if index < names.count { store.selectLiveEntry(index) }
                         }) { index in
                         if index == names.count {
-                            WorkoutExercisePrompt(icon: "checkmark.circle", message: "ALL_EXERCISES_COMPLETE",
-                                buttonTitle: "ADD_NEW_EXERCISE", buttonAccessibilityLabel: "ADD_NEW_EXERCISE",
-                                buttonIdentifier: "completed-workout-add-exercise") {
-                                store.liveInputBuffer.commitAll(); showExercisePicker = true
+                            VStack(spacing: 8) {
+                                WorkoutExercisePrompt(icon: "checkmark.circle", message: "ALL_EXERCISES_COMPLETE",
+                                    buttonTitle: "ADD_NEW_EXERCISE", buttonAccessibilityLabel: "ADD_NEW_EXERCISE",
+                                    buttonIdentifier: "completed-workout-add-exercise") {
+                                    store.liveInputBuffer.commitAll(); showExercisePicker = true
+                                }
+                                GreenButton(title: "FINISH_WORKOUT", icon: "checkmark") {
+                                    store.liveInputBuffer.commitAll(); confirmFinish = true
+                                }
+                                .disabled(store.workTimer != nil)
+                                .accessibilityIdentifier("completed-workout-finish")
                             }
                             // 页面外层有 20pt 内边距，居中区域扣除上下两侧。
                             .containerRelativeFrame(.vertical) { length, _ in max(0, length - 40) }

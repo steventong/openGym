@@ -312,4 +312,42 @@ import WeatherKit
         XCTAssertEqual(WorkoutPlaceCapture.healthCondition(.blizzard), .snow)
         XCTAssertNil(WorkoutPlaceCapture.healthCondition(.hot), "Temperature-only descriptions are not weather conditions")
     }
+
+    func testReceiptFollowsTheFinishedRequestAndWatchReports() {
+        var finished = request()
+        XCTAssertNil(WorkoutHealthReceipt(request: finished, report: nil), "A running workout has no save progress")
+        XCTAssertNil(WorkoutHealthReceipt(request: nil, report: nil))
+        let end = Date(timeIntervalSince1970: 2000)
+        finished.phase = .finished; finished.end = end
+        XCTAssertEqual(WorkoutHealthReceipt(request: finished, report: nil), .waiting)
+        XCTAssertEqual(WorkoutHealthReceipt(request: finished, report: HealthWorkoutReport(id: finished.id, state: .running, updatedAt: end + 5)), .waiting)
+        let interrupted = HealthWorkoutReport(id: finished.id, state: .failed, message: "interrupted", updatedAt: end - 60)
+        XCTAssertEqual(WorkoutHealthReceipt(request: finished, report: interrupted), .waiting, "A failure from before the finish is stale")
+        let failed = HealthWorkoutReport(id: finished.id, state: .failed, message: "denied", updatedAt: end + 5)
+        XCTAssertEqual(WorkoutHealthReceipt(request: finished, report: failed), .failed(message: "denied"))
+        let saved = HealthWorkoutReport(id: finished.id, state: .saved, activeCalories: 120, updatedAt: end + 5)
+        XCTAssertEqual(WorkoutHealthReceipt(request: finished, report: saved), .saved(activeCalories: 120, message: nil))
+    }
+
+    func testSavedWorkoutShowsHealthReceiptUntilDismissed() throws {
+        let (store, _, id) = try fixture()
+        let draft = try XCTUnwrap(store.draft)
+        let sync = store.workoutHealth
+        XCTAssertTrue(sync.finish(draft, at: Date()))
+        sync.showReceipt(for: draft)
+        XCTAssertEqual(sync.receiptID, id)
+        XCTAssertEqual(sync.receipt, .waiting)
+        sync.receive(HealthWorkoutReport(id: id, state: .saved, activeCalories: 80), owner: .watch)
+        XCTAssertEqual(sync.receipt, .saved(activeCalories: 80, message: nil))
+        sync.dismissReceipt()
+        XCTAssertNil(sync.receipt)
+    }
+
+    func testReceiptIsNotShownWithoutAHealthRequest() throws {
+        let (store, _, _) = try fixture()
+        var other = try XCTUnwrap(store.draft)
+        other.id = "never-synced"
+        store.workoutHealth.showReceipt(for: other)
+        XCTAssertNil(store.workoutHealth.receiptID, "Health sync was off when this workout started")
+    }
 }

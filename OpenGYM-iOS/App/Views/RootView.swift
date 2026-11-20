@@ -69,6 +69,18 @@ struct RootView: View {
         .sheet(item: $store.selectedExercise) {
             ExerciseDetail(exercise: $0)
         }
+        .sheet(
+            isPresented: Binding(
+                get: { store.workoutHealth.receiptID != nil },
+                set: {
+                    if !$0 {
+                        store.workoutHealth.dismissReceipt()
+                    }
+                }
+            )
+        ) {
+            WorkoutHealthReceiptSheet()
+        }
         .alert(
             String("openGym"),
             isPresented: Binding(

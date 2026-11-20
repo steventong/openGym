@@ -1,3 +1,4 @@
+import CloudKit
 import CoreData
 import Observation
 
@@ -5,7 +6,7 @@ import Observation
 struct CloudSyncStatus: Equatable {
     var accountAvailable = false
     var lastSync: Date?
-    var issue: String?
+    var issue: CloudSyncIssue?
 }
 
 /// 监听 Core Data 的 CloudKit 镜像事件。同步由系统自动进行，这里只记录结果供设置页显示。
@@ -23,16 +24,21 @@ struct CloudSyncStatus: Equatable {
         observers.append(center.addObserver(forName: NSPersistentCloudKitContainer.eventChangedNotification, object: container, queue: .main) { [weak self] note in
             guard let event = note.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey] as? NSPersistentCloudKitContainer.Event,
                   let finished = event.endDate else { return }
-            let succeeded = event.succeeded, failure = event.error?.localizedDescription, isSetup = event.type == .setup
-            MainActor.assumeIsolated { self?.record(finished: finished, succeeded: succeeded, failure: failure, isSetup: isSetup) }
+            let phase: CloudSyncIssue.Phase = switch event.type {
+            case .import: .download
+            case .export: .upload
+            default: .setup
+            }
+            let issue = event.succeeded ? nil : CloudSyncIssue(error: event.error ?? CKError(.internalError), phase: phase)
+            MainActor.assumeIsolated { self?.record(finished: finished, issue: issue, isSetup: phase == .setup) }
         })
         observers.append(center.addObserver(forName: .NSUbiquityIdentityDidChange, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.status.accountAvailable = FileManager.default.ubiquityIdentityToken != nil }
         })
     }
 
-    private func record(finished: Date, succeeded: Bool, failure: String?, isSetup: Bool) {
-        guard succeeded else { status.issue = failure; return }
+    private func record(finished: Date, issue: CloudSyncIssue?, isSetup: Bool) {
+        if let issue { status.issue = issue; return }
         status.issue = nil
         // 初始化事件不代表资料已经传输。
         guard !isSetup else { return }
