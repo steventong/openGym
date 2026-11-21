@@ -56,9 +56,16 @@ enum HealthWorkoutAccess {
     /// One fixed point at the start and end of the workout, so Fitness shows where it happened on a map.
     /// The route belongs to the builder and is saved with `finishWorkout`; a failure here never blocks the workout.
     static func addRoute(_ request: HealthWorkoutRequest, to builder: HKWorkoutBuilder, health: HKHealthStore, from start: Date, to end: Date) async {
-        guard let place = request.place, place.hasLocation,
-              health.authorizationStatus(for: route) == .sharingAuthorized,
-              let series = builder.seriesBuilder(for: route) as? HKWorkoutRouteBuilder else { return }
+        guard let place = request.place, place.hasLocation else { return }
+        let status = health.authorizationStatus(for: route)
+        guard status == .sharingAuthorized else {
+            logger.error("HealthSync route skipped authorization=\(status.rawValue)")
+            return
+        }
+        guard let series = builder.seriesBuilder(for: route) as? HKWorkoutRouteBuilder else {
+            logger.error("HealthSync route skipped no route series builder")
+            return
+        }
         let points = [start, max(start, end)].map { date in
             CLLocation(coordinate: CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude),
                        altitude: place.altitude ?? 0, horizontalAccuracy: place.horizontalAccuracy,
@@ -205,8 +212,11 @@ enum HealthWorkoutAccess {
                 guard session.state == .stopped || session.state == .ended else {
                     throw NSError(domain: "OpenGymHealth", code: 3, userInfo: [NSLocalizedDescriptionKey: String(localized: "STOPPING_ACTIVITY_TRACKING_RETRY_SYNCING_SHORTLY", bundle: AppLanguage.bundle, locale: AppLanguage.locale)])
                 }
-                if !collectionEnded { try await builder.endCollection(at: end); collectionEnded = true }
-                await HealthWorkoutAccess.addRoute(request, to: builder, health: health, from: builder.startDate ?? request.start, to: end)
+                // Route points go in while collection is still open, the way the Workout app records them.
+                if !collectionEnded {
+                    await HealthWorkoutAccess.addRoute(request, to: builder, health: health, from: builder.startDate ?? request.start, to: end)
+                    try await builder.endCollection(at: end); collectionEnded = true
+                }
                 // The training may have been renamed since collection began; place and weather arrive with the finish.
                 try await builder.addMetadata(HealthWorkoutAccess.metadata(request))
                 guard let workout = try await builder.finishWorkout() else {
