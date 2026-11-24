@@ -112,7 +112,7 @@ import OSLog
         }
         guard sample.recordedAt >= max(listeningSince, context.rest.startedAt), sample.recordedAt <= now() else { return }
         let onset = detector.consume(sample)
-        if let note = detector.takeNote() { Self.log(note) }
+        for note in detector.takeNotes() { Self.log(note) }
         guard let onset else {
             state = .listening(context, token, listeningSince, detector)
             return
@@ -139,7 +139,7 @@ import OSLog
 
     private static func log(_ note: RepeatedMotionDetector.Note) {
         func format(_ value: Double?) -> String { value.map { String(format: "%.3f", $0) } ?? "-" }
-        logger.info("Rest motion \(note.kind.rawValue, privacy: .public) cycles=\(note.cycles, privacy: .public) reason=\(note.reason?.rawValue ?? "-", privacy: .public) period_s=\(format(note.period), privacy: .public) peak_pos_g=\(format(note.positivePeak), privacy: .public) peak_neg_g=\(format(note.negativePeak), privacy: .public)")
+        logger.info("Rest motion \(note.kind.rawValue, privacy: .public) channel=\(note.channel.rawValue, privacy: .public) cycles=\(note.cycles, privacy: .public) reason=\(note.reason?.rawValue ?? "-", privacy: .public) period_s=\(format(note.period), privacy: .public) peak_pos=\(format(note.positivePeak), privacy: .public) peak_neg=\(format(note.negativePeak), privacy: .public) turn_pos_rad=\(format(note.positiveTurn), privacy: .public) turn_neg_rad=\(format(note.negativeTurn), privacy: .public)")
     }
 
     /// 与 Context 的条件顺序一致，说明为何当前不需要采样。

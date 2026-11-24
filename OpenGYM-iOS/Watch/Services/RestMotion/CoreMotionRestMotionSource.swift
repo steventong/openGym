@@ -32,8 +32,11 @@ import OSLog
                     x: r.m11 * a.x + r.m21 * a.y + r.m31 * a.z,
                     y: r.m12 * a.x + r.m22 * a.y + r.m32 * a.z,
                     z: r.m13 * a.x + r.m23 * a.y + r.m33 * a.z)
+                // 角速度保留设备系：弯举等铰链动作的转轴固定在前臂上，转换到参考系反而会随姿态转动。
+                let rate = data.rotationRate
                 receive(.success(.init(timestamp: data.timestamp,
-                    recordedAt: Date(timeIntervalSince1970: epoch + data.timestamp), acceleration: acceleration)))
+                    recordedAt: Date(timeIntervalSince1970: epoch + data.timestamp), acceleration: acceleration,
+                    rotationRate: .init(x: rate.x, y: rate.y, z: rate.z))))
             }
         }
     }
