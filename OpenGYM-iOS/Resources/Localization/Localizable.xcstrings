@@ -9615,6 +9615,23 @@
         }
       }
     },
+    "MORE_PLAN_ACTIONS" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More plan actions"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多计划选项"
+          }
+        }
+      }
+    },
     "MORE_REPS_SHORTER_RESTS_AND_CARDIO" : {
       "comment" : "更多次数、较短休息和有氧",
       "extractionState" : "manual",
@@ -10798,24 +10815,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "顺序"
-          }
-        }
-      }
-    },
-    "ORDER_PROGRESS" : {
-      "comment" : "顺序 / 进度",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Order / Progress"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "顺序 / 进度"
           }
         }
       }
@@ -17059,24 +17058,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每周"
-          }
-        }
-      }
-    },
-    "WEEKLY_BY_DATE" : {
-      "comment" : "每周 / 单日",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Weekly / By date"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每周 / 单日"
           }
         }
       }

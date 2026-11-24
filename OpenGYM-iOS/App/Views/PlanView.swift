@@ -12,14 +12,13 @@ struct PlanView: View {
                 HStack {
                     VStack(alignment:.leading,spacing:7) { Text("ROUTINES").font(.system(size:34,weight:.bold)) }
                     Spacer()
-                    Button { create = true } label: { Image(systemName:"plus").font(.system(size:20)).foregroundStyle(GymTheme.green).padding(12).background(GymTheme.green.opacity(0.12),in:Circle()) }.accessibilityLabel("NEW_ROUTINE")
+                    Button { create = true } label: { PlanHeaderIcon(systemName:"plus") }.accessibilityLabel("NEW_ROUTINE")
+                    PlanMoreMenu(openSchedule:{ schedule = true },openRotation:{ rotation = true })
                 }
                 if store.routines.isEmpty {
                     EmptyCard(icon:"calendar",title:"NO_ROUTINES_YET")
                     GreenButton(title:"CREATE_ROUTINE",icon:"plus") { create = true }
                 }
-                Button { schedule = true } label: { HStack { Label("WORKOUT_SCHEDULE",systemImage:"calendar.badge.clock"); Spacer(); Text("WEEKLY_BY_DATE").font(.caption); Image(systemName:"chevron.right") }.foregroundStyle(GymTheme.green).gymCard() }.accessibilityIdentifier("open-schedule")
-                Button {rotation = true} label:{HStack {Label("ROTATION_SCHEDULE",systemImage:"repeat");Spacer();Text("ORDER_PROGRESS").font(.caption);Image(systemName:"chevron.right")}.foregroundStyle(GymTheme.green).gymCard()}.accessibilityIdentifier("open-rotation")
                 if store.rotationSummary()["view"] as? [String:Any] != nil {RotationProgressCard()}
                 ForEach(store.routines) { routine in
                     VStack(alignment:.leading,spacing:16) {
@@ -47,6 +46,36 @@ struct PlanView: View {
             .sheet(item:$selected) { routine in RoutineEditor(routine:routine,unit:store.unit) }
     }
 }
+private struct PlanHeaderIcon: View {
+    let systemName: String
+
+    var body: some View {
+        Image(systemName: systemName)
+            .font(.system(size: 20))
+            .foregroundStyle(GymTheme.green)
+            .frame(width: 44, height: 44)
+            .background(GymTheme.green.opacity(0.12), in: Circle())
+    }
+}
+
+private struct PlanMoreMenu: View {
+    let openSchedule: () -> Void
+    let openRotation: () -> Void
+
+    var body: some View {
+        Menu {
+            Button("WORKOUT_SCHEDULE", systemImage: "calendar.badge.clock", action: openSchedule)
+                .accessibilityIdentifier("open-schedule")
+            Button("ROTATION_SCHEDULE", systemImage: "repeat", action: openRotation)
+                .accessibilityIdentifier("open-rotation")
+        } label: {
+            PlanHeaderIcon(systemName: "ellipsis")
+        }
+        .accessibilityLabel("MORE_PLAN_ACTIONS")
+        .accessibilityIdentifier("plan-more-menu")
+    }
+}
+
 private struct RoutineExercisePreview: View {
     let exercises: [[String: Any]]
     private let thumbnailSize: CGFloat = 52
