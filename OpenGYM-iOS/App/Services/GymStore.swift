@@ -25,6 +25,7 @@ import Observation
     var lastDocumentChange: Date?
     var selectedTab = 0
     var showSettings = false
+    var showAIChat = false
     var selectedExercise: Exercise?
     var draft: TrainingDraft? {
         willSet {
@@ -61,6 +62,9 @@ import Observation
     @ObservationIgnored lazy var healthSync = HealthWeightSync(store:self)
     @ObservationIgnored lazy var workoutHealth = WorkoutHealthSync(store: self)
     @ObservationIgnored lazy var historyHealth = HistoryHealthSync()
+    /// AI 助手。只有正式容器使用钥匙串，测试和预览的 key 只在内存里。
+    @ObservationIgnored lazy var aiSettings = AISettings(defaults: defaults, keys: cloudSync != nil ? AIKeychain() : AIMemoryKeyStore())
+    @ObservationIgnored lazy var aiChat = AIChatStore(store: self, settings: aiSettings, responder: AIHTTPClient())
     var restUntil: Date? {
         get { guard let t = draft?.activeJSON["nativeRest"] as? [String: Any] else { return nil }; return Date(timeIntervalSince1970: number(t["end"])) }
         set { changeActive { raw in if let newValue { var rest = raw["nativeRest"] as? [String: Any] ?? [:]; rest["end"] = newValue.timeIntervalSince1970; raw["nativeRest"] = rest } else { raw.removeValue(forKey: "nativeRest") } } }

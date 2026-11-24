@@ -24,6 +24,7 @@ struct HomeView: View {
                         Text(Date().formatted(.dateTime.month().day().weekday(.wide).locale(AppLanguage.locale))).font(.system(size:13)).foregroundStyle(GymTheme.muted)
                     }
                     Spacer()
+                    Button { store.showAIChat = true } label: { Image(systemName: "sparkles").font(.system(size: 22)).foregroundStyle(GymTheme.green).frame(width: 27, height: 27).padding(12).background(GymTheme.card, in: Circle()) }.accessibilityLabel("AI_COACH").accessibilityIdentifier("open-ai-chat")
                     Button { store.showSettings = true } label: { Image(systemName:"gearshape").font(.system(size:22)).foregroundStyle(.white).padding(12).background(GymTheme.card,in:Circle()) }.accessibilityLabel("SETTINGS")
                 }
                 VStack(spacing:18) {

@@ -58,9 +58,18 @@ xcodebuild -project OpenGYM.xcodeproj -scheme OpenGYM \
 ## 动作库
 
 - 5,632 条动作的文字资料内置在 `Resources/catalogue.json`，App 不从网络读取目录。需要更新时，用一份 openGym 动作目录重新生成后重新打包：`python3 scripts/build-catalogue.py /path/to/openGym`（读取其中的 `catalogue/exercises` 与 `catalogue/i18n/zh.json`）。
-- 图片和视频不打包，首次查看时从「设置 → 动作图片与视频」填写的地址下载（`/exercise-media/still/{id}.webp`、`/exercise-media/clip/{id}.mp4`），缓存在 `Documents/workout-images` 与 `Documents/workout-videos`。这是 App 唯一的网络访问。
+- 图片和视频不打包，首次查看时从「设置 → 动作图片与视频」填写的地址下载（`/exercise-media/still/{id}.webp`、`/exercise-media/clip/{id}.mp4`），缓存在 `Documents/workout-images` 与 `Documents/workout-videos`。除 iCloud 同步和用户自行配置的 AI 服务外，这是 App 唯一的网络访问。
 - 计划或训练记录用到某个动作库动作时，该动作会复制进用户自己的资料（`StoredExercise`，`origin = catalogue`），之后显示以副本为准，并随 iCloud 同步。
 - 任何动作都可以在详情页菜单中「编辑动作」。编辑动作库动作会保存为同 ID 的本地动作，计划和历史记录继续指向它；删除这份本地动作后恢复为动作库原样。「复制动作」仍会创建一个独立 ID 的新动作。
+
+## AI 教练
+
+首页右上角的星形按钮打开对话；在「设置 → AI 教练」选择 Anthropic 或 OpenAI（Chat Completions）接口、官方或自定义地址、模型和 API key。
+
+- API key 只保存在 iCloud 钥匙串（`AIKeychain`），随系统同步到同一 Apple 账户的设备。协议与地址的每种组合各用各的 key，自定义地址按协议、主机和端口区分，key 只会发给它所属的主机；请求不跟随重定向。其余设置存 UserDefaults，对话保存在本机文件 `ai-chat.json`，都不随 iCloud 同步。
+- 消息和 AI 读取的训练、身体数据会发送到用户配置的服务。远程地址必须使用 HTTPS，局域网地址可以使用 HTTP。
+- `AITool.swift` 是工具清单：参数结构同时用于生成 JSON Schema 和校验模型给出的参数。查询直接执行；修改由 `AIToolbox` 生成提案，用户在对话里的确认卡片确认后才经 `GymStore` 现有流程写入。
+- `AIChatStore` 持有对话状态，`AIChatStore+Actions.swift` 是对话循环；`AnthropicMessages.swift`、`OpenAIChat.swift` 负责两种协议的请求与流式解析。新增工具时在清单、`AIToolbox.prepare` 和文案 `AI_TOOL_<名称>` 中各加一项。
 
 ## 训练规则
 
@@ -68,7 +77,8 @@ xcodebuild -project OpenGYM.xcodeproj -scheme OpenGYM \
 
 ## 已知边界
 
-- AI 教练已下线（原实现依赖服务器端的模型服务）。已有的教练记录保留在资料中，暂无入口。
+- 旧版服务器 AI 教练的记录保留在资料中，暂无入口。新的 AI 教练见上一节，不读取这些记录。
+- AI 教练不能修改进行中的训练、循环排期、重量单位、器械库存和 Apple 健康同步。对话在 App 前台进行，切到后台可能中断，可以重试。
 - 从 Apple 健康读取的体重会作为体重记录随资料同步到 iCloud。上架审核前请确认这符合 App Store 对健康数据的要求，或改为仅保存在本机。
 - 训练草稿不跨设备同步：一次训练在哪台设备开始，就在哪台设备完成。
 - CloudKit 同步需要真机和 iCloud 账号验证；模拟器只能验证本机存储。

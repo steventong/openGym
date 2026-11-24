@@ -17,6 +17,13 @@ struct SettingsView: View {
                     Section { CloudSyncRow(status: cloudSync.status) }
                 }
 
+                Section {
+                    NavigationLink { AISettingsView(settings: store.aiSettings) } label: {
+                        LabeledContent("AI_COACH") { Text(store.aiSettings.isConfigured ? "AI_CONFIGURED" : "AI_NOT_SET_UP") }
+                    }
+                    .accessibilityIdentifier("open-ai-settings")
+                }
+
                 MediaServerSection(current: store.mediaServerURL, save: store.saveMediaServer)
 
                 Section("PERSONAL_SETTINGS") {

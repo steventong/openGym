@@ -84,15 +84,22 @@ struct CustomExerciseEditor:View {
             proposed["desc"] = String((raw["desc"] as? String ?? "").prefix(1000))
         }
         if baseline == nil || ["bp", "primaries", "secondaries"].contains(where: { !RecordPatch.equal(initial[$0], raw[$0]) }) {
-            let primary = raw["bp"] as? String == "cardio" ? ["cardiovascular system"] : raw["primaries"] as? [String] ?? []
-            let secondary = (raw["secondaries"] as? [String] ?? []).filter { !primary.contains($0) }
-            proposed["primaries"] = primary
-            proposed["secondaries"] = secondary
-            proposed["sm"] = secondary
-            proposed["muscleGroups"] = primary + secondary
-            let target = baseline?["tg"] as? String
-            proposed["tg"] = primary.contains(target ?? "") ? target : primary.first ?? ""
+            CustomExerciseMuscles.apply(primary: raw["primaries"] as? [String] ?? [], secondary: raw["secondaries"] as? [String] ?? [], to: &proposed, baseline: baseline)
         }
         Task { if await store.savePersonalRecord(collection:"customEx",key:"id",original:original,proposed:proposed) { if let id = proposed["id"] as? String, store.selectedExercise != nil { store.selectedExercise = store.exercise(id) };dismiss() } else { issue = store.editError } }
+    }
+}
+
+/// 自定义动作的肌群字段由主要、次要肌群推导，编辑页与 AI 助手共用。
+enum CustomExerciseMuscles {
+    static func apply(primary: [String], secondary: [String], to record: inout [String: Any], baseline: [String: Any]?) {
+        let primary = record["bp"] as? String == "cardio" ? ["cardiovascular system"] : primary
+        let secondary = secondary.filter { !primary.contains($0) }
+        record["primaries"] = primary
+        record["secondaries"] = secondary
+        record["sm"] = secondary
+        record["muscleGroups"] = primary + secondary
+        let target = baseline?["tg"] as? String
+        record["tg"] = primary.contains(target ?? "") ? target : primary.first ?? ""
     }
 }

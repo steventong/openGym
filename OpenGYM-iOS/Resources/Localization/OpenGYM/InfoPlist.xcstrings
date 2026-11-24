@@ -61,6 +61,23 @@
         }
       }
     },
+    "NSLocalNetworkUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "openGym connects to a server on your local network when you set one as your AI service or exercise media address."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当你把局域网服务器设为 AI 服务或动作媒体地址时，openGym 需要连接它。"
+          }
+        }
+      }
+    },
     "NSLocationWhenInUseUsageDescription" : {
       "comment" : "开启「添加位置和天气」后，openGym 会在训练开始时读取一次你的位置，并随训练保存到 Apple 健康。",
       "extractionState" : "manual",

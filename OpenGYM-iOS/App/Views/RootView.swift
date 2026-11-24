@@ -66,6 +66,9 @@ struct RootView: View {
         .sheet(isPresented: $store.showSettings) {
             SettingsView()
         }
+        .sheet(isPresented: $store.showAIChat) {
+            AIChatView(chat: store.aiChat)
+        }
         .sheet(item: $store.selectedExercise) {
             ExerciseDetail(exercise: $0)
         }
