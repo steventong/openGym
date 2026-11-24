@@ -11,9 +11,6 @@ enum LocalProfile {
 /// 启动时从 Core Data 读出整份文档 → 页面与规则只读 `state` → 所有修改经 `mutate` 写回变化的记录
 /// → iCloud 导入其他设备的变更后，数据库发出通知，这里重新读取文档。
 extension GymStore {
-    /// 全新资料的文档骨架，与规则引擎默认值一致。
-    static let emptyDocument: [String: Any] = ["unit": "kg", "routines": [], "workouts": [], "bodyweight": [], "week": [String: Any]()]
-
     /// 冷启动准备：确定本机资料标识，读出文档、训练草稿和历史编辑。
     func prepareOfflineLaunch() {
         userID = LocalProfile.user
@@ -59,9 +56,8 @@ extension GymStore {
             return false
         }
         do {
-            // 还没有任何设置的全新资料，第一次保存时补上文档骨架；已有资料原样交给修改操作。
-            let source = StateDocument.settings(of: state).isEmpty ? Self.emptyDocument.merging(state) { _, existing in existing } : state
-            let next = StateDocument.canonical(addingExerciseCopies(to: try operation(source)))
+            // 不补任何默认值：新设备在 iCloud 导入前写下的默认值会比其他设备的真实设置更新，合并时把它们盖掉。
+            let next = StateDocument.canonical(addingExerciseCopies(to: try operation(state)))
             guard verify?(next) != false else {
                 throw APIError.response(0, String(localized: "COULD_NOT_SAVE_ON_THIS_DEVICE", bundle: AppLanguage.bundle, locale: AppLanguage.locale))
             }

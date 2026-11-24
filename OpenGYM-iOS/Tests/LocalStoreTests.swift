@@ -137,6 +137,86 @@ import XCTest
         XCTAssertTrue(StateDocument.same(try StateRepository(persistence: persistence).load(), before))
     }
 
+    // MARK: - 新设备不写入默认设置
+
+    private func settingKeys(in persistence: PersistenceController) throws -> Set<String> {
+        Set(try objects("StoredSetting", in: persistence).compactMap { $0.value(forKey: "key") as? String })
+    }
+
+    func testFirstSaveOnNewDeviceStoresNoDefaultSettings() async throws {
+        let persistence = PersistenceController(inMemory: true)
+        let s = store(persistence)
+        try s.reloadDocument()
+        let weighed = await s.recordWeight(80)
+        XCTAssertTrue(weighed)
+        XCTAssertEqual(try settingKeys(in: persistence), [])
+        XCTAssertEqual(s.unit, "kg")
+    }
+
+    func testFinishingWorkoutOnNewDeviceStoresOnlyWhatTheWorkoutProduced() async throws {
+        let persistence = PersistenceController(inMemory: true)
+        let s = store(persistence)
+        try s.reloadDocument()
+        s.startFreestyle()
+        s.manageLiveExercise(action: "add", index: 0, id: "0289")
+        s.liveRowAction(entry: 0, set: 0, action: ["action": "field", "key": "w", "value": 20])
+        s.liveRowAction(entry: 0, set: 0, action: ["action": "field", "key": "r", "value": 8])
+        s.liveRowAction(entry: 0, set: 0, action: ["action": "toggle"])
+        await s.finish()
+        XCTAssertNil(s.error)
+        XCTAssertEqual(s.workouts.count, 1)
+        XCTAssertEqual(try settingKeys(in: persistence), ["exWeights"])
+        // 删除后由训练得到的工作重量随之清空，同样不带出其他默认值。
+        let deleted = await s.deletePersonalWorkout(WorkoutRecord(raw: try XCTUnwrap(s.workouts.first)))
+        XCTAssertTrue(deleted, s.editError ?? "")
+        XCTAssertTrue(try settingKeys(in: persistence).isSubset(of: ["exWeights"]))
+    }
+
+    func testRotationAndPlanImportOnNewDeviceStoreNoUnrelatedDefaults() async throws {
+        let persistence = PersistenceController(inMemory: true)
+        let s = store(persistence)
+        try s.reloadDocument()
+        let added = await s.addRoutine(name: "推", exerciseIDs: ["0025"])
+        XCTAssertTrue(added)
+        let id = try XCTUnwrap(s.routines.first?.id)
+        let rotated = await s.updateRotation(action: "save", ids: [id], label: "", baseline: s.state)
+        XCTAssertTrue(rotated, s.editError ?? "")
+        XCTAssertEqual(try settingKeys(in: persistence), ["scheduleMode", "rotation", "queue"])
+        let bundle: [String: Any] = ["routines": [["id": "x", "name": "拉", "ex": []]], "customEx": [], "week": [String: Any](), "unit": "kg"]
+        let imported = await s.mutate { source in
+            try WebRules.shared.call("personalChange", payload: ["action": "importPlan", "state": source, "bundle": bundle, "schedule": false]) as! [String: Any]
+        }
+        XCTAssertTrue(imported, s.error ?? "")
+        XCTAssertEqual(s.routines.map(\.name), ["推", "拉"])
+        XCTAssertEqual(try settingKeys(in: persistence), ["scheduleMode", "rotation", "queue"])
+    }
+
+    func testOlderDeviceSettingsSurviveFirstSaveOnNewDevice() async throws {
+        let persistence = PersistenceController(inMemory: true)
+        let s = store(persistence)
+        try s.reloadDocument()
+        let weighed = await s.recordWeight(80)
+        XCTAssertTrue(weighed)
+        // iCloud 随后导入另一台设备更早保存的设置。
+        let context = persistence.container.viewContext
+        for (key, value) in [("unit", "lb"), ("week", ["1": ["r1"]])] as [(String, Any)] {
+            let object = NSEntityDescription.insertNewObject(forEntityName: "StoredSetting", into: context)
+            object.setValue(key, forKey: "key")
+            object.setValue(try JSONSerialization.data(withJSONObject: value, options: [.fragmentsAllowed]), forKey: "payload")
+            object.setValue(Date(timeIntervalSince1970: 1_000), forKey: "updatedAt")
+        }
+        try context.save()
+        try s.reloadDocument()
+        XCTAssertEqual(s.unit, "lb")
+        XCTAssertTrue(StateDocument.same(s.state["week"], ["1": ["r1"]]))
+        // 已有的设置即使等于默认值，后续训练保存也不能把它删掉。
+        let reset = await s.mutate { source in var next = source; next["unit"] = "kg"; next["restSec"] = 90; return next }
+        XCTAssertTrue(reset)
+        let rotated = await s.updateRotation(action: "week", ids: [], label: "", baseline: s.state)
+        XCTAssertTrue(rotated, s.editError ?? "")
+        XCTAssertTrue(try settingKeys(in: persistence).isSuperset(of: ["unit", "restSec", "week"]))
+    }
+
     // MARK: - 动作库副本
 
     func testUsingCatalogueExerciseCopiesItAndEditingReplacesTheCopy() async throws {

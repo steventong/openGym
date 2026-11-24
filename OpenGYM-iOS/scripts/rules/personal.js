@@ -1,4 +1,5 @@
 import { t } from './lib/i18n-core.js';
+import { withoutDefaults } from './defaults.js';
 // Native personal features use the same catalogue, units and analytics as the web client.
 import { registerCustom, EXIDX, betterWeight, isAssisted } from './lib/exercises.js';
 import { convertStateUnit } from './lib/units.js';
@@ -22,8 +23,9 @@ import { TEMPLATES, TEMPLATE_LIST, DEFAULT_TEMPLATE_ID } from './lib/structuralB
 import { speedUnitOf, toSpeed } from './lib/speed.js';
 import { rebuildPrHistory } from './lib/workout-date.js';
 import { workoutText } from './lib/workout-text.js';
+const initial = () => ({unit:'kg', workouts:[], routines:[], customEx:[], bodyweight:[], exWeights:{}, week:{}, dayPlan:{}});
 const prepare = state => {
-  const s = {unit:'kg', workouts:[], routines:[], customEx:[], bodyweight:[], exWeights:{}, week:{}, dayPlan:{}, ...state};
+  const s = {...initial(), ...state};
   registerCustom(s.customEx); s.workouts.sort((a,b)=>(a.start||0)-(b.start||0)); return s;
 };
 function customExerciseInUse(state, id, localEntries) {
@@ -90,24 +92,25 @@ export function personalChange(input){
     return JSON.stringify({state});
   }
   const s=prepare(p.state);
+  const saved=result=>JSON.stringify(withoutDefaults(result,p.state,initial()));
   if(p.action==='unit'){
     const out=p.convert?convertStateUnit(s,p.unit):{...s,unit:p.unit};
     if(p.convert)out.bodyweight=(out.bodyweight||[]).map(row=>{
       const prior=s.bodyweight.find(x=>x.d===row.d),mark=prior?.healthKit;
       return mark&&prior.w===mark.value&&prior.t===mark.time?{...row,healthKit:{...row.healthKit,value:row.w}}:row;
     });
-    return JSON.stringify(out);
+    return saved(out);
   }
-  if(p.action==='importPlan'){mergePlan(s,p.bundle,{schedule:p.schedule});return JSON.stringify(s);}
+  if(p.action==='importPlan'){mergePlan(s,p.bundle,{schedule:p.schedule});return saved(s);}
   if(p.action==='deleteWorkout'){
-    const removed=s.workouts.find(w=>(w.id||`${w.d}|${w.start}`)===p.id);if(!removed)return JSON.stringify(s);
+    const removed=s.workouts.find(w=>(w.id||`${w.d}|${w.start}`)===p.id);if(!removed)return saved(s);
     s.workouts=s.workouts.filter(w=>w!==removed);const touched=[...new Set((removed.entries||[]).map(e=>e.id))];
     // An empty changed record lets the web rule rebuild only affected record badges.
     s.workouts=rebuildPrHistory(s.workouts,touched,{entries:[]});
     for(const id of touched){const before=(removed.entries||[]).filter(e=>e.id===id).map(bestWeightForEntry).filter(w=>w>0).reduce((a,b)=>a>0?betterWeight(id,a,b):b,0);if(s.exWeights[id]?.w!==before)continue;
       const remaining=s.workouts.flatMap(w=>(w.entries||[]).filter(e=>e.id===id).map(e=>({w:bestWeightForEntry(e),d:w.d}))).filter(x=>x.w>0);
       const best=remaining.reduce((a,b)=>!a||betterWeight(id,a.w,b.w)===b.w?b:a,null);if(best)s.exWeights[id]=best;else delete s.exWeights[id];
-    }return JSON.stringify(s);
+    }return saved(s);
   }
   throw Error(t("RULE_UNKNOWN_ACTION" /* 未知操作 */));
 }

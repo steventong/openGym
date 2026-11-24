@@ -1,4 +1,5 @@
 import { t } from './lib/i18n-core.js';
+import { withoutDefaults } from './defaults.js';
 import {buildCombinedEntries,deriveSessionName} from './lib/session-merge.js';
 import {buildCompletedWorkout,sessionEnd} from './lib/finish-workout.js';
 import {defaultConfig,modeOf,lastEntryFor,setLabel,workoutVolume,bestWeightForEntry,bestWeightFor,cleanupSg,pairAdjacent,unpairSuperset,supersetUnits,doneUnits,setUnitsTotal,setsDoneActive,copyRowAt,setSpanAt,moveRoutineEntry,canBeWarmup} from './lib/history.js';
@@ -13,7 +14,9 @@ import {clampIncline,inclineFits} from './lib/incline.js';
 import {dropGrid} from './lib/plates.js';
 import {saveRotation,chooseFixedWeek,chooseRotation,startNewPass,stopPass,refillAfter,scheduleModeOf} from './lib/rotation.js';
 import {queueView,queueOf} from './lib/queue.js';
-const defaults=s=>{const state={unit:'kg',restSec:90,restPauseSec:15,bodyweight:[],workouts:[],routines:[],exWeights:{},week:{},dayPlan:{},customEx:[],...s};registerCustom(state.customEx);return state;};
+const initial=()=>({unit:'kg',restSec:90,restPauseSec:15,bodyweight:[],workouts:[],routines:[],exWeights:{},week:{},dayPlan:{},customEx:[]});
+const defaults=s=>{const state={...initial(),...s};registerCustom(state.customEx);return state;};
+const saved=(s,input)=>JSON.stringify(withoutDefaults(s,input,initial()));
 const integer=(v,f,min,max)=>Math.max(min,Math.min(max,Math.round(Number(v))||f));
 export function advancedConfig(input) {
   const {config:c}=JSON.parse(input),mode=modeOf(c), out={...defaultConfig(c.id,mode),...c,mode};
@@ -46,11 +49,11 @@ export function beginAdvanced(input){
 }
 export function finishAdvanced(input){
  const {state,active,now,today}=JSON.parse(input),s=defaults(state);
- if(s.workouts.some(w=>w.id===active.id))return JSON.stringify(s);
+ if(s.workouts.some(w=>w.id===active.id))return saved(s,state);
  const w=buildCompletedWorkout(active,{end:sessionEnd(active,now),prs:[]});
  if(!w.entries.length)throw Error(t("RULE_COMPLETE_SET_FIRST" /* 至少完成一组或一侧后再保存。 */));
  for(const entry of w.entries){const top=bestWeightForEntry(entry);const before=bestWeightFor(s,entry.id,entryDbLoad(entry));if(beatsWeight(entry.id,top,before))w.prs.push(entry.id);if(beatsWeight(entry.id,top,s.exWeights[entry.id]?.w||0))s.exWeights[entry.id]={w:top,d:w.d};}
- w.prs=[...new Set(w.prs)];w.vol=workoutVolume(w);s.workouts.push(w);s.workouts.sort((a,b)=>(a.d||'').localeCompare(b.d||'')||(a.start||0)-(b.start||0));refillAfter(s,w,today,now);delete s.active;return JSON.stringify(s);
+ w.prs=[...new Set(w.prs)];w.vol=workoutVolume(w);s.workouts.push(w);s.workouts.sort((a,b)=>(a.d||'').localeCompare(b.d||'')||(a.start||0)-(b.start||0));refillAfter(s,w,today,now);delete s.active;return saved(s,state);
 }
 export function rowInfo(input){const {row,target={}}=JSON.parse(input);return JSON.stringify({mode:M.modeForSet(row,target),side:M.isSideSet(row),warmup:M.isWarmupRow(row),type:M.setType(row),completed:M.hasCompletedWork(row),canWarmup:canBeWarmup(row),incline:row.incline!=null||inclineFits(EXIDX[target.id])});}
 export function sessionInfo(input){const {active}=JSON.parse(input);return JSON.stringify({done:active.entries.reduce((n,e)=>n+e.sets.reduce((v,s)=>v+doneUnits(s),0),0),total:setUnitsTotal(active.entries),completed:setsDoneActive(active),volume:workoutVolume(active)});}
@@ -104,7 +107,7 @@ export function rotationChange(input){
  }else if(action==='week')chooseFixedWeek(s,today);
  else if(action==='resume')chooseRotation(s,today,now);
  else if(action==='restart')startNewPass(s,today,now);
- delete s.active;return JSON.stringify(s);
+ delete s.active;return saved(s,state);
 }
 
 export function copyAdvancedSet(input){
