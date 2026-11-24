@@ -55,6 +55,10 @@ import Observation
     var historyEdits: [String: [String: Any]] = [:]
     let localStorage: LocalTrainingStorage
     @ObservationIgnored let repository: StateRepository
+    /// 资料版本备份；测试与预览默认没有，不会写进“文件”App 可见的目录。
+    @ObservationIgnored let dataBackup: DataBackup?
+    /// 最近一次备份失败的原因。不放进 localSaveIssues，那会拦住训练和历史的保存。
+    var dataBackupIssue: String?
     /// 仅正式容器有 iCloud 同步状态；内存库（测试、预览）为 nil。
     let cloudSync: CloudSyncMonitor?
     @ObservationIgnored var storeObserver: NSObjectProtocol?
@@ -79,9 +83,10 @@ import Observation
     private var catalogueMediaIDs: Set<String> = []
     /// 默认使用内存库，预览和测试不会碰到用户数据；正式容器只在 App 启动处传入。
     init(userID: String? = nil, storage: LocalTrainingStorage = LocalTrainingStorage(), defaults: UserDefaults = .standard,
-         persistence: PersistenceController = PersistenceController(inMemory: true)) {
+         persistence: PersistenceController = PersistenceController(inMemory: true), dataBackup: DataBackup? = nil) {
         self.userID = userID; self.localStorage = storage
         self.defaults = defaults
+        self.dataBackup = dataBackup
         self.repository = StateRepository(persistence: persistence)
         self.cloudSync = persistence.syncsWithCloud ? CloudSyncMonitor(container: persistence.container, defaults: defaults) : nil
         self.mediaServerURL = defaults.string(forKey: Self.mediaServerKey) ?? "http://localhost:8080"

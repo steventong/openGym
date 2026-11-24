@@ -17,6 +17,7 @@ extension GymStore {
         do {
             state = try repository.load()
             clearDatabaseFailure()
+            backUpDocument()
         } catch { reportDatabaseFailure(error) }
         restoreLocalTraining()
         observeStoreChanges()
@@ -45,6 +46,7 @@ extension GymStore {
         guard !StateDocument.same(state, next) else { return }
         state = next
         lastDocumentChange = Date()
+        backUpDocument()
     }
 
     /// 所有资料修改的唯一入口：在当前文档上执行一次修改，把变化的记录写入 Core Data，成功后才更新内存文档。
@@ -66,6 +68,7 @@ extension GymStore {
             if !StateDocument.same(state, next) {
                 state = next
                 lastDocumentChange = Date()
+                backUpDocument()
             }
             return true
         } catch { return fail(error.localizedDescription) }

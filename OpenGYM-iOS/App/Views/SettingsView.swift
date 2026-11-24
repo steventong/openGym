@@ -98,6 +98,8 @@ struct SettingsView: View {
                     }
                 }
 
+                DataBackupSection(issue: store.dataBackupIssue, export: store.exportedBackup, restore: store.restoreBackup)
+
                 Section("ABOUT") {
                     LabeledContent("EXERCISES", value: String(format: String(localized: "COUNT_EXERCISES", bundle: AppLanguage.bundle, locale: AppLanguage.locale), locale: AppLanguage.locale, String(describing: store.exercises.count)))
                     Button("LICENSES_AND_CREDITS") { notice = true }

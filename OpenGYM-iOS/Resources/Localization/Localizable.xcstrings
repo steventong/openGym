@@ -1397,6 +1397,40 @@
         }
       }
     },
+    "BACKUP_IMPORTED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup imported"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已导入备份"
+          }
+        }
+      }
+    },
+    "BACKUP_REPLACEMENT_SUMMARY" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This replaces all current data with the backup (%1$@ workouts, %2$@ routines, %3$@ days of body weight) and syncs to your other devices through iCloud. The current version is saved in data-backup first."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将用备份（%1$@ 次训练、%2$@ 个计划、%3$@ 天体重）替换当前全部资料，并随 iCloud 同步到其他设备。替换前会先在 data-backup 保存当前版本。"
+          }
+        }
+      }
+    },
     "BACK_A" : {
       "comment" : "返回",
       "extractionState" : "manual",
@@ -3654,6 +3688,23 @@
         }
       }
     },
+    "COULD_NOT_SAVE_DATA_BACKUP_COUNT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not save the data backup: %1$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数据备份保存失败：%1$@"
+          }
+        }
+      }
+    },
     "COULD_NOT_SAVE_EXERCISE_ORDER" : {
       "comment" : "无法保存顺序",
       "extractionState" : "manual",
@@ -4694,6 +4745,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自定义项目"
+          }
+        }
+      }
+    },
+    "DATA_BACKUP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data Backup"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数据备份"
+          }
+        }
+      }
+    },
+    "DATA_BACKUP_INFO" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every change saves a full copy to Files → OpenGYM → data-backup. Old copies are not removed automatically."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次数据变动都会保存一份完整备份，可在“文件”App → OpenGYM → data-backup 中查看。旧备份不会自动清理。"
           }
         }
       }
@@ -6712,6 +6797,23 @@
         }
       }
     },
+    "EXPORT_BACKUP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export Backup"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出备份"
+          }
+        }
+      }
+    },
     "EZ_BARBELL" : {
       "comment" : "曲杆杠铃",
       "extractionState" : "manual",
@@ -7823,6 +7925,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "训练方式"
+          }
+        }
+      }
+    },
+    "IMPORT_BACKUP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Backup"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入备份"
           }
         }
       }
@@ -9838,6 +9957,23 @@
         }
       }
     },
+    "NOT_AN_OPENGYM_BACKUP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This file is not a complete openGym backup."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个文件不是完整的 openGym 备份。"
+          }
+        }
+      }
+    },
     "NO_ACCOUNT_IS_AVAILABLE_TO_SAVE_THIS_WORKOUT_DRAFT_LOCALLY" : {
       "comment" : "没有账号，训练草稿无法写入本机。",
       "extractionState" : "manual",
@@ -11566,6 +11702,23 @@
         }
       }
     },
+    "REPLACE_ALL_DATA_WITH_BACKUP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replace all data with this backup?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用这份备份替换全部资料？"
+          }
+        }
+      }
+    },
     "REPLACE_THIS_EXERCISE" : {
       "comment" : "更换此动作？",
       "extractionState" : "manual",
@@ -12984,6 +13137,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请先保存训练与历史编辑草稿，再切换账号单位。"
+          }
+        }
+      }
+    },
+    "SAVE_WORKOUT_AND_HISTORY_DRAFTS_BEFORE_IMPORTING_BACKUP" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finish your workout and save your history edits before importing a backup."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先完成当前训练并保存历史编辑，再导入备份。"
           }
         }
       }
