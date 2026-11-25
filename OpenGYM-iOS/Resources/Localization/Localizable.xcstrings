@@ -13157,6 +13157,23 @@
         }
       }
     },
+    "SAVE_WORKOUT_ON_PHONE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save workout on phone"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在手机上保存训练"
+          }
+        }
+      }
+    },
     "SAVE_YOUR_WORKOUT_AND_HISTORY_DRAFTS_FIRST" : {
       "comment" : "请先保存训练与历史编辑草稿。",
       "extractionState" : "manual",
@@ -17490,24 +17507,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "训练操作"
-          }
-        }
-      }
-    },
-    "WORKOUT_COMPLETE" : {
-      "comment" : "训练完成",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Workout complete"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "训练完成"
           }
         }
       }

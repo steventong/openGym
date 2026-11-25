@@ -246,6 +246,7 @@ import UIKit
             ("START_A_WORKOUT_ON_PHONE", "Start a workout on phone", "在手机开始训练"),
             ("ADD_EXERCISES_ON_IPHONE", "Add exercises on phone", "在手机添加动作"),
             ("SAVE_ON_IPHONE", "Save on phone", "请在手机保存"),
+            ("SAVE_WORKOUT_ON_PHONE", "Save workout on phone", "在手机上保存训练"),
             ("OPEN_OPENGYM_ON_IPHONE", "Open openGym on phone", "请打开手机上的 openGym")
         ] {
             for (language, expected) in [("en", english), ("zh", chinese)] {

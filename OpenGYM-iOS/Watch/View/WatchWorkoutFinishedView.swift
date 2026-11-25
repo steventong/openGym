@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// 全部动作完成后的手表页面，与等待开始页同布局。
+/// 全部动作完成后的手表页面，提示回手机保存训练；与等待开始页同布局。
 struct WatchWorkoutFinishedView: View {
     var body: some View {
         VStack(spacing: 12) {
@@ -11,7 +11,7 @@ struct WatchWorkoutFinishedView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .accessibilityHidden(true)
 
-            Text("WORKOUT_COMPLETE")
+            Text("SAVE_WORKOUT_ON_PHONE")
                 .font(.headline)
                 .multilineTextAlignment(.center)
         }
