@@ -10,7 +10,8 @@ enum HealthWorkoutAccess {
     static let restingEnergy = HKQuantityType(.basalEnergyBurned)
     static let heartRate = HKQuantityType(.heartRate)
     static let route = HKSeriesType.workoutRoute()
-    /// `includeRoute` is only asked for when the user turns on location and weather.
+    /// On the phone `includeRoute` is only asked for when the user turns on location and weather.
+    /// The Watch always asks for it, because it writes the route and the phone's grant may not reach it.
     static func authorize(_ health: HKHealthStore, includeRoute: Bool = false) async throws {
         let share: Set<HKSampleType> = includeRoute ? [workout, energy, route] : [workout, energy]
         try await health.requestAuthorization(toShare: share, read: [workout, energy, restingEnergy, heartRate])

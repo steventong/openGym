@@ -263,13 +263,15 @@ extension WatchRemoteStore {
     // MARK: - 健康采集与提醒协调
 
     /// 健康授权由系统处理；成功后让采集器继续处理已经收到的训练请求。
+    /// 路线由手表随训练一起写入，手机上的路线授权不一定同步到手表，所以这里一并申请。
+    /// 手表不知道手机是否打开了「位置和天气」，关闭时请求里没有位置，不会写路线。
     func authorizeWorkout() {
         guard !isPreview, !authorizingHealth, HKHealthStore.isHealthDataAvailable() else { return }
         authorizingHealth = true
         Task {
             defer { authorizingHealth = false }
             do {
-                try await HealthWorkoutAccess.authorize(healthStore)
+                try await HealthWorkoutAccess.authorize(healthStore, includeRoute: true)
                 healthRecorder.accept([])
                 refresh()
             } catch { self.error = error.localizedDescription }
