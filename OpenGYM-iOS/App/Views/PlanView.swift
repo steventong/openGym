@@ -13,7 +13,7 @@ struct PlanView: View {
                     VStack(alignment:.leading,spacing:7) { Text("ROUTINES").font(.system(size:34,weight:.bold)) }
                     Spacer()
                     Button { create = true } label: { PlanHeaderIcon(systemName:"plus") }.accessibilityLabel("NEW_ROUTINE")
-                    PlanMoreMenu(openSchedule:{ schedule = true },openRotation:{ rotation = true })
+                    PlanMoreMenu(openSchedule:{ schedule = true },openRotation:{ rotation = true },openTools:{ tools = true })
                 }
                 if store.routines.isEmpty {
                     EmptyCard(icon:"calendar",title:"NO_ROUTINES_YET")
@@ -37,7 +37,6 @@ struct PlanView: View {
                             .accessibilityIdentifier("start-routine-\(routine.id)")
                     }.gymCard()
                 }
-                Button { tools = true } label: { Label("TEMPLATES_AND_ROUTINE_IMPORT_EXPORT",systemImage:"square.and.arrow.up").frame(maxWidth:.infinity,minHeight:44) }.accessibilityIdentifier("open-plan-tools")
             }.padding(22)
         }.refreshable { await store.refresh() }.sheet(isPresented:$create) { RoutineComposer() }
             .sheet(isPresented:$tools) { PlanToolsView() }
@@ -61,6 +60,7 @@ private struct PlanHeaderIcon: View {
 private struct PlanMoreMenu: View {
     let openSchedule: () -> Void
     let openRotation: () -> Void
+    let openTools: () -> Void
 
     var body: some View {
         Menu {
@@ -68,6 +68,9 @@ private struct PlanMoreMenu: View {
                 .accessibilityIdentifier("open-schedule")
             Button("ROTATION_SCHEDULE", systemImage: "repeat", action: openRotation)
                 .accessibilityIdentifier("open-rotation")
+            Divider()
+            Button("TEMPLATES_AND_ROUTINE_IMPORT_EXPORT", systemImage: "square.and.arrow.up", action: openTools)
+                .accessibilityIdentifier("open-plan-tools")
         } label: {
             PlanHeaderIcon(systemName: "ellipsis")
         }
