@@ -1,9 +1,0 @@
-{
-  "private": true,
-  "scripts": {
-    "build:rules": "node scripts/build-rules.mjs"
-  },
-  "devDependencies": {
-    "esbuild": "0.25.12"
-  }
-}
